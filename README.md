@@ -1,4 +1,4 @@
-# HPCDeepLearning
+# HPCDeepNeuralNetworks
 High-Performance Deep Learning
 
 Meeting at Sep 19 2022:
