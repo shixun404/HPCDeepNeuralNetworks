@@ -40,14 +40,14 @@ __global__ void fill(float *a , float x)
 
 
 
-__global__ void sdot(float *a, float *b, float *c)
+__global__ void sdot(int N_, int threads_per_block_, float *a, float *b, float *c)
 {	
 	__shared__ float cache[threads_per_block];
 	int tid = threadIdx.x + blockIdx.x * blockDim.x;
 	int cacheIndex = threadIdx.x;
 	
 	float temp = 0;
-	while (tid < N){
+	while (tid < N_){
 		temp += a[tid] * b[tid];
 		tid += blockDim.x * gridDim.x;
 	}
@@ -69,7 +69,9 @@ __global__ void sdot(float *a, float *b, float *c)
 	}
 	
 	if (cacheIndex == 0)
-		c[blockIdx.x] = cache[0];
+		atomicAdd( c , cache[0] );
+
+		//c[blockIdx.x] = cache[0];
 }
 
 
@@ -120,16 +122,17 @@ int main()
     cudaError_t addVectorsErr;
     cudaError_t asyncErr;
     saxpy_timer t;
-    float alpha=1.6;
-    int M = 100;
+    //float alpha=1.6;
+    int M = 10000;
     for(int i = 0; i < M; ++i){
-	sdot <<< number_of_blocks, threads_per_block >>> ( x, y , result);
-	//cublasSdot(handle, N, x, 1, y, 1, result);
+	//sdot <<< number_of_blocks, threads_per_block >>> (N, threads_per_block, x, y , result);
+	cublasSdot(handle, N, x, 1, y, 1, result);
     }
     cudaMemPrefetchAsync(result, size, cudaCpuDeviceId);
     cudaDeviceSynchronize();
     double elapsed = t.elapsed_msec();
-    double gflops = 2 * M * N / 1e9;
+    double gflops = double(2 * M * double(N)) / (1000000000);
+	//printf("gflops %f\n", double(2 * M *double( N)));
     double perf = gflops / (elapsed / 1e3);
     printf("%fms\n performance: %f gflops\n", elapsed, perf);
     

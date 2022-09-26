@@ -1,5 +1,5 @@
 #include <stdio.h>
-
+#include <cublas_v2.h>
 #define N 2048 * 2048 * 2 // Number of elements in each vector
 
 
@@ -37,60 +37,34 @@ __global__ void fill(float *a , float x)
    }
 }
 
-__global__ void saxpy_(float *x, float *y, float *result)
+__global__ void saxpy_(float *x, float *y,float alpha, float *result)
 {
    int index = threadIdx.x + blockIdx.x * blockDim.x;
    int stride = blockDim.x * gridDim.x;
    
    for(int i = index; i < N; i += stride)
    {
-       result[i] = 1.6 * x[i] + y[i];
+       result[i] = alpha * x[i] + y[i];
    }
 }
 
-__global__ void saxpy(float *x, float *y, float alpha )
+__global__ void saxpy(float *x, float *y, float alpha)// float loop=8)
 {
    int index = threadIdx.x + blockIdx.x * blockDim.x;
-   int stride = blockDim.x * gridDim.x;
-
+   //printf("%d")
+	int stride = blockDim.x * gridDim.x;
+ //printf("%d\n", loop);
+   
+   //int index = (threadIdx.x + blockIdx.x * blockDim.x) * loop;
+   //int index_next = index + loop;
    for(int i = index; i < N; i += stride)
+    //for(int i = index; i < index_next; i += 1)
    {
-       y[i] = alpha * x[i] + y[i];
+       y[i] =  alpha * x[i] + y[i];
+	 //y[i] = __fadd_rn(__fmul_rd(alpha, x[i]), y[i]);
    }
 }
 
-
-__global__ void sdot(float *a, float *b, float *c)
-{	
-	__shared__ float cache[threadsPerBlock];
-	int tid = threadIdx.x + blockIdx.x * blockDim.x;
-	int cacheIndex = threadIdx.x;
-	
-	float temp = 0;
-	while (tid < N){
-		temp += a[tid] * b[tid];
-		tid += blockDim.x * gridDim.x;
-	}
-	
-	// set the cache values
-	cache[cacheIndex] = temp;
-	
-	// synchronize threads in this block
-	__syncthreads();
-	
-	// for reductions, threadsPerBlock must be a power of 2
-	// because of the following code
-	int i = blockDim.x/2;
-	while (i != 0){
-		if (cacheIndex < i)
-			cache[cacheIndex] += cache[cacheIndex + i];
-		__syncthreads();
-		i /= 2;
-	}
-	
-	if (cacheIndex == 0)
-		c[blockIdx.x] = cache[0];
-}
 
 
 cudaDeviceProp getDetails(int deviceId)
@@ -123,7 +97,7 @@ int main()
 	
     int threads_per_block = 1024;
     printf("number of sms :%d \n", props.multiProcessorCount);
-    int number_of_blocks = 1024;//props.multiProcessorCount * multi;
+    int number_of_blocks = props.multiProcessorCount * 10;
 	
 	cudaStream_t stream_result; cudaStreamCreate(&stream_result);
 	cudaStream_t stream_x; cudaStreamCreate(&stream_x);
@@ -135,21 +109,24 @@ int main()
 	
 	cudaStreamDestroy(stream_result); cudaStreamDestroy(stream_x); cudaStreamDestroy(stream_y);	
     
+    cublasHandle_t handle;
+    cublasCreate(&handle);
 
     //error variables
     cudaError_t addVectorsErr;
     cudaError_t asyncErr;
     saxpy_timer t;
-    float alpha=1.6;
-    int M = 100;
+    float alpha=2.0;
+    int M = 10000;
     for(int i = 0; i < M; ++i){
 	saxpy <<< number_of_blocks, threads_per_block >>> ( x, y, alpha);
-	//saxpy <<< number_of_blocks, threads_per_block >>> ( x, y , result)
+	//cublasSaxpy(handle, N, &alpha, x, 1, y, 1)	;
+//saxpy <<< number_of_blocks, threads_per_block >>> ( x, y , result)
     }
     cudaMemPrefetchAsync(result, size, cudaCpuDeviceId);
     cudaDeviceSynchronize();
     double elapsed = t.elapsed_msec();
-    double gflops = 2 * M * N / 1e9;
+    double gflops = 2 * M * double(N) / 1e9;
     double perf = gflops / (elapsed / 1e3);
     printf("%fms\n performance: %f gflops\n", elapsed, perf);
     
