@@ -4,16 +4,6 @@
 #define threads_per_block 1024
 
 
-/*
- * Optimize this already-accelerated codebase. Work iteratively,
- * and use nsys to support your work.
- *
- * Aim to profile `saxpy` (without modifying `N`) running under
- * 20us.
- *
- * Some bugs have been placed in this codebase for your edification.
- */
-
 #include <chrono>
 class saxpy_timer
 {
