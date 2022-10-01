@@ -1,9 +1,0 @@
-run:
-	nvcc -o saxpy saxpy.cu  -std=c++11 -lcublas -O3
-	nvcc -o sdot sdot.cu  -std=c++11 -lcublas -O3
-
-profile:
-	nsys profile --stats=true ./saxpy
-
-clean:
-	bash -c "rm ./report*"
