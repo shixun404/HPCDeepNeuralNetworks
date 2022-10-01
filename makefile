@@ -9,8 +9,8 @@ INCFLAGS    = -I$(CUDA_PATH)/include -I$(CUDA_PATH)/samples/common/inc
 SRC         = $(wildcard *.cu)
 build : $(BINARY_NAME)
 
-$(BINARY_NAME): %: %.cu
-	$(CC) $(CFLAGS) $(LDFLAGS) $(INCFLAGS) $< -o $@
+$(BINARY_NAME): %: %.cu utils.cu
+	$(CC) $(CFLAGS) $(LDFLAGS) $(INCFLAGS) $^ -o $@
 
 clean:
 	rm $(BINARY_NAME)

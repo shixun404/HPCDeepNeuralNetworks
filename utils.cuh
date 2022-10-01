@@ -1,5 +1,19 @@
-
+#include <stdio.h>
 #include <chrono>
+#include <cuda_runtime.h>
+#include <cublas_v2.h>
+#include <helper_functions.h>
+#include <helper_cuda.h>
+#define CUDA_CALLER(call) do{\
+  cudaError_t cuda_ret = (call);\
+  if(cuda_ret != cudaSuccess){\
+    printf("CUDA Error at line %d in file %s\n", __LINE__, __FILE__);\
+    printf("  Error message: %s\n", cudaGetErrorString(cuda_ret));\
+    printf("  In the function call %s\n", #call);\
+    exit(1);\
+  }\
+}while(0)
+
 class saxpy_timer
 {
 public:
@@ -23,22 +37,10 @@ private:
     std::chrono::high_resolution_clock::time_point t0_;
 };
 
-__global__ void fill(float *a , float x, int N)
-{
-   int index =  blockIdx.x * blockDim.x + threadIdx.x;
-   int stride = blockDim.x * gridDim.x;
-
-   for(int i = index; i < N; i += stride)
-   {
-       a[i] = x;
-   }
-}
-
-
-cudaDeviceProp getDetails(int deviceId)
-{
-        cudaDeviceProp props;
-            cudaGetDeviceProperties(&props, deviceId);
-                return props;
-}
+__global__ void fill(float *a , float x, int N);
+cudaDeviceProp getDetails(int deviceId);
+void generate_random_vector(float* target, int n);
+void copy_vector(float *src, float *dest, int n);
+bool verify_vector(float *vec1, float *vec2, int n);
+void fill_vector(float*, int, float);
 
