@@ -1,48 +1,12 @@
 #include <stdio.h>
 #include <cublas_v2.h>
-#define N 2048 * 2048 * 2 // Number of elements in each vector
-#define threads_per_block 1024
-
-
-#include <chrono>
-class saxpy_timer
-{
-public:
-    saxpy_timer() { reset(); }
-    void reset() {
-	t0_ = std::chrono::high_resolution_clock::now();
-    }
-    double elapsed(bool reset_timer=false) {
-	std::chrono::high_resolution_clock::time_point t =
-			std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double> time_span =
-			std::chrono::duration_cast<std::chrono::duration<double>>(t - t0_);
-	if (reset_timer)
-	    reset();
-	return time_span.count();
-    }
-    double elapsed_msec(bool reset_timer=false) {
-	return elapsed(reset_timer) * 1000;
-    }
-private:
-    std::chrono::high_resolution_clock::time_point t0_;
-};
-__global__ void fill(float *a , float x)
-{
-   int index =  blockIdx.x * blockDim.x + threadIdx.x;
-   int stride = blockDim.x * gridDim.x;
-   
-   for(int i = index; i < N; i += stride)
-   {
-       a[i] = x;
-   }
-}
-
-
-
-__global__ void sdot(int N_, int threads_per_block_, float *a, float *b, float *c)
+ #include "utils.cuh"
+#define PPP 1
+//#define N 2048 * 2048 * 2 // Number of elements in each vector
+//#define threads_per_block 1024
+__global__ void sdot(int N_, int threads_per_block_, float *a, float *b, float *c, int N)
 {	
-	__shared__ float cache[threads_per_block];
+	__shared__ float cache[1024];
 	int tid = threadIdx.x + blockIdx.x * blockDim.x;
 	int cacheIndex = threadIdx.x;
 	
@@ -52,14 +16,10 @@ __global__ void sdot(int N_, int threads_per_block_, float *a, float *b, float *
 		tid += blockDim.x * gridDim.x;
 	}
 	
-	// set the cache values
 	cache[cacheIndex] = temp;
 	
-	// synchronize threads in this block
 	__syncthreads();
 	
-	// for reductions, threadsPerBlock must be a power of 2
-	// because of the following code
 	int i = blockDim.x/2;
 	while (i != 0){
 		if (cacheIndex < i)
@@ -75,82 +35,94 @@ __global__ void sdot(int N_, int threads_per_block_, float *a, float *b, float *
 }
 
 
-cudaDeviceProp getDetails(int deviceId)
-{
-    cudaDeviceProp props;
-    cudaGetDeviceProperties(&props, deviceId);
-    return props;
-}
-
-
-
 #define multi 20
-int main()
+int main(int argc, char **argv)
 {
-    float *x, *y, *result;
-    int size = N * sizeof (int); // The total number of bytes per vector
-    
-    int deviceId;
-    cudaGetDevice(&deviceId);
-    cudaDeviceProp props = getDetails(deviceId);
-    
+    if (argc != 2) {
+        printf("Please select a kernel (range 0 - 1, here 0 is for NVIDIA cuBLAS).\n");
+         exit(-1);
+      }
+    int kernel_number = atoi(argv[1]);
+     for(int N = 1024 * 2048; N <= 2048 * 2048 * 4; N += 2048 * 1024){
+        
+        int M = 100;
+        
+        float *x[100], *y[100], *result[100];
+        
+        int size = N * sizeof (int); // The total number of bytes per vector
+        
+        int deviceId;
+        
+        cudaGetDevice(&deviceId);
+        
+        cudaDeviceProp props = getDetails(deviceId);
+        
+        int threads_per_block = 1024;
+        
+        int number_of_blocks =2048;
 
-    cudaMallocManaged(&result, size);
-    cudaMallocManaged(&x, size);
-    cudaMallocManaged(&y, size);
+    for(int ii = 0; ii < M; ++ii){
+        
+        cudaMallocManaged(&result[ii], sizeof(int));
+        cudaMallocManaged(&x[ii], size);
+        cudaMallocManaged(&y[ii], size);
     
-    cudaMemPrefetchAsync(result, size, deviceId);
-    cudaMemPrefetchAsync(x, size, deviceId);
-    cudaMemPrefetchAsync(y, size, deviceId);
+        cudaMemPrefetchAsync(result[ii], 1, deviceId);
+        cudaMemPrefetchAsync(x[ii], size, deviceId);
+        cudaMemPrefetchAsync(y[ii], size, deviceId);
 
-    printf("number of sms :%d \n", props.multiProcessorCount);
-    int number_of_blocks = 1024;//props.multiProcessorCount * multi;
+    //printf("number of sms :%d \n", props.multiProcessorCount);
+    //int number_of_blocks = 1024;//props.multiProcessorCount * multi;
 	
 	cudaStream_t stream_result; cudaStreamCreate(&stream_result);
 	cudaStream_t stream_x; cudaStreamCreate(&stream_x);
 	cudaStream_t stream_y; cudaStreamCreate(&stream_y);
 
-    fill<<<threads_per_block,number_of_blocks, 0 , stream_result>>>(result, 0.0); //result
-    fill<<<threads_per_block,number_of_blocks, 0 , stream_x>>>(x, 1.0); // array x 
-    fill<<<threads_per_block,number_of_blocks, 0 , stream_y>>>(y, 2.0); // array y
+    fill<<<threads_per_block, number_of_blocks, 0, stream_result>>>(result[ii], 0.0, 1); //result
+    fill<<<threads_per_block, number_of_blocks, 0, stream_x>>>(x[ii], 1.0, N); // array x 
+    fill<<<threads_per_block, number_of_blocks, 0, stream_y>>>(y[ii], 2.0, N); // array y
 	
     cudaStreamDestroy(stream_result); cudaStreamDestroy(stream_x); cudaStreamDestroy(stream_y);	
-    
+    }
     cublasHandle_t handle;
     cublasCreate(&handle);
     //error variables
-    cudaError_t addVectorsErr;
-    cudaError_t asyncErr;
+    //cudaError_t addVectorsErr;
+    //cudaError_t asyncErr;
+    if (kernel_number == 1){
     saxpy_timer t;
     //float alpha=1.6;
-    int M = 10000;
-    for(int i = 0; i < M; ++i){
-	//sdot <<< number_of_blocks, threads_per_block >>> (N, threads_per_block, x, y , result);
-	cublasSdot(handle, N, x, 1, y, 1, result);
+    //int M = 10000;
+    for(int ii = 0; ii < M; ++ii){
+	    sdot <<< number_of_blocks, threads_per_block >>> (N, threads_per_block, x[ii], y[ii] , result[ii], N);
+	    //cublasSdot(handle, N, x[ii], 1, y[ii], 1, result[ii]);
     }
     cudaMemPrefetchAsync(result, size, cudaCpuDeviceId);
     cudaDeviceSynchronize();
     double elapsed = t.elapsed_msec();
-    double gflops = double(2 * M * double(N)) / (1000000000);
-	//printf("gflops %f\n", double(2 * M *double( N)));
+    double gflops = double(2 * M * double(N)) / (1e9);
     double perf = gflops / (elapsed / 1e3);
-    printf("%fms\n performance: %f gflops\n", elapsed, perf);
-    
-	addVectorsErr = cudaGetLastError();
+    printf("%8.2f|", perf);
+    }
+    else if (kernel_number == 0){
+        saxpy_timer t;
+    //float alpha=1.6;
+    //int M = 10000;
+    for(int ii = 0; ii < M; ++ii){
+        //sdot <<< number_of_blocks, threads_per_block >>> (N, threads_per_block, x[ii], y[ii] , result[ii], N);
+        cublasSdot(handle, N, x[ii], 1, y[ii], 1, result[ii]);
+    }
+    cudaMemPrefetchAsync(result, size, cudaCpuDeviceId);
+    cudaDeviceSynchronize();
+    double elapsed = t.elapsed_msec();
+    double gflops = double(2 * M * double(N)) / (1e9);
+    double perf = gflops / (elapsed / 1e3);
+    printf("%8.2f|", perf);
 
-    if(addVectorsErr != cudaSuccess) printf("Error: %s\n", cudaGetErrorString(addVectorsErr));
-
-    asyncErr = cudaDeviceSynchronize();
-    if(asyncErr != cudaSuccess) printf("Error: %s\n", cudaGetErrorString(asyncErr));
-
-    
-    //Print out the first and last 5 values of c for a quality check
-    for( int i = 0; i < 5; ++i )
-        printf("y[%d] = %f, ", i, result[i]);
-    printf ("\n");
-    for( int i = N-5; i < N; ++i )
-        printf("y[%d] = %f, ", i, result[i]);
-    printf ("\n");
-
-    cudaFree( result ); cudaFree( x ); cudaFree( y );
+    }
+    for(int ii = 0; ii < M; ++ii){
+        cudaFree( result[ii] ); cudaFree( x[ii] ); cudaFree( y[ii] );
+    }
+}
+printf("\n");
 }
