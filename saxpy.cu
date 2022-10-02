@@ -1,120 +1,117 @@
 #include <stdio.h>
-
 #include <cublas_v2.h>
 #include "utils.cuh"
- //#define N 2048 * 2048 * 2 // Number of elements in each vector
+#define PPP 1
+#include <cuda_runtime.h>
 
-__global__ void saxpy_(float *x, float *y,float alpha, float *result, int N)
-{
-   int index = threadIdx.x + blockIdx.x * blockDim.x;
-   int stride = blockDim.x * gridDim.x;
-   
-   for(int i = index; i < N; i += stride)
-   {
-       result[i] = alpha * x[i] + y[i];
-   }
+__global__ void saxpy(int N, float alpha, float *a, float *b)
+{	
+    int tid = threadIdx.x + blockIdx.x * blockDim.x;
+	int cacheIndex = threadIdx.x;
+	
+	float temp = 0;
+	while (tid < N){
+		b[tid] += alpha * a[tid];
+		tid += blockDim.x * gridDim.x;
+	}
 }
-
-__global__ void saxpy(float *x, float *y, float alpha, int N)
-{
-   int index = threadIdx.x + blockIdx.x * blockDim.x;
-   int stride = blockDim.x * gridDim.x;
-   for(int i = index; i < N; i += stride)
-   {
-       y[i] =  alpha * x[i] + y[i];
-   }
-}
-
-
-
 
 #define multi 20
-int main()
+int main(int argc, char **argv)
 {
-    for(int N = 2048; N <= 2048 * 2048; N *= 2){
-    //float *x[100], *y[100], *result[100];
-    float *x, *y, *result;
-    int M = 100;
-    float  *x_[100], *y_[100], *result_[100];
-    int size = N * sizeof (float); // The total number of bytes per vector
-
-    int deviceId;
-    cudaGetDevice(&deviceId);
-    cudaDeviceProp props = getDetails(deviceId);
-    int threads_per_block = 1024;
-    int number_of_blocks = props.multiProcessorCount * 10;
-
-
-for(int ii = 0; ii < M; ++ii){
-    cudaMallocManaged(&result_[ii], size);
-    cudaMallocManaged(&x_[ii], size);
-    cudaMallocManaged(&y_[ii], size);
-    
-    cudaMemPrefetchAsync(result_[ii], size, deviceId);
-    cudaMemPrefetchAsync(x_[ii], size, deviceId);
-    cudaMemPrefetchAsync(y_[ii], size, deviceId);
-	
-	
-    cudaStream_t stream_result; cudaStreamCreate(&stream_result);
-    cudaStream_t stream_x; cudaStreamCreate(&stream_x);
-    cudaStream_t stream_y; cudaStreamCreate(&stream_y);
-
-    fill<<<threads_per_block,number_of_blocks, 0 , stream_result>>>(result_[ii], 0.0, N); //result
-    fill<<<threads_per_block,number_of_blocks, 0 , stream_x>>>(x_[ii], 2.0, N); // array x 
-    fill<<<threads_per_block,number_of_blocks, 0 , stream_y>>>(y_[ii], 2.0, N); // array y
-	
-	cudaStreamDestroy(stream_result); cudaStreamDestroy(stream_x); cudaStreamDestroy(stream_y);	
-    //x_[0] = x;
-    //y_[0] = y;
-    //result_[0] = result;
-  }
-    cublasHandle_t handle;
-    cublasCreate(&handle);
-
-    //error variables
-    cudaError_t addVectorsErr;
-    cudaError_t asyncErr;
-    saxpy_timer t;
-    float alpha=2.0;
-    cudaEvent_t start, stop;
-    cudaEventCreate(&start);
-    cudaEventCreate(&stop);
-    cudaEventRecord(start);
-    for(int i = 0; i < M; ++i){
-	saxpy <<< number_of_blocks, threads_per_block >>> ( x_[i], y_[i], alpha, N);
-	//cublasSaxpy(handle, N, &alpha, x_[i], 1, y_[i], 1)	;
-	//saxpy <<< number_of_blocks, threads_per_block >>> ( x, y , result)
+    if (argc != 2) {
+        printf("Please select a kernel (range 0 - 1, here 0 is for NVIDIA cuBLAS).\n");
+         exit(-1);
+      }
+    int kernel_number = atoi(argv[1]);
+    int num_tests = 100;
+    int start_size = 1024;
+    int end_size = 1024 * 1024 * 64;
+    int gap_size = 1024;
+    for(int max_size = start_size, exp_=10; max_size <= end_size; max_size *=2, exp_ += 1){
+        printf("%8.2d|", exp_);
     }
-    cudaEventRecord(stop);
-    cudaEventSynchronize(stop);
-    //float milliseconds = 0;
-    float elapsed = 0;//t.elapsed_msec();
-    cudaEventElapsedTime(&elapsed, start, stop);
-    cudaMemPrefetchAsync(result, size, cudaCpuDeviceId);
-    cudaDeviceSynchronize();
-    double gflops = 2 * M * double(N) / 1e9;
-    double perf = gflops / (elapsed / 1e3);
-    //printf("%fms\n performance: %f gflops\n", elapsed, perf);
-    printf("%f, ", perf);
-    
-    //addVectorsErr = cudaGetLastError();
+    printf("\n");
+    for(int max_size = start_size; max_size <= end_size; max_size *=2){
+        
+        float *A = NULL, *B = NULL, *B_ref = NULL;// *alpha = NULL;
+        float *dA = NULL,*dB = NULL, *dB_ref = NULL;// *dalpha = NULL;
+        int size = max_size * sizeof (int);
+        int deviceId;
+        cudaGetDevice(&deviceId);
+        cudaDeviceProp props = getDetails(deviceId);
+        int threads_per_block = 1024;
+        int number_of_blocks = min(1024, (max_size + 1024 - 1) / threads_per_block);
+        
+        A = (float *)malloc(sizeof(float) * max_size * num_tests);
+        B = (float *)malloc(sizeof(float) * max_size * num_tests);
+        B_ref = (float *)malloc(sizeof(float) * max_size);
+        // alpha = (float *)malloc(sizeof(float) * 1);
+        // float a = *alpha;
+        generate_random_vector(A, max_size * num_tests);
+        generate_random_vector(B, max_size * num_tests);
+        //generate_random_vector(alpha, 1);
+        copy_vector(B, B_ref, max_size);
+        float a = float(rand() % 5) + (rand() % 5) * 0.01;
+        a = (rand() % 2 == 0) ? a :( -1.0 * a);
+        CUDA_CALLER(cudaMalloc((void**) &dA, sizeof(float) * max_size * num_tests));
+        CUDA_CALLER(cudaMalloc((void**) &dB, sizeof(float) * max_size * num_tests));
+        CUDA_CALLER(cudaMalloc((void**) &dB_ref, sizeof(float) * max_size));
+        //CUDA_CALLER(cudaMalloc((void**) &dalpha, sizeof(float) * 1));
+        
+        CUDA_CALLER(cudaMemcpy(dA, A, sizeof(float) * max_size * num_tests, cudaMemcpyHostToDevice));
+        CUDA_CALLER(cudaMemcpy(dB, B, sizeof(float) * max_size * num_tests, cudaMemcpyHostToDevice));
+        CUDA_CALLER(cudaMemcpy(dB_ref, B, sizeof(float) * max_size, cudaMemcpyHostToDevice));
+        //CUDA_CALLER(cudaMemcpy(dalpha, alpha, sizeof(float) * 1, cudaMemcpyHostToDevice));
 
-    //if(addVectorsErr != cudaSuccess) printf("Error: %s\n", cudaGetErrorString(addVectorsErr));
+        cublasHandle_t handle;
+        cublasCreate(&handle);
+        
+        if (!verify_vector(B_ref, B, 1)) {
+            printf("Failed to pass the correctness verification against NVIDIA cuBLAS. Exited.\n");
+            exit(-3);
+        }
 
-    //asyncErr = cudaDeviceSynchronize();
-    //if(asyncErr != cudaSuccess) printf("Error: %s\n", cudaGetErrorString(asyncErr));
-
-    
-    //Print out the first and last 5 values of c for a quality check
-    //for( int i = 0; i < 5; ++i )
-    //    printf("y[%d] = %f, ", i, y_[0][i]);
-    //printf ("\n");
-    //for( int i = N-5; i < N; ++i )
-    //    printf("y[%d] = %f, ", i, y_[99][i]);
-    //printf ("\n");
-
-    for(int ii = 0; ii < M; ++ii){
-	cudaFree( result_[ii] ); cudaFree( x_[ii] ); cudaFree( y_[ii] );
-	}
-	}
+        cublasSaxpy(handle, max_size, &a, dA, 1, dB_ref, 1);
+        saxpy <<< number_of_blocks, threads_per_block >>> (max_size, a, dA, dB);
+        cudaDeviceSynchronize();
+        cudaMemcpy(B, dB, sizeof(float) * max_size, cudaMemcpyDeviceToHost);
+        cudaMemcpy(B_ref, dB_ref, sizeof(float) * max_size, cudaMemcpyDeviceToHost);
+        cudaDeviceSynchronize();
+        if (!verify_vector(B_ref, B, 1)) {
+            printf("Failed to pass the correctness verification against NVIDIA cuBLAS. Exited.\n");
+            exit(-3);
+        }
+        if (kernel_number == 1){
+            saxpy_timer t;
+            for(int ii = 0; ii < num_tests; ++ii){
+                saxpy<<< number_of_blocks, threads_per_block >>>(max_size, a, dA + ii * max_size, dB + ii * max_size);
+            }
+            cudaMemPrefetchAsync(dB, size, cudaCpuDeviceId);
+            cudaDeviceSynchronize();
+            double elapsed = t.elapsed_msec();
+            double gflops = double(2 * num_tests * double(max_size)) / (1e9);
+            double perf = gflops / (elapsed / 1e3);
+            printf("%8.2f|", perf);
+        }
+        else if (kernel_number == 0){
+            saxpy_timer t;
+            for(int ii = 0; ii < num_tests; ++ii){
+                cublasSaxpy(handle, max_size, &a, dA + ii * max_size, 1, dB + ii * max_size, 1);
+            }
+            cudaMemPrefetchAsync(dB, size, cudaCpuDeviceId);
+            cudaDeviceSynchronize();
+            double elapsed = t.elapsed_msec();
+            double gflops = double(2 * num_tests * double(max_size)) / (1e9);
+            double perf = gflops / (elapsed / 1e3);
+            printf("%8.2f|", perf);
+        }
+       // cudaFree( dalpha ); 
+        cudaFree( dA ); 
+        cudaFree( dB );
+        cudaFree( dB_ref );
+        
+        fflush(stdout);
+    }
+    printf("\n");
 }
