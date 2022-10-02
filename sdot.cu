@@ -69,14 +69,14 @@ __global__ void reduction(int N, float *a, float *c){
 #define multi 20
 int main(int argc, char **argv)
 {
-    if (argc != 2) {
+    if (argc < 2) {
         printf("Please select a kernel (range 0 - 1, here 0 is for NVIDIA cuBLAS).\n");
          exit(-1);
       }
     int kernel_number = atoi(argv[1]);
     int num_tests = 100;
-    int start_size = 1024 * 1024 * 64;
-    int end_size = 1024 * 1024 * 64 * 8;
+    int start_size = 1024;
+    int end_size = 1024 * 1024 * 64;
     int gap_size = 1024;
     for(int max_size = start_size, exp_=10; max_size <= end_size; max_size *=2, exp_ += 1){
         printf("%8.2d|", exp_);
@@ -94,9 +94,9 @@ int main(int argc, char **argv)
         
         cudaDeviceProp props = getDetails(deviceId);
         
-        int threads_per_block = 1024;
+        int threads_per_block = atoi(argv[2]);
         
-        int number_of_blocks = min(1024, (max_size + 1024 - 1) / threads_per_block);
+        int number_of_blocks = min(1024, (max_size + threads_per_block - 1) / threads_per_block);
         //printf("\n number of blocks: %d\n", number_of_blocks);
         A = (float *)malloc(sizeof(float) * max_size);
         B = (float *)malloc(sizeof(float) * max_size);
@@ -191,7 +191,7 @@ int main(int argc, char **argv)
             double elapsed = t.elapsed_msec();
             double gflops = double(2 * num_tests * double(max_size)) / (1e9);
             double perf = gflops / (elapsed / 1e3);
-            printf("%8.2f|", perf);
+            printf("%4.2f,", perf);
         }
 
         else if (kernel_number == 2){
@@ -205,7 +205,7 @@ int main(int argc, char **argv)
             double elapsed = t.elapsed_msec();
             double gflops = double(2 * num_tests * double(max_size)) / (1e9);
             double perf = gflops / (elapsed / 1e3);
-            printf("%8.2f|", perf);
+            printf("%4.2f,", perf);
   
         }
         else if (kernel_number == 0){
@@ -218,7 +218,7 @@ int main(int argc, char **argv)
             double elapsed = t.elapsed_msec();
             double gflops = double(2 * num_tests * double(max_size)) / (1e9);
             double perf = gflops / (elapsed / 1e3);
-            printf("%8.2f|", perf);
+            printf("%4.2f,", perf);
         }
         for(int ii = 0; ii < num_tests; ++ii){
             cudaFree( dC ); 

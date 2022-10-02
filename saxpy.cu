@@ -106,7 +106,7 @@ int main(int argc, char **argv)
         }
 
         cublasSaxpy(handle, max_size, &a, dA, 1, dB_ref, 1);
-        if(kernel_number == 1)
+        if(kernel_number <= 1)
 	saxpy <<< number_of_blocks, threads_per_block >>> (max_size / 4, a, (f128*)dA, (f128*)dB);
 	else if(kernel_number == 2)
 	_saxpy <<< number_of_blocks, threads_per_block >>> (max_size, a, dA,dB);
@@ -143,7 +143,7 @@ int main(int argc, char **argv)
             double elapsed = t.elapsed_msec();
             double gflops = double(2 * num_tests * double(max_size)) / (1e9);
             double perf = gflops / (elapsed / 1e3);
-            printf("%8.2f|", perf);
+            printf("%4.2f,", perf);
         }
 
 	else if (kernel_number == 2){
@@ -157,7 +157,7 @@ int main(int argc, char **argv)
             double elapsed = t.elapsed_msec();
             double gflops = double(2 * num_tests * double(max_size)) / (1e9);
             double perf = gflops / (elapsed / 1e3);
-            printf("%8.2f|", perf);
+            printf("%4.2f,", perf);
         }
 
         else if (kernel_number == 0){
@@ -170,7 +170,7 @@ int main(int argc, char **argv)
             double elapsed = t.elapsed_msec();
             double gflops = double(2 * num_tests * double(max_size)) / (1e9);
             double perf = gflops / (elapsed / 1e3);
-            printf("%8.2f|", perf);
+            printf("%4.2f,", perf);
         }
        // cudaFree( dalpha ); 
         cudaFree( dA ); 
