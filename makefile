@@ -1,4 +1,4 @@
-BINARY_NAME = sdot saxpy
+BINARY_NAME = sdot saxpy sgemm
 CUDA_PATH   = /usr/local/cuda-11.4
 CC          = $(CUDA_PATH)/bin/nvcc
 CFLAGS      = -O3 -std=c++11

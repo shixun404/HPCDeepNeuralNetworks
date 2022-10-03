@@ -38,9 +38,21 @@ private:
 };
 
 __global__ void fill(float *a , float x, int N);
+
 cudaDeviceProp getDetails(int deviceId);
+
 void generate_random_vector(float* target, int n);
+
 void copy_vector(float *src, float *dest, int n);
+
 bool verify_vector(float *vec1, float *vec2, int n);
+
 void fill_vector(float*, int, float);
 
+void copy_matrix(float *src, float *dest, int n);
+
+void generate_random_matrix(float* target, int n);
+
+bool verify_matrix(float*, float*, int n);
+
+void cpu_gemm(float alpha, float beta, float *mat1, float*mat2, int max_size, float* mat3);
