@@ -90,11 +90,11 @@ bool verify_matrix(float *mat1, float *mat2, int n){
 void cpu_gemm(float alpha, float beta, float *mat1, float *mat2, int n, float *mat3){
     int i = 0, j = 0, k  = 0;
     for(i = 0; i < n; ++i){
-        for(k = 0; k < n; ++k){
+        for(j = 0; j < n; ++j){
             float temp = 0;
-	    for(j = 0; j < n; ++j)
-		temp += mat1[i * n + k] * mat2[k * n + j];
-            mat3[i * n + j] = alpha * temp + beta * mat3[i * n + j];
+	    for(k = 0; k < n; ++k)
+		temp += mat1[k * n + i] * mat2[j * n + k];
+            mat3[j * n + i] = alpha * temp + beta * mat3[j * n + i];
 	}
     }
 }

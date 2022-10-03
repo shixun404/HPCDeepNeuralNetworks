@@ -64,6 +64,11 @@ int main(int argc, char **argv)
     }
     printf("\n");
     for(int max_size = start_size; max_size <= end_size; max_size += gap_size){
+        printf("%8.2f|", double(max_size) * 62.5 / 1e3);
+    }
+
+    printf("\n");
+    for(int max_size = start_size; max_size <= end_size; max_size += gap_size){
         
         float *A = NULL, *B = NULL, *C_ref = NULL, *C = NULL;
         float *dA = NULL,*dB = NULL, *dC_ref = NULL, *dC = NULL;
@@ -101,23 +106,24 @@ int main(int argc, char **argv)
 
         cublasHandle_t handle;
         cublasCreate(&handle);
-        
+        // printf("hey!");
         if (!verify_matrix(C_ref, C, max_size)) {
             printf("Failed to pass the correctness verification against NVIDIA cuBLAS. Exited.\n");
             exit(-3);
         }
-
+	// printf("hey!");
         cublasSgemm(handle, CUBLAS_OP_N,CUBLAS_OP_N,max_size, max_size,  max_size, &alpha, dA, max_size, dB, max_size, &beta, dC_ref, max_size);
 	if(kernel_number == 0)
 	cpu_gemm(alpha, beta, A, B, max_size, C);
 	cudaDeviceSynchronize();
-        cudaMemcpy(C, dC, sizeof(float) * max_size, cudaMemcpyDeviceToHost);
+        // cudaMemcpy(C, dC, sizeof(float) * max_size, cudaMemcpyDeviceToHost);
         cudaMemcpy(C_ref, dC_ref, sizeof(float) * max_size, cudaMemcpyDeviceToHost);
         cudaDeviceSynchronize();
         if (!verify_vector(C_ref, C, 1)) {
             printf("Failed to pass the correctness verification against NVIDIA cuBLAS. Exited.\n");
             exit(-3);
         }
+        // printf("hey!");
         if (kernel_number == 0){
             saxpy_timer t;
             for(int ii = 0; ii < num_tests; ++ii){
@@ -126,9 +132,9 @@ int main(int argc, char **argv)
             cudaMemPrefetchAsync(dC, size, cudaCpuDeviceId);
             cudaDeviceSynchronize();
             double elapsed = t.elapsed_msec();
-            double gflops = double(2 * num_tests * double(max_size)) / (1e9);
+            double gflops = double(2 * num_tests * double(max_size) * double(max_size) * double(max_size)) / (1e9);
             double perf = gflops / (elapsed / 1e3);
-            printf("%4.2f,", perf);
+            printf("%8.2f|", perf);
         }
        // cudaFree( dalpha ); 
         cudaFree( dA ); 
