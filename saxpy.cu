@@ -27,11 +27,11 @@ __global__ void saxpy3(int N, float alpha, f128 *a, f128 *b)
     int tid = threadIdx.x + blockIdx.x * blockDim.x;
 
         while (tid < N){
-                b[tid].a += alpha * a[tid].a;
-		b[tid].b += alpha * a[tid].b;
-		b[tid].c += alpha * a[tid].c;
-		b[tid].d += alpha * a[tid].d;
-                tid += blockDim.x * gridDim.x;
+            b[tid].a += alpha * a[tid].a;
+		    b[tid].b += alpha * a[tid].b;
+		    b[tid].c += alpha * a[tid].c;
+		    b[tid].d += alpha * a[tid].d;
+            tid += blockDim.x * gridDim.x;
         }
 
 }

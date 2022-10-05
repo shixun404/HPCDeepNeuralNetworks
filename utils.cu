@@ -79,8 +79,9 @@ bool verify_matrix(float *mat1, float *mat2, int n){
     for (i = 0; mat1 + i * n && mat2 + i * n && i < n; ++i){
         for(j = 0; mat1 + i * n + j && mat2 + i * n + j && j < n; ++j)
 	diff = fabs( (double)mat1[i * n + j] - (double)mat2[i * n + j] );
-        if (diff / double(mat1[i * n  + j]) > 5e-5) {
-            printf("error. %5.2f,%5.2f,%d\n", mat1[i * n + j], mat2[i * n + j], i * n + j);
+        // if (diff / double(mat1[i * n  + j]) > 5e-5) {
+        if (diff > 1e-2){
+            printf("error. %8.5f,%8.5f,%d\n", mat1[i * n + j], mat2[i * n + j], i * n + j);
             return false;
         }
     }
@@ -99,6 +100,14 @@ void cpu_gemm(float alpha, float beta, float *mat1, float *mat2, int n, float *m
     }
 }
 
-
+void print_matrix(float* mat, int N){
+    for(int i = 0; i < N; ++i){
+        for(int j = 0; j < N; ++j){
+            printf("%8.5f  ", mat[j * N + i]);
+        }
+        printf("\n");
+    }
+    fflush(stdout);
+}
 
 

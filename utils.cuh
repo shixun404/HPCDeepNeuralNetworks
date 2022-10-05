@@ -13,6 +13,7 @@
     exit(1);\
   }\
 }while(0)
+#define CEIL_DIV(m,n) ( (m) + (n) - 1 ) / (n)
 
 class saxpy_timer
 {
@@ -56,3 +57,5 @@ void generate_random_matrix(float* target, int n);
 bool verify_matrix(float*, float*, int n);
 
 void cpu_gemm(float alpha, float beta, float *mat1, float*mat2, int max_size, float* mat3);
+
+void print_matrix(float*, int);
