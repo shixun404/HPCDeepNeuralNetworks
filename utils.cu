@@ -34,11 +34,29 @@ void generate_random_vector(float* target, int n){
     }
 }
 
+void generate_random_matrix(float* target, int n){
+    for(int i = 0; i < n; ++i){
+	for(int j = 0; j < n; ++j){
+        float tmp = (float)(rand() % 5) + rand() % 5 * 0.01;
+        tmp = (rand() % 2 == 0) ? tmp : tmp * (-1.);     
+   	target[i * n + j] = tmp;
+	}
+    }
+}
+
+
 void copy_vector(float *src, float *dest, int n){
     int i;
     for (i = 0; src + i && dest + i && i < n; i++) *(dest + i) = *(src + i);
     if (i != n) printf("copy failed at %d while there are %d elements in total.\n", i, n);
 }
+
+void copy_matrix(float *src, float *dest, int n){
+    int i;
+    for (i = 0; src + i && dest + i && i < n * n; i++) *(dest + i) = *(src + i);
+    if (i != n * n) printf("copy failed at %d while there are %d elements in total.\n", i, n * n);
+}
+
 
 bool verify_vector(float *vec1, float *vec2, int n){
     double diff = 0.0;
@@ -54,4 +72,42 @@ bool verify_vector(float *vec1, float *vec2, int n){
     }
     return true;
 }
+
+bool verify_matrix(float *mat1, float *mat2, int n){
+    double diff = 0.0;
+    int i, j;
+    for (i = 0; mat1 + i * n && mat2 + i * n && i < n; ++i){
+        for(j = 0; mat1 + i * n + j && mat2 + i * n + j && j < n; ++j)
+	diff = fabs( (double)mat1[i * n + j] - (double)mat2[i * n + j] );
+        // if (diff / double(mat1[i * n  + j]) > 5e-5) {
+        if (diff > 1e-2){
+            printf("error. %8.5f,%8.5f,%d\n", mat1[i * n + j], mat2[i * n + j], i * n + j);
+            return false;
+        }
+    }
+    return true;
+}
+
+void cpu_gemm(float alpha, float beta, float *mat1, float *mat2, int n, float *mat3){
+    int i = 0, j = 0, k  = 0;
+    for(i = 0; i < n; ++i){
+        for(j = 0; j < n; ++j){
+            float temp = 0;
+	    for(k = 0; k < n; ++k)
+		temp += mat1[k * n + i] * mat2[j * n + k];
+            mat3[j * n + i] = alpha * temp + beta * mat3[j * n + i];
+	}
+    }
+}
+
+void print_matrix(float* mat, int N){
+    for(int i = 0; i < N; ++i){
+        for(int j = 0; j < N; ++j){
+            printf("%8.5f  ", mat[j * N + i]);
+        }
+        printf("\n");
+    }
+    fflush(stdout);
+}
+
 
