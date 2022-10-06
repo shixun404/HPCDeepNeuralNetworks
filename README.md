@@ -31,6 +31,6 @@ B(col major) = B'(row major)
 * $Cblock_{ij} = \sum_{k} Ablock_{ik} * Bblock_{kj}$ 
 * Load $Ablock_{ik}, Bblock_{kj}$ into shared memory to accelerate. 
 
-### 2.3 Remove _warp conflicts_ (actually I am not sure about this) in kernel 1 and kernel 2: 
+### 2.3 Obey spatial locality within a warp (actually I am not sure about this) in kernel 1 and kernel 2: 
 * Possible reasons: threads in same warp should load data from a same memory block to avoid serialization and satisfy **spatial locality**.
 ![alt text](fig/sgemm_2.png)
