@@ -94,8 +94,8 @@ void cpu_gemm(float alpha, float beta, float *mat1, float *mat2, int n, float *m
         for(j = 0; j < n; ++j){
             float temp = 0;
 	    for(k = 0; k < n; ++k)
-		temp += mat1[k * n + i] * mat2[j * n + k];
-            mat3[j * n + i] = alpha * temp + beta * mat3[j * n + i];
+		temp += mat1[i * n + k] * mat2[k * n + j];
+            mat3[i * n + j] = alpha * temp + beta * mat3[i * n + j];
 	}
     }
 }
