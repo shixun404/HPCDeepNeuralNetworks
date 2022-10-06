@@ -9,9 +9,19 @@ __global__ void sgemm_1(int N, float* A, float*B, float*C, float alpha, float be
     int j = idx / N;
     int i = idx % N;
     float temp = 0;
-    if (idx >= N * N)return;
     for(int k = 0; k < N; ++k){
         temp += A[i + k * N] * B[k + j * N];
+    }
+    C[i + j * N] = alpha * temp + beta * C[i + j * N];
+}
+
+__global__ void sgemm_1_row(int N, float *A, float *B, float *C, float alpha, float beta){
+    int idx = threadIdx.x + blockIdx.x * blockDim.x;
+    int j = idx / N;
+    int i = idx % N;
+    float temp = 0;
+    for(int k = 0; k < N; ++k){
+        temp += B[i + k * N] * A[k + j * N];
     }
     C[i + j * N] = alpha * temp + beta * C[i + j * N];
 }
@@ -27,14 +37,11 @@ __global__ void sgemm_2(int N, float *A, float *B, float *C, float alpha, float 
     for(int k = 0; k < gridDim.x; ++k){
         int ii = threadIdx.x + k * blockDim.x;
         int jj = threadIdx.y + k * blockDim.y;
-        // printf("i:%d, j:%d, ii:%d, jj:%d\n", i, j, ii, jj);
         _shared[tidx * blockDim.x + tidy] = A[ii * N + j];
         _shared[tidx * blockDim.x + tidy + blockDim.x * blockDim.x] = B[i * N + jj];
         __syncthreads();
         for(int kk = 0; kk < blockDim.x; ++kk)
             temp += _shared[kk * blockDim.x + tidy] * _shared[tidx * blockDim.x + kk + blockDim.x * blockDim.x];
-        //printf("i:%d, j:%d, ii:%d, jj:%d, temp:%f, \n", i, j, ii, jj, temp);
-        //C[i * N + j] +=  alpha * temp;
         __syncthreads();
     }
     C[i * N + j] +=  alpha * temp;
@@ -73,8 +80,7 @@ int main(int argc, char **argv)
         cudaGetDevice(&deviceId);
         cudaDeviceProp props = getDetails(deviceId);
         int number_of_blocks = 0;
-	    number_of_blocks =  (max_size * max_size + threads_per_block - 1) / threads_per_block;
-        
+	    number_of_blocks =  (max_size * max_size + threads_per_block - 1) / threads_per_block; 
         A = (float *)malloc(sizeof(float) * max_size * max_size);
         B = (float *)malloc(sizeof(float) * max_size * max_size);
         C = (float *)malloc(sizeof(float) * max_size * max_size);
@@ -107,14 +113,18 @@ int main(int argc, char **argv)
             printf("Failed to pass the correctness verification against NVIDIA cuBLAS. Exited.\n");
             exit(-3);
         }
-        cublasSgemm(handle, CUBLAS_OP_N,CUBLAS_OP_N,max_size, max_size,  max_size, &alpha, dA, max_size, dB, max_size, &beta, dC_ref, max_size);
-	    if(kernel_number == 0)
+        // cublasSgemm(handle, CUBLAS_OP_N,CUBLAS_OP_N,max_size, max_size,  max_size, &alpha, dA, max_size, dB, max_size, &beta, dC_ref, max_size);
+	    cublasSgemm(handle, CUBLAS_OP_N,CUBLAS_OP_N,max_size, max_size,  max_size, &alpha, dB, max_size, dA, max_size, &beta, dC_ref, max_size);
+        if(kernel_number == 0)
             sgemm_1 <<<number_of_blocks, threads_per_block>>>(max_size, dA, dB, dC, alpha, beta);
         else if (kernel_number == 1){
             sgemm_1 <<<number_of_blocks, threads_per_block>>>(max_size, dA, dB, dC, alpha, beta);   
         }
         else if(kernel_number == 2){
             sgemm_2 <<<gridDim, blockDim, threads_per_block * 2 * sizeof(float)>>>(max_size, dA, dB, dC, alpha, beta);
+        }
+        else if(kernel_number == 3){
+            sgemm_1_row<<<number_of_blocks, threads_per_block>>>(max_size, dA, dB, dC, alpha, beta);
         }
 
         cudaDeviceSynchronize();
@@ -137,9 +147,9 @@ int main(int argc, char **argv)
         if (kernel_number == 0){
             for(int ii = 0; ii < num_tests; ++ii){
                  cudaDeviceSynchronize();
-		cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, max_size, max_size, max_size, &alpha, dA, max_size, dB, max_size, &beta, dC, max_size);
+		         cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, max_size, max_size, max_size, &alpha, dB, max_size, dA, max_size, &beta, dC, max_size);
             	 cudaDeviceSynchronize();
-	    }
+	        }
         }
         else if(kernel_number == 1){
             for(int ii = 0; ii < num_tests; ++ii){
@@ -155,12 +165,20 @@ int main(int argc, char **argv)
                 cudaDeviceSynchronize();
             }
         }
+        else if(kernel_number == 3){
+            for(int ii = 0; ii < num_tests; ++ii){
+                cudaDeviceSynchronize();
+                sgemm_1_row<<<number_of_blocks, threads_per_block>>>(max_size, dA, dB, dC, alpha, beta);
+                cudaDeviceSynchronize();
+            }
+        }
+
             cudaMemPrefetchAsync(dC, size, cudaCpuDeviceId);
             cudaDeviceSynchronize();
             double elapsed = t.elapsed_msec();
             double gflops = double(2 * num_tests * double(max_size) * double(max_size) * double(max_size)) / (1e9);
             double perf = gflops / (elapsed / 1e3);
-            printf("%8.2f|", perf);
+            printf("%8.2f,", perf);
         
        // cudaFree( dalpha ); 
         cudaFree( dA ); 
