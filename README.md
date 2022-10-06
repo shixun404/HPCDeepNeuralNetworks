@@ -29,4 +29,4 @@ B(col major) = B'(row major)
 ### 2.2 Kernel 2: block matrix multiplication
 * Each thread block calculates a different block C_block<sub>ij</sub> for matrix C.
 * $Cblock_{ij} = \sum_{k} Ablock_{ik} * Bblock_{kj}$ 
-* Load $Ablock_{ik}, Bblock_{kj}$ into shared memory. 
+* Load $Ablock_{ik}, Bblock_{kj}$ into shared memory to accelerate. 
