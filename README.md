@@ -1,7 +1,7 @@
 # HPCDeepNerualNetworks
 Cuda implementation of SAXPY, SDOT and SGEMM.
 ## 1. SAXPY and SDOT
-Custom kernel outperforms cublasSaxpy and cublasSdot on Turing4.
+Custom kernels outperform cublasSaxpy and cublasSdot on Turing4.
 ![alt text](fig/saxpy.png)
 ![alt text](fig/sdot.png)
 ## 2. SGEMM
