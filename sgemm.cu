@@ -25,6 +25,7 @@ __global__ void sgemm_1_row(int N, float *A, float *B, float *C, float alpha, fl
         // temp += B[j + k * N] * A[k + i * N];
     }
     C[i + j * N] = alpha * temp + beta * C[i + j * N];
+    // C[j + i * N] = alpha * temp + beta * C[j + i * N];
 }
 
 __global__ __launch_bounds__(1024) void sgemm_2(int N, float *A, float *B, float *C, float alpha, float beta){
