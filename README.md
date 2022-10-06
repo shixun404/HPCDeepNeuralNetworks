@@ -34,3 +34,5 @@ B(col major) = B'(row major)
 ### 2.3 Obey spatial locality within a warp (actually I am not sure about this) in kernel 1 and kernel 2: 
 * Possible reasons: threads in same warp should load data from a same memory block to avoid serialization and satisfy **spatial locality**.
 ![alt text](fig/sgemm_2.png)
+### 2.4 Calculate 4 index $C_{ij}, C_{ij+1}, C_{ij+2},C_{ij+3}$ within a thread: 
+![alt text](fig/sgemm_3.png)
