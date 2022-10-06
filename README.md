@@ -19,12 +19,12 @@ Custom kernel outperforms cublasSaxpy and cublasSdot on Turing4.
 * How to transfer from column major to row major
 ```
 B(col major) = B'(row major)
+```
+
 | Column Major  | Row Major |
 | ----------- | ----------- |
 |      AxB = C      |      B'xA'=C'       |
 |   cublasSgemm(...A(col major), B(col major)...)  | cublasSgemm(...B(row major), A(row major)...)        |
-
-```
 
 ### 2.2 Kernel 2: block matrix multiplication
 * Each thread block calculates a different block C_block<sub>ij</sub> for matrix C.
