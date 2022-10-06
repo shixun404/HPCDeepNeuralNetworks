@@ -77,12 +77,14 @@ bool verify_matrix(float *mat1, float *mat2, int n){
     double diff = 0.0;
     int i, j;
     for (i = 0; mat1 + i * n && mat2 + i * n && i < n; ++i){
-        for(j = 0; mat1 + i * n + j && mat2 + i * n + j && j < n; ++j)
+        for(j = 0; mat1 + i * n + j && mat2 + i * n + j && j < n; ++j){
 	diff = fabs( (double)mat1[i * n + j] - (double)mat2[i * n + j] );
         // if (diff / double(mat1[i * n  + j]) > 5e-5) {
         if (diff > 1e-2){
-            printf("error. %8.5f,%8.5f,%d\n", mat1[i * n + j], mat2[i * n + j], i * n + j);
+        
+            printf("error is %8.5f.  %8.5f,%8.5f,%d\n",diff,  mat1[i * n + j], mat2[i * n + j], i * n + j);
             return false;
+        }
         }
     }
     return true;
