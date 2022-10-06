@@ -31,6 +31,6 @@ B(col major) = B'(row major)
 * $Cblock_{ij} = \sum_{k} Ablock_{ik} * Bblock_{kj}$ 
 * Load $Ablock_{ik}, Bblock_{kj}$ into shared memory to accelerate. 
 
-### 2.3 Remove warp conflicts in kernel 1 and kernel 2: 
-* Threads in same warp should load different data from memory to avoid conflicts.
+### 2.3 Remove _warp conflicts_ (actually I am not sure about this) in kernel 1 and kernel 2: 
+* Possible reasons: threads in same warp should load different data from memory to avoid conflicts.
 ![alt text](fig/sgemm_2.png)
