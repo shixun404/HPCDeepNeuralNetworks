@@ -93,7 +93,7 @@ int main(int argc, char **argv)
         }
         else if(kernel_number == 6){
             dim3 blockDim(threads_x / 4, threads_x / 4);
-            dim3 gridDim(CEIL_DIV(max_size, threads_x), CEIL_DIV(max_size, threads_x));
+            dim3 gridDim(CEIL_DIV(max_size, threads_x ), CEIL_DIV(max_size, threads_x ));
             sgemm_6 <<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
         }
 
