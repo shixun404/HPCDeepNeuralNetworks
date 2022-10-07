@@ -101,7 +101,7 @@ __global__  __launch_bounds__(1024) void sgemm_6(int N, float *A, float *B, floa
     C1[2].w =  alpha * temp[3].z + beta * C1[2].w;
     C1[3].w =  alpha * temp[3].w + beta * C1[3].w;
 
-    *(float4*)(C + i1 + j1 * N) = C1[0];
+    *(float4*)(C + i1 + j1 * N) = C1[0]; 
     *(float4*)(C + i1 + j2 * N) = C1[1];
     *(float4*)(C + i1 + j3 * N) = C1[2];
     *(float4*)(C + i1 + j4 * N) = C1[3];
