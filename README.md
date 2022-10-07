@@ -44,4 +44,5 @@ B(col major) = B'(row major)
 ![alt text](fig/sgemm_4vs5.png)
 
 ### 2.6 Kernel 6: Each thread computes for 4x4 elements in C (4x1 in Kernel 5): 
+* 8x8 threads in a threadblock.
 ![alt text](fig/sgemm_5vs6.png)
