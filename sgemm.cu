@@ -91,6 +91,11 @@ int main(int argc, char **argv)
             dim3 gridDim(CEIL_DIV(max_size, threads_x), CEIL_DIV(max_size, threads_x));
             sgemm_5 <<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
         }
+        else if(kernel_number == 6){
+            dim3 blockDim(threads_x / 4, threads_x / 4);
+            dim3 gridDim(CEIL_DIV(max_size, threads_x), CEIL_DIV(max_size, threads_x));
+            sgemm_6 <<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
+        }
 
         cudaDeviceSynchronize();
         cudaMemcpy(C, dC, sizeof(float) * max_size * max_size, cudaMemcpyDeviceToHost);
@@ -152,6 +157,15 @@ int main(int argc, char **argv)
             for(int ii = 0; ii < num_tests; ++ii){
                 cudaDeviceSynchronize();
                 sgemm_5<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
+                cudaDeviceSynchronize();
+            }
+        }
+        else if (kernel_number == 6){
+            dim3 blockDim(threads_x / 4, threads_x / 4);
+            dim3 gridDim(CEIL_DIV(max_size, threads_x), CEIL_DIV(max_size, threads_x));
+            for(int ii = 0; ii < num_tests; ++ii){
+                cudaDeviceSynchronize();
+                sgemm_6<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
                 cudaDeviceSynchronize();
             }
         }
