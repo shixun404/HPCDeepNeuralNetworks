@@ -42,3 +42,6 @@ B(col major) = B'(row major)
 
 ### 2.5 Kernel 5: Vectorized load/store with float4 for kernel 4: 
 ![alt text](fig/sgemm_4vs5.png)
+
+### 2.6 Kernel 6: Each thread computes for 4x4 elements in C (4x1 in Kernel 5): 
+![alt text](fig/sgemm_5vs6.png)
