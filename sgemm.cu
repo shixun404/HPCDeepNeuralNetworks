@@ -4,7 +4,8 @@
 #include "kernels.cuh"
 #define PPP 1
 #include <cuda_runtime.h>
-
+#include <helper_functions.h>
+#include <helper_cuda.h>
 #define multi 20
 int main(int argc, char **argv)
 {
@@ -80,6 +81,16 @@ int main(int argc, char **argv)
             dim3 gridDim(CEIL_DIV(max_size, threads_x), CEIL_DIV(max_size, threads_x));
             sgemm_3 <<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
         }
+        else if(kernel_number == 4){
+            dim3 blockDim(threads_x, threads_x / 4);
+            dim3 gridDim(CEIL_DIV(max_size, threads_x), CEIL_DIV(max_size, threads_x));
+            sgemm_4 <<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
+        }
+        else if(kernel_number == 5){
+            dim3 blockDim(threads_x, threads_x / 4);
+            dim3 gridDim(CEIL_DIV(max_size, threads_x), CEIL_DIV(max_size, threads_x));
+            sgemm_5 <<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
+        }
 
         cudaDeviceSynchronize();
         cudaMemcpy(C, dC, sizeof(float) * max_size * max_size, cudaMemcpyDeviceToHost);
@@ -123,6 +134,24 @@ int main(int argc, char **argv)
             for(int ii = 0; ii < num_tests; ++ii){
                 cudaDeviceSynchronize();
                 sgemm_3<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
+                cudaDeviceSynchronize();
+            }
+        }
+        else if (kernel_number == 4){
+            dim3 blockDim(threads_x, threads_x / 4);
+            dim3 gridDim(CEIL_DIV(max_size, threads_x), CEIL_DIV(max_size, threads_x));
+            for(int ii = 0; ii < num_tests; ++ii){
+                cudaDeviceSynchronize();
+                sgemm_4<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
+                cudaDeviceSynchronize();
+            }
+        }
+        else if (kernel_number == 5){
+            dim3 blockDim(threads_x, threads_x / 4);
+            dim3 gridDim(CEIL_DIV(max_size, threads_x), CEIL_DIV(max_size, threads_x));
+            for(int ii = 0; ii < num_tests; ++ii){
+                cudaDeviceSynchronize();
+                sgemm_5<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
                 cudaDeviceSynchronize();
             }
         }

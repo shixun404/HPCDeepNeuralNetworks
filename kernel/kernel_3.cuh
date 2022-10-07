@@ -10,10 +10,10 @@ __global__ void sgemm_3(int N, float *A, float *B, float *C, float alpha, float 
     float temp1 = 0, temp2 = 0, temp3 = 0, temp4 = 0;
     for(int k = 0; k < gridDim.x; ++k){
         int ii = threadIdx.x + k * blockDim.x;
-        int jj1 = threadIdx.y * 4 + k * blockDim.y * 4 + 0;
-        int jj2 = threadIdx.y * 4 + k * blockDim.y * 4 + 1;
-        int jj3 = threadIdx.y * 4 + k * blockDim.y * 4 + 2;
-        int jj4 = threadIdx.y * 4 + k * blockDim.y * 4 + 3;
+        int jj1 = tidy + k * blockDim.y * 4 + 0;
+        int jj2 = tidy + k * blockDim.y * 4 + 1;
+        int jj3 = tidy + k * blockDim.y * 4 + 2;
+        int jj4 = tidy + k * blockDim.y * 4 + 3;
         shared_A[tidx + tidy * blockDim.y * 4] = A[ii + j1 * N];
         shared_A[tidx + (tidy + 1) * blockDim.y * 4] = A[ii + j2 * N];
         shared_A[tidx + (tidy + 2)  * blockDim.y * 4] = A[ii + j3 * N];
