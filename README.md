@@ -31,8 +31,14 @@ B(col major) = B'(row major)
 * $Cblock_{ij} = \sum_{k} Ablock_{ik} * Bblock_{kj}$ 
 * Load $Ablock_{ik}, Bblock_{kj}$ into shared memory to accelerate. 
 
-### 2.3 Obey spatial locality within a warp (actually I am not sure about this) in kernel 1 and kernel 2: 
+#### 2.2 Kernel 2': Obey spatial locality within a warp (actually I am not sure about this) in kernel 1 and kernel 2: 
 * Possible reasons: threads in same warp should load data from a same memory block to avoid serialization and satisfy **spatial locality**.
 ![alt text](fig/sgemm_2.png)
-### 2.4 Calculate 4 index $C_{ij}, C_{ij+1}, C_{ij+2},C_{ij+3}$ within a thread: 
+### 2.3 Kernel 3: Calculate 4 index $C_{ij}, C_{ij+1}, C_{ij+2},C_{ij+3}$ within a thread: 
 ![alt text](fig/sgemm_3.png)
+
+### 2.4 Kernel 4: A modification of access order for kernel 3: 
+![alt text](fig/sgemm_3vs4.png)
+
+### 2.5 Kernel 5: Vectorized load/store with float4 for kernel 4: 
+![alt text](fig/sgemm_4vs5.png)
