@@ -46,3 +46,11 @@ B(col major) = B'(row major)
 ### 2.6 Kernel 6: Each thread computes for 4x4 elements in C (4x1 in Kernel 5): 
 * 8x8 threads in a threadblock.
 ![alt text](fig/sgemm_5vs6.png)
+
+### 2.7 Kernel 7: 8x8 threads/block -> 16x16 thread/block, using array size (64, 64) on shared memory: 
+* 16x16 threads in a threadblock, each block holds two arrays with size 4096 on shared memory.
+![alt text](fig/sgemm_6vs7.png)
+
+### 2.8 Kernel 8: keep shared memory array size 1024 by using array size (64, 16): 
+* 16x16 threads in a threadblock, each block holds two arrays with size 64x16=1024 on shared memory.
+![alt text](fig/sgemm_7vs8.png)
