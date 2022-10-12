@@ -54,3 +54,7 @@ B(col major) = B'(row major)
 ### 2.8 Kernel 8: keep shared memory array size 1024 by using array size (64, 16): 
 * 16x16 threads in a threadblock, each block holds two arrays with size 64x16=1024 on shared memory.
 ![alt text](fig/sgemm_7vs8.png)
+
+### 2.8 Kernel 8: keep shared memory array size 1024 by using array size (128, 8): 
+* 16x16 threads in a threadblock, each block holds two arrays with size 128x8=1024 on shared memory.
+![alt text](fig/sgemm_8vs9.png)
