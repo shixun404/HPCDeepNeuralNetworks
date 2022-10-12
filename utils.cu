@@ -1,5 +1,5 @@
 #include "utils.cuh"
-
+__global__ void sgemm_9(int N, float *A, float *B, float *C, float alpha, float beta);
 
 __global__ void fill(float *a , float x, int N)
 {
@@ -85,7 +85,7 @@ bool verify_matrix(float *mat1, float *mat2, int n){
             printf("error is %8.5f.  %8.5f,%8.5f. id: %d, %d\n",diff,  mat1[i * n + j], mat2[i * n + j], i, j);
             return false;
         }
-        // else printf("OK, %d, %d\n", i, j);
+        // else printf("OK, %d, %d\n", i, j); 
         }
     }
     return true;
@@ -101,7 +101,7 @@ void cpu_gemm(float alpha, float beta, float *mat1, float *mat2, int n, float *m
             mat3[i * n + j] = alpha * temp + beta * mat3[i * n + j];
 	}
     }
-}
+} 
 
 void print_matrix(float* mat, int N){
     for(int i = 0; i < N; ++i){

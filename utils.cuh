@@ -60,3 +60,4 @@ bool verify_matrix(float*, float*, int n);
 void cpu_gemm(float alpha, float beta, float *mat1, float*mat2, int max_size, float* mat3);
 
 void print_matrix(float*, int);
+__global__ void sgemm_9(int N, float *A, float *B, float *C, float alpha, float beta);

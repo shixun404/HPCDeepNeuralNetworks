@@ -1,5 +1,5 @@
 #define m 4
-__global__  __launch_bounds__(1024) void sgemm_8(int N, float *A, float *B, float *C, float alpha, float beta){
+__global__  __launch_bounds__(256) void sgemm_8(int N, float *A, float *B, float *C, float alpha, float beta){
     __shared__ float shared_A[1024]; // blockDim * 2 for sublocks of A and B
     __shared__ float shared_B[1024];
     int tidx = threadIdx.x, tidy = threadIdx.y;

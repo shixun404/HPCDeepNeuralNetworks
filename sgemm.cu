@@ -6,9 +6,10 @@
 #include <cuda_runtime.h>
 #include <helper_functions.h>
 #include <helper_cuda.h>
+//#include "kernel_9.cu"
 #define multi 20
 int main(int argc, char **argv)
-{
+{       
     if (argc < 2) {
         printf("Please select a kernel (range 0 - 1, here 0 is for NVIDIA cuBLAS).\n");
          exit(-1);
@@ -59,7 +60,7 @@ int main(int argc, char **argv)
         CUDA_CALLER(cudaMemcpy(dC_ref, C_ref, sizeof(float) * max_size * max_size, cudaMemcpyHostToDevice));
 
         cublasHandle_t handle;
-        cublasCreate(&handle);
+        cublasCreate(&handle);  
         if (!verify_matrix(C_ref, C, max_size)) {
             printf("Failed to pass the correctness verification against NVIDIA cuBLAS. Exited.\n");
             exit(-3);
@@ -106,6 +107,11 @@ int main(int argc, char **argv)
             dim3 gridDim(CEIL_DIV(max_size, 64), CEIL_DIV(max_size, 64));
             sgemm_8<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
         }
+        else if(kernel_number == 9){
+            dim3 blockDim(16, 16);
+            dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
+            sgemm_9<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
+        }
 
         cudaDeviceSynchronize();
         cudaMemcpy(C, dC, sizeof(float) * max_size * max_size, cudaMemcpyDeviceToHost);
@@ -118,6 +124,9 @@ int main(int argc, char **argv)
             exit(-3);
         }
         saxpy_timer t;
+        // print_matrix(C, max_size);
+        // printf("CPU \n");
+        // print_matrix(C_ref, max_size);
         if (kernel_number == 0){
             for(int ii = 0; ii < num_tests; ++ii){
                  cudaDeviceSynchronize();
@@ -194,6 +203,15 @@ int main(int argc, char **argv)
             for(int ii = 0; ii < num_tests; ++ii){
                 cudaDeviceSynchronize();
                 sgemm_8<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
+                cudaDeviceSynchronize();
+            }
+        }
+        else if (kernel_number == 9){
+            dim3 blockDim(threads_x / 2, threads_x / 2);
+            dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
+            for(int ii = 0; ii < num_tests; ++ii){
+                cudaDeviceSynchronize();
+                sgemm_9<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
                 cudaDeviceSynchronize();
             }
         }
