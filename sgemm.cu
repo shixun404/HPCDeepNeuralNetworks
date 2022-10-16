@@ -13,7 +13,7 @@ int main(int argc, char **argv)
     if (argc < 2) {
         printf("Please select a kernel (range 0 - 1, here 0 is for NVIDIA cuBLAS).\n");
          exit(-1);
-      }
+    }
     int kernel_number = atoi(argv[1]);
     int num_tests = 10;
     int start_size = 256;
@@ -108,7 +108,7 @@ int main(int argc, char **argv)
             sgemm_8<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
         }
         else if(kernel_number == 9){
-            dim3 blockDim(16, 16);
+            dim3 blockDim(256);
             dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
             sgemm_9<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
         }
@@ -207,7 +207,7 @@ int main(int argc, char **argv)
             }
         }
         else if (kernel_number == 9){
-            dim3 blockDim(threads_x / 2, threads_x / 2);
+            dim3 blockDim(256);
             dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
             for(int ii = 0; ii < num_tests; ++ii){
                 cudaDeviceSynchronize();
