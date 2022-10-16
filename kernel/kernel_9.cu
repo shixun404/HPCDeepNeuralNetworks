@@ -26,13 +26,9 @@ __global__  __launch_bounds__(256) void sgemm_9(int N, float *A, float *B, float
     memset(t, 0, sizeof(t));
     int idx_4 = (idx<<2), idy_128 = (idy << 7), by_128 = (by << 7);
     // int A_gap = (idx_4 + by_128)*N;
-    int tx_x128 =(tx&127);
-     
-    int A_gap = (tx_x128 + by_128) * N;
+    int A_gap = ((tx&127) + by_128) * N;
     // A = A + A_gap + idy;
-    int tx_r7_l2 = ((tx >> 7) << 2);
-    int tx_x128_add_tx_r7_l9 = ((tx >> 7) << 9) + tx_x128;
-    A = A + A_gap + tx_r7_l2;
+    A = A + A_gap + ((tx >> 7) << 2);
     B = B + idx_4 + (bx << 7) + idy * N;
     for(int k = 0; k < N; k += 8){
         // float4 *a = (float4 *)(shared_A + idx * 4 + idy * 128);
@@ -40,10 +36,10 @@ __global__  __launch_bounds__(256) void sgemm_9(int N, float *A, float *B, float
         //      |___________|
         // shared memory index we need to change
         float4 *a = (float4*)A;
-        shared_A[tx_x128_add_tx_r7_l9]= (*a).x;
-        shared_A[tx_x128_add_tx_r7_l9+128 ]= (*a).y;
-        shared_A[tx_x128_add_tx_r7_l9 +256 ]= (*a).z;
-        shared_A[tx_x128_add_tx_r7_l9+384 ]= (*a).w;
+        shared_A[(tx&127) + ((((tx >> 7)<<2) + 0)<<7) ]= (*a).x;
+        shared_A[(tx&127) + ((((tx >> 7)<<2) + 1)<<7) ]= (*a).y;
+        shared_A[(tx&127) + ((((tx >> 7)<<2) + 2)<<7) ]= (*a).z;
+        shared_A[(tx&127) + ((((tx >> 7)<<2) + 3)<<7) ]= (*a).w;
         // shared_A[idx * 4 + idy * 128] = A[id / 32 + k * 8 + (id % 32 * 4 + 128 * blockIdx.y + 0) * N];
         // shared_A[idx * 4 + 1 + idy * 128] = A[id / 32 + k * 8 + (id % 32 * 4 + 128 * blockIdx.y + 1) * N];
         // shared_A[idx * 4 + 2 + idy * 128] = A[id / 32 + k * 8 + (id % 32 * 4 + 128 * blockIdx.y + 2) * N];
@@ -84,11 +80,11 @@ __global__  __launch_bounds__(256) void sgemm_9(int N, float *A, float *B, float
             
         // }
         #pragma unroll
-        for(int kk = 0; kk < kk_max; kk+=128){
-            bb0 = *(float4*)(shared_B + tidx_3 + kk);
-            bb1 = *(float4*)(shared_B + tidx_3 + 4 + kk);
-            aa0 = *(float4*)(shared_A + tidy_3 + kk);
-            aa1 = *(float4*)(shared_A + tidy_3 + 4 + kk);
+        for(int kk = 0; kk < 8; kk+=1){
+            bb0 = *(float4*)(shared_B + tidx_3 + (kk<<7));
+            bb1 = *(float4*)(shared_B + tidx_3 + 4 + (kk<<7));
+            aa0 = *(float4*)(shared_A + tidy_3 + (kk<<7));
+            aa1 = *(float4*)(shared_A + tidy_3 + 4 + (kk<<7));
             
             // tab(t[0], aa0, bb0.x);
             // tab(t[1], aa1, bb0.x);
