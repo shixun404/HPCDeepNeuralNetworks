@@ -38,7 +38,7 @@ __global__  __launch_bounds__(256) void sgemm_9(int N, float *A, float *B, float
         float4 *a = (float4*)A;
         shared_A[(tx&127) + ((((tx >> 7)<<2) + 0)<<7) ]= (*a).x;
         shared_A[(tx&127) + ((((tx >> 7)<<2) + 1)<<7) ]= (*a).y;
-        shared_A[(tx&127) + ((((tx >> 7)<<2) + 2)<<7) ]= (*a).z;
+        shared_A[(tx&127) + ((((tx >> 7)<<2) + 2)<<7) ]= (*a).z; 
         shared_A[(tx&127) + ((((tx >> 7)<<2) + 3)<<7) ]= (*a).w;
         // shared_A[idx * 4 + idy * 128] = A[id / 32 + k * 8 + (id % 32 * 4 + 128 * blockIdx.y + 0) * N];
         // shared_A[idx * 4 + 1 + idy * 128] = A[id / 32 + k * 8 + (id % 32 * 4 + 128 * blockIdx.y + 1) * N];
