@@ -19,16 +19,20 @@ __global__  __launch_bounds__(256) void sgemm_9(int N, float *A, float *B, float
     int tidx = (tx & 15), tidy = (tx>>4);
     int bx = blockIdx.x, by = blockIdx.y;
     int tidx_3 = (tidx << 3), tidy_3 = (tidy << 3);
-    int i1 = tidx_3 + (bx<<3) *16;
-    int j1 = tidy_3 + (by<<3) * 16;
+    int i1 = tidx_3 + (bx<<7);
+    int j1 = tidy_3 + (by<<7);
     float4 t[16], bb0,aa0,bb1, aa1, C1[16];
     int idx = tx & 31, idy = tx >> 5;
     memset(t, 0, sizeof(t));
     int idx_4 = (idx<<2), idy_128 = (idy << 7), by_128 = (by << 7);
     // int A_gap = (idx_4 + by_128)*N;
-    int A_gap = ((tx&127) + by_128) * N;
+    int tx_x128 =(tx&127);
+     
+    int A_gap = (tx_x128 + by_128) * N;
     // A = A + A_gap + idy;
-    A = A + A_gap + ((tx >> 7) << 2);
+    int tx_r7_l2 = ((tx >> 7) << 2);
+    int tx_x128_add_tx_r7_l9 = ((tx >> 7) << 9) + tx_x128;
+    A = A + A_gap + tx_r7_l2;
     B = B + idx_4 + (bx << 7) + idy * N;
     for(int k = 0; k < N; k += 8){
         // float4 *a = (float4 *)(shared_A + idx * 4 + idy * 128);
@@ -36,10 +40,10 @@ __global__  __launch_bounds__(256) void sgemm_9(int N, float *A, float *B, float
         //      |___________|
         // shared memory index we need to change
         float4 *a = (float4*)A;
-        shared_A[(tx&127) + ((((tx >> 7)<<2) + 0)<<7) ]= (*a).x;
-        shared_A[(tx&127) + ((((tx >> 7)<<2) + 1)<<7) ]= (*a).y;
-        shared_A[(tx&127) + ((((tx >> 7)<<2) + 2)<<7) ]= (*a).z;
-        shared_A[(tx&127) + ((((tx >> 7)<<2) + 3)<<7) ]= (*a).w;
+        shared_A[tx_x128_add_tx_r7_l9]= (*a).x;
+        shared_A[tx_x128_add_tx_r7_l9+128 ]= (*a).y;
+        shared_A[tx_x128_add_tx_r7_l9 +256 ]= (*a).z;
+        shared_A[tx_x128_add_tx_r7_l9+384 ]= (*a).w;
         // shared_A[idx * 4 + idy * 128] = A[id / 32 + k * 8 + (id % 32 * 4 + 128 * blockIdx.y + 0) * N];
         // shared_A[idx * 4 + 1 + idy * 128] = A[id / 32 + k * 8 + (id % 32 * 4 + 128 * blockIdx.y + 1) * N];
         // shared_A[idx * 4 + 2 + idy * 128] = A[id / 32 + k * 8 + (id % 32 * 4 + 128 * blockIdx.y + 2) * N];
