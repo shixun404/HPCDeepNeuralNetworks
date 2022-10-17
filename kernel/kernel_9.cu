@@ -1,7 +1,7 @@
 #include <stdio.h>
 //#include "../kernels.cuh"
 #define m 8
-#define kk_max 1<<10
+#define kk_max 1024
 #define tab(t, a, b)t.x += a.x * b;t.y += a.y * b;  t.z += a.z * b;t.w += a.w * b;  
     
 // #define tcab(t, c, alpha, beta) c = alpha * t + beta * c;
@@ -28,18 +28,16 @@ __global__  __launch_bounds__(256) void sgemm_9(int N, float *A, float *B, float
     // int A_gap = (idx_4 + by_128)*N;
     // int A_gap = ((tx&127) + by_128) * N;
     // A = A + A_gap + idy;
-    A = A + ((tx&127) + by_128) * N + ((tx >> 7) << 2);
+    A = A + ((tx>>1) + by_128) * N + ((tx & 1) << 2);
     B = B + idx_4 + (bx << 7) + idy * N;
     for(int k = 0; k < N; k += 8){
         bb0 = *(float4*)B;
         aa0 = *(float4*)A;
-        *(float4*)(shared_B + idx_4 + idy_128) = bb0;
-        shared_A[(tx&127) + ((((tx >> 7)<<2) + 0)<<7)]= aa0.x;
-        shared_A[(tx&127) + ((((tx >> 7)<<2)+1)<<7) ]= aa0.y;
-        shared_A[(tx&127) + ((((tx >> 7)<<2) + 2)<<7)]= aa0.z; 
-        shared_A[(tx&127) + ((((tx >> 7)<<2) + 3)<<7)]= aa0.w;
-        
-        
+        *((float4*)(shared_B) + tx) = bb0;
+        shared_A[(tx>>1) + ((((tx&1)<<2) + 0)<<7)]= aa0.x;
+        shared_A[(tx>>1) + ((((tx&1)<<2)+1)<<7) ]= aa0.y;
+        shared_A[(tx>>1) + ((((tx&1)<<2) + 2)<<7)]= aa0.z; 
+        shared_A[(tx>>1) + ((((tx&1)<<2) + 3)<<7)]= aa0.w;
         B += (N<<3);
         A += 8; 
         __syncthreads(); 
