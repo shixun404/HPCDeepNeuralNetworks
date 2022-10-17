@@ -16,9 +16,9 @@ __global__  __launch_bounds__(256) void sgemm_9(int N, float *A, float *B, float
     __shared__ float shared_A[1024]; // blockDim * 2 for sublocks of A and B
     __shared__ float shared_B[1024];
     int tx = threadIdx.x;
-    int tidx = (tx & 15), tidy = (tx>>4);
+// int tidx = (tx & 15), tidy = (tx>>4);
     int bx = blockIdx.x, by = blockIdx.y;
-    int tidx_3 = (tidx << 3), tidy_3 = (tidy << 3);
+    int tidx_3 = ((tx & 15) << 3), tidy_3 = ((tx>>4) << 3);
     int i1 = tidx_3 + (bx<<7);
     int j1 = tidy_3 + (by<<7);
     float4 t[16], bb0,aa0,bb1, aa1, C1[16];
@@ -26,17 +26,20 @@ __global__  __launch_bounds__(256) void sgemm_9(int N, float *A, float *B, float
     memset(t, 0, sizeof(t));
     int idx_4 = (idx<<2), idy_128 = (idy << 7), by_128 = (by << 7);
     // int A_gap = (idx_4 + by_128)*N;
-    int A_gap = ((tx&127) + by_128) * N;
+    // int A_gap = ((tx&127) + by_128) * N;
     // A = A + A_gap + idy;
-    A = A + A_gap + ((tx >> 7) << 2);
+    A = A + ((tx&127) + by_128) * N + ((tx >> 7) << 2);
     B = B + idx_4 + (bx << 7) + idy * N;
     for(int k = 0; k < N; k += 8){
-        float4 *a = (float4*)A;
-        shared_A[(tx&127) + ((((tx >> 7)<<2) + 0)<<7) ]= (*a).x;
-        shared_A[(tx&127) + ((((tx >> 7)<<2) + 1)<<7) ]= (*a).y;
-        shared_A[(tx&127) + ((((tx >> 7)<<2) + 2)<<7) ]= (*a).z; 
-        shared_A[(tx&127) + ((((tx >> 7)<<2) + 3)<<7) ]= (*a).w;
-        *(float4*)(shared_B + idx_4 + idy_128) = *(float4*)(B);
+        bb0 = *(float4*)B;
+        aa0 = *(float4*)A;
+        *(float4*)(shared_B + idx_4 + idy_128) = bb0;
+        shared_A[(tx&127) + ((((tx >> 7)<<2) + 0)<<7)]= aa0.x;
+        shared_A[(tx&127) + ((((tx >> 7)<<2)+1)<<7) ]= aa0.y;
+        shared_A[(tx&127) + ((((tx >> 7)<<2) + 2)<<7)]= aa0.z; 
+        shared_A[(tx&127) + ((((tx >> 7)<<2) + 3)<<7)]= aa0.w;
+        
+        
         B += (N<<3);
         A += 8; 
         __syncthreads(); 
