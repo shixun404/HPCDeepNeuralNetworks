@@ -1,7 +1,7 @@
 #include "utils.cuh"
 __global__ void sgemm_9(int N, float *A, float *B, float *C, float alpha, float beta);
 __global__ void sgemm_10(int N, float *A, float *B, float *C, float alpha, float beta);
-
+__global__ void sgemm_11(int N, float *A, float *B, float *C, float alpha, float beta);
 __global__ void fill(float *a , float x, int N)
 {
    int index =  blockIdx.x * blockDim.x + threadIdx.x;
