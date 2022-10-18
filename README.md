@@ -11,7 +11,7 @@ Custom kernels outperform cublasSaxpy and cublasSdot on Turing4.
 - [x] Call cublasSgemm under row major: AB=C -> B'A'=C'
 - [x] Validation of CPU GEMM and cublasSgemm 
 - [x] Implement GPU version SGEMM, validate the correctness, and benchmarking the performance for square matrices ranging 256 to 6144.
-- [ ] Optimize the baseline GPU SGEMM
+- [x] Optimize the baseline GPU SGEMM
 ![alt text](fig/sgemm_1.png)
 ### 2.1 Kernel 1: basline GPU SGEMM
 * Naive implmentation, each thread calculates a different index C<sub>ij</sub> for matrix C.
