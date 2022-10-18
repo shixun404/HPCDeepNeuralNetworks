@@ -15,7 +15,7 @@ int main(int argc, char **argv)
          exit(-1);
     }
     int kernel_number = atoi(argv[1]);
-    int num_tests = 100;
+    int num_tests = 10;
     int start_size = 256;
     int end_size = 6144;
     int gap_size = 256;
@@ -32,7 +32,7 @@ int main(int argc, char **argv)
     int threads_x = atoi(argv[3]);
     float alpha = 1.5;
 	float beta = -1.0; 
-    for(int max_size = start_size; max_size <= end_size; max_size += gap_size){
+    int max_size = end_size;
         float *A = NULL, *B = NULL, *C_ref = NULL, *C = NULL;
         float *dA = NULL,*dB = NULL, *dC_ref = NULL, *dC = NULL;
         int size = max_size * sizeof (int);
@@ -65,6 +65,7 @@ int main(int argc, char **argv)
             printf("Failed to pass the correctness verification against NVIDIA cuBLAS. Exited.\n");
             exit(-3);
         }
+        for(int max_size = start_size; max_size <= end_size; max_size += gap_size){
 	    cublasSgemm(handle, CUBLAS_OP_N,CUBLAS_OP_N,max_size, max_size,  max_size, &alpha, dB, max_size, dA, max_size, &beta, dC_ref, max_size);
         // test_kernel(kernel_number, max_size, dA, dB, dC, alpha, beta);
         if(kernel_number == 0 || kernel_number == 1){
@@ -137,6 +138,7 @@ int main(int argc, char **argv)
         // print_matrix(C, max_size);
         // printf("CPU \n");
         // print_matrix(C_ref, max_size);
+    
         cudaEvent_t beg, end;
     cudaEventCreate(&beg);
     cudaEventCreate(&end);
@@ -305,10 +307,10 @@ int main(int argc, char **argv)
             printf("%8.2f,", perf);
         
        // cudaFree( dalpha ); 
-        cudaFree( dA ); 
-        cudaFree( dB );
-	    cudaFree(dC);
-        cudaFree( dC_ref );
+        // cudaFree( dA ); 
+        // cudaFree( dB );
+	    // cudaFree(dC);
+        // cudaFree( dC_ref );
         
         fflush(stdout);
     }
