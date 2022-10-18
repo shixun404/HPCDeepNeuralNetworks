@@ -71,3 +71,7 @@ Outperform cuBLAS :)
 ### 2.12 Kernel 12: Prefetching
 * 2 stage: 1) global memory -> shared memory; 2) shared memory -> register 
 ![alt text](fig/sgemm_11vs12.png)
+
+### 2.12 Kernel 12: Shared memory double cache to avoid a syncthreads
+* Double the shared memory and alternating between the first part and second part.
+![alt text](fig/sgemm_12vs13.png)
