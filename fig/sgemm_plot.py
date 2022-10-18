@@ -29,6 +29,7 @@ yujia_kernel_8 = th.as_tensor([190.48,  805.77, 1560.18, 2490.08, 3076.69, 3713.
 kernel_9 = th.as_tensor([177.76,  765.87, 1443.33, 1423.20, 1513.88, 1631.02, 1784.56, 1678.19, 2551.13, 4023.79, 3883.49, 3838.83, 2618.63, 2911.50, 3282.03, 3394.44, 3619.79, 3614.37, 3683.84, 3634.01, 3676.98, 3617.03, 3616.57, 3611.67])
 kernel_9 = th.as_tensor([184.83,  572.90, 1485.18, 1487.19, 1577.03, 1717.92, 1876.06, 1767.93, 2341.90, 4052.65, 4004.23, 3935.54, 3133.98, 3003.05, 3262.04, 3522.22, 3537.33, 3633.18, 3808.62, 3791.41, 3796.83, 3761.01, 3737.50, 3720.90])
 kernel_9 = th.as_tensor([187.32,  801.13, 1486.61, 1517.10, 2780.23, 3741.43, 3886.34, 3776.56, 3706.90, 3827.34, 3654.27, 3714.79, 3596.62, 3565.42, 3591.80, 3635.23, 3623.61, 3640.63, 3619.50, 3624.01, 3616.23, 3610.44, 3600.73, 3593.95])
+kernel_10 = th.as_tensor([ 6.34,   30.99,   81.43,   64.90,   53.60,   51.28,   51.09,   49.98,   48.14,   49.53,   48.14,   49.06,   49.08, 50,  50,  50,  50,  50, 50,  50,  50,  50,  50, 50])
 kernel_11 = th.as_tensor([ 193.43,  823.16, 1763.82, 1838.18, 2007.28, 3780.65, 4614.82, 4577.38, 4405.02, 4602.46, 4360.08, 4471.16, 4249.18, 4198.25, 4338.15, 4252.38, 4329.91, 4263.61, 4173.79, 4371.01, 4188.36, 4051.43, 4000.18, 4067.46])
 roofline = N * 31.25
 for i in range(N.shape[0]):
@@ -37,11 +38,14 @@ for i in range(N.shape[0]):
 plt.rc('font', size=12)
 plt.rcParams['lines.linewidth'] = 2
 fig, ax = plt.subplots(ncols=2, figsize=(12, 5))
-
+k1 = kernel_9
+k2 = kernel_11
+k1_id = 9
+k2_id = 11
 ax[0].plot(N, cublas / 1000,  label="cublas", color = 'k')
 # ax[0].plot(N, yujia_kernel_8 / 1000,  label="kernel 8 from Yujia ", color = 'b')
-ax[0].plot(N, kernel_9 / 1000,  label="kernel 9", color = 'g')
-ax[0].plot(N, kernel_11 / 1000,  label="kernel 11", color = 'r')
+ax[0].plot(N, k1 / 1000,  label=f"kernel {k2_id}", color = 'g')
+ax[0].plot(N, k2 / 1000,  label=f"kernel {k1_id}", color = 'r')
 ax[0].plot(N, roofline / 1000, '--', label="roofline model", color='b')
 # ax[0].set_xscale('log')
 ax[0].set_xlabel("Matrix Sizes (m=n=k)")
@@ -52,8 +56,8 @@ ax[0].legend(loc="upper left")
 
 ax[1].plot(N, cublas / roofline,  label="cublas", color = 'k')
 # ax[1].plot(N, yujia_kernel_8 / roofline,  label="kernel 8 from Yujia", color = 'b')# ax[1].set_xscale('log')
-ax[1].plot(N, kernel_9 / roofline,  label="kernel 9", color = 'g')
-ax[1].plot(N, kernel_11 / roofline,  label="kernel 11", color = 'r')# ax[1].set_xscale('log')
+ax[1].plot(N, k1 / roofline,  label=f"kernel {k1_id}", color = 'g')
+ax[1].plot(N, k2 / roofline,  label=f"kernel {k2_id}", color = 'r')# ax[1].set_xscale('log')
 ax[1].set_ylim([0,1])
 ax[1].set_xlabel("Matrix Sizes (m=n=k)")
 ax[1].set_ylabel("Efficiency")
@@ -61,4 +65,4 @@ ax[1].set_title("SGEMM")
 ax[1].grid()
 ax[1].legend(loc="upper left")
 
-fig.savefig("sgemm_9vs11.png", dpi=1000, bbox_inches='tight')
+fig.savefig(f"sgemm_{k1_id}vs{k2_id}.png", dpi=1000, bbox_inches='tight')

@@ -61,9 +61,9 @@ B(col major) = B'(row major)
 ![alt text](fig/sgemm_8vs9.png)
 
 ### 2.10 Kernel 10: keep shared memory array size 1024 by using fragement size (256, 4): 
-* 16x16 threads in a threadblock, each block holds two arrays with size 256x4=1024 on shared memory.
-* Remarks: Consecutively read data from global memory matters!
-![alt text](fig/sgemm_8vs9.png)
+* This performance is bad!
+![alt text](fig/sgemm_9vs10.png)
 
 ### 2.11 Kernel 11: Warp level block: organize threads in the same warp (8 x 4, namely 8 x 2 float4 for subvectors in B fragment, and 4 x 2 float4 for subvectors in A fragment).
+Outperform cuBLAS :)
 ![alt text](fig/sgemm_9vs11.png)
