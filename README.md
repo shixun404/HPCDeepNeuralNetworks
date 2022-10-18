@@ -67,3 +67,7 @@ B(col major) = B'(row major)
 ### 2.11 Kernel 11: Warp level block: organize threads in the same warp (8 x 4, namely 8 x 2 float4 for subvectors in B fragment, and 4 x 2 float4 for subvectors in A fragment).
 Outperform cuBLAS :)
 ![alt text](fig/sgemm_9vs11.png)
+
+### 2.12 Kernel 12: Prefetching
+* 2 stage: 1) global memory -> shared memory; 2) shared memory -> register 
+![alt text](fig/sgemm_11vs12.png)
