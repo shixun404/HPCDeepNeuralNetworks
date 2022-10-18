@@ -11,7 +11,7 @@ INCFLAGS    = -I$(CUDA_PATH)/include -I$(CUDA_PATH)/samples/common/inc
 SRC         = $(wildcard *.cu)
 build : $(BINARY_NAME)
 
-$(BINARY_NAME): %: %.cu utils.cu ./kernel/kernel_9.cu ./kernel/kernel_10.cu ./kernel/kernel_11.cu
+$(BINARY_NAME): %: %.cu utils.cu ./kernel/kernel_9.cu ./kernel/kernel_10.cu ./kernel/kernel_11.cu ./kernel/kernel_12.cu
 	$(CC) $(CFLAGS) $(LDFLAGS) $(INCFLAGS)  $^ -o $@
 
 clean:
