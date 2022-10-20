@@ -75,3 +75,9 @@ Outperform cuBLAS :)
 ### 2.13 Kernel 13: Shared memory double cache to avoid a syncthreads
 * Double the shared memory and alternating between the first part and second part.
 ![alt text](fig/sgemm_12vs13.png)
+
+### 2.14 Kernel 14: Allocate shared_A[2][4096] and shared_B[2][4096] (64KB shared memory in total).
+* Each thread transfered 64 bytes data (4 x float4) from global memory to shared memory.
+* Include all tricks mentioned above.
+* Must call *cudaFuncSetAttribute* before call the kernel sgemm_14.
+![alt text](fig/sgemm_13vs14.png)
