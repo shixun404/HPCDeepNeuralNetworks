@@ -1,7 +1,4 @@
 #include <stdio.h>
-//#include "../kernels.cuh"
-#define m 8
-#define kk_max 1024
 #define tab(t, a, b)t.x += a.x * b;t.y += a.y * b;  t.z += a.z * b;t.w += a.w * b;  
     
 // #define tcab(t, c, alpha, beta) c = alpha * t + beta * c;
@@ -12,9 +9,10 @@
     c.w = alpha * t.w + beta * c.w;
     
 
-__global__  __launch_bounds__(256) void sgemm_13(int N, float *A, float *B, float *C, float alpha, float beta){
-    __shared__ float shared_A[2][1024]; // blockDim * 2 for sublocks of A and B
-    __shared__ float shared_B[2][1024];
+__global__  __launch_bounds__(256) void sgemm_14(int N, float *A, float *B, float *C, float alpha, float beta){
+    extern __shared__ float shared_AB[];
+    float *shared_A = (float*)shared_AB; // blockDim * 2 for sublocks of A and B
+    float *shared_B = (float*)shared_AB + 2 * 4096;
     float* sa, *sb;
     sa = (float*)shared_A;
     sb = (float*)shared_B;
@@ -26,37 +24,65 @@ __global__  __launch_bounds__(256) void sgemm_13(int N, float *A, float *B, floa
     int inter_warp_id_a = ((tx&31) & 3);
     int i1 = (wid_b << 6) + (inter_warp_id_b << 3) + (bx<<7);
     int j1 = (wid_a << 5) + (inter_warp_id_a << 3) + (by<<7);
-    float4 t[16], bb0[2],aa0[2],bb1[2], aa1[2], C1[16], pre_A, pre_B;
-    int idx = tx & 31, idy = tx >> 5;
+    float4 t[16], bb0[2],aa0[2],bb1[2], aa1[2], C1[16], pre_A[4], pre_B[4];
     memset(t, 0, sizeof(t));
-    int idx_4 = (idx<<2), idy_128 = (idy << 7), by_128 = (by << 7);
-    A = A + ((tx>>1) + by_128) * N + ((tx & 1) << 2);
-    B = B + idx_4 + (bx << 7) + idy * N;
-    pre_B = *(float4*)B;
-    pre_A = *(float4*)A;
+    int by_128 = (by << 7);
+    A = A + ((tx>>1) + by_128) * N + ((tx & 1) << 4);
+    B = B + ((tx & 7) << 4) + (bx << 7) + (tx>>3) * N;
+    pre_B[0] = ((float4*)B)[0];
+    pre_B[1] = ((float4*)B)[1];
+    pre_B[2] = ((float4*)B)[2];
+    pre_B[3] = ((float4*)B)[3];
+    pre_A[0] = ((float4*)A)[0];
+    pre_A[1] = ((float4*)A)[1];
+    pre_A[2] = ((float4*)A)[2];
+    pre_A[3] = ((float4*)A)[3];
     //int shared_offset = 0;
-    ((float4*)sb)[tx] = pre_B;
-    sa[(tx>>1) + ((((tx&1)<<2) + 0)<<7)]= pre_A.x;
-    sa[(tx>>1) + ((((tx&1)<<2)+1)<<7) ]= pre_A.y;
-    sa[(tx>>1) + ((((tx&1)<<2) + 2)<<7)]= pre_A.z; 
-    sa[(tx>>1) + ((((tx&1)<<2) + 3)<<7)]= pre_A.w;
+    ((float4*)sb)[(tx << 2)] = pre_B[0];
+    ((float4*)sb)[(tx << 2) + 1] = pre_B[1];
+    ((float4*)sb)[(tx << 2) + 2] = pre_B[2];
+    ((float4*)sb)[(tx << 2) + 3] = pre_B[3];
+    sa[(tx>>1) + ((((tx&1)<<4) + 0)<<7)]= pre_A[0].x;
+    sa[(tx>>1) + ((((tx&1)<<4) + 1)<<7) ]= pre_A[0].y;
+    sa[(tx>>1) + ((((tx&1)<<4) + 2)<<7)]= pre_A[0].z; 
+    sa[(tx>>1) + ((((tx&1)<<4) + 3)<<7)]= pre_A[0].w;
+    sa[(tx>>1) + ((((tx&1)<<4) + 4)<<7)]= pre_A[1].x;
+    sa[(tx>>1) + ((((tx&1)<<4) + 5)<<7) ]= pre_A[1].y;
+    sa[(tx>>1) + ((((tx&1)<<4) + 6)<<7)]= pre_A[1].z; 
+    sa[(tx>>1) + ((((tx&1)<<4) + 7)<<7)]= pre_A[1].w;
+    sa[(tx>>1) + ((((tx&1)<<4) + 8)<<7)] = pre_A[2].x;
+    sa[(tx>>1) + ((((tx&1)<<4) + 9)<<7) ]= pre_A[2].y;
+    sa[(tx>>1) + ((((tx&1)<<4) + 10)<<7)]= pre_A[2].z; 
+    sa[(tx>>1) + ((((tx&1)<<4) + 11)<<7)]= pre_A[2].w;
+    sa[(tx>>1) + ((((tx&1)<<4) + 12)<<7)] = pre_A[3].x;
+    sa[(tx>>1) + ((((tx&1)<<4) + 13)<<7) ]= pre_A[3].y;
+    sa[(tx>>1) + ((((tx&1)<<4) + 14)<<7)]= pre_A[3].z; 
+    sa[(tx>>1) + ((((tx&1)<<4) + 15)<<7)]= pre_A[3].w;
+    
+    
     __syncthreads();
     bb0[0] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3));
     bb1[0] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3) + 4);
     aa0[0] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3));
     aa1[0] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3) + 4);
 
-    for(int k = 0; k < N; k += 8){
-        B += (N<<3);
-        A += 8; 
-        int shared_offset = ((((k>>3) + 1)&1)<<10);
-        pre_B = *(float4*)B;
-        pre_A = *(float4*)A;
+    for(int k = 0; k < N; k += 32){
+        B += (N<<5);
+        A += 32; 
+        int shared_offset = ((((k>>5) + 1)&1)<<12);
+        pre_B[0] = ((float4*)B)[0];
+        pre_B[1] = ((float4*)B)[1];
+        pre_B[2] = ((float4*)B)[2];
+        pre_B[3] = ((float4*)B)[3];
+        pre_A[0] = ((float4*)A)[0];
+        pre_A[1] = ((float4*)A)[1];
+        pre_A[2] = ((float4*)A)[2];
+        pre_A[3] = ((float4*)A)[3];
         #pragma unroll
-        for(int kk = 0; kk < 8; kk+=1){
+        for(int kk = 0; kk < 32; kk+=1){
             int prefetch_next = ((kk + 1)&1);
             int prefetch = ((kk)&1);
-            int kk_ = ((kk + 1)&7);
+            int kk_ = ((kk + 1)&31);
             bb0[prefetch_next] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3) + (kk_<<7));
             bb1[prefetch_next] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3) + 4 + (kk_<<7));
             aa0[prefetch_next] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3) + (kk_<<7));
@@ -82,11 +108,26 @@ __global__  __launch_bounds__(256) void sgemm_13(int N, float *A, float *B, floa
         }
     sb = (float*)shared_B + shared_offset;
     sa = (float*)shared_A + shared_offset;
-    ((float4*)sb)[tx] = pre_B;
-    sa[(tx>>1) + ((((tx&1)<<2) + 0)<<7)]= pre_A.x;
-    sa[(tx>>1) + ((((tx&1)<<2)+1)<<7) ]= pre_A.y;
-    sa[(tx>>1) + ((((tx&1)<<2) + 2)<<7)]= pre_A.z; 
-    sa[(tx>>1) + ((((tx&1)<<2) + 3)<<7)]= pre_A.w;
+    ((float4*)sb)[(tx << 2)] = pre_B[0];
+    ((float4*)sb)[(tx << 2) + 1] = pre_B[1];
+    ((float4*)sb)[(tx << 2) + 2] = pre_B[2];
+    ((float4*)sb)[(tx << 2) + 3] = pre_B[3];
+    sa[(tx>>1) + ((((tx&1)<<4) + 0)<<7)]= pre_A[0].x;
+    sa[(tx>>1) + ((((tx&1)<<4) + 1)<<7) ]= pre_A[0].y;
+    sa[(tx>>1) + ((((tx&1)<<4) + 2)<<7)]= pre_A[0].z; 
+    sa[(tx>>1) + ((((tx&1)<<4) + 3)<<7)]= pre_A[0].w;
+    sa[(tx>>1) + ((((tx&1)<<4) + 4)<<7)]= pre_A[1].x;
+    sa[(tx>>1) + ((((tx&1)<<4) + 5)<<7) ]= pre_A[1].y;
+    sa[(tx>>1) + ((((tx&1)<<4) + 6)<<7)]= pre_A[1].z; 
+    sa[(tx>>1) + ((((tx&1)<<4) + 7)<<7)]= pre_A[1].w;
+    sa[(tx>>1) + ((((tx&1)<<4) + 8)<<7)] = pre_A[2].x;
+    sa[(tx>>1) + ((((tx&1)<<4) + 9)<<7) ]= pre_A[2].y;
+    sa[(tx>>1) + ((((tx&1)<<4) + 10)<<7)]= pre_A[2].z; 
+    sa[(tx>>1) + ((((tx&1)<<4) + 11)<<7)]= pre_A[2].w;
+    sa[(tx>>1) + ((((tx&1)<<4) + 12)<<7)] = pre_A[3].x;
+    sa[(tx>>1) + ((((tx&1)<<4) + 13)<<7) ]= pre_A[3].y;
+    sa[(tx>>1) + ((((tx&1)<<4) + 14)<<7)]= pre_A[3].z; 
+    sa[(tx>>1) + ((((tx&1)<<4) + 15)<<7)]= pre_A[3].w;
     __syncthreads();
     bb0[0] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3));
     bb1[0] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3) + 4);
