@@ -15,7 +15,7 @@ int main(int argc, char **argv)
          exit(-1);
     }
     int kernel_number = atoi(argv[1]);
-    int num_tests = 10;
+    int num_tests = 100;
     int start_size = 256;
     int end_size = 6144;
     int gap_size = 256;
@@ -336,6 +336,7 @@ int main(int argc, char **argv)
                 sgemm_13<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
                 cudaDeviceSynchronize();
             }
+
             cudaEventRecord(end);
             cudaEventSynchronize(beg);
             cudaEventSynchronize(end);
