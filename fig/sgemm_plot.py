@@ -43,12 +43,12 @@ plt.rcParams['lines.linewidth'] = 2
 fig, ax = plt.subplots(ncols=2, figsize=(12, 5))
 k1 = kernel_13
 k2 = kernel_14
-k1_id = 13
-k2_id = 14
+k1_id = 9
+k2_id = 11
 ax[0].plot(N, cublas / 1000,  label="cublas", color = 'k')
 # ax[0].plot(N, yujia_kernel_8 / 1000,  label="kernel 8 from Yujia ", color = 'b')
-ax[0].plot(N, k1 / 1000,  label=f"kernel {k2_id}", color = 'g')
-ax[0].plot(N, k2 / 1000,  label=f"kernel {k1_id}", color = 'r')
+ax[0].plot(N, k1 / 1000,  label=f"kernel {k1_id}", color = 'g')
+ax[0].plot(N, k2 / 1000,  label=f"kernel {k2_id}", color = 'r')
 ax[0].plot(N, roofline / 1000, '--', label="roofline model", color='b')
 # ax[0].set_xscale('log')
 ax[0].set_xlabel("Matrix Sizes (m=n=k)")
@@ -68,4 +68,4 @@ ax[1].set_title("SGEMM")
 ax[1].grid()
 ax[1].legend(loc="upper left")
 
-fig.savefig(f"sgemm_{k1_id}vs{k2_id}.png", dpi=1000, bbox_inches='tight')
+fig.savefig(f"sgemm_{k1_id}vs{k2_id}.png", dpi=400, bbox_inches='tight')

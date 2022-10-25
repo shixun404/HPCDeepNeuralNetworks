@@ -80,5 +80,7 @@ Outperform cuBLAS :)
 * 128 x 128 x 32 tiling
 * Each thread transfered 64 bytes data (4 x float4) from global memory to shared memory.
 * Include all tricks mentioned above.
+* Must call *cudaFuncSetAttribute* before call the kernel sgemm_14.
 * For the Turing architecture (compute capability 7.5), static memory has a limited size of 48 KB. To allocate a 64 KB dynamic shared memroy, you must call *cudaFuncSetAttribute* before call the kernel sgemm_14.
 ![alt text](fig/sgemm_13vs14.png)
+
