@@ -26,3 +26,7 @@ $$A \cdot \begin{bmatrix}B&Be_1&Be_2\\ \end{bmatrix} = \begin{bmatrix}AB&ABe_1&A
 \end{bmatrix}$$
 
 ![alt text](../fig/ABFT_GEMM/abft_sgemm_1vs2.png)
+
+### 1.3 Baseline: 8 offline ABFT Sgemm with cuBLAS
+![alt text](../../fig/ABFT_GEMM/baseline_offline_ABFT_sgemm_cublas_01.png)
+![alt text](../../fig/ABFT_GEMM/baseline_offline_ABFT_sgemm_cublas_02.png)
