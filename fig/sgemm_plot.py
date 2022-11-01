@@ -43,8 +43,8 @@ for i in range(N.shape[0]):
 plt.rc('font', size=12)
 plt.rcParams['lines.linewidth'] = 2
 fig, ax = plt.subplots(ncols=2, figsize=(12, 5))
-k1 = kernel_13
-k2 = kernel_14
+k1 = kernel_9
+k2 = kernel_11
 k1_id = 9
 k2_id = 11
 ax[0].plot(N, cublas / 1000,  label="cublas", color = 'k')
