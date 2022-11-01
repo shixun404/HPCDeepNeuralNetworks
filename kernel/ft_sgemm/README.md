@@ -37,7 +37,7 @@ $$A \cdot \begin{bmatrix}B&Be_1&Be_2\\ \end{bmatrix} = \begin{bmatrix}AB&ABe_1&A
 * Step 2: Transfer checksum and reference checksum to shared memory.
 * Step 3: Perform 4 reductions for $C^c, C^r, C^c_{ref}, C^r_{ref}$.
 ![alt text](../../fig/ABFT_GEMM/settings.png)
-![alt text](../../fig/ABFT_GEMM/strategies.png)
+![alt text](../../fig/ABFT_GEMM/Strategies.png)
 ![alt text](../../fig/ABFT_GEMM/step1.png)
 ![alt text](../../fig/ABFT_GEMM/step2.png)
 ![alt text](../../fig/ABFT_GEMM/step3.png)
