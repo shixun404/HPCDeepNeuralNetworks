@@ -5,7 +5,7 @@
 #include <cuda_runtime.h>
 #include <helper_functions.h>
 #include <helper_cuda.h>
-//#include "kernel_9.cu"
+#include "kernels.cuh"
 #define multi 20
 int main(int argc, char **argv)
 {       
@@ -16,7 +16,7 @@ int main(int argc, char **argv)
     int kernel_number = atoi(argv[1]);
     int num_tests = 10;
     int start_size = 256;
-    int end_size = 6144;
+    int end_size = 6144; 
     int gap_size = 256;
     for(int max_size = start_size; max_size <= end_size; max_size += gap_size){
         printf("%8.2d|", max_size);
@@ -54,7 +54,7 @@ int main(int argc, char **argv)
         
     	C_ref = (float *)malloc(sizeof(float) * max_size * max_size);
         generate_random_matrix(A, max_size);
-        generate_random_matrix(B, max_size);
+        generate_random_matrix(B, max_size);  
         generate_random_matrix(C, max_size);
         fill_vector(Res, 0.0, 1);
         fill_vector(C, 0.0, max_size * max_size);
@@ -69,7 +69,7 @@ int main(int argc, char **argv)
         
         
         CUDA_CALLER(cudaMalloc((void**) &dA, sizeof(float) * max_size * max_size));
-        CUDA_CALLER(cudaMalloc((void**) &dB, sizeof(float) * max_size * max_size));
+        CUDA_CALLER(cudaMalloc((void**) &dB, sizeof(float) * max_size * max_size));  
         CUDA_CALLER(cudaMalloc((void**) &dC, sizeof(float) * max_size * max_size));
         CUDA_CALLER(cudaMalloc((void**) &dC_ref, sizeof(float) * max_size * max_size));
         CUDA_CALLER(cudaMalloc((void**) &dE, sizeof(float) * max_size));
@@ -81,12 +81,12 @@ int main(int argc, char **argv)
         CUDA_CALLER(cudaMalloc((void**) &dcheck_A_col_mul_B, sizeof(float) * max_size));
         CUDA_CALLER(cudaMalloc((void**) &dcheck_B_row_mul_A, sizeof(float) * max_size));
         CUDA_CALLER(cudaMalloc((void**) &dRes, sizeof(float)));
-
+ 
         CUDA_CALLER(cudaMemcpy(dA, A, sizeof(float) * max_size * max_size, cudaMemcpyHostToDevice));
         CUDA_CALLER(cudaMemcpy(dB, B, sizeof(float) * max_size * max_size, cudaMemcpyHostToDevice));
         CUDA_CALLER(cudaMemcpy(dC, C, sizeof(float) * max_size * max_size, cudaMemcpyHostToDevice));
         CUDA_CALLER(cudaMemcpy(dC_ref, C_ref, sizeof(float) * max_size * max_size, cudaMemcpyHostToDevice));
-        CUDA_CALLER(cudaMemcpy(dE, E, sizeof(float) * max_size, cudaMemcpyHostToDevice));
+        CUDA_CALLER(cudaMemcpy(dE, E, sizeof(float) * max_size, cudaMemcpyHostToDevice));  
         CUDA_CALLER(cudaMemcpy(dE_, E_, sizeof(float) * max_size, cudaMemcpyHostToDevice));
         CUDA_CALLER(cudaMemcpy(dcheck_A_col, dcheck_A_col, sizeof(float) * max_size, cudaMemcpyHostToDevice));
         CUDA_CALLER(cudaMemcpy(dcheck_B_row, check_B_row, sizeof(float) * max_size, cudaMemcpyHostToDevice));
@@ -95,31 +95,10 @@ int main(int argc, char **argv)
         CUDA_CALLER(cudaMemcpy(dcheck_A_col_mul_B, check_A_row_mul_C, sizeof(float) * max_size, cudaMemcpyHostToDevice));
         CUDA_CALLER(cudaMemcpy(dcheck_B_row_mul_A, check_B_row_mul_C, sizeof(float) * max_size, cudaMemcpyHostToDevice));
         CUDA_CALLER(cudaMemcpy(dRes, Res, sizeof(float), cudaMemcpyHostToDevice));
-        cublasHandle_t handle;
+        cublasHandle_t handle;  
         cublasCreate(&handle);  
 
-
-  cublasSgemm(handle, CUBLAS_OP_N,CUBLAS_OP_N,max_size, max_size,  max_size, &alpha, dA, max_size, dB, max_size, &beta, dC, max_size);
-                cudaDeviceSynchronize();
-                
-                // row sum of C
-                cublasSgemv(handle, CUBLAS_OP_N, max_size, max_size, &alpha, dC, max_size, dE, 1, &beta, dcheck_C_row, 1);
-                
-                // col sum of C
-                cublasSgemv(handle, CUBLAS_OP_N, max_size, max_size, &alpha, dC, max_size, dE_, 1, &beta, dcheck_C_col, 1);
-
-                // col sum of A
-                cublasSgemv(handle, CUBLAS_OP_N, max_size, max_size, &alpha, dA, max_size, dE_, 1, &beta, dcheck_A_col, 1);
-
-                // row sum of B
-                cublasSgemv(handle, CUBLAS_OP_N, max_size, max_size, &alpha, dB, max_size, dE, 1, &beta, dcheck_B_row, 1);
-                cudaDeviceSynchronize();
-                // col sum of A x B
-                cublasSgemv(handle, CUBLAS_OP_N, max_size, max_size, &alpha, dA, max_size, dcheck_A_col, 1, &beta, dcheck_A_col_mul_B, 1);
-
-                // col sum of A x B
-                cublasSgemv(handle, CUBLAS_OP_N, max_size, max_size, &alpha, dA, max_size, dcheck_B_row, 1, &beta, dcheck_B_row_mul_A, 1);
-                cudaDeviceSynchronize();
+        ft_sgemm_1(1, max_size, handle, dA, dB, dC, dE, dRes, dcheck_C_row, dcheck_C_col, dcheck_A_col_mul_B, dcheck_B_row_mul_A, dcheck_A_col, dcheck_B_row,  alpha, beta, negative_1);
         // verify
         cublasSaxpy(handle, max_size, &negative_1, dcheck_A_col_mul_B, 1, dcheck_C_col, 1);
         cublasSdot(handle, max_size, dcheck_C_col, 1, dE, 1, dRes);
@@ -139,79 +118,36 @@ int main(int argc, char **argv)
         if (kernel_number == 0){
             cudaEventRecord(beg);
             for(int ii = 0; ii < num_tests; ++ii){
-                cudaDeviceSynchronize();
+                cudaDeviceSynchronize();    
                 cublasSgemm(handle, CUBLAS_OP_N,CUBLAS_OP_N,max_size, max_size,  max_size, &alpha, dA, max_size, dB, max_size, &beta, dC, max_size);
                 cudaDeviceSynchronize();
             }
             cudaEventRecord(end);
             cudaEventSynchronize(beg);
             cudaEventSynchronize(end);
-        }
+        }   
         else if (kernel_number == 1){
             cudaEventRecord(beg);
-            for(int ii = 0; ii < num_tests; ++ii){
-                cublasSgemm(handle, CUBLAS_OP_N,CUBLAS_OP_N,max_size, max_size,  max_size, &alpha, dA, max_size, dB, max_size, &beta, dC, max_size);
-                cudaDeviceSynchronize();
-                
-                // row sum of C
-                cublasSgemv(handle, CUBLAS_OP_N, max_size, max_size, &alpha, dC, max_size, dE, 1, &beta, dcheck_C_row, 1);
-                
-                // col sum of C
-                cublasSgemv(handle, CUBLAS_OP_T, max_size, max_size, &alpha, dC, max_size, dE, 1, &beta, dcheck_C_col, 1);
-
-                // col sum of A
-                cublasSgemv(handle, CUBLAS_OP_T, max_size, max_size, &alpha, dA, max_size, dE, 1, &beta, dcheck_A_col, 1);
-
-                // row sum of B
-                cublasSgemv(handle, CUBLAS_OP_N, max_size, max_size, &alpha, dB, max_size, dE, 1, &beta, dcheck_B_row, 1);
-                cudaDeviceSynchronize();
-                // col sum of A x B
-                cublasSgemv(handle, CUBLAS_OP_T, max_size, max_size, &alpha, dB, max_size, dcheck_A_col, 1, &beta, dcheck_A_col_mul_B, 1);
-
-                // row sum of B x A
-                cublasSgemv(handle, CUBLAS_OP_N, max_size, max_size, &alpha, dA, max_size, dcheck_B_row, 1, &beta, dcheck_B_row_mul_A, 1);
-                cudaDeviceSynchronize();
-                // verify
-                cublasSaxpy(handle, max_size, &negative_1, dcheck_A_col_mul_B, 1, dcheck_C_col, 1);
-                cublasSdot(handle, max_size, dcheck_C_col, 1, dE, 1, dRes);
-                cudaDeviceSynchronize();
-                cublasSaxpy(handle, max_size, &negative_1, dcheck_B_row_mul_A, 1, dcheck_C_row, 1);
-                cublasSdot(handle, max_size, dcheck_C_row, 1, dE, 1, dRes);
-            }
+            ft_sgemm_1(num_tests, max_size, handle, dA, dB, dC, dE, dRes, dcheck_C_row, dcheck_C_col, dcheck_A_col_mul_B, dcheck_B_row_mul_A, dcheck_A_col, dcheck_B_row,  alpha, beta, negative_1);
+            cudaEventRecord(end);
+            cudaEventSynchronize(beg);  
+            cudaEventSynchronize(end); 
+        }    
+        else if (kernel_number == 2){ 
+            cudaEventRecord(beg);
+            ft_sgemm_2(num_tests, max_size, handle, dA, dB, dC, dE, dE_, dRes, dcheck_C_row, dcheck_C_col, dcheck_A_col_mul_B, dcheck_B_row_mul_A, dcheck_A_col, dcheck_B_row,  alpha, beta, negative_1);
             cudaEventRecord(end);
             cudaEventSynchronize(beg);
             cudaEventSynchronize(end);
         }
-        else if (kernel_number == 2){
+        else if (kernel_number == 3){
             cudaEventRecord(beg);
+            dim3 blockDim(256);
+            dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
             for(int ii = 0; ii < num_tests; ++ii){
-                cublasSgemm(handle, CUBLAS_OP_N,CUBLAS_OP_N,max_size, max_size,  max_size, &alpha, dA, max_size, dB, max_size, &beta, dC, max_size);
                 cudaDeviceSynchronize();
-                
-                // row sum of C
-                cublasSgemv(handle, CUBLAS_OP_N, max_size, max_size, &alpha, dC, max_size, dE, 1, &beta, dcheck_C_row, 1);
-                
-                // col sum of C
-                cublasSgemv(handle, CUBLAS_OP_N, max_size, max_size, &alpha, dC, max_size, dE_, 1, &beta, dcheck_C_col, 1);
-
-                // col sum of A
-                cublasSgemv(handle, CUBLAS_OP_N, max_size, max_size, &alpha, dA, max_size, dE_, 1, &beta, dcheck_A_col, 1);
-
-                // row sum of B
-                cublasSgemv(handle, CUBLAS_OP_N, max_size, max_size, &alpha, dB, max_size, dE, 1, &beta, dcheck_B_row, 1);
+                ft_sgemm_3<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
                 cudaDeviceSynchronize();
-                // col sum of A x B
-                cublasSgemv(handle, CUBLAS_OP_N, max_size, max_size, &alpha, dA, max_size, dcheck_A_col, 1, &beta, dcheck_A_col_mul_B, 1);
-
-                // col sum of A x B
-                cublasSgemv(handle, CUBLAS_OP_N, max_size, max_size, &alpha, dA, max_size, dcheck_B_row, 1, &beta, dcheck_B_row_mul_A, 1);
-                cudaDeviceSynchronize();
-                // verify
-                cublasSaxpy(handle, max_size, &negative_1, dcheck_A_col_mul_B, 1, dcheck_C_col, 1);
-                cublasSdot(handle, max_size, dcheck_C_col, 1, dE, 1, dRes);
-                cudaDeviceSynchronize();
-                cublasSaxpy(handle, max_size, &negative_1, dcheck_B_row_mul_A, 1, dcheck_C_row, 1);
-                cublasSdot(handle, max_size, dcheck_C_row, 1, dE, 1, dRes);
             }
             cudaEventRecord(end);
             cudaEventSynchronize(beg);
