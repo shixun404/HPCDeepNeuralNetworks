@@ -301,7 +301,7 @@ int main(int argc, char **argv)
             cudaEventSynchronize(beg);
             cudaEventSynchronize(end);
         }
-        else if (kernel_number == 11){
+        else if (kernel_number == 11){ 
             cudaEventRecord(beg);
             dim3 blockDim(256);
             dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));

@@ -11,7 +11,6 @@
     c.z = alpha * t.z + beta * c.z;\
     c.w = alpha * t.w + beta * c.w;
     
-
 __global__  __launch_bounds__(256) void sgemm_13(int N, float *A, float *B, float *C, float alpha, float beta){
     __shared__ float shared_A[2][1024]; // blockDim * 2 for sublocks of A and B
     __shared__ float shared_B[2][1024];
