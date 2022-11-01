@@ -27,6 +27,19 @@ $$A \cdot \begin{bmatrix}B&Be_1&Be_2\\ \end{bmatrix} = \begin{bmatrix}AB&ABe_1&A
 
 ![alt text](../../fig/ABFT_GEMM/abft_sgemm_1vs2.png)
 
+
 ### 1.3 Baseline: 8 offline ABFT Sgemm with cuBLAS
 ![alt text](../../fig/ABFT_GEMM/baseline_offline_ABFT_sgemm_cublas_01.png)
 ![alt text](../../fig/ABFT_GEMM/baseline_offline_ABFT_sgemm_cublas_02.png)
+
+### 1.4 Baseline: 8 offline ABFT Sgemm with cuBLAS
+* Step 1: Add outer-product in the inner loop.
+* Step 2: Transfer checksum and reference checksum to shared memory.
+* Step 3: Perform 4 reductions for $C^c, C^r, C^c_{ref}, C^r_{ref}$.
+![alt text](../../fig/ABFT_GEMM/settings.png)
+![alt text](../../fig/ABFT_GEMM/step1.png)
+![alt text](../../fig/ABFT_GEMM/step2.png)
+![alt text](../../fig/ABFT_GEMM/step3.png)
+![alt text](../../fig/ABFT_GEMM/abft_sgemm_3vs5.png)
+![alt text](../../fig/ABFT_GEMM/abft_sgemm_3vs4.png)
+![alt text](../../fig/ABFT_GEMM/abft_sgemm_3vs6.png)
