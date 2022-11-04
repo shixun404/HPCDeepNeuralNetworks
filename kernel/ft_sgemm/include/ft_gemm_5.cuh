@@ -51,10 +51,6 @@ __global__  __launch_bounds__(256) void ft_sgemm_4(int N, float *A, float *B, fl
     // __shared__ float shared_C_r_ref[2048];
     // __shared__ float shared_C_c_ref[2048];
     __shared__ float shared_C_r[128], shared_C_c[128], shared_C_r_ref[128], shared_C_c_ref[128];
-    
-    
-    
-    
     int tx = threadIdx.x;
     // if(tx / 128 == 0){
     //     shared_C_r[tx & 127] = 0;

@@ -35,7 +35,7 @@ int main(int argc, char **argv)
         float *check_A_col = NULL, *check_B_row = NULL, *check_C_col = NULL, *check_C_row = NULL, *check_A_row_mul_C=NULL, *check_B_row_mul_C=NULL;
         float *dA = NULL,*dB = NULL, *dC_ref = NULL, *dC = NULL, *dE=NULL, *dE_ = NULL, *dRes =NULL;
         float *dcheck_A_col = NULL, *dcheck_B_row = NULL, *dcheck_C_col = NULL, *dcheck_C_row = NULL, *dcheck_A_col_mul_B=NULL, *dcheck_B_row_mul_A=NULL;
-        int size = max_size * sizeof (int);         
+        int size = max_size * sizeof (int);            
         int deviceId;
         cudaGetDevice(&deviceId);
         cudaDeviceProp props = getDetails(deviceId);
