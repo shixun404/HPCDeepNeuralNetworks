@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <cublas_v2.h>
+#include <cublas_v2.h>  
 #include "utils/utils.cuh"
 #define PPP 1
 #include <cuda_runtime.h>
@@ -7,11 +7,11 @@
 #include <helper_cuda.h>
 #include "kernels.cuh"
 #define multi 20
-int main(int argc, char **argv)
+int main(int argc, char **argv)    
 {       
     if (argc < 2) {
         printf("Please select a kernel (range 0 - 1, here 0 is for NVIDIA cuBLAS).\n");
-         exit(-1);
+         exit(-1); 
     }
     int kernel_number = atoi(argv[1]);
     int num_tests = 10;
@@ -35,7 +35,7 @@ int main(int argc, char **argv)
         float *check_A_col = NULL, *check_B_row = NULL, *check_C_col = NULL, *check_C_row = NULL, *check_A_row_mul_C=NULL, *check_B_row_mul_C=NULL;
         float *dA = NULL,*dB = NULL, *dC_ref = NULL, *dC = NULL, *dE=NULL, *dE_ = NULL, *dRes =NULL;
         float *dcheck_A_col = NULL, *dcheck_B_row = NULL, *dcheck_C_col = NULL, *dcheck_C_row = NULL, *dcheck_A_col_mul_B=NULL, *dcheck_B_row_mul_A=NULL;
-        int size = max_size * sizeof (int);
+        int size = max_size * sizeof (int);         
         int deviceId;
         cudaGetDevice(&deviceId);
         cudaDeviceProp props = getDetails(deviceId);
@@ -50,12 +50,12 @@ int main(int argc, char **argv)
         check_C_col = (float *)malloc(sizeof(float) * max_size);
         check_C_row = (float *)malloc(sizeof(float) * max_size);
         check_A_row_mul_C = (float *)malloc(sizeof(float) * max_size);
-        check_B_row_mul_C = (float *)malloc(sizeof(float) * max_size);
+        check_B_row_mul_C = (float  *)malloc(sizeof(float) * max_size);
         
     	C_ref = (float *)malloc(sizeof(float) * max_size * max_size);
         generate_random_matrix(A, max_size);
-        generate_random_matrix(B, max_size);  
-        generate_random_matrix(C, max_size);
+        generate_random_matrix(B, max_size);        
+        generate_random_matrix(C, max_size); 
         fill_vector(Res, 0.0, 1);
         fill_vector(C, 0.0, max_size * max_size);
         fill_vector(E, 1.0, max_size);
@@ -113,7 +113,7 @@ int main(int argc, char **argv)
         for(int max_size = start_size; max_size <= end_size; max_size += gap_size){
         cudaEvent_t beg, end;
     cudaEventCreate(&beg);
-    cudaEventCreate(&end);
+    cudaEventCreate(&end); 
     float elapsed = 0;
         if (kernel_number == 0){
             cudaEventRecord(beg);
@@ -147,6 +147,19 @@ int main(int argc, char **argv)
             for(int ii = 0; ii < num_tests; ++ii){
                 cudaDeviceSynchronize();
                 ft_sgemm_3<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
+                cudaDeviceSynchronize();
+            }
+            cudaEventRecord(end);
+            cudaEventSynchronize(beg);
+            cudaEventSynchronize(end);
+        }
+        else if (kernel_number == 4){
+            cudaEventRecord(beg);
+            dim3 blockDim(256);
+            dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
+            for(int ii = 0; ii < num_tests; ++ii){
+                cudaDeviceSynchronize();
+                ft_sgemm_4<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
                 cudaDeviceSynchronize();
             }
             cudaEventRecord(end);
