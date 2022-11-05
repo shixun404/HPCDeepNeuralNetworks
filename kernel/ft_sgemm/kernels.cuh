@@ -2,3 +2,6 @@
 #include "./include/ft_gemm_2.cuh"
 #include "./include/ft_gemm_3.cuh"
 #include "./include/ft_gemm_4.cuh"
+#include "./include/ft_gemm_5.cuh"
+#include "./include/ft_gemm_6.cuh"
+#include "./include/ft_gemm_7.cuh"

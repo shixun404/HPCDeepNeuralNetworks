@@ -1,0 +1,81 @@
+/usr/local/cuda-11.4/bin/nvcc -arch=sm_75 -O3 -std=c++11   -L/usr/local/cuda-11.4/lib64 -lcudart -lcublas -I/usr/local/cuda-11.4/include -I/usr/local/cuda-11.4/samples/common/inc -I.  kernel/ft_sgemm/ft_sgemm.cu utils/utils.cu -o ft_sgemm
+In file included from kernel/ft_sgemm/kernels.cuh:5:0,
+                 from kernel/ft_sgemm/ft_sgemm.cu:8:
+kernel/ft_sgemm/./include/ft_gemm_5.cuh:25:0: warning: "shared_vec_write" redefined [enabled by default]
+ #define shared_vec_write(s, offset, vec, tmp) \
+ ^
+In file included from kernel/ft_sgemm/kernels.cuh:4:0,
+                 from kernel/ft_sgemm/ft_sgemm.cu:8:
+kernel/ft_sgemm/./include/ft_gemm_4.cuh:15:0: note: this is the location of the previous definition
+ #define shared_vec_write(s, offset, vec) \
+ ^
+In file included from kernel/ft_sgemm/kernels.cuh:6:0,
+                 from kernel/ft_sgemm/ft_sgemm.cu:8:
+kernel/ft_sgemm/./include/ft_gemm_6.cuh:15:0: warning: "shared_vec_write" redefined [enabled by default]
+ #define shared_vec_write(s, offset, vec) \
+ ^
+In file included from kernel/ft_sgemm/kernels.cuh:5:0,
+                 from kernel/ft_sgemm/ft_sgemm.cu:8:
+kernel/ft_sgemm/./include/ft_gemm_5.cuh:25:0: note: this is the location of the previous definition
+ #define shared_vec_write(s, offset, vec, tmp) \
+ ^
+kernel/ft_sgemm/./include/ft_gemm_3.cuh(40): warning: variable "idy_128" was declared but never referenced
+
+kernel/ft_sgemm/./include/ft_gemm_4.cuh(74): warning: variable "tmp" was declared but never referenced
+
+kernel/ft_sgemm/./include/ft_gemm_4.cuh(82): warning: variable "idy_128" was declared but never referenced
+
+kernel/ft_sgemm/./include/ft_gemm_4.cuh(162): warning: variable "shared_col_idx" was declared but never referenced
+
+kernel/ft_sgemm/./include/ft_gemm_4.cuh(163): warning: variable "shared_row_idx" was declared but never referenced
+
+kernel/ft_sgemm/./include/ft_gemm_5.cuh(53): warning: variable "shared_C_r" was declared but never referenced
+
+kernel/ft_sgemm/./include/ft_gemm_5.cuh(53): warning: variable "shared_C_c" was declared but never referenced
+
+kernel/ft_sgemm/./include/ft_gemm_5.cuh(53): warning: variable "shared_C_r_ref" was declared but never referenced
+
+kernel/ft_sgemm/./include/ft_gemm_5.cuh(53): warning: variable "shared_C_c_ref" was declared but never referenced
+
+kernel/ft_sgemm/./include/ft_gemm_5.cuh(70): warning: variable "tmp" was declared but never referenced
+
+kernel/ft_sgemm/./include/ft_gemm_5.cuh(78): warning: variable "idy_128" was declared but never referenced
+
+kernel/ft_sgemm/./include/ft_gemm_5.cuh(158): warning: variable "shared_col_idx" was declared but never referenced
+
+kernel/ft_sgemm/./include/ft_gemm_5.cuh(159): warning: variable "shared_row_idx" was declared but never referenced
+
+kernel/ft_sgemm/./include/ft_gemm_5.cuh(196): warning: variable "wx" was declared but never referenced
+
+kernel/ft_sgemm/./include/ft_gemm_5.cuh(196): warning: variable "wy" was declared but never referenced
+
+kernel/ft_sgemm/./include/ft_gemm_6.cuh(79): warning: variable "tmp" was declared but never referenced
+
+kernel/ft_sgemm/./include/ft_gemm_6.cuh(88): warning: variable "idy_128" was declared but never referenced
+
+kernel/ft_sgemm/./include/ft_gemm_6.cuh(168): warning: variable "shared_col_idx" was declared but never referenced
+
+kernel/ft_sgemm/./include/ft_gemm_6.cuh(169): warning: variable "shared_row_idx" was declared but never referenced
+
+kernel/ft_sgemm/ft_sgemm.cu(38): warning: variable "size" was declared but never referenced
+
+In file included from kernel/ft_sgemm/kernels.cuh:5:0,
+                 from kernel/ft_sgemm/ft_sgemm.cu:8:
+kernel/ft_sgemm/./include/ft_gemm_5.cuh:25:0: warning: "shared_vec_write" redefined [enabled by default]
+ #define shared_vec_write(s, offset, vec, tmp) \
+ ^
+In file included from kernel/ft_sgemm/kernels.cuh:4:0,
+                 from kernel/ft_sgemm/ft_sgemm.cu:8:
+kernel/ft_sgemm/./include/ft_gemm_4.cuh:15:0: note: this is the location of the previous definition
+ #define shared_vec_write(s, offset, vec) \
+ ^
+In file included from kernel/ft_sgemm/kernels.cuh:6:0,
+                 from kernel/ft_sgemm/ft_sgemm.cu:8:
+kernel/ft_sgemm/./include/ft_gemm_6.cuh:15:0: warning: "shared_vec_write" redefined [enabled by default]
+ #define shared_vec_write(s, offset, vec) \
+ ^
+In file included from kernel/ft_sgemm/kernels.cuh:5:0,
+                 from kernel/ft_sgemm/ft_sgemm.cu:8:
+kernel/ft_sgemm/./include/ft_gemm_5.cuh:25:0: note: this is the location of the previous definition
+ #define shared_vec_write(s, offset, vec, tmp) \
+ ^

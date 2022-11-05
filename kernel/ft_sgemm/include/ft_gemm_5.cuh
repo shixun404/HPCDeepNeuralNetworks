@@ -12,29 +12,30 @@
     c.y = alpha * t.y + beta * c.y;\
     c.z = alpha * t.z + beta * c.z;\
     c.w = alpha * t.w + beta * c.w;
-#define shared_vec_write(s, offset, vec) \
-        (*(float4*)((float*)s + offset)).x += vec[0].x; \
-        (*(float4*)((float*)s + offset)).y += vec[0].y; \
-        (*(float4*)((float*)s + offset)).z += vec[0].z; \
-        (*(float4*)((float*)s + offset)).w += vec[0].w; \
-        (*(float4*)((float*)s + offset + 4)).x += vec[1].x; \
-        (*(float4*)((float*)s + offset + 4)).y += vec[1].y; \
-        (*(float4*)((float*)s + offset + 4)).z += vec[1].z; \
-        (*(float4*)((float*)s + offset + 4)).w += vec[1].w;
+// #define shared_vec_write(s, offset, vec) \
+//         (*(float4*)((float*)s + offset)).x += vec[0].x; \
+//         (*(float4*)((float*)s + offset)).y += vec[0].y; \
+//         (*(float4*)((float*)s + offset)).z += vec[0].z; \
+//         (*(float4*)((float*)s + offset)).w += vec[0].w; \
+//         (*(float4*)((float*)s + offset + 4)).x += vec[1].x; \
+//         (*(float4*)((float*)s + offset + 4)).y += vec[1].y; \
+//         (*(float4*)((float*)s + offset + 4)).z += vec[1].z; \
+//         (*(float4*)((float*)s + offset + 4)).w += vec[1].w;
 
-// #define shared_vec_write(s, offset, vec, tmp) \
-//         tmp = (*(float4*)((float*)s + offset));\
-//         tmp.x += vec[0].x; \
-//         tmp.y += vec[0].y; \
-//         tmp.z += vec[0].z; \
-//         tmp.w += vec[0].w; \
-//         (*(float4*)((float*)s + offset)) = tmp;\
-//         tmp = (*(float4*)((float*)s + offset + 4));\
-//         tmp.x += vec[1].x; \
-//         tmp.y += vec[1].y; \
-//         tmp.z += vec[1].z; \
-//         tmp.w += vec[1].w; \
-//         (*(float4*)((float*)s + offset + 4)) = tmp;
+#define shared_vec_write(s, offset, vec, tmp) \
+        tmp = (*(float4*)((float*)s + offset));\
+        tmp.x += vec[0].x; \
+        tmp.y += vec[0].y; \
+        tmp.z += vec[0].z; \
+        tmp.w += vec[0].w; \
+        (*(float4*)((float*)s + offset)) = tmp;\
+        tmp = (*(float4*)((float*)s + offset + 4));\
+        tmp.x += vec[1].x; \
+        tmp.y += vec[1].y; \
+        tmp.z += vec[1].z; \
+        tmp.w += vec[1].w; \
+        (*(float4*)((float*)s + offset + 4)) = tmp;
+        // (*(float4*)((float*)s + offset + 4)) = tmp;
 
 #define warp_shfl_down(a, i) \
     a.x += __shfl_down_sync(0xffffffff, a.x, i, 32); \
@@ -43,7 +44,7 @@
     a.w += __shfl_down_sync(0xffffffff, a.w, i, 32);
     
 
-__global__  __launch_bounds__(256) void ft_sgemm_4(int N, float *A, float *B, float *C, float alpha, float beta){
+__global__  __launch_bounds__(256) void ft_sgemm_5(int N, float *A, float *B, float *C, float alpha, float beta){
     __shared__ float shared_A[1024]; // blockDim * 2 for sublocks of A and B
     __shared__ float shared_B[1024];
     // __shared__ float shared_C_r[2048];

@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <cublas_v2.h>  
-#include "utils/utils.cuh"
+#include <cublas_v2.h>     
+#include "utils/utils.cuh"          
 #define PPP 1
 #include <cuda_runtime.h>
 #include <helper_functions.h>
@@ -27,7 +27,7 @@ int main(int argc, char **argv)
     }
 
     printf("\n");
-    float alpha = 1.0;
+    float alpha = 1.0;  
     float negative_1 = -1.0;
 	float beta = 0.0; 
     int max_size = end_size;
@@ -35,12 +35,12 @@ int main(int argc, char **argv)
         float *check_A_col = NULL, *check_B_row = NULL, *check_C_col = NULL, *check_C_row = NULL, *check_A_row_mul_C=NULL, *check_B_row_mul_C=NULL;
         float *dA = NULL,*dB = NULL, *dC_ref = NULL, *dC = NULL, *dE=NULL, *dE_ = NULL, *dRes =NULL;
         float *dcheck_A_col = NULL, *dcheck_B_row = NULL, *dcheck_C_col = NULL, *dcheck_C_row = NULL, *dcheck_A_col_mul_B=NULL, *dcheck_B_row_mul_A=NULL;
-        int size = max_size * sizeof (int);            
+        int size = max_size * sizeof (int);             
         int deviceId;
         cudaGetDevice(&deviceId);
-        cudaDeviceProp props = getDetails(deviceId);
+        cudaDeviceProp props = getDetails(deviceId);           
         A = (float *)malloc(sizeof(float) * max_size * max_size);
-        B = (float *)malloc(sizeof(float) * max_size * max_size);
+        B = (float *)malloc(sizeof(float) * max_size * max_size);   
         C = (float *)malloc(sizeof(float) * max_size * max_size);
         E = (float *)malloc(sizeof(float) * max_size);
         E_ = (float *)malloc(sizeof(float) * max_size);
@@ -52,7 +52,7 @@ int main(int argc, char **argv)
         check_A_row_mul_C = (float *)malloc(sizeof(float) * max_size);
         check_B_row_mul_C = (float  *)malloc(sizeof(float) * max_size);
         
-    	C_ref = (float *)malloc(sizeof(float) * max_size * max_size);
+    	C_ref = (float *)malloc(sizeof(float) * max_size * max_size); 
         generate_random_matrix(A, max_size);
         generate_random_matrix(B, max_size);        
         generate_random_matrix(C, max_size); 
@@ -73,7 +73,7 @@ int main(int argc, char **argv)
         CUDA_CALLER(cudaMalloc((void**) &dC, sizeof(float) * max_size * max_size));
         CUDA_CALLER(cudaMalloc((void**) &dC_ref, sizeof(float) * max_size * max_size));
         CUDA_CALLER(cudaMalloc((void**) &dE, sizeof(float) * max_size));
-        CUDA_CALLER(cudaMalloc((void**) &dE_, sizeof(float) * max_size));
+        CUDA_CALLER(cudaMalloc((void**) &dE_, sizeof(float) * max_size)); 
         CUDA_CALLER(cudaMalloc((void**) &dcheck_A_col, sizeof(float) * max_size));
         CUDA_CALLER(cudaMalloc((void**) &dcheck_B_row, sizeof(float) * max_size));
         CUDA_CALLER(cudaMalloc((void**) &dcheck_C_col, sizeof(float) * max_size));
@@ -84,10 +84,10 @@ int main(int argc, char **argv)
  
         CUDA_CALLER(cudaMemcpy(dA, A, sizeof(float) * max_size * max_size, cudaMemcpyHostToDevice));
         CUDA_CALLER(cudaMemcpy(dB, B, sizeof(float) * max_size * max_size, cudaMemcpyHostToDevice));
-        CUDA_CALLER(cudaMemcpy(dC, C, sizeof(float) * max_size * max_size, cudaMemcpyHostToDevice));
+        CUDA_CALLER(cudaMemcpy(dC, C, sizeof(float) * max_size * max_size, cudaMemcpyHostToDevice));      
         CUDA_CALLER(cudaMemcpy(dC_ref, C_ref, sizeof(float) * max_size * max_size, cudaMemcpyHostToDevice));
         CUDA_CALLER(cudaMemcpy(dE, E, sizeof(float) * max_size, cudaMemcpyHostToDevice));  
-        CUDA_CALLER(cudaMemcpy(dE_, E_, sizeof(float) * max_size, cudaMemcpyHostToDevice));
+        CUDA_CALLER(cudaMemcpy(dE_, E_, sizeof(float) * max_size, cudaMemcpyHostToDevice)); 
         CUDA_CALLER(cudaMemcpy(dcheck_A_col, dcheck_A_col, sizeof(float) * max_size, cudaMemcpyHostToDevice));
         CUDA_CALLER(cudaMemcpy(dcheck_B_row, check_B_row, sizeof(float) * max_size, cudaMemcpyHostToDevice));
         CUDA_CALLER(cudaMemcpy(dcheck_C_col, check_C_col, sizeof(float) * max_size, cudaMemcpyHostToDevice));
@@ -164,8 +164,49 @@ int main(int argc, char **argv)
             }
             cudaEventRecord(end);
             cudaEventSynchronize(beg);
+            cudaEventSynchronize(end);   
+        }
+        else if (kernel_number == 5){
+            cudaEventRecord(beg);       
+            dim3 blockDim(256);
+            dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
+            for(int ii = 0; ii < num_tests; ++ii){
+                cudaDeviceSynchronize();
+                ft_sgemm_5<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
+                cudaDeviceSynchronize();
+            }
+            cudaEventRecord(end);
+            cudaEventSynchronize(beg);
             cudaEventSynchronize(end);
         }
+        else if (kernel_number == 6){
+            cudaEventRecord(beg);
+            dim3 blockDim(256);   
+            dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
+            for(int ii = 0; ii < num_tests; ++ii){
+                cudaDeviceSynchronize();
+                ft_sgemm_6<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
+                cudaDeviceSynchronize();
+            }
+            cudaEventRecord(end);
+            cudaEventSynchronize(beg);
+            cudaEventSynchronize(end);
+        }
+
+        else if (kernel_number == 7){
+            cudaEventRecord(beg);
+            dim3 blockDim(256);
+            dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
+            for(int ii = 0; ii < num_tests; ++ii){
+                cudaDeviceSynchronize();
+                ft_sgemm_7<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
+                cudaDeviceSynchronize();
+            }
+            cudaEventRecord(end);
+            cudaEventSynchronize(beg);
+            cudaEventSynchronize(end);
+        }
+          
             cudaEventElapsedTime(&elapsed, beg, end);
             
             double gflops = double(2 * num_tests * double(max_size) * double(max_size) * double(max_size)) / (1e9);

@@ -12,29 +12,54 @@
     c.y = alpha * t.y + beta * c.y;\
     c.z = alpha * t.z + beta * c.z;\
     c.w = alpha * t.w + beta * c.w;
-#define shared_vec_write(s, offset, vec) \
-        (*(float4*)((float*)s + offset)).x += vec[0].x; \
-        (*(float4*)((float*)s + offset)).y += vec[0].y; \
-        (*(float4*)((float*)s + offset)).z += vec[0].z; \
-        (*(float4*)((float*)s + offset)).w += vec[0].w; \
-        (*(float4*)((float*)s + offset + 4)).x += vec[1].x; \
-        (*(float4*)((float*)s + offset + 4)).y += vec[1].y; \
-        (*(float4*)((float*)s + offset + 4)).z += vec[1].z; \
-        (*(float4*)((float*)s + offset + 4)).w += vec[1].w;
+// #define shared_vec_write(s, offset, vec) \
+//         (*(float4*)((float*)s + offset)).x += vec[0].x; \
+//         (*(float4*)((float*)s + offset)).y += vec[0].y; \
+//         (*(float4*)((float*)s + offset)).z += vec[0].z; \
+//         (*(float4*)((float*)s + offset)).w += vec[0].w; \
+//         (*(float4*)((float*)s + offset + 4)).x += vec[1].x; \
+//         (*(float4*)((float*)s + offset + 4)).y += vec[1].y; \
+//         (*(float4*)((float*)s + offset + 4)).z += vec[1].z; \
+//         (*(float4*)((float*)s + offset + 4)).w += vec[1].w;
 
-// #define shared_vec_write(s, offset, vec, tmp) \
+#define shared_vec_write(s, offset, vec, tmp) \
+        tmp = (*(float4*)((float*)s + offset));\
+        tmp.x += vec[0].x; \
+        tmp.y += vec[0].y; \
+        tmp.z += vec[0].z; \
+        tmp.w += vec[0].w; \
+        (*(float4*)((float*)s + offset)) = tmp;\
+        tmp = (*(float4*)((float*)s + offset + 4));\
+        tmp.x += vec[1].x; \
+        tmp.y += vec[1].y; \
+        tmp.z += vec[1].z; \
+        tmp.w += vec[1].w; \
+        (*(float4*)((float*)s + offset + 4)) = tmp;
+// #define shared_vec_write_2float4(s, offset, vec, tmp) \
 //         tmp = (*(float4*)((float*)s + offset));\
-//         tmp.x += vec[0].x; \
-//         tmp.y += vec[0].y; \
-//         tmp.z += vec[0].z; \
-//         tmp.w += vec[0].w; \
+//         tmp.x = vec[0].x; \
+//         tmp.y = vec[0].y; \
+//         tmp.z = vec[0].z; \
+//         tmp.w = vec[0].w; \
 //         (*(float4*)((float*)s + offset)) = tmp;\
 //         tmp = (*(float4*)((float*)s + offset + 4));\
-//         tmp.x += vec[1].x; \
-//         tmp.y += vec[1].y; \
-//         tmp.z += vec[1].z; \
-//         tmp.w += vec[1].w; \
+//         tmp.x = vec[1].x; \
+//         tmp.y = vec[1].y; \
+//         tmp.z = vec[1].z; \
+//         tmp.w = vec[1].w; \
 //         (*(float4*)((float*)s + offset + 4)) = tmp;
+
+#define shared_vec_write_2float4(s, offset, vec, tmp) \
+        (*(float4*)((float*)s + offset)).x = vec[0].x; \
+        (*(float4*)((float*)s + offset)).y = vec[0].y; \
+        (*(float4*)((float*)s + offset)).z = vec[0].z; \
+        (*(float4*)((float*)s + offset)).w = vec[0].w; \
+        (*(float4*)((float*)s + offset + 4)).x = vec[1].x; \
+        (*(float4*)((float*)s + offset + 4)).y = vec[1].y; \
+        (*(float4*)((float*)s + offset + 4)).z = vec[1].z; \
+        (*(float4*)((float*)s + offset + 4)).w = vec[1].w; 
+
+        // (*(float4*)((float*)s + offset + 4)) = tmp;
 
 #define warp_shfl_down(a, i) \
     a.x += __shfl_down_sync(0xffffffff, a.x, i, 32); \
@@ -43,18 +68,16 @@
     a.w += __shfl_down_sync(0xffffffff, a.w, i, 32);
     
 
-__global__  __launch_bounds__(256) void ft_sgemm_4(int N, float *A, float *B, float *C, float alpha, float beta){
+__global__  __launch_bounds__(256) void ft_sgemm_7(int N, float *A, float *B, float *C, float alpha, float beta){
     __shared__ float shared_A[1024]; // blockDim * 2 for sublocks of A and B
     __shared__ float shared_B[1024];
     // __shared__ float shared_C_r[2048];
     // __shared__ float shared_C_c[2048];
     // __shared__ float shared_C_r_ref[2048];
     // __shared__ float shared_C_c_ref[2048];
-    __shared__ float shared_C_r[128], shared_C_c[128], shared_C_r_ref[128], shared_C_c_ref[128];
-    
-    
-    
-    
+    // __shared__ float shared_C[1536];
+    __shared__ float shared_C_r[512], shared_C_c[256], shared_C_r_ref[512], shared_C_c_ref[256];
+    // __shared__ float shared_C_r[128], shared_C_c[128], shared_C_r_ref[128], shared_C_c_ref[128];
     int tx = threadIdx.x;
     // if(tx / 128 == 0){
     //     shared_C_r[tx & 127] = 0;
@@ -218,52 +241,76 @@ __global__  __launch_bounds__(256) void ft_sgemm_4(int N, float *A, float *B, fl
  
     // }
     
-    if(wx == 0){
         // printf("%d, %d\n", wx, inter_warp_id_b);
-        shared_vec_write(shared_C_c, wy * 8, C_c);
-        shared_vec_write(shared_C_c_ref, wy * 8, C_c_ref);
+        // shared_vec_write(shared_C_c, wy * 8, C_c, tmp);
+        // shared_vec_write(shared_C_c_ref, wy * 8, C_c_ref);
         // shared_vec_write(shared_C_c, wy * 8, C_c, tmp);
         // shared_vec_write(shared_C_c_ref, wy * 8, C_c_ref, tmp);
-    }
-    if(wy == 0){
-        //printf("%d, %d\n", wy, inter_warp_id_a);
-        shared_vec_write(shared_C_r, wx * 8, C_r);
-        shared_vec_write(shared_C_r_ref, wx * 8, C_r_ref);
-        // shared_vec_write(shared_C_r, wx * 8, C_r, tmp);
-        // shared_vec_write(shared_C_r_ref, wx * 8, C_r_ref, tmp);
-    }
+    shared_vec_write_2float4(shared_C_r, wx * 8 + wid_a * 128, C_r, tmp);
+    shared_vec_write_2float4(shared_C_r_ref, wx * 8 + wid_a * 128, C_r_ref, tmp);
+    shared_vec_write_2float4(shared_C_c, wy * 8 + wid_b * 128, C_c, tmp);
+    shared_vec_write_2float4(shared_C_c_ref, wy * 8 + wid_b * 128, C_c_ref, tmp);
     __syncthreads();
-    if(wx == 8){
-        // printf("%d, %d\n", wx, inter_warp_id_b);
-        shared_vec_write(shared_C_c, wy * 8, C_c);
-        shared_vec_write(shared_C_c_ref, wy * 8, C_c_ref);
-        // shared_vec_write(shared_C_c, wy * 8, C_c, tmp);
-        // shared_vec_write(shared_C_c_ref, wy * 8, C_c_ref, tmp);
-    }
-    if(wy == 4){
-        //printf("%d, %d\n", wy, inter_warp_id_a);
-        shared_vec_write(shared_C_r, wx * 8, C_r);
-        shared_vec_write(shared_C_r_ref, wx * 8, C_r_ref);
-        // shared_vec_write(shared_C_r, wx * 8, C_r, tmp);
-        // shared_vec_write(shared_C_r_ref, wx * 8, C_r_ref, tmp);
-    }
+    i = 256;
+    shared_C_r[tx] += shared_C_r[tx + i];
+    shared_C_r_ref[tx] += shared_C_r_ref[tx + i];
     __syncthreads();
-    if(wy == 8){
-        //printf("%d, %d\n", wy, inter_warp_id_a);
-        shared_vec_write(shared_C_r, wx * 8, C_r);
-        shared_vec_write(shared_C_r_ref, wx * 8, C_r_ref);
-        // shared_vec_write(shared_C_r, wx * 8, C_r, tmp);
-        // shared_vec_write(shared_C_r_ref, wx * 8, C_r_ref, tmp);
-    }
-    __syncthreads();
-    if(wy == 12){
-        //printf("%d, %d\n", wy, inter_warp_id_a);
-        shared_vec_write(shared_C_r, wx * 8, C_r);
-        shared_vec_write(shared_C_r_ref, wx * 8, C_r_ref);
-        // shared_vec_write(shared_C_r, wx * 8, C_r, tmp);
-        // shared_vec_write(shared_C_r_ref, wx * 8, C_r_ref, tmp);
-    }
-    __syncthreads();
+    // i = i / 2;
+    // if(tx < 128){
+    // shared_C_r[tx] += shared_C_r[tx + i];
+    // shared_C_r_ref[tx] += shared_C_r_ref[tx + i];
+    // }
+    // else{
+    //     shared_C_c[tx - 128] += shared_C_c[tx + i - 128];
+    //     shared_C_c_ref[tx - 128] += shared_C_c_ref[tx + i - 128];
+    // }
+    //shared_C_r[wid_a * 128 + wx * 8] = C_r[0].x;
+    //     if(wx == 0){
+    //     // printf("%d, %d\n", wx, inter_warp_id_b);
+    //     // shared_vec_write(shared_C_c, wy * 8, C_c, tmp);
+    //     // shared_vec_write(shared_C_c_ref, wy * 8, C_c_ref);
+    //     shared_vec_write(shared_C_c, wy * 8, C_c, tmp);
+    //     shared_vec_write(shared_C_c_ref, wy * 8, C_c_ref, tmp);
+    // }
+    // if(wy == 0){
+    //     //printf("%d, %d\n", wy, inter_warp_id_a);
+    //     // shared_vec_write(shared_C_r, wx * 8, C_r);
+    //     // shared_vec_write(shared_C_r_ref, wx * 8, C_r_ref);
+    //     shared_vec_write(shared_C_r, wx * 8, C_r, tmp);
+    //     shared_vec_write(shared_C_r_ref, wx * 8, C_r_ref, tmp);
+    // }
+    // __syncthreads();
+    // if(wx == 8){
+    //     // printf("%d, %d\n", wx, inter_warp_id_b);
+    //     // shared_vec_write(shared_C_c, wy * 8, C_c);
+    //     // shared_vec_write(shared_C_c_ref, wy * 8, C_c_ref);
+    //     shared_vec_write(shared_C_c, wy * 8, C_c, tmp);
+    //     shared_vec_write(shared_C_c_ref, wy * 8, C_c_ref, tmp);
+    // }
+    // if(wy == 4){
+    //     //printf("%d, %d\n", wy, inter_warp_id_a);
+    //     // shared_vec_write(shared_C_r, wx * 8, C_r);
+    //     // shared_vec_write(shared_C_r_ref, wx * 8, C_r_ref);
+    //     shared_vec_write(shared_C_r, wx * 8, C_r, tmp);
+    //     shared_vec_write(shared_C_r_ref, wx * 8, C_r_ref, tmp);
+    // }
+    // __syncthreads();
+    // if(wy == 8){
+    //     //printf("%d, %d\n", wy, inter_warp_id_a);
+    //     // shared_vec_write(shared_C_r, wx * 8, C_r);
+    //     // shared_vec_write(shared_C_r_ref, wx * 8, C_r_ref);
+    //     shared_vec_write(shared_C_r, wx * 8, C_r, tmp);
+    //     shared_vec_write(shared_C_r_ref, wx * 8, C_r_ref, tmp);
+    // }
+    // __syncthreads();
+    // if(wy == 12){
+    //     //printf("%d, %d\n", wy, inter_warp_id_a);
+    //     // shared_vec_write(shared_C_r, wx * 8, C_r);
+    //     // shared_vec_write(shared_C_r_ref, wx * 8, C_r_ref);
+    //     shared_vec_write(shared_C_r, wx * 8, C_r, tmp);
+    //     shared_vec_write(shared_C_r_ref, wx * 8, C_r_ref, tmp);
+    // }
+    // __syncthreads();
 
     C1[0] = *(float4*)(C + i1 + j1 * N);
     C1[1] = *(float4*)(C + i1 + 4 + j1 * N);
