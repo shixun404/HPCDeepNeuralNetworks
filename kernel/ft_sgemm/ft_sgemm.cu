@@ -166,46 +166,46 @@ int main(int argc, char **argv)
             cudaEventSynchronize(beg);
             cudaEventSynchronize(end);   
         }
-        else if (kernel_number == 5){
-            cudaEventRecord(beg);       
-            dim3 blockDim(256);
-            dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
-            for(int ii = 0; ii < num_tests; ++ii){
-                cudaDeviceSynchronize();
-                ft_sgemm_5<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
-                cudaDeviceSynchronize();
-            }
-            cudaEventRecord(end);
-            cudaEventSynchronize(beg);
-            cudaEventSynchronize(end);
-        }
-        else if (kernel_number == 6){
-            cudaEventRecord(beg);
-            dim3 blockDim(256);   
-            dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
-            for(int ii = 0; ii < num_tests; ++ii){
-                cudaDeviceSynchronize();
-                ft_sgemm_6<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
-                cudaDeviceSynchronize();
-            }
-            cudaEventRecord(end);
-            cudaEventSynchronize(beg);
-            cudaEventSynchronize(end);
-        }
+        // else if (kernel_number == 5){
+        //     cudaEventRecord(beg);       
+        //     dim3 blockDim(256);
+        //     dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
+        //     for(int ii = 0; ii < num_tests; ++ii){
+        //         cudaDeviceSynchronize();
+        //         ft_sgemm_5<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
+        //         cudaDeviceSynchronize();
+        //     }
+        //     cudaEventRecord(end);
+        //     cudaEventSynchronize(beg);
+        //     cudaEventSynchronize(end);
+        // }
+        // else if (kernel_number == 6){
+        //     cudaEventRecord(beg);
+        //     dim3 blockDim(256);   
+        //     dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
+        //     for(int ii = 0; ii < num_tests; ++ii){
+        //         cudaDeviceSynchronize();
+        //         ft_sgemm_6<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
+        //         cudaDeviceSynchronize();
+        //     }
+        //     cudaEventRecord(end);
+        //     cudaEventSynchronize(beg);
+        //     cudaEventSynchronize(end);
+        // }
 
-        else if (kernel_number == 7){
-            cudaEventRecord(beg);
-            dim3 blockDim(256);
-            dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
-            for(int ii = 0; ii < num_tests; ++ii){
-                cudaDeviceSynchronize();
-                ft_sgemm_7<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
-                cudaDeviceSynchronize();
-            }
-            cudaEventRecord(end);
-            cudaEventSynchronize(beg);
-            cudaEventSynchronize(end);
-        }
+        // else if (kernel_number == 7){
+        //     cudaEventRecord(beg);
+        //     dim3 blockDim(256);
+        //     dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
+        //     for(int ii = 0; ii < num_tests; ++ii){
+        //         cudaDeviceSynchronize();
+        //         ft_sgemm_7<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
+        //         cudaDeviceSynchronize();
+        //     }
+        //     cudaEventRecord(end);
+        //     cudaEventSynchronize(beg);
+        //     cudaEventSynchronize(end);
+        // }
           
             cudaEventElapsedTime(&elapsed, beg, end);
             
