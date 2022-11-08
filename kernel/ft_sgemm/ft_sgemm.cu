@@ -9,10 +9,6 @@
 #define multi 20
 int main(int argc, char **argv)    
 {       
-    if (argc < 2) {
-        printf("Please select a kernel (range 0 - 1, here 0 is for NVIDIA cuBLAS).\n");
-         exit(-1); 
-    }
     int kernel_number = atoi(argv[1]);
     int num_tests = 10;
     int start_size = 256;
@@ -148,7 +144,7 @@ int main(int argc, char **argv)
                 cudaDeviceSynchronize();
                 ft_sgemm_3<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
                 cudaDeviceSynchronize();
-            }
+            } 
             cudaEventRecord(end);
             cudaEventSynchronize(beg);
             cudaEventSynchronize(end);
@@ -162,49 +158,22 @@ int main(int argc, char **argv)
                 ft_sgemm_4<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
                 cudaDeviceSynchronize();
             }
-            cudaEventRecord(end);
+            cudaEventRecord(end);       
             cudaEventSynchronize(beg);
             cudaEventSynchronize(end);   
         }
-        else if (kernel_number == 5){
-            cudaEventRecord(beg);       
-            dim3 blockDim(256);
-            dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
-            for(int ii = 0; ii < num_tests; ++ii){
-                cudaDeviceSynchronize();
-                ft_sgemm_5<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
-                cudaDeviceSynchronize();
-            }
-            cudaEventRecord(end);
-            cudaEventSynchronize(beg);
-            cudaEventSynchronize(end);
-        }
-        else if (kernel_number == 6){
-            cudaEventRecord(beg);
-            dim3 blockDim(256);   
-            dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
-            for(int ii = 0; ii < num_tests; ++ii){
-                cudaDeviceSynchronize();
-                ft_sgemm_6<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
-                cudaDeviceSynchronize();
-            }
-            cudaEventRecord(end);
-            cudaEventSynchronize(beg);
-            cudaEventSynchronize(end);
-        }
-
-        else if (kernel_number == 7){
+        else if (kernel_number == 8){
             cudaEventRecord(beg);
             dim3 blockDim(256);
             dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
             for(int ii = 0; ii < num_tests; ++ii){
                 cudaDeviceSynchronize();
-                ft_sgemm_7<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
+                ft_sgemm_8<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
                 cudaDeviceSynchronize();
             }
             cudaEventRecord(end);
             cudaEventSynchronize(beg);
-            cudaEventSynchronize(end);
+            cudaEventSynchronize(end);   
         }
           
             cudaEventElapsedTime(&elapsed, beg, end);
