@@ -197,24 +197,24 @@ __global__  __launch_bounds__(256) void ft_sgemm_7(int N, float *A, float *B, fl
     
     
     int wx = ((wid_b << 3) + inter_warp_id_b), wy = ((wid_a << 2) + inter_warp_id_a);
-    shared_vec_write_2float4(shared_C_r, wx * 8 + wid_a * 128, C_r, tmp);
-    shared_vec_write_2float4(shared_C_r_ref, wx * 8 + wid_a * 128, C_r_ref, tmp);
-    shared_vec_write_2float4(shared_C_c, wy * 8 + wid_b * 128, C_c, tmp);
-    shared_vec_write_2float4(shared_C_c_ref, wy * 8 + wid_b * 128, C_c_ref, tmp);
-    __syncthreads();
-    i = 256;
-    shared_C_r[tx] += shared_C_r[tx + i];
-    shared_C_r_ref[tx] += shared_C_r_ref[tx + i];
-    __syncthreads();
-    i = i / 2;
-    if(tx < 128){
-    shared_C_r[tx] += shared_C_r[tx + i];
-    shared_C_r_ref[tx] += shared_C_r_ref[tx + i];
-    }
-    else{
-        shared_C_c[tx - 128] += shared_C_c[tx + i - 128];
-        shared_C_c_ref[tx - 128] += shared_C_c_ref[tx + i - 128];
-    }
+    // shared_vec_write_2float4(shared_C_r, wx * 8 + wid_a * 128, C_r, tmp);
+    // shared_vec_write_2float4(shared_C_r_ref, wx * 8 + wid_a * 128, C_r_ref, tmp);
+    // shared_vec_write_2float4(shared_C_c, wy * 8 + wid_b * 128, C_c, tmp);
+    // shared_vec_write_2float4(shared_C_c_ref, wy * 8 + wid_b * 128, C_c_ref, tmp);
+    // __syncthreads();
+    // i = 256;
+    // shared_C_r[tx] += shared_C_r[tx + i];
+    // shared_C_r_ref[tx] += shared_C_r_ref[tx + i];
+    // __syncthreads();
+    // i = i / 2;
+    // if(tx < 128){
+    // shared_C_r[tx] += shared_C_r[tx + i];
+    // shared_C_r_ref[tx] += shared_C_r_ref[tx + i];
+    // }
+    // else{
+    //     shared_C_c[tx - 128] += shared_C_c[tx + i - 128];
+    //     shared_C_c_ref[tx - 128] += shared_C_c_ref[tx + i - 128];
+    // }
     
     C1[0] = *(float4*)(C + i1 + j1 * N);
     C1[1] = *(float4*)(C + i1 + 4 + j1 * N);
