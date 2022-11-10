@@ -1,6 +1,7 @@
 #include <stdio.h>
 //#include "../kernels.cuh"
 #define m 8
+#define err_bound 3e-6
 #define kk_max 1024
 #define tab(t, a, b)t.x += a.x * b;t.y += a.y * b;  t.z += a.z * b;t.w += a.w * b;  
 
@@ -17,6 +18,11 @@
     c.w = alpha * t.w + beta * c.w;
 
 #define float4_set_zero(t) t.x = 0.; t.y = 0.; t.z = 0.; t.w = 0.; 
+#define comp_and_record(checksum, r, offset) \
+    if(checksum.x > err_bound) r = 0 + offset; \ 
+    if(checksum.y > err_bound) r = 1 + offset; \ 
+    if(checksum.z > err_bound) r = 2 + offset; \ 
+    if(checksum.w > err_bound) r = 3 + offset; 
 
 
 
@@ -88,10 +94,10 @@ __global__  __launch_bounds__(256) void ft_sgemm_8(int N, float *A, float *B, fl
             tab(t[14], bb0[prefetch], aa1[prefetch].w);
             tab(t[15], bb1[prefetch], aa1[prefetch].w);
 
-            // checksum_8(A_c, aa0[prefetch], aa1[prefetch]);
-            // checksum_8(B_r, bb0[prefetch], bb1[prefetch]);
-            // saxpy(C_c[0], C_c[1], A_c, bb0[prefetch], bb1[prefetch]);
-            // saxpy(C_r[0], C_r[1], B_r, aa0[prefetch], aa1[prefetch]);
+            checksum_8(A_c, aa0[prefetch], aa1[prefetch]);
+            checksum_8(B_r, bb0[prefetch], bb1[prefetch]);
+            saxpy(C_c[0], C_c[1], A_c, bb0[prefetch], bb1[prefetch]);
+            saxpy(C_r[0], C_r[1], B_r, aa0[prefetch], aa1[prefetch]);
 
         }
         sb = (float*)shared_B + shared_offset;
@@ -107,42 +113,67 @@ __global__  __launch_bounds__(256) void ft_sgemm_8(int N, float *A, float *B, fl
         aa0[0] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3));
         aa1[0] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3) + 4);
         
-        // if((k % 256) == 0){
-        //     negative_checksum_8(C_c[0].x, t[0], t[1])
-        //     negative_checksum_8(C_c[0].y, t[2], t[3])
-        //     negative_checksum_8(C_c[0].z, t[4], t[5])
-        //     negative_checksum_8(C_c[0].w, t[6], t[7])
-        //     negative_checksum_8(C_c[1].x, t[8], t[9])
-        //     negative_checksum_8(C_c[1].y, t[10], t[11])
-        //     negative_checksum_8(C_c[1].z, t[12], t[13])
-        //     negative_checksum_8(C_c[1].w, t[14], t[15])
+        if((k % 256) == 0){
+            negative_checksum_8(C_c[0].x, t[0], t[1])
+            negative_checksum_8(C_c[0].y, t[2], t[3])
+            negative_checksum_8(C_c[0].z, t[4], t[5])
+            negative_checksum_8(C_c[0].w, t[6], t[7])
+            negative_checksum_8(C_c[1].x, t[8], t[9])
+            negative_checksum_8(C_c[1].y, t[10], t[11])
+            negative_checksum_8(C_c[1].z, t[12], t[13])
+            negative_checksum_8(C_c[1].w, t[14], t[15])
             
-        //     // C_r_ref[0] = t[0] + t[2] + t[4] + t[6] + t[8] + t[10] + t[12] + t[14];
-        //     tcab(t[0], C_r[0], -1.0, 1.0)
-        //     tcab(t[2], C_r[0], -1.0, 1.0)
-        //     tcab(t[4], C_r[0], -1.0, 1.0)
-        //     tcab(t[6], C_r[0], -1.0, 1.0)
-        //     tcab(t[8], C_r[0], -1.0, 1.0)
-        //     tcab(t[10], C_r[0], -1.0, 1.0)
-        //     tcab(t[12], C_r[0], -1.0, 1.0)
-        //     tcab(t[14], C_r[0], -1.0, 1.0)
+            // C_r_ref[0] = t[0] + t[2] + t[4] + t[6] + t[8] + t[10] + t[12] + t[14];
+            tcab(t[0], C_r[0], -1.0, 1.0)
+            tcab(t[2], C_r[0], -1.0, 1.0)
+            tcab(t[4], C_r[0], -1.0, 1.0)
+            tcab(t[6], C_r[0], -1.0, 1.0)
+            tcab(t[8], C_r[0], -1.0, 1.0)
+            tcab(t[10], C_r[0], -1.0, 1.0)
+            tcab(t[12], C_r[0], -1.0, 1.0)
+            tcab(t[14], C_r[0], -1.0, 1.0)
             
-        //     // C_r_ref[1] = t[1] + t[3] + t[5] + t[7] + t[9] + t[11] + t[13] + t[15];
-        //     tcab(t[1], C_r[1], -1.0, 1.0)
-        //     tcab(t[3], C_r[1], -1.0, 1.0)
-        //     tcab(t[5], C_r[1], -1.0, 1.0)
-        //     tcab(t[7], C_r[1], -1.0, 1.0)
-        //     tcab(t[9], C_r[1], -1.0, 1.0)
-        //     tcab(t[11], C_r[1], -1.0, 1.0)
-        //     tcab(t[13], C_r[1], -1.0, 1.0)
-        //     tcab(t[15], C_r[1], -1.0, 1.0)
+            // C_r_ref[1] = t[1] + t[3] + t[5] + t[7] + t[9] + t[11] + t[13] + t[15];
+            tcab(t[1], C_r[1], -1.0, 1.0)
+            tcab(t[3], C_r[1], -1.0, 1.0)
+            tcab(t[5], C_r[1], -1.0, 1.0)
+            tcab(t[7], C_r[1], -1.0, 1.0)
+            tcab(t[9], C_r[1], -1.0, 1.0)
+            tcab(t[11], C_r[1], -1.0, 1.0)
+            tcab(t[13], C_r[1], -1.0, 1.0)
+            tcab(t[15], C_r[1], -1.0, 1.0)
 
-        //     checksum_8(tmp, C_r[0], C_r[1]);
-        //     checksum_8(tmp, C_c[0], C_c[1]);
+            checksum_8(tmp, C_r[0], C_r[1]);
+            checksum_8(tmp, C_c[0], C_c[1]);
 
-        //     float4_set_zero(C_r[0]);float4_set_zero(C_r[1]);
-        //     float4_set_zero(C_c[0]);float4_set_zero(C_c[1]);
-        // }
+
+            // 16 comparisons
+            int r = -1, c = -1;
+            comp_and_record(C_r[0], r, 0);
+            comp_and_record(C_r[1], r, 4);
+            comp_and_record(C_c[0], c, 0);
+            comp_and_record(C_c[1], c, 4);
+
+            if(r >= 0 and c >= 0){
+                if(r % 4 == 0){
+                    t[c * 2 + r / 4].x += tmp;
+                }
+                else if(r % 4 == 1){
+                    t[c * 2 + r / 4].y += tmp;
+                }
+                else if(r % 4 == 2){
+                    t[c * 2 + r / 4].z += tmp;
+                }
+                else if(r % 4 == 3){
+                    t[c * 2 + r / 4].w += tmp;
+                }
+            }
+
+            float4_set_zero(C_r[0]);float4_set_zero(C_r[1]);
+            float4_set_zero(C_c[0]);float4_set_zero(C_c[1]);
+
+
+        }
     }
     C1[0] = *(float4*)(C + i1 + j1 * N);
     C1[1] = *(float4*)(C + i1 + 4 + j1 * N);
