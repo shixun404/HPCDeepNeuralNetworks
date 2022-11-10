@@ -10,7 +10,8 @@
 int main(int argc, char **argv)    
 {      
     int r = -1, c = -1;
-    // printf("type: %s\n", typeof((c * 2 + r / 4)));
+    // printf() seems to be different between host code and device kernel code
+    // printf("type: %s\n", typeof((c * 2 + r / 4))); 
     int index = int(c * 2 + r / 4);
     printf("value: %f, %d\n", (c * 2 + r / 4), index);
      return 0;
