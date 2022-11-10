@@ -190,7 +190,7 @@ int main(int argc, char **argv)
         }
         else if (kernel_number == 7){
             cudaEventRecord(beg);
-            dim3 blockDim(256); 
+            dim3 blockDim(256);  
             dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
             for(int ii = 0; ii < num_tests; ++ii){
                 cudaDeviceSynchronize();

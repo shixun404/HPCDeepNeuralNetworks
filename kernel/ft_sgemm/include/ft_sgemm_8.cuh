@@ -146,7 +146,7 @@ __global__  __launch_bounds__(256) void ft_sgemm_8(int N, float *A, float *B, fl
             checksum_8(tmp, C_r[0], C_r[1]);
             checksum_8(tmp, C_c[0], C_c[1]);
 
-
+            printf("%d \n", tmp);
             // 16 comparisons
             int r = -1, c = -1;
             comp_and_record(C_r[0], r, 0);
