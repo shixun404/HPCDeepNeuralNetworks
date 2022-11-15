@@ -1,7 +1,7 @@
 #include <stdio.h>
 //#include "../kernels.cuh"
 #define m 8
-#define err_bound 3e-2
+#define err_bound 3e-1
 #define kk_max 1024
 #define tab(t, a, b)t.x += a.x * b;t.y += a.y * b;  t.z += a.z * b;t.w += a.w * b;  
 
@@ -49,7 +49,7 @@ __global__  __launch_bounds__(256) void ft_sgemm_8(int N, float *A, float *B, fl
     int i1 = (wid_b << 6) + (inter_warp_id_b << 3) + (bx<<7);
     int j1 = (wid_a << 5) + (inter_warp_id_a << 3) + (by<<7);
     float4 t[16], bb0[2],aa0[2],bb1[2], aa1[2], C1[16], pre_A, pre_B, C_c[2], C_r[2], C_c1[2], C_r1[2];
-    float A_r = 0, B_c = 0., tmp = 0; 
+    float A_r = 0, B_c = 0., checksum_sum = 0; 
     int idx = tx & 31, idy = tx >> 5;
     memset(t, 0, sizeof(t));
     memset(C_c, 0, sizeof(C_c));
@@ -117,12 +117,7 @@ __global__  __launch_bounds__(256) void ft_sgemm_8(int N, float *A, float *B, fl
         sa[(tx>>1) + ((((tx&1)<<2)+1)<<7) ]= pre_A.y;
         sa[(tx>>1) + ((((tx&1)<<2) + 2)<<7)]= pre_A.z; 
         sa[(tx>>1) + ((((tx&1)<<2) + 3)<<7)]= pre_A.w;
-        __syncthreads();
-        bb0[0] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3));
-        bb1[0] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3) + 4);
-        aa0[0] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3));
-        aa1[0] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3) + 4);
-        
+        __syncthreads();        
         if((k % 256) == 0){
             copy_float4(C_c1[0], C_c[0]);copy_float4(C_c1[1], C_c[1]);
             copy_float4(C_r1[0], C_r[0]);copy_float4(C_r1[1], C_r[1]);
@@ -162,77 +157,34 @@ __global__  __launch_bounds__(256) void ft_sgemm_8(int N, float *A, float *B, fl
             tcab(t[15], C_r1[1], -1.0, 1.0)
             
             
+            C_r1[1].x = 1;
+            C_c1[0].x = 1;
+            checksum_sum = 0;
+            checksum_8(checksum_sum, C_r1[0], C_r1[1]);
+            checksum_sum = 0;
+            checksum_8(checksum_sum, C_c1[0], C_c1[1]);
+
+            //\printf("%d \n", checksum_sum);
+            // 16 comparisons
+            bool verified = (checksum_sum - err_bound > 0) || (checksum_sum + err_bound < 0);
+            //if(verified){
+                            
             // print_float4(C_r1[0], C_r1[1], gridDim.x * 128);
             // print_float4(C_c1[0], C_c1[1], gridDim.x * 128);
-            // print_float4(C_r[0], C_r[1], gridDim.x * 128);
-            // print_float4(C_c[0], C_c[1], gridDim.x * 128);
-            
-            
-            tmp = 0;
-            checksum_8(tmp, C_r1[0], C_r1[1]);
-            tmp = 0;
-            checksum_8(tmp, C_c1[0], C_c1[1]);
-
-            // printf("%d \n", tmp);
-            // 16 comparisons
             int r = -1, c = -1;
             comp_and_record(C_r1[0], r, 0);
             comp_and_record(C_r1[1], r, 4);
             comp_and_record(C_c1[0], c, 0);
             comp_and_record(C_c1[1], c, 4);
-            //////////////////////////////////////////////////////
-            // if(r >= 0 and c >= 0){
-            //     printf("%d, %d \n", r, c);
-            //     if(r % 4 == 0){
-            //         t[c * 2 + r / 4].x += tmp;
-            //     }
-            //     else if(r % 4 == 1){
-            //         t[c * 2 + r / 4].y += tmp;
-            //     }
-            //     else if(r % 4 == 2){
-            //         t[c * 2 + r / 4].z += tmp;
-            //     }
-            //     else if(r % 4 == 3){
-            //         t[c * 2 + r / 4].w += tmp;
-            //     }
-            // }
-            //////////////////////////////////////////////////////
-            //////////////////////////////////////////////////////
-            // if(r % 4 == 0){
-            //     t[c * 2 + r / 4].x += tmp;
-            // }
-            // else if(r % 4 == 1){
-            //     t[c * 2 + r / 4].y += tmp;
-            // }
-            // else if(r % 4 == 2){
-            //     t[c * 2 + r / 4].z += tmp;
-            // }
-            // else if(r % 4 == 3){
-            //     t[c * 2 + r / 4].w += tmp;
-            // }
-            //////////////////////////////////////////////////////
-            // r = -1, c = -1;
-            // printf("%f\n", c * 2 + r / 4);
-            // t[c * 2 + r / 4].x += tmp;
-            // t[c * 2 + r / 4].y += tmp;
-            // t[c * 2 + r / 4].z += tmp;
-            // t[c * 2 + r / 4].w += tmp;
-            ////////////////////////////////////
-            int error_index = int(c * 2 + r / 4);
-            if (error_index != 0){
-                printf("%d\n", error_index);
-                printf("%f, %d\n", (c * 2 + r / 4), error_index);
-            }
-            // printf("type: %s\n", typeof((c * 2 + r / 4)));
-            t[error_index].x += tmp;
-            t[error_index].y += tmp;
-            t[error_index].z += tmp;
-            t[error_index].w += tmp;
             
-            //////////////////////////////////////////////////////
-            // float4_set_zero(C_r[0]);float4_set_zero(C_r[1]);
-            // float4_set_zero(C_c[0]);float4_set_zero(C_c[1]);
+            //t[c * 2 + r / 4].x += 0;
+            //}
+            *(((float*)(t + c * 2 + r / 4)) + r % 4) += 1;
         }
+                bb0[0] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3));
+        bb1[0] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3) + 4);
+        aa0[0] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3));
+        aa1[0] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3) + 4);
     }
     C1[0] = *(float4*)(C + i1 + j1 * N);
     C1[1] = *(float4*)(C + i1 + 4 + j1 * N);

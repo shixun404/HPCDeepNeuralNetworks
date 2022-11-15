@@ -10,11 +10,11 @@
 int main(int argc, char **argv)    
 {      
     int r = -1, c = -1;
-    // printf() seems to be different between host code and device kernel code
+    // printf() seems to be different between host code and device kernel code 
     // printf("type: %s\n", typeof((c * 2 + r / 4))); 
     int index = int(c * 2 + r / 4);
-    printf("value: %f, %d\n", (c * 2 + r / 4), index);
-     return 0;
+    // printf("value: %f, %d\n", (c * 2 + r / 4), index);
+    //  return 0;
     int kernel_number = atoi(argv[1]);
     int num_tests = 10;
     int start_size = 256;
@@ -104,7 +104,7 @@ int main(int argc, char **argv)
     if(true){
         dim3 blockDim(256);
         dim3 gridDim(CEIL_DIV(max_size, 128 ), CEIL_DIV(max_size, 128    ));
-        ft_sgemm_8 <<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
+        ft_sgemm_8 <<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta); 
     }
             cudaDeviceSynchronize();
     cudaMemcpy(C, dC, sizeof(float) * max_size * max_size, cudaMemcpyDeviceToHost);
@@ -112,7 +112,7 @@ int main(int argc, char **argv)
     cudaMemcpy(C_ref, dC_ref, sizeof(float) * max_size * max_size, cudaMemcpyDeviceToHost);
     cudaDeviceSynchronize();
 
-    if (!verify_matrix(C_ref, C, max_size)) {
+    if (!verify_matrix(C_ref, C, max_size)) { 
         printf("Failed to pass the correctness verification against NVIDIA cuBLAS. Exited.\n");
         exit(-3);
     }
@@ -211,7 +211,7 @@ int main(int argc, char **argv)
             cudaEventSynchronize(end);   
         }
         else if (kernel_number == 7){
-            cudaEventRecord(beg);
+            cudaEventRecord(beg);       
             dim3 blockDim(256);          
             dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
             for(int ii = 0; ii < num_tests; ++ii){
@@ -219,7 +219,7 @@ int main(int argc, char **argv)
                 ft_sgemm_7<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
                 cudaDeviceSynchronize();
             }
-            cudaEventRecord(end);       
+            cudaEventRecord(end);                     
             cudaEventSynchronize(beg);
             cudaEventSynchronize(end);   
         }
@@ -237,8 +237,9 @@ int main(int argc, char **argv)
             cudaEventSynchronize(end);   
         }
             
-            cudaEventElapsedTime(&elapsed, beg, end);
+            cudaEventElapsedTime(&elapsed, beg, end);                     
             
+            // double gflops = double(2 * num_tests * double(max_size) * double(max_size) * double(max_size) + num_tests * 4 * double(max_size) * double(max_size) * (1.0 + 1.0 / 256.0)) / (1e9);
             double gflops = double(2 * num_tests * double(max_size) * double(max_size) * double(max_size)) / (1e9);
             double perf = gflops / (elapsed / 1e3);
             printf("%8.2f,", perf);
