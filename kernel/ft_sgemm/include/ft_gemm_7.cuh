@@ -139,7 +139,7 @@ __global__  __launch_bounds__(256) void ft_sgemm_7(int N, float *A, float *B, fl
         }
         __syncthreads();
     }
-    checksum_8(C_c_ref[0].x, t[0], t[1])
+    checksum_8(C_c_ref[0].x, t[0], t[1]);
     checksum_8(C_c_ref[0].y, t[2], t[3])
     checksum_8(C_c_ref[0].z, t[4], t[5])
     checksum_8(C_c_ref[0].w, t[6], t[7])
