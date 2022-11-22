@@ -46,3 +46,7 @@ $$A \cdot \begin{bmatrix}B&Be_1&Be_2\\ \end{bmatrix} = \begin{bmatrix}AB&ABe_1&A
 ![alt text](../../fig/ABFT_GEMM/abft_sgemm_3vs6.png)
 * Step 4: a) Kernel level vs. b) threadblock level vs. c) warp level vs. d) thread level.
 ![alt text](../../fig/ABFT_GEMM/11082022_1.png)
+* Step 5: Add correction encounters register spills.
+To do list: 
+  - Profiling with ptxas-options=-v,
+  - Performance modelling. 
