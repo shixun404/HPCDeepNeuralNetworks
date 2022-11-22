@@ -223,7 +223,7 @@ int main(int argc, char **argv)
         //     cudaEventSynchronize(beg);
         //     cudaEventSynchronize(end);                
         // }
-        if (kernel_number == 8){ 
+        if (kernel_number == 8){   
             cudaEventRecord(beg);
             dim3 blockDim(256);
             dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
@@ -254,7 +254,7 @@ int main(int argc, char **argv)
             dim3 blockDim(256);
             dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
             for(int ii = 0; ii < num_tests; ++ii){      
-                cudaDeviceSynchronize();    
+                cudaDeviceSynchronize();        
                 ft_sgemm_10<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
                 cudaDeviceSynchronize();
             }

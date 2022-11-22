@@ -41,6 +41,7 @@
 __global__  __launch_bounds__(256) void ft_sgemm_10(int N, float *A, float *B, float *C, float alpha, float beta){
     __shared__ float shared_A[2][1024]; // blockDim * 2 for sublocks of A and B
     __shared__ float shared_B[2][1024];
+    // double shared buffer to store checksum
     __shared__ float shared_A_r[2][128];
     __shared__ float shared_B_c[2][128];
     float* sa, *sb;
@@ -127,8 +128,8 @@ __global__  __launch_bounds__(256) void ft_sgemm_10(int N, float *A, float *B, f
             int prefetch_next = ((kk + 1)&1);
             int prefetch = ((kk)&1);
             int kk_ = ((kk + 1)&7);
-            // checksum_B_c[prefetch_next] = *(sBc + (wid_b << 3) + inter_warp_id_b + (kk_<<4));
-            // checksum_A_r[prefetch_next] = *(sAr + (wid_a << 4) + inter_warp_id_a + (kk_<<4));
+            checksum_B_c[prefetch_next] = *(sBc + (wid_b << 3) + inter_warp_id_b + (kk_<<4));
+            checksum_A_r[prefetch_next] = *(sAr + (wid_a << 4) + inter_warp_id_a + (kk_<<4));
             bb0[prefetch_next] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3) + (kk_<<7));
             bb1[prefetch_next] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3) + 4 + (kk_<<7));
             aa0[prefetch_next] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3) + (kk_<<7));
@@ -150,25 +151,26 @@ __global__  __launch_bounds__(256) void ft_sgemm_10(int N, float *A, float *B, f
             tab(t[13], bb1[prefetch], aa1[prefetch].z);
             tab(t[14], bb0[prefetch], aa1[prefetch].w);
             tab(t[15], bb1[prefetch], aa1[prefetch].w);
-            A_r = 0, B_c = 0;
-            checksum_8(A_r, aa0[prefetch], aa1[prefetch]);
-            checksum_8(B_c, bb0[prefetch], bb1[prefetch]);
-            saxpy(C_r[0], C_r[1],A_r, bb0[prefetch], bb1[prefetch]);
-            saxpy(C_c[0], C_c[1], B_c, aa0[prefetch], aa1[prefetch]);
+            // A_r = 0, B_c = 0;
+            // checksum_8(A_r, aa0[prefetch], aa1[prefetch]);
+            // checksum_8(B_c, bb0[prefetch], bb1[prefetch]);
+            // saxpy(C_r[0], C_r[1],A_r, bb0[prefetch], bb1[prefetch]);
+            // saxpy(C_c[0], C_c[1], B_c, aa0[prefetch], aa1[prefetch]);
             // saxpy(C_r[0], C_r[1],checksum_B_c[prefetch], bb0[prefetch], bb1[prefetch]);
             // saxpy(C_c[0], C_c[1], checksum_A_r[prefetch], aa0[prefetch], aa1[prefetch]);
         }
-        // A_r = pre_A.x + pre_A.y + pre_A.z + pre_A.w;
-        // B_c = pre_B.x + pre_B.y + pre_B.z + pre_B.w;
-        // A_r += __shfl_down_sync(0xffffffff, A_r, 1, 32);
-        // B_c += __shfl_down_sync(0xffffffff, B_c, 1, 32);
-        // sAr = (float*)shared_A_r + shared_checksum_offset;
-        // sBc = (float*)shared_B_c + shared_checksum_offset;
-        // if(((tx&31) & 1) == 0){
-        //     //shared_checksum_offset
-        //     sAr[int(tx / 2)] = A_r;
-        //     sBc[int(tx / 2)] = B_c;
-        // }
+        A_r = pre_A.x + pre_A.y + pre_A.z + pre_A.w;
+        B_c = pre_B.x + pre_B.y + pre_B.z + pre_B.w;
+        A_r += __shfl_down_sync(0xffffffff, A_r, 1, 32);
+        B_c += __shfl_down_sync(0xffffffff, B_c, 1, 32);
+        sAr = (float*)shared_A_r + shared_checksum_offset;
+        sBc = (float*)shared_B_c + shared_checksum_offset;
+        // Attention! This branch cause warp divergence.
+        if(((tx&31) & 1) == 0){
+            //shared_checksum_offset
+            sAr[int(tx / 2)] = A_r;
+            sBc[int(tx / 2)] = B_c;
+        }
         sb = (float*)shared_B + shared_offset;
         sa = (float*)shared_A + shared_offset;
         ((float4*)sb)[tx] = pre_B;
