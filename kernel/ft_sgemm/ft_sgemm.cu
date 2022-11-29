@@ -104,7 +104,7 @@ int main(int argc, char **argv)
     if(true){       
         dim3 blockDim(256);
         dim3 gridDim(CEIL_DIV(max_size, 128 ), CEIL_DIV(max_size, 128    ));
-        ft_sgemm_8 <<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta); 
+        ft_sgemm_10 <<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta); 
     }
             cudaDeviceSynchronize();
     cudaMemcpy(C, dC, sizeof(float) * max_size * max_size, cudaMemcpyDeviceToHost);
@@ -118,32 +118,33 @@ int main(int argc, char **argv)
     // }   
     // ft_sgemm_1(1, max_size, handle, dA, dB, dC, dE, dRes, dcheck_C_row, dcheck_C_col, dcheck_A_col_mul_B, dcheck_B_row_mul_A, dcheck_A_col, dcheck_B_row,  alpha, beta, negative_1);
     // verify
-    cublasSaxpy(handle, max_size, &negative_1, dcheck_A_col_mul_B, 1, dcheck_C_col, 1);
-    cublasSdot(handle, max_size, dcheck_C_col, 1, dE, 1, dRes);
-    cudaMemcpy(Res, dRes, sizeof(float), cudaMemcpyDeviceToHost);
-    printf("delta col sum %f\n", Res);             
-    cudaDeviceSynchronize();
-    cublasSaxpy(handle, max_size, &negative_1, dcheck_B_row_mul_A, 1, dcheck_C_row, 1);
-    cublasSdot(handle, max_size, dcheck_C_row, 1, dE, 1, dRes);
-    cudaMemcpy(Res, dRes, sizeof(float), cudaMemcpyDeviceToHost);
-    printf("delta row sum %f\n", Res);
+    // cublasSaxpy(handle, max_size, &negative_1, dcheck_A_col_mul_B, 1, dcheck_C_col, 1);
+    // cublasSdot(handle, max_size, dcheck_C_col, 1, dE, 1, dRes);
+    // cudaMemcpy(Res, dRes, sizeof(float), cudaMemcpyDeviceToHost);
+    // printf("delta col sum %f\n", Res);             
+    // cudaDeviceSynchronize();
+    // cublasSaxpy(handle, max_size, &negative_1, dcheck_B_row_mul_A, 1, dcheck_C_row, 1);
+    // cublasSdot(handle, max_size, dcheck_C_row, 1, dE, 1, dRes);
+    // cudaMemcpy(Res, dRes, sizeof(float), cudaMemcpyDeviceToHost);
+    // printf("delta row sum %f\n", Res);
 
     for(int max_size = start_size; max_size <= end_size; max_size += gap_size){
         cudaEvent_t beg, end;
         cudaEventCreate(&beg);
         cudaEventCreate(&end); 
         float elapsed = 0;       
-        // if (kernel_number == 0){
-        //     cudaEventRecord(beg);
-        //     for(int ii = 0; ii < num_tests; ++ii){
-        //         cudaDeviceSynchronize();    
-        //         cublasSgemm(handle, CUBLAS_OP_N,CUBLAS_OP_N,max_size, max_size,  max_size, &alpha, dA, max_size, dB, max_size, &beta, dC, max_size);
-        //         cudaDeviceSynchronize();
-        //     }
-        //     cudaEventRecord(end);
-        //     cudaEventSynchronize(beg);
-        //     cudaEventSynchronize(end);
-        // }   
+        if (kernel_number == 0){
+            cudaEventRecord(beg);
+            //printf("I am here!\n");
+            for(int ii = 0; ii < num_tests; ++ii){
+                cudaDeviceSynchronize();    
+                cublasSgemm(handle, CUBLAS_OP_N,CUBLAS_OP_N,max_size, max_size,  max_size, &alpha, dA, max_size, dB, max_size, &beta, dC, max_size);
+                cudaDeviceSynchronize();
+            }
+            cudaEventRecord(end);
+            cudaEventSynchronize(beg);
+            cudaEventSynchronize(end);
+        }   
         // else if (kernel_number == 1){
         //     cudaEventRecord(beg);
         //     ft_sgemm_1(num_tests, max_size, handle, dA, dB, dC, dE, dRes, dcheck_C_row, dcheck_C_col, dcheck_A_col_mul_B, dcheck_B_row_mul_A, dcheck_A_col, dcheck_B_row,  alpha, beta, negative_1);
@@ -223,7 +224,7 @@ int main(int argc, char **argv)
         //     cudaEventSynchronize(beg);
         //     cudaEventSynchronize(end);                
         // }
-        if (kernel_number == 8){   
+        else if (kernel_number == 8){                                                                              
             cudaEventRecord(beg);
             dim3 blockDim(256);
             dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));

@@ -173,7 +173,7 @@ __global__  __launch_bounds__(256) void ft_sgemm_7(int N, float *A, float *B, fl
     int shared_row_idx = (((wid_b << 3) + inter_warp_id_b) << 7) + (((wid_a << 2) + inter_warp_id_a) << 3);
     
     // reduction
-    __syncthreads();
+    __syncthreads(); 
     warp_shfl_down(C_c[0], 1);
     warp_shfl_down(C_c[1], 1);
     warp_shfl_down(C_c_ref[0], 1);

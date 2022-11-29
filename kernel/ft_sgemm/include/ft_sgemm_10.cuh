@@ -42,8 +42,8 @@ __global__  __launch_bounds__(256) void ft_sgemm_10(int N, float *A, float *B, f
     __shared__ float shared_A[2][1024]; // blockDim * 2 for sublocks of A and B
     __shared__ float shared_B[2][1024];
     // double shared buffer to store checksum
-    __shared__ float shared_A_r[2][128];
-    __shared__ float shared_B_c[2][128];
+    __shared__ float shared_A_r[2][32];
+    __shared__ float shared_B_c[2][16];
     float* sa, *sb;
     float* sAr, *sBc;
     sAr = (float*)shared_A_r;
@@ -51,6 +51,7 @@ __global__  __launch_bounds__(256) void ft_sgemm_10(int N, float *A, float *B, f
     sa = (float*)shared_A;
     sb = (float*)shared_B;
     int tx = threadIdx.x;
+    float tmp;
     int bx = blockIdx.x, by = blockIdx.y;
     int wid = (tx >> 5);
     int wid_b = (wid >> 2), wid_a = (wid & 3);
@@ -58,11 +59,13 @@ __global__  __launch_bounds__(256) void ft_sgemm_10(int N, float *A, float *B, f
     int inter_warp_id_a = ((tx&31) & 3);
     int i1 = (wid_b << 6) + (inter_warp_id_b << 3) + (bx<<7);
     int j1 = (wid_a << 5) + (inter_warp_id_a << 3) + (by<<7);
-    float4 t[16], bb0[2],aa0[2],bb1[2], aa1[2], C1[16], pre_A, pre_B, C_c[2], C_r[2], C_c1[2], C_r1[2];
+    int A_r_checksum_id = ((tx&31) >> 2);
+    float4 t[16], bb0[2],aa0[4],bb1[2], C1[16], pre_A, pre_B, pre_A_sum, C_c[2], C_r[2], C_c1[2], C_r1[2];
     float checksum_B_c[2], checksum_A_r[2];
-    float A_r = 0, B_c = 0., checksum_sum = 0; 
+    float A_r[2] = {0,0}, B_c = 0, checksum_sum = 0; 
     int idx = tx & 31, idy = tx >> 5;
     int r = -1, c = -1;
+    int tmp_1 =  (((tx & 31) >> 2) & 1 );
     memset(t, 0, sizeof(t));
     memset(C_c, 0, sizeof(C_c));
     memset(C_r, 0, sizeof(C_r));
@@ -83,13 +86,13 @@ __global__  __launch_bounds__(256) void ft_sgemm_10(int N, float *A, float *B, f
     bb0[0] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3));
     bb1[0] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3) + 4);
     aa0[0] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3));
-    aa1[0] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3) + 4);
+    aa0[1] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3) + 4);
 
     for(int k = 0; k < N; k += 8){
         B += (N<<3);
         A += 8; 
         int shared_offset = ((((k>>3) + 1)&1)<<10);
-        int shared_checksum_offset = ((((k>>3) + 1)&1)<<7);
+        int shared_checksum_offset = ((((k>>3) + 1)&1)<<4);
         pre_B = *(float4*)B;
         pre_A = *(float4*)A;
         // checksum_b1[0].x += *(sb + (wid_b << 6) + (idx << 1) + (0<<7));
@@ -128,48 +131,125 @@ __global__  __launch_bounds__(256) void ft_sgemm_10(int N, float *A, float *B, f
             int prefetch_next = ((kk + 1)&1);
             int prefetch = ((kk)&1);
             int kk_ = ((kk + 1)&7);
-            checksum_B_c[prefetch_next] = *(sBc + (wid_b << 3) + inter_warp_id_b + (kk_<<4));
-            checksum_A_r[prefetch_next] = *(sAr + (wid_a << 4) + inter_warp_id_a + (kk_<<4));
+
+            
+            
+            // checksum_A_r[prefetch_next] = *(sAr + (wid_a << 4) + inter_warp_id_a + (kk_<<4));
+            // checksum_A_r[prefetch_next] = 
             bb0[prefetch_next] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3) + (kk_<<7));
             bb1[prefetch_next] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3) + 4 + (kk_<<7));
-            aa0[prefetch_next] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3) + (kk_<<7));
-            aa1[prefetch_next] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3) + 4 + (kk_<<7));
-            tab(t[0], bb0[prefetch], aa0[prefetch].x);
-            tab(t[1], bb1[prefetch], aa0[prefetch].x);
-            tab(t[2], bb0[prefetch], aa0[prefetch].y);
-            tab(t[3], bb1[prefetch], aa0[prefetch].y);
-            tab(t[4], bb0[prefetch], aa0[prefetch].z);
-            tab(t[5], bb1[prefetch], aa0[prefetch].z);
-            tab(t[6], bb0[prefetch], aa0[prefetch].w);
-            tab(t[7], bb1[prefetch], aa0[prefetch].w);
+            aa0[prefetch_next * 2 + 0] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3) + (kk_<<7));
+            aa0[prefetch_next * 2 + 1] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3) + 4 + (kk_<<7));
+            checksum_B_c[prefetch_next] = *(sBc + wid_b + (kk_<<1));
+            // A_r[prefetch_next] = *(sa + (wid_a << 5) + (inter_warp_id_a << 3) + A_r_checksum_id + (kk_<<7));
+            // A_r[prefetch_next] = ((float*)(aa0 + prefetch_next * 2))[A_r_checksum_id];
+            // A_r[prefetch_next] = ((float*)(aa0 + prefetch_next * 2))[A_r_checksum_id];
+            // A_r[prefetch_next] = ((float*)(aa0 + prefetch_next * 2))[0];
+            // A_r[prefetch_next] = aa0[prefetch_next * 2 + 0].x;
+            // checksum_8(A_r[prefetch_next], aa0[prefetch_next * 2 + 0], aa0[prefetch_next * 2 + 1]);
+            checksum_A_r[prefetch_next] = *(sAr + wid_a + (kk_<<2));
+            // A_r[prefetch_next] += aa0[prefetch_next * 2 + tmp_1].x;
+            // A_r[prefetch_next] += aa0[prefetch_next * 2 + tmp_1].y;
+            // A_r[prefetch_next] += aa0[prefetch_next * 2 + tmp_1].z;
+            // A_r[prefetch_next] += aa0[prefetch_next * 2 + tmp_1].w;
+            // // checksum_8(A_r, aa0[prefetch][0], aa0[prefetch][1]);
+            // A_r[prefetch_next] += __shfl_xor_sync(-1, A_r[prefetch_next], 1);
+            // A_r[prefetch_next] += __shfl_xor_sync(-1, A_r[prefetch_next], 2);
+            // A_r[prefetch_next] += __shfl_xor_sync(-1, A_r[prefetch_next], 4);
+            // A_r[prefetch_next] += __shfl_xor_sync(-1, A_r[prefetch_next], 8);
+            // A_r[prefetch_next] += __shfl_xor_sync(-1, A_r[prefetch_next], 16);
+    
+            
+            
+            tab(t[0], bb0[prefetch], aa0[prefetch * 2 + 0].x);
+            tab(t[1], bb1[prefetch], aa0[prefetch * 2 + 0].x);
+            tab(t[2], bb0[prefetch], aa0[prefetch * 2 + 0].y);  
+            tab(t[3], bb1[prefetch], aa0[prefetch * 2 + 0].y);
+            tab(t[4], bb0[prefetch], aa0[prefetch * 2 + 0].z);
+            tab(t[5], bb1[prefetch], aa0[prefetch * 2 + 0].z);
+            tab(t[6], bb0[prefetch], aa0[prefetch * 2 + 0].w);
+            tab(t[7], bb1[prefetch], aa0[prefetch * 2 + 0].w);
 
-            tab(t[8], bb0[prefetch], aa1[prefetch].x);
-            tab(t[9], bb1[prefetch], aa1[prefetch].x);
-            tab(t[10], bb0[prefetch], aa1[prefetch].y);   
-            tab(t[11], bb1[prefetch], aa1[prefetch].y);
-            tab(t[12], bb0[prefetch], aa1[prefetch].z);
-            tab(t[13], bb1[prefetch], aa1[prefetch].z);
-            tab(t[14], bb0[prefetch], aa1[prefetch].w);
-            tab(t[15], bb1[prefetch], aa1[prefetch].w);
-            // A_r = 0, B_c = 0;
-            // checksum_8(A_r, aa0[prefetch], aa1[prefetch]);
+            tab(t[8], bb0[prefetch], aa0[prefetch * 2 + 1].x);
+            tab(t[9], bb1[prefetch], aa0[prefetch * 2 + 1].x);
+            tab(t[10], bb0[prefetch], aa0[prefetch * 2 + 1].y);   
+            tab(t[11], bb1[prefetch], aa0[prefetch * 2 + 1].y);
+            tab(t[12], bb0[prefetch], aa0[prefetch * 2 + 1].z);
+            tab(t[13], bb1[prefetch], aa0[prefetch * 2 + 1].z);
+            tab(t[14], bb0[prefetch], aa0[prefetch * 2 + 1].w);
+            tab(t[15], bb1[prefetch], aa0[prefetch * 2 + 1].w);
             // checksum_8(B_c, bb0[prefetch], bb1[prefetch]);
             // saxpy(C_r[0], C_r[1],A_r, bb0[prefetch], bb1[prefetch]);
-            // saxpy(C_c[0], C_c[1], B_c, aa0[prefetch], aa1[prefetch]);
+            // saxpy(C_c[0], C_c[1], B_c, aa0[prefetch], aa1[prefetc h]);
+
+
+            C_c[0].x += checksum_B_c[prefetch] * bb0[prefetch].x;
+            C_c[0].y += checksum_B_c[prefetch] * bb0[prefetch].y;
+            C_r[0].x += checksum_A_r[prefetch] * aa0[prefetch * 2 + 0].x;
+            // C_r[0].x += A_r[prefetch] * aa0[prefetch * 2 + 0].x;
             // saxpy(C_r[0], C_r[1],checksum_B_c[prefetch], bb0[prefetch], bb1[prefetch]);
             // saxpy(C_c[0], C_c[1], checksum_A_r[prefetch], aa0[prefetch], aa1[prefetch]);
+            
         }
-        A_r = pre_A.x + pre_A.y + pre_A.z + pre_A.w;
+        // A_r = pre_A.x + pre_A.y + pre_A.z + pre_A.w;
         B_c = pre_B.x + pre_B.y + pre_B.z + pre_B.w;
-        A_r += __shfl_down_sync(0xffffffff, A_r, 1, 32);
+        // A_r += __shfl_down_sync(0xffffffff, A_r, 1, 32);
         B_c += __shfl_down_sync(0xffffffff, B_c, 1, 32);
-        sAr = (float*)shared_A_r + shared_checksum_offset;
+        B_c += __shfl_down_sync(0xffffffff, B_c, 2, 32);
+        B_c += __shfl_down_sync(0xffffffff, B_c, 4, 32);
+        B_c += __shfl_down_sync(0xffffffff, B_c, 8, 32);
+        // pre_A_sum = pre_A;
+        // // pre_A += __shfl_down_sync(0xffffffff, pre_A, 2, 32);
+        // pre_A_sum.x += __shfl_down_sync(0xffffffff, pre_A_sum.x, 2, 32);
+        // pre_A_sum.x += __shfl_down_sync(0xffffffff, pre_A_sum.x, 4, 32);
+        // pre_A_sum.x += __shfl_down_sync(0xffffffff, pre_A_sum.x, 8, 32);
+        // pre_A_sum.x += __shfl_down_sync(0xffffffff, pre_A_sum.x, 16, 32);
+
+        // pre_A_sum.y += __shfl_down_sync(0xffffffff, pre_A_sum.y, 2, 32);
+        // pre_A_sum.y += __shfl_down_sync(0xffffffff, pre_A_sum.y, 4, 32);
+        // pre_A_sum.y += __shfl_down_sync(0xffffffff, pre_A_sum.y, 8, 32);
+        // pre_A_sum.y += __shfl_down_sync(0xffffffff, pre_A_sum.y, 16, 32);
+
+        // pre_A_sum.z += __shfl_down_sync(0xffffffff, pre_A_sum.z, 2, 32);
+        // pre_A_sum.z += __shfl_down_sync(0xffffffff, pre_A_sum.z, 4, 32);
+        // pre_A_sum.z += __shfl_down_sync(0xffffffff, pre_A_sum.z, 8, 32);
+        // pre_A_sum.z += __shfl_down_sync(0xffffffff, pre_A_sum.z, 16, 32);
+
+        // pre_A_sum.w += __shfl_down_sync(0xffffffff, pre_A_sum.w, 2, 32);
+        // pre_A_sum.w += __shfl_down_sync(0xffffffff, pre_A_sum.w, 4, 32);
+        // pre_A_sum.w += __shfl_down_sync(0xffffffff, pre_A_sum.w, 8, 32);
+        // pre_A_sum.w += __shfl_down_sync(0xffffffff, pre_A_sum.w, 16, 32);
+
+        // pre_A.x += __shfl_down_sync(0xffffffff, pre_A.x, 2, 32);
+        // pre_A.y += __shfl_down_sync(0xffffffff, pre_A.y, 2, 32);
+        // pre_A.z += __shfl_down_sync(0xffffffff, pre_A.z, 2, 32);
+        // pre_A.w += __shfl_down_sync(0xffffffff, pre_A.w, 2, 32);
+
+        
+        // pre_A.x += __shfl_down_sync(0xffffffff, pre_A.x, 4, 32);
+        // pre_A.y += __shfl_down_sync(0xffffffff, pre_A.y, 4, 32);
+        // pre_A.z += __shfl_down_sync(0xffffffff, pre_A.z, 4, 32);
+        // pre_A.w += __shfl_down_sync(0xffffffff, pre_A.w, 4, 32);
+
+
+        // pre_A.x += __shfl_down_sync(0xffffffff, pre_A.x, 8, 32);
+        // pre_A.y += __shfl_down_sync(0xffffffff, pre_A.y, 8, 32);
+        // pre_A.z += __shfl_down_sync(0xffffffff, pre_A.z, 8, 32);
+        // pre_A.w += __shfl_down_sync(0xffffffff, pre_A.w, 8, 32);
+
+        // pre_A.x += __shfl_down_sync(0xffffffff, pre_A.x, 16, 32);                
+        // pre_A.y += __shfl_down_sync(0xffffffff, pre_A.y, 16, 32);
+        // pre_A.z += __shfl_down_sync(0xffffffff, pre_A.z, 16, 32);
+        // pre_A.w += __shfl_down_sync(0xffffffff, pre_A.w, 16, 32);
+        
+        
+        // sAr = (float*)shared_A_r + shared_checksum_offset;
         sBc = (float*)shared_B_c + shared_checksum_offset;
         // Attention! This branch cause warp divergence.
-        if(((tx&31) & 1) == 0){
+        if(((tx&31) & 15) == 0){
             //shared_checksum_offset
-            sAr[int(tx / 2)] = A_r;
-            sBc[int(tx / 2)] = B_c;
+            // sAr[int(tx / 2)] = A_r;
+            sBc[int(tx / 16)] = B_c;
         }
         sb = (float*)shared_B + shared_offset;
         sa = (float*)shared_A + shared_offset;
@@ -178,8 +258,19 @@ __global__  __launch_bounds__(256) void ft_sgemm_10(int N, float *A, float *B, f
         sa[(tx>>1) + ((((tx&1)<<2)+1)<<7) ]= pre_A.y;
         sa[(tx>>1) + ((((tx&1)<<2) + 2)<<7)]= pre_A.z; 
         sa[(tx>>1) + ((((tx&1)<<2) + 3)<<7)]= pre_A.w;
-        
         __syncthreads();        
+        pre_A = ((float4*)sa)[tx];
+        A_r[0] = pre_A.x + pre_A.y + pre_A.z + pre_A.w;
+        A_r[0] += __shfl_down_sync(0xffffffff, A_r[0], 1, 32);
+        A_r[0] += __shfl_down_sync(0xffffffff, A_r[0], 2, 32);
+        A_r[0] += __shfl_down_sync(0xffffffff, A_r[0], 4, 32);
+
+        sAr = (float*)shared_A_r + shared_checksum_offset * 2;
+        // Attention! This branch cause warp divergence.
+        if(((tx&31) & 7) == 0){
+            //shared_checksum_offset
+            sAr[int(tx / 8)] = A_r[0];
+        }
         if((k % 256) == 0){
             // // t[0].x = C_c[0].x;
             // // t[0].y = C_r[0].x;
@@ -223,9 +314,9 @@ __global__  __launch_bounds__(256) void ft_sgemm_10(int N, float *A, float *B, f
             
             // checksum_b1[1].x = 1.0; 
             // checksum_b2[0].x = 1.0;
-            C_c[1].x = 1.0;
-            C_r[0].x = 1.0;
-            checksum_sum = checksum_A_r[0] + checksum_A_r[1] + checksum_B_c[0] + checksum_B_c[1] + A_r + B_c;
+            C_c[1].x += 1.0;
+            C_r[0].x += 1.0;
+            checksum_sum = checksum_A_r[0] + checksum_A_r[1] + checksum_B_c[0] + checksum_B_c[1] + A_r[0] + A_r[1];
             //checksum_8(checksum_sum, checksum_a1[0], checksum_a1[1]);
             // checksum_8(checksum_sum, checksum_b1[0], checksum_b1[1]);
             // checksum_8(checksum_sum, checksum_b2[0], checksum_b2[1]);
@@ -261,7 +352,7 @@ __global__  __launch_bounds__(256) void ft_sgemm_10(int N, float *A, float *B, f
         bb0[0] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3));
         bb1[0] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3) + 4);
         aa0[0] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3));
-        aa1[0] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3) + 4);
+        aa0[1] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3) + 4);
     }
     C1[0] = *(float4*)(C + i1 + j1 * N);
     C1[1] = *(float4*)(C + i1 + 4 + j1 * N);
