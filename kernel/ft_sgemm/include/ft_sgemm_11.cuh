@@ -175,12 +175,6 @@ __global__  __launch_bounds__(256) void ft_sgemm_10(int N, float *A, float *B, f
         B_c += __shfl_xor_sync(0xffffffff, B_c, 4, 32);
         B_c += __shfl_xor_sync(0xffffffff, B_c, 8, 32);
         B_c += __shfl_xor_sync(0xffffffff, B_c, 16, 32);
-        saxpy(B_c, pre_B, block_level_B_c);
-        // sBc = (float*)shared_B_c + shared_checksum_offset;
-        *(((float4*)sBc) + tx) = block_level_B_c;
-        
-        int i = 0;
-        while(i > 0)
         //Attention! This branch cause warp divergence.
         // if(((tx&31) & 15) == 0){
         //     //shared_checksum_offset
@@ -200,16 +194,12 @@ __global__  __launch_bounds__(256) void ft_sgemm_10(int N, float *A, float *B, f
 
         // sAr = (float*)shared_A_r + shared_checksum_offset * 2;
         // sAr = (float*)shared_A_r + shared_checksum_offset * 2;
-        saxpy(A_r[0], pre_A, block_level_A_r);
-        // sBc = (float*)shared_B_c + shared_checksum_offset;
-        *(((float4*)sAr) + tx) = block_level_A_r;
+        saxpy(B_c, pre_A, block_level_A_r);
         
-        // Attention! This branch cause warp divergence.
-        // if(((tx&31) & 7) == 0){
-        //     //shared_checksum_offset
-        //     sAr[int(tx / 8)] = A_r[0];
-        //     // sAr[tx] = A_r[0];
-        // }
+        *(((float4*)sAr) + tx) = block_level_A_r;
+        saxpy(A_r[0], pre_B, block_level_B_c);
+        
+        *(((float4*)sBc) + tx) = block_level_B_c;
         __syncthreads();
         if((k % 256) == 0){
             negative_checksum_8(C_c1[0].x, t[0], t[1])
