@@ -7,8 +7,7 @@
 
 #define checksum_8(t, a, b) t += a.x; t += a.y; t += a.z; t += a.w; t += b.x; t += b.y; t += b.z; t += b.w;
 #define negative_checksum_8(t, a, b) t -= a.x; t -= a.y; t -= a.z; t -= a.w; t -= b.x; t -= b.y; t -= b.z; t -= b.w;
-#define saxpy(t1,t2, a, b1,b2) t1.x += a * b1.x; t1.y += a * b1.y; t1.z += a * b1.z; t1.w += a * b1.w; \
-                               t2.x += a * b2.x; t2.y += a * b2.y; t2.z += a * b2.z; t2.w += a * b2.w;
+#define saxpy(alpha, a,b) b.x += alpha * a.x; b.y += alpha * a.y; b.z += alpha * a.z; b.w += alpha * a.w;
 
 // #define tcab(t, c, alpha, beta) c = alpha * t + beta * c;
 #define tcab(t, c, alpha, beta) \
@@ -42,16 +41,21 @@ __global__  __launch_bounds__(256) void ft_sgemm_10(int N, float *A, float *B, f
     __shared__ float shared_A[2][1024]; // blockDim * 2 for sublocks of A and B
     __shared__ float shared_B[2][1024];
     // double shared buffer to store checksum
-    __shared__ float shared_A_r[2][32];
-    __shared__ float shared_B_c[2][16];
+    // __shared__ float shared_A_r[2][32];
+    __shared__ float shared_A_r[1024];
+    __shared__ float shared_B_c[1024];
+    // __shared__ float shared_A_r[2][256];
+    // __shared__ float shared_B_c[2][256];
     float* sa, *sb;
     float* sAr, *sBc;
     sAr = (float*)shared_A_r;
     sBc = (float*)shared_B_c;
+
     sa = (float*)shared_A;
     sb = (float*)shared_B;
     int tx = threadIdx.x;
-    float aa0, bb0, bb1;
+    float2 bb0[2];
+    float aa0[2];
     float tmp;
     int bx = blockIdx.x, by = blockIdx.y;
     int wid = (tx >> 5);
@@ -61,7 +65,8 @@ __global__  __launch_bounds__(256) void ft_sgemm_10(int N, float *A, float *B, f
     int i1 = (wid_b << 6) + (inter_warp_id_b << 3) + (bx<<7);
     int j1 = (wid_a << 5) + (inter_warp_id_a << 3) + (by<<7);
     int A_r_checksum_id = ((tx&31) >> 2);
-    float4 t[16], bb[4],aa[4], C1[16], pre_A, pre_B, pre_A_sum; //C_c[2], C_r[2], C_c1[2], C_r1[2];
+    float4 t[16], bb[4],aa[4], C1[16], pre_A, pre_B, pre_A_sum, C_c1[2], C_r1[2];
+    float4 block_level_B_c, block_level_A_r;
     float C_r[2],C_c; 
     float checksum_B_c[2], checksum_A_r[2];
     float A_r[2] = {0,0}, B_c = 0, checksum_sum = 0; 
@@ -108,11 +113,20 @@ __global__  __launch_bounds__(256) void ft_sgemm_10(int N, float *A, float *B, f
             bb[prefetch_next * 2 + 1] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3) + 4 + (kk_<<7));
             aa[prefetch_next * 2 + 0] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3) + (kk_<<7));
             aa[prefetch_next * 2 + 1] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3) + 4 + (kk_<<7));
-            bb0 = *(sb + (wid_b << 6) + (tx&31) * 2 + (kk_<<7));
-            bb1 = *(sb + (wid_b << 6) + (tx&31) * 2 + 1 + (kk_<<7));
-            aa0 = *(sa + (wid_a << 5) + (tx&31) + (kk_<<7));
-            checksum_B_c[prefetch_next] = *(sBc + wid_b + (kk_<<1));
-            checksum_A_r[prefetch_next] = *(sAr + wid_a + (kk_<<2));
+            
+            // bb0[prefetch_next] = *((float2*)(sb + (wid_b << 6) + (tx&31) * 2 + (kk_<<7))); 
+            // // bb1[prefetch_next] = *(sb + (wid_b << 6) + (tx&31) * 2 + 1 + (kk_<<7));
+            // aa0[prefetch_next] = *(sa + (wid_a << 5) + (tx&31) + (kk_<<7));
+            if(tx < 128){
+                C_c += *(sBc + tx + (kk << 7));
+            }
+            else{
+                C_r[0] += *(sAr + (tx & 127) + (kk << 7));
+            }
+            // checksum_B_c[prefetch_next] = *(sBc + wid_b * 16 + (tx & 16) + (kk_<<1));
+            // checksum_A_r[prefetch_next] = *(sAr + wid_a + (kk_<<2));
+            // checksum_B_c[prefetch_next]=__shfl_sync(0xffffffff, *ptr_Bc, wid_b + (kk_<<1));
+            // checksum_A_r[prefetch_next]=__shfl_sync(0xffffffff, checksum_A_r[prefetch_next], 0);
 
             tab(t[0], bb[prefetch * 2], aa[prefetch * 2 + 0].x);
             tab(t[1], bb[prefetch * 2 + 1], aa[prefetch * 2 + 0].x);
@@ -131,46 +145,21 @@ __global__  __launch_bounds__(256) void ft_sgemm_10(int N, float *A, float *B, f
             tab(t[13], bb[prefetch * 2 + 1], aa[prefetch * 2 + 1].z);
             tab(t[14], bb[prefetch * 2], aa[prefetch * 2 + 1].w);
             tab(t[15], bb[prefetch * 2 + 1], aa[prefetch * 2 + 1].w);
-
-            
+            // float2 tmp_b = *((float2*)(bb + prefetch * 2) + inter_warp_id_a);
+            // float tmp_a = *((float*)(aa + prefetch * 2) + inter_warp_id_b);
+            // C_r[0] += checksum_A_r[prefetch] * tmp_b.x;
+            // C_r[1] += checksum_A_r[prefetch] * tmp_b.y;
+            // C_c += checksum_B_c[prefetch] * tmp_a;
             // C_r[0] += checksum_A_r[prefetch] * *((float*)(bb + prefetch * 2) + inter_warp_id_a * 2);
             // C_r[1] += checksum_A_r[prefetch] * *((float*)(bb + prefetch * 2) + inter_warp_id_a * 2 + 1);
             // C_c += checksum_B_c[prefetch] * *((float*)(aa + prefetch * 2) + inter_warp_id_b);
-            C_r[0] += checksum_A_r[prefetch] * bb0;
-            C_r[1] += checksum_A_r[prefetch] * bb1;
-            C_c += checksum_B_c[prefetch] * aa0;
+            // C_r[0] += checksum_A_r[prefetch] * bb0[prefetch].x;
+            // C_r[1] += checksum_A_r[prefetch] * bb0[prefetch].y;
+            // C_c += checksum_B_c[prefetch] * aa0[prefetch];
             
-            // C_r[0] += checksum_A_r[prefetch] * *((float*)(bb + prefetch * 2) + 0 * 2);
-            // C_r[1] += checksum_A_r[prefetch] * *((float*)(bb + prefetch * 2) + 0 * 2 + 1);
-            // C_r[0] += checksum_A_r[prefetch] * *((float*)(bb + prefetch * 2) + 0 * 2 + 2);
-            // C_r[1] += checksum_A_r[prefetch] * *((float*)(bb + prefetch * 2) + 0 * 2 + 3);
-            // C_r[0] += checksum_A_r[prefetch] * *((float*)(bb + prefetch * 2) + 0 * 2 + 4);
-            // C_r[1] += checksum_A_r[prefetch] * *((float*)(bb + prefetch * 2) + 0 * 2 + 5);
-            // C_r[0] += checksum_A_r[prefetch] * *((float*)(bb + prefetch * 2) + 0 * 2 + 6);
-            // C_r[1] += checksum_A_r[prefetch] * *((float*)(bb + prefetch * 2) + 0 * 2 + 7);
-            // C_c += checksum_B_c[prefetch] * *((float*)(aa + prefetch * 2) + 0);
-            // C_c += checksum_B_c[prefetch] * *((float*)(aa + prefetch * 2) + 1);
-            // C_c += checksum_B_c[prefetch] * *((float*)(aa + prefetch * 2) + 2);
-            // C_c += checksum_B_c[prefetch] * *((float*)(aa + prefetch * 2) + 3);
-            // C_c += checksum_B_c[prefetch] * *((float*)(aa + prefetch * 2) + 4);
-            // C_c += checksum_B_c[prefetch] * *((float*)(aa + prefetch * 2) + 5);
-            // C_c += checksum_B_c[prefetch] * *((float*)(aa + prefetch * 2) + 6);
-            // C_c += checksum_B_c[prefetch] * *((float*)(aa + prefetch * 2) + 7);
             
         }
-        B_c = pre_B.x + pre_B.y + pre_B.z + pre_B.w;
-        B_c += __shfl_down_sync(0xffffffff, B_c, 1, 32);
-        B_c += __shfl_down_sync(0xffffffff, B_c, 2, 32);
-        B_c += __shfl_down_sync(0xffffffff, B_c, 4, 32);
-        B_c += __shfl_down_sync(0xffffffff, B_c, 8, 32);
-        
-        sBc = (float*)shared_B_c + shared_checksum_offset;
-        // Attention! This branch cause warp divergence.
-        if(((tx&31) & 15) == 0){
-            //shared_checksum_offset
-            // sAr[int(tx / 2)] = A_r;
-            sBc[int(tx / 16)] = B_c;
-        }
+
         sb = (float*)shared_B + shared_offset;
         sa = (float*)shared_A + shared_offset;
         ((float4*)sb)[tx] = pre_B;
@@ -178,33 +167,91 @@ __global__  __launch_bounds__(256) void ft_sgemm_10(int N, float *A, float *B, f
         sa[(tx>>1) + ((((tx&1)<<2)+1)<<7) ]= pre_A.y;
         sa[(tx>>1) + ((((tx&1)<<2) + 2)<<7)]= pre_A.z; 
         sa[(tx>>1) + ((((tx&1)<<2) + 3)<<7)]= pre_A.w;
+        
+        
+        B_c = pre_B.x + pre_B.y + pre_B.z + pre_B.w;
+        B_c += __shfl_xor_sync(0xffffffff, B_c, 1, 32);
+        B_c += __shfl_xor_sync(0xffffffff, B_c, 2, 32);
+        B_c += __shfl_xor_sync(0xffffffff, B_c, 4, 32);
+        B_c += __shfl_xor_sync(0xffffffff, B_c, 8, 32);
+        B_c += __shfl_xor_sync(0xffffffff, B_c, 16, 32);
+        saxpy(B_c, pre_B, block_level_B_c);
+        // sBc = (float*)shared_B_c + shared_checksum_offset;
+        *(((float4*)sBc) + tx) = block_level_B_c;
+        
+        int i = 0;
+        while(i > 0)
+        //Attention! This branch cause warp divergence.
+        // if(((tx&31) & 15) == 0){
+        //     //shared_checksum_offset
+        //     // sAr[int(tx / 2)] = A_r;
+        //     sBc[int(tx / 16)] = B_c;
+        // }
+        
         __syncthreads();        
         
         pre_A = ((float4*)sa)[tx];
         A_r[0] = pre_A.x + pre_A.y + pre_A.z + pre_A.w;
-        A_r[0] += __shfl_down_sync(0xffffffff, A_r[0], 1, 32);
-        A_r[0] += __shfl_down_sync(0xffffffff, A_r[0], 2, 32);
-        A_r[0] += __shfl_down_sync(0xffffffff, A_r[0], 4, 32);
+        A_r[0] += __shfl_xor_sync(0xffffffff, A_r[0], 1, 32);
+        A_r[0] += __shfl_xor_sync(0xffffffff, A_r[0], 2, 32);
+        A_r[0] += __shfl_xor_sync(0xffffffff, A_r[0], 4, 32);
+        A_r[0] += __shfl_xor_sync(0xffffffff, A_r[0], 8, 32);
+        A_r[0] += __shfl_xor_sync(0xffffffff, A_r[0], 16, 32);
 
-        sAr = (float*)shared_A_r + shared_checksum_offset * 2;
+        // sAr = (float*)shared_A_r + shared_checksum_offset * 2;
+        // sAr = (float*)shared_A_r + shared_checksum_offset * 2;
+        saxpy(A_r[0], pre_A, block_level_A_r);
+        // sBc = (float*)shared_B_c + shared_checksum_offset;
+        *(((float4*)sAr) + tx) = block_level_A_r;
+        
         // Attention! This branch cause warp divergence.
-        if(((tx&31) & 7) == 0){
-            //shared_checksum_offset
-            sAr[int(tx / 8)] = A_r[0];
-        }
+        // if(((tx&31) & 7) == 0){
+        //     //shared_checksum_offset
+        //     sAr[int(tx / 8)] = A_r[0];
+        //     // sAr[tx] = A_r[0];
+        // }
+        __syncthreads();
         if((k % 256) == 0){
+            negative_checksum_8(C_c1[0].x, t[0], t[1])
+            negative_checksum_8(C_c1[0].y, t[2], t[3])
+            negative_checksum_8(C_c1[0].z, t[4], t[5])
+            negative_checksum_8(C_c1[0].w, t[6], t[7])
+            negative_checksum_8(C_c1[1].x, t[8], t[9])
+            negative_checksum_8(C_c1[1].y, t[10], t[11])
+            negative_checksum_8(C_c1[1].z, t[12], t[13])
+            negative_checksum_8(C_c1[1].w, t[14], t[15])
+            
+            tcab(t[0], C_r1[0], -1.0, 1.0)
+            tcab(t[2], C_r1[0], -1.0, 1.0)
+            tcab(t[4], C_r1[0], -1.0, 1.0)
+            tcab(t[6], C_r1[0], -1.0, 1.0)
+            tcab(t[8], C_r1[0], -1.0, 1.0)
+            tcab(t[10], C_r1[0], -1.0, 1.0)
+            tcab(t[12], C_r1[0], -1.0, 1.0)
+            tcab(t[14], C_r1[0], -1.0, 1.0)
+            tcab(t[1], C_r1[1], -1.0, 1.0)
+            tcab(t[3], C_r1[1], -1.0, 1.0)
+            tcab(t[5], C_r1[1], -1.0, 1.0)
+            tcab(t[7], C_r1[1], -1.0, 1.0)
+            tcab(t[9], C_r1[1], -1.0, 1.0)
+            tcab(t[11], C_r1[1], -1.0, 1.0)
+            tcab(t[13], C_r1[1], -1.0, 1.0)
+            tcab(t[15], C_r1[1], -1.0, 1.0)
+
             C_c += 1.0;
             C_r[0] += 1.0;
-            checksum_sum = checksum_A_r[0] + checksum_A_r[1] + checksum_B_c[0] + checksum_B_c[1] + A_r[0] + A_r[1];
+            checksum_sum = checksum_A_r[0] + checksum_A_r[1] + checksum_B_c[0] + checksum_B_c[1] + A_r[0] + A_r[1] + bb0[0].x + bb0[1].x + aa0[0] + aa0[1];
+            checksum_sum -= C_r1[0].x + C_r1[0].y + C_r1[0].z + C_r1[0].w + C_r1[1].x + C_r1[1].y + C_r1[1].z + C_r1[1].w;
+            checksum_sum -= C_c1[0].x + C_c1[0].y + C_c1[0].z + C_c1[0].w + C_c1[1].x + C_c1[1].y + C_c1[1].z + C_c1[1].w;
             checksum_sum -= C_c;
             checksum_sum -= C_r[0];
             checksum_sum -= C_r[1];
+
             if((checksum_sum - err_bound > 0) || (checksum_sum + err_bound < 0)){
             r = -1, c = -1;
             r = 0, c = 0;
             *(((float*)(t + c * 2 + r / 4)) + r % 4) += 1;
             }
-            
         }
         
         

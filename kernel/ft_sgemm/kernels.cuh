@@ -5,6 +5,7 @@
 // #include "./include/ft_gemm_5.cuh"
 // #include "./include/ft_gemm_6.cuh"
 // #include "./include/ft_gemm_7.cuh"
-#include "./include/ft_sgemm_8.cuh"
+#include "./include/ft_sgemm_8.cuh"      
 #include "./include/ft_sgemm_9.cuh" 
 #include "./include/ft_sgemm_10.cuh"
+#include "./include/ft_sgemm_11.cuh"
