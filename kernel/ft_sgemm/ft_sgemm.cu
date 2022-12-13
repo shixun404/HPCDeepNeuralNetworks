@@ -196,7 +196,7 @@ int main(int argc, char **argv)
         //     }
         //     cudaEventRecord(end);       
         //     cudaEventSynchronize(beg);     
-        //     cudaEventSynchronize(end);                              
+        //     cudaEventSynchronize(end);                                
         // } 
         // else if (kernel_number == 6){
         //     cudaEventRecord(beg);

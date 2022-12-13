@@ -205,33 +205,50 @@ __global__  __launch_bounds__(256) void ft_sgemm_12(int N, float *A, float *B, f
 
             *((float4*)s_) = C_r1[0];
             *((float4*)(s_ + 4)) = C_r1[1];
-            // *s_ = C_r1[0].x;
-            // *(s_ + (1 << 4)) = C_r1[0].y;
-            // *(s_ + (2 << 4)) = C_r1[0].z;
-            // *(s_ + (3 << 4)) = C_r1[0].w;
-            // *(s_ + (4 << 4)) = C_r1[1].x;
-            // *(s_ + (5 << 4)) = C_r1[1].y;
-            // *(s_ + (6 << 4)) = C_r1[1].z;
-            // *(s_ + (7 << 4)) = C_r1[1].w;
             
             __syncthreads();
             float C_c_ = C_c;
-            C_c_ -= *((float*)shared + ((tx_128) << tx_div_128_mul_4) + offset_2048_ + (0 << tx_div_128_mul_7));
-            C_c_ -= *((float*)shared + ((tx_128) << tx_div_128_mul_4) + offset_2048_ + (1 << tx_div_128_mul_7));
-            C_c_ -= *((float*)shared + ((tx_128) << tx_div_128_mul_4) + offset_2048_ + (2 << tx_div_128_mul_7));
-            C_c_ -= *((float*)shared + ((tx_128) << tx_div_128_mul_4) + offset_2048_ + (3 << tx_div_128_mul_7));
-            C_c_ -= *((float*)shared + ((tx_128) << tx_div_128_mul_4) + offset_2048_ + (4 << tx_div_128_mul_7));
-            C_c_ -= *((float*)shared + ((tx_128) << tx_div_128_mul_4) + offset_2048_ + (5 << tx_div_128_mul_7));
-            C_c_ -= *((float*)shared + ((tx_128) << tx_div_128_mul_4) + offset_2048_ + (6 << tx_div_128_mul_7));
-            C_c_ -= *((float*)shared + ((tx_128) << tx_div_128_mul_4) + offset_2048_ + (7 << tx_div_128_mul_7));
-            C_c_ -= *((float*)shared + ((tx_128) << tx_div_128_mul_4) + offset_2048_ + (8 << tx_div_128_mul_7));
-            C_c_ -= *((float*)shared + ((tx_128) << tx_div_128_mul_4) + offset_2048_ + (9 << tx_div_128_mul_7));
-            C_c_ -= *((float*)shared + ((tx_128) << tx_div_128_mul_4) + offset_2048_ + (10 << tx_div_128_mul_7));
-            C_c_ -= *((float*)shared + ((tx_128) << tx_div_128_mul_4) + offset_2048_ + (11 << tx_div_128_mul_7));
-            C_c_ -= *((float*)shared + ((tx_128) << tx_div_128_mul_4) + offset_2048_ + (12 << tx_div_128_mul_7));
-            C_c_ -= *((float*)shared + ((tx_128) << tx_div_128_mul_4) + offset_2048_ + (13 << tx_div_128_mul_7));
-            C_c_ -= *((float*)shared + ((tx_128) << tx_div_128_mul_4) + offset_2048_ + (14 << tx_div_128_mul_7));
-            C_c_ -= *((float*)shared + ((tx_128) << tx_div_128_mul_4) + offset_2048_ + (15 << tx_div_128_mul_7));
+            if (tx < 128){
+                float4 r_ = *((float4*)((float*)shared + (tx << 4)));
+                C_c_ -= r_.x;
+                C_c_ -= r_.y;
+                C_c_ -= r_.z;
+                C_c_ -= r_.w;
+                r_ = *((float4*)((float*)shared + (tx << 4) + 4));
+                C_c_ -= r_.x;
+                C_c_ -= r_.y;
+                C_c_ -= r_.z;
+                C_c_ -= r_.w;
+                r_ = *((float4*)((float*)shared + (tx << 4) + 8));
+                C_c_ -= r_.x;
+                C_c_ -= r_.y;
+                C_c_ -= r_.z;
+                C_c_ -= r_.w;
+                r_ = *((float4*)((float*)shared + (tx << 4) + 12));
+                C_c_ -= r_.x;
+                C_c_ -= r_.y;
+                C_c_ -= r_.z;
+                C_c_ -= r_.w;
+            }
+            else{
+                float *r_ = ((float*)shared + 2048 + (tx&127));
+                C_c_ -= *r_;
+                C_c_ -= *(r_ + (1 << 7));
+                C_c_ -= *(r_ + (2 << 7));
+                C_c_ -= *(r_ + (3 << 7));
+                C_c_ -= *(r_ + (4 << 7));
+                C_c_ -= *(r_ + (5 << 7));
+                C_c_ -= *(r_ + (6 << 7));
+                C_c_ -= *(r_ + (7 << 7));
+                C_c_ -= *(r_ + (8 << 7));
+                C_c_ -= *(r_ + (9 << 7));
+                C_c_ -= *(r_ + (10 << 7));
+                C_c_ -= *(r_ + (11 << 7));
+                C_c_ -= *(r_ + (12 << 7));
+                C_c_ -= *(r_ + (13 << 7));
+                C_c_ -= *(r_ + (14 << 7));
+                C_c_ -= *(r_ + (15 << 7));
+            }
             float error = abs(C_c_ / (abs(C_c) + 1)) + 1;
             if((error - err_bound > 0) || (error + err_bound < 0)){
             r = -1, c = -1;
@@ -262,11 +279,11 @@ __global__  __launch_bounds__(256) void ft_sgemm_12(int N, float *A, float *B, f
         B_c += __shfl_xor_sync(0xffffffff, B_c, 16, 32);
 
         
-        __syncthreads();        
+        // __syncthreads();        
         int shared_offset_ = ((((k>>3))&1)<<10);
         sAr = (float*)shared + shared_offset_;
         sBc = (float*)shared + 2048 + shared_offset_;
-        pre_A = ((float4*)sa)[tx];
+        // pre_A = ((float4*)sa)[tx];
         A_r[0] = pre_A.x + pre_A.y + pre_A.z + pre_A.w;
         A_r[0] += __shfl_xor_sync(0xffffffff, A_r[0], 1, 32);
         A_r[0] += __shfl_xor_sync(0xffffffff, A_r[0], 2, 32);
