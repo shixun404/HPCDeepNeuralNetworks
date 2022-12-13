@@ -38,13 +38,14 @@
     a.w += __shfl_down_sync(0xffffffff, a.w, i, 32);
 
 __global__  __launch_bounds__(256) void ft_sgemm_11(int N, float *A, float *B, float *C, float alpha, float beta){
-    __shared__ float shared[4][1024]; // blockDim * 2 for sublocks of A and B
+    __shared__ float shared_A[2][1024]; // blockDim * 2 for sublocks of A and B
+    __shared__ float shared_B[2][1024];
     float* sa, *sb;
     float* sAr, *sBc;
-    sAr = (float*)(shared) + 1024;
-    sBc = (float*)(shared) + 1024 + 2048;
-    sa = (float*)shared;
-    sb = (float*)shared + 2048;
+    sAr = (float*)(shared_A) + 1024;
+    sBc = (float*)(shared_B) + 1024 ;
+    sa = (float*)shared_A;
+    sb = (float*)shared_B;
     int tx = threadIdx.x;
     float2 bb0[2];
     float aa0[2];
@@ -60,7 +61,7 @@ __global__  __launch_bounds__(256) void ft_sgemm_11(int N, float *A, float *B, f
     float4 t[16], bb[4],aa[4], C1[16], pre_A, pre_B, pre_A_sum, C_c1[2], C_r1[2];
     float4 block_level_B_c = {0, 0, 0, 0}, block_level_A_r = {0, 0, 0, 0};
     
-    float C_c; 
+    float C_r[2],C_c; 
     float checksum_B_c[2], checksum_A_r[2];
     float A_r[2] = {0.,0.}, B_c = 0, checksum_sum = 0; 
     int idx = tx & 31, idy = tx >> 5;
@@ -68,6 +69,7 @@ __global__  __launch_bounds__(256) void ft_sgemm_11(int N, float *A, float *B, f
     int tmp_1 =  (((tx & 31) >> 2) & 1 );
     memset(t, 0, sizeof(t));
     C_c = 0.0;
+    memset(C_r, 0, sizeof(C_r));
     memset(C_c1, 0, sizeof(C_c1));
     memset(C_r1, 0, sizeof(C_r1));
     memset(checksum_B_c, 0, sizeof(checksum_B_c));
@@ -107,17 +109,26 @@ __global__  __launch_bounds__(256) void ft_sgemm_11(int N, float *A, float *B, f
     
     *(((float4*)sAr) + tx) = block_level_A_r;
     __syncthreads();
-    int offset_2048 = ((((tx >> 7) + 1) & 1) << 11);
-    int offset_2048_ = ((((tx >> 7) + 0) & 1) << 11);
-    sAr += offset_2048 + (tx & 127);
-    C_c += *(sAr + (0 << 7));
-    C_c += *(sAr + (1 << 7));
-    C_c += *(sAr + (2 << 7));
-    C_c += *(sAr + (3 << 7));
-    C_c += *(sAr + (4 << 7));
-    C_c += *(sAr + (5 << 7));
-    C_c += *(sAr + (6 << 7));
-    C_c += *(sAr + (7 << 7));
+            if(tx < 128){
+            C_c += *(sBc + tx + (0 << 7));
+            C_c += *(sBc + tx + (1 << 7));
+            C_c += *(sBc + tx + (2 << 7));
+            C_c += *(sBc + tx + (3 << 7));
+            C_c += *(sBc + tx + (4 << 7));
+            C_c += *(sBc + tx + (5 << 7));
+            C_c += *(sBc + tx + (6 << 7));
+            C_c += *(sBc + tx + (7 << 7));
+        }
+        else{
+            C_r[0] += *(sAr + (tx & 127) + (0 << 7));
+            C_r[0] += *(sAr + (tx & 127) + (1 << 7));
+            C_r[0] += *(sAr + (tx & 127) + (2 << 7));
+            C_r[0] += *(sAr + (tx & 127) + (3 << 7));
+            C_r[0] += *(sAr + (tx & 127) + (4 << 7));
+            C_r[0] += *(sAr + (tx & 127) + (5 << 7));
+            C_r[0] += *(sAr + (tx & 127) + (6 << 7));
+            C_r[0] += *(sAr + (tx & 127) + (7 << 7));
+        }
     bb[0] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3));
     bb[1] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3) + 4);
     aa[0] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3));
@@ -187,9 +198,9 @@ __global__  __launch_bounds__(256) void ft_sgemm_11(int N, float *A, float *B, f
 
             __syncthreads();
             
-            float* s = ((float*)(shared) + ((wid_b) << 3) + (wid_a << 9) + inter_warp_id_b + (inter_warp_id_a << 7) + 0);
+            float* s = ((float*)(shared_A) + ((wid_b) << 3) + (wid_a << 9) + inter_warp_id_b + (inter_warp_id_a << 7) + 0);
             // float* s_ = ((float*)(shared_B) + ((wid_a) << 2) + (wid_b << 10) + inter_warp_id_a + (inter_warp_id_b << 7) + 0);
-            float* s_ = ((float*)(shared) + 2048 + ((wid_a) << 9) + (wid_b << 6) + (inter_warp_id_a<<7) + (inter_warp_id_b << 3) + 0);
+            float* s_ = ((float*)(shared_B) + ((wid_a) << 9) + (wid_b << 6) + (inter_warp_id_a<<7) + (inter_warp_id_b << 3) + 0);
             *s = C_c1[0].x;
             *(s + (1 << 4)) = C_c1[0].y;
             *(s + (2 << 4)) = C_c1[0].z;
@@ -213,27 +224,64 @@ __global__  __launch_bounds__(256) void ft_sgemm_11(int N, float *A, float *B, f
             
             __syncthreads();
             float C_c_ = C_c;
-            C_c_ -= *((float*)shared + ((tx&127) << (4*(((tx >> 7) + 1) & 1))) + offset_2048_ + (0 << (7 * ((tx >> 7) & 1))));
-            C_c_ -= *((float*)shared + ((tx&127) << (4*(((tx >> 7) + 1) & 1))) + offset_2048_ + (1 << (7 * ((tx >> 7) & 1))));
-            C_c_ -= *((float*)shared + ((tx&127) << (4*(((tx >> 7) + 1) & 1))) + offset_2048_ + (2 << (7 * ((tx >> 7) & 1))));
-            C_c_ -= *((float*)shared + ((tx&127) << (4*(((tx >> 7) + 1) & 1))) + offset_2048_ + (3 << (7 * ((tx >> 7) & 1))));
-            C_c_ -= *((float*)shared + ((tx&127) << (4*(((tx >> 7) + 1) & 1))) + offset_2048_ + (4 << (7 * ((tx >> 7) & 1))));
-            C_c_ -= *((float*)shared + ((tx&127) << (4*(((tx >> 7) + 1) & 1))) + offset_2048_ + (5 << (7 * ((tx >> 7) & 1))));
-            C_c_ -= *((float*)shared + ((tx&127) << (4*(((tx >> 7) + 1) & 1))) + offset_2048_ + (6 << (7 * ((tx >> 7) & 1))));
-            C_c_ -= *((float*)shared + ((tx&127) << (4*(((tx >> 7) + 1) & 1))) + offset_2048_ + (7 << (7 * ((tx >> 7) & 1))));
-            C_c_ -= *((float*)shared + ((tx&127) << (4*(((tx >> 7) + 1) & 1))) + offset_2048_ + (8 << (7 * ((tx >> 7) & 1))));
-            C_c_ -= *((float*)shared + ((tx&127) << (4*(((tx >> 7) + 1) & 1))) + offset_2048_ + (9 << (7 * ((tx >> 7) & 1))));
-            C_c_ -= *((float*)shared + ((tx&127) << (4*(((tx >> 7) + 1) & 1))) + offset_2048_ + (10 << (7 * ((tx >> 7) & 1))));
-            C_c_ -= *((float*)shared + ((tx&127) << (4*(((tx >> 7) + 1) & 1))) + offset_2048_ + (11 << (7 * ((tx >> 7) & 1))));
-            C_c_ -= *((float*)shared + ((tx&127) << (4*(((tx >> 7) + 1) & 1))) + offset_2048_ + (12 << (7 * ((tx >> 7) & 1))));
-            C_c_ -= *((float*)shared + ((tx&127) << (4*(((tx >> 7) + 1) & 1))) + offset_2048_ + (13 << (7 * ((tx >> 7) & 1))));
-            C_c_ -= *((float*)shared + ((tx&127) << (4*(((tx >> 7) + 1) & 1))) + offset_2048_ + (14 << (7 * ((tx >> 7) & 1))));
-            C_c_ -= *((float*)shared + ((tx&127) << (4*(((tx >> 7) + 1) & 1))) + offset_2048_ + (15 << (7 * ((tx >> 7) & 1))));
-            float error = abs(C_c_ / (abs(C_c) + 1)) + 1;
+            float C_r_ = C_r[0];
+            // if (k ==0 && tx == 0){
+            //     printf("%d, %d C_c error: %f\n",k, tx, C_c);
+            // }
+            if (tx < 128){
+                float4 r_ = *((float4*)((float*)shared_A + (tx << 4)));
+                C_c_ -= r_.x;
+                C_c_ -= r_.y;
+                C_c_ -= r_.z;
+                C_c_ -= r_.w;
+                r_ = *((float4*)((float*)shared_A + (tx << 4) + 4));
+                C_c_ -= r_.x;
+                C_c_ -= r_.y;
+                C_c_ -= r_.z;
+                C_c_ -= r_.w;
+                r_ = *((float4*)((float*)shared_A + (tx << 4) + 8));
+                C_c_ -= r_.x;
+                C_c_ -= r_.y;
+                C_c_ -= r_.z;
+                C_c_ -= r_.w;
+                r_ = *((float4*)((float*)shared_A + (tx << 4) + 12));
+                C_c_ -= r_.x;
+                C_c_ -= r_.y;
+                C_c_ -= r_.z;
+                C_c_ -= r_.w;
+                // if(true){
+                // // // if (abs(C_c_ / (abs(C_c) + 1)) > 0.01){
+                // printf("%d, %d, col error: %f, %f\n",N,k, C_c_, C_c);
+                // }
+            }
+            else{
+                float *r_ = ((float*)shared_B + (tx&127));
+                C_r_ -= *r_;
+                C_r_ -= *(r_ + (1 << 7));
+                C_r_ -= *(r_ + (2 << 7));
+                C_r_ -= *(r_ + (3 << 7));
+                C_r_ -= *(r_ + (4 << 7));
+                C_r_ -= *(r_ + (5 << 7));
+                C_r_ -= *(r_ + (6 << 7));
+                C_r_ -= *(r_ + (7 << 7));
+                C_r_ -= *(r_ + (8 << 7));
+                C_r_ -= *(r_ + (9 << 7));
+                C_r_ -= *(r_ + (10 << 7));
+                C_r_ -= *(r_ + (11 << 7));
+                C_r_ -= *(r_ + (12 << 7));
+                C_r_ -= *(r_ + (13 << 7));
+                C_r_ -= *(r_ + (14 << 7));
+                C_r_ -= *(r_ + (15 << 7));
+                // if(true){
+                // if (abs(C_r_ / (abs(C_r[0]) + 3)) > 0.01){
+                // printf("%d, %d, row error: %f, %f\n",N,k, C_r_, C_r[0]);
+                // }
+            }
+            float error = abs(C_c_ / (abs(C_c) + 1)) + abs(C_r_ / (abs(C_r[0]) + 1)) + 1;
             if((error - err_bound > 0) || (error + err_bound < 0)){
             r = -1, c = -1;
             r = 0, c = 0;
-            *(((float*)(t + c * 2 + r / 4)) + r % 4) += C_c_;
+            *(((float*)(t + c * 2 + r / 4)) + r % 4) += C_c_ + C_r_;
             }
             __syncthreads();
             // C_c = 0;
@@ -242,8 +290,8 @@ __global__  __launch_bounds__(256) void ft_sgemm_11(int N, float *A, float *B, f
         }
 
 
-        sb = (float*)shared + 2048 + shared_offset;
-        sa = (float*)shared + shared_offset;
+        sb = (float*)shared_B + shared_offset;
+        sa = (float*)shared_A + shared_offset;
         ((float4*)sb)[tx] = pre_B;
         sa[(tx>>1) + ((((tx&1)<<2) + 0)<<7)]= pre_A.x;
         sa[(tx>>1) + ((((tx&1)<<2) + 1)<<7) ]= pre_A.y;
@@ -261,8 +309,8 @@ __global__  __launch_bounds__(256) void ft_sgemm_11(int N, float *A, float *B, f
         
         __syncthreads();        
         int shared_offset_ = ((((k>>3))&1)<<10);
-        sAr = (float*)shared + shared_offset_;
-        sBc = (float*)shared + 2048 + shared_offset_;
+        sAr = (float*)shared_A + shared_offset_;
+        sBc = (float*)shared_B + shared_offset_;
         pre_A = ((float4*)sa)[tx];
         A_r[0] = pre_A.x + pre_A.y + pre_A.z + pre_A.w;
         A_r[0] += __shfl_xor_sync(0xffffffff, A_r[0], 1, 32);
@@ -279,16 +327,26 @@ __global__  __launch_bounds__(256) void ft_sgemm_11(int N, float *A, float *B, f
         
         *(((float4*)sAr) + tx) = block_level_A_r;
         __syncthreads();
-        sAr += offset_2048 + (tx & 127);
-        C_c += *(sAr + (0 << 7));
-        C_c += *(sAr + (1 << 7));
-        C_c += *(sAr + (2 << 7));
-        C_c += *(sAr + (3 << 7));
-        C_c += *(sAr + (4 << 7));
-        C_c += *(sAr + (5 << 7));
-        C_c += *(sAr + (6 << 7));
-        C_c += *(sAr + (7 << 7));
-
+        if(tx < 128){
+            C_c += *(sBc + tx + (0 << 7));
+            C_c += *(sBc + tx + (1 << 7));
+            C_c += *(sBc + tx + (2 << 7));
+            C_c += *(sBc + tx + (3 << 7));
+            C_c += *(sBc + tx + (4 << 7));
+            C_c += *(sBc + tx + (5 << 7));
+            C_c += *(sBc + tx + (6 << 7));
+            C_c += *(sBc + tx + (7 << 7));
+        }
+        else{
+            C_r[0] += *(sAr + (tx & 127) + (0 << 7));
+            C_r[0] += *(sAr + (tx & 127) + (1 << 7));
+            C_r[0] += *(sAr + (tx & 127) + (2 << 7));
+            C_r[0] += *(sAr + (tx & 127) + (3 << 7));
+            C_r[0] += *(sAr + (tx & 127) + (4 << 7));
+            C_r[0] += *(sAr + (tx & 127) + (5 << 7));
+            C_r[0] += *(sAr + (tx & 127) + (6 << 7));
+            C_r[0] += *(sAr + (tx & 127) + (7 << 7));
+        }
         bb[0] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3));
         bb[1] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3) + 4);
         aa[0] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3));

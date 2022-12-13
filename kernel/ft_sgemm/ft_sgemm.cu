@@ -5,10 +5,10 @@
 #include <cuda_runtime.h>
 #include <helper_functions.h>
 #include <helper_cuda.h>
-#include "kernels.cuh"  
+#include "kernels.cuh"    
 #define multi 20  
 int main(int argc, char **argv)    
- {      
+ {       
     int r = -1, c = -1; 
     // printf() seems to be different between host code and device kernel code 
     // printf("type: %s\n", typeof((c * 2 + r / 4))); 
@@ -139,19 +139,19 @@ int main(int argc, char **argv)
             for(int ii = 0; ii < num_tests; ++ii){
                 cudaDeviceSynchronize();    
                 cublasSgemm(handle, CUBLAS_OP_N,CUBLAS_OP_N,max_size, max_size,  max_size, &alpha, dB, max_size, dA, max_size, &beta, dC, max_size);
-                cudaDeviceSynchronize();
+                cudaDeviceSynchronize();  
             }
             cudaEventRecord(end);
             cudaEventSynchronize(beg);
             cudaEventSynchronize(end);
         }   
-        else if (kernel_number == 1){
-            cudaEventRecord(beg);
-            ft_sgemm_1(num_tests, max_size, handle, dA, dB, dC, dE, dRes, dcheck_C_row, dcheck_C_col, dcheck_A_col_mul_B, dcheck_B_row_mul_A, dcheck_A_col, dcheck_B_row,  alpha, beta, negative_1);
-            cudaEventRecord(end);
-            cudaEventSynchronize(beg);  
-            cudaEventSynchronize(end); 
-        }    
+        // else if (kernel_number == 1){
+        //     cudaEventRecord(beg);
+        //     ft_sgemm_1(num_tests, max_size, handle, dA, dB, dC, dE, dRes, dcheck_C_row, dcheck_C_col, dcheck_A_col_mul_B, dcheck_B_row_mul_A, dcheck_A_col, dcheck_B_row,  alpha, beta, negative_1);
+        //     cudaEventRecord(end);
+        //     cudaEventSynchronize(beg);  
+        //     cudaEventSynchronize(end); 
+        // }    
         // else if (kernel_number == 2){ 
         //     cudaEventRecord(beg);
         //     ft_sgemm_2(num_tests, max_size, handle, dA, dB, dC, dE, dE_, dRes, dcheck_C_row, dcheck_C_col, dcheck_A_col_mul_B, dcheck_B_row_mul_A, dcheck_A_col, dcheck_B_row,  alpha, beta, negative_1);
