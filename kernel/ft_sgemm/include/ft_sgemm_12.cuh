@@ -249,11 +249,17 @@ __global__  __launch_bounds__(256) void ft_sgemm_12(int N, float *A, float *B, f
                 C_c_ -= *(r_ + (14 << 7));
                 C_c_ -= *(r_ + (15 << 7));
             }
-            float error = abs(C_c_ / (abs(C_c) + 1)) + 1;
-            if((error - err_bound > 0) || (error + err_bound < 0)){
+            *((float*)shared + tx) = C_c_;
+            __syncthreads();
+            // float error = abs(C_c_ / (abs(C_c) + 1)) + 1;
+            float error = 0.0, error1 = 0.0;
+            checksum_8(error, (*(float4*)((float*)shared + (wid_b * 64 + inter_warp_id_b * 8))), (*(float4*)((float*)shared + (wid_b * 64 + inter_warp_id_b * 8) + 4)));
+            checksum_8(error1, (*(float4*)((float*)shared + (wid_a * 32 + inter_warp_id_a * 8))), (*(float4*)((float*)shared + (wid_a * 32 + inter_warp_id_b * 8) + 4)));
+            // if((error - err_bound > 0) || (error + err_bound < 0)){
+            if(true){
             r = -1, c = -1;
             r = 0, c = 0;
-            *(((float*)(t + c * 2 + r / 4)) + r % 4) += C_c_;
+            *(((float*)(t + c * 2 + r / 4)) + r % 4) += error + error1 + C_c_;
             }
             __syncthreads();
             // C_c = 0;
