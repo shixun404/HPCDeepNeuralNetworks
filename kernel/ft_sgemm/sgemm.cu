@@ -146,11 +146,19 @@ int main(int argc, char **argv)
             cudaEventSynchronize(end);
         }   
         else if (kernel_number == 1){
+<<<<<<< HEAD:kernel/ft_sgemm/sgemm.cu
              cudaEventRecord(beg);
              ft_sgemm_1(num_tests, max_size, handle, dA, dB, dC, dE, dRes, dcheck_C_row, dcheck_C_col, dcheck_A_col_mul_B, dcheck_B_row_mul_A, dcheck_A_col, dcheck_B_row,  alpha, beta, negative_1);
              cudaEventRecord(end);
              cudaEventSynchronize(beg);  
              cudaEventSynchronize(end); 
+=======
+            cudaEventRecord(beg);
+            ft_sgemm_1(num_tests, max_size, handle, dA, dB, dC, dE, dRes, dcheck_C_row, dcheck_C_col, dcheck_A_col_mul_B, dcheck_B_row_mul_A, dcheck_A_col, dcheck_B_row,  alpha, beta, negative_1);
+            cudaEventRecord(end);
+            cudaEventSynchronize(beg);  
+            cudaEventSynchronize(end); 
+>>>>>>> 5b677744ec456924adc5afa3dcfe5471319a77cb:kernel/ft_sgemm/ft_sgemm.cu
         }    
         // else if (kernel_number == 2){ 
         //     cudaEventRecord(beg);
