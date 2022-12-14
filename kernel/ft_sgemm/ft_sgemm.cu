@@ -18,7 +18,7 @@ int main(int argc, char **argv)
     int kernel_number = atoi(argv[1]);
     int num_tests = 1;
     int start_size = 256;       
-    int end_size =  6144 ;      
+    int end_size =  16314 ;      
     int gap_size = 256;                    
     for(int max_size = start_size; max_size <= end_size; max_size += gap_size){
         printf("%8.2d|", max_size);
