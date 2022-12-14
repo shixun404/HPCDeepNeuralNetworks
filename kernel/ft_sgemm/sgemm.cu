@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <stdio.h> 
 #include <cublas_v2.h>     
 #include "utils/utils.cuh"          
 #define PPP 1
@@ -18,7 +18,7 @@ int main(int argc, char **argv)
     int kernel_number = atoi(argv[1]);
     int num_tests = 1;
     int start_size = 256;       
-    int end_size =  6144 ;      
+    int end_size =  16384;      
     int gap_size = 256;                    
     for(int max_size = start_size; max_size <= end_size; max_size += gap_size){
         printf("%8.2d|", max_size);
@@ -145,13 +145,13 @@ int main(int argc, char **argv)
             cudaEventSynchronize(beg);
             cudaEventSynchronize(end);
         }   
-        // else if (kernel_number == 1){
-        //     cudaEventRecord(beg);
-        //     ft_sgemm_1(num_tests, max_size, handle, dA, dB, dC, dE, dRes, dcheck_C_row, dcheck_C_col, dcheck_A_col_mul_B, dcheck_B_row_mul_A, dcheck_A_col, dcheck_B_row,  alpha, beta, negative_1);
-        //     cudaEventRecord(end);
-        //     cudaEventSynchronize(beg);  
-        //     cudaEventSynchronize(end); 
-        // }    
+        else if (kernel_number == 1){
+             cudaEventRecord(beg);
+             ft_sgemm_1(num_tests, max_size, handle, dA, dB, dC, dE, dRes, dcheck_C_row, dcheck_C_col, dcheck_A_col_mul_B, dcheck_B_row_mul_A, dcheck_A_col, dcheck_B_row,  alpha, beta, negative_1);
+             cudaEventRecord(end);
+             cudaEventSynchronize(beg);  
+             cudaEventSynchronize(end); 
+        }    
         // else if (kernel_number == 2){ 
         //     cudaEventRecord(beg);
         //     ft_sgemm_2(num_tests, max_size, handle, dA, dB, dC, dE, dE_, dRes, dcheck_C_row, dcheck_C_col, dcheck_A_col_mul_B, dcheck_B_row_mul_A, dcheck_A_col, dcheck_B_row,  alpha, beta, negative_1);

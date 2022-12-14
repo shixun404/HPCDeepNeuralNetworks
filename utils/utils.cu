@@ -1,4 +1,5 @@
 #include "utils.cuh"
+/*
 __global__ void fill(float *a , float x, int N)
 {
    int index =  blockIdx.x * blockDim.x + threadIdx.x;
@@ -9,7 +10,7 @@ __global__ void fill(float *a , float x, int N)
        a[i] = x;
    }
 }
-
+*/
 
 void fill_vector(float *target, int size, float val){
     for(int i = 0; i < size; ++i){
