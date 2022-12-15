@@ -250,6 +250,9 @@ __global__  __launch_bounds__(256) void ft_sgemm_12(int N, int K, float *A, floa
                 C_c_ -= *(r_ + (15 << 7));
             }
             *((float*)shared + tx) = C_c_;
+            if(tx == 0){
+                printf
+            }
             __syncthreads();
             // float error = abs(C_c_ / (abs(C_c) + 1)) + 1;
             float error = 0.0, error1 = 0.0;
@@ -259,7 +262,7 @@ __global__  __launch_bounds__(256) void ft_sgemm_12(int N, int K, float *A, floa
             if(true){
             r = -1, c = -1;
             r = 0, c = 0;
-            *(((float*)(t + c * 2 + r / 4)) + r % 4) += error + error1 + C_c_;
+            // *(((float*)(t + c * 2 + r / 4)) + r % 4) += error + error1 + C_c_;
             }
             __syncthreads();
             // C_c = 0;
@@ -271,11 +274,7 @@ __global__  __launch_bounds__(256) void ft_sgemm_12(int N, int K, float *A, floa
         sb = (float*)shared + 2048 + shared_offset;
         sa = (float*)shared + shared_offset;
         ((float4*)sb)[tx] = pre_B;
-        sa[(tx>>1) + ((((tx&1)<<2) + 0)<<7)]= pre_A.x;
-        sa[(tx>>1) + ((((tx&1)<<2) + 1)<<7) ]= pre_A.y;
-        sa[(tx>>1) + ((((tx&1)<<2) + 2)<<7)]= pre_A.z; 
-        sa[(tx>>1) + ((((tx&1)<<2) + 3)<<7)]= pre_A.w;
-        
+        ((float4*)sa)[tx] = pre_A;
         
         B_c = pre_B.x + pre_B.y + pre_B.z + pre_B.w;
         B_c += __shfl_xor_sync(0xffffffff, B_c, 1, 32);
