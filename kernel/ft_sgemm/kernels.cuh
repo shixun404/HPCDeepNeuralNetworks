@@ -18,3 +18,4 @@
 #include "./include/ft_sgemm_no_shfl_B.cuh"
 #include "./include/ft_sgemm_no_verification.cuh"
 #include "./include/kernel_13.cuh"
+#include "./include/ft_sgemm_20.cuh"

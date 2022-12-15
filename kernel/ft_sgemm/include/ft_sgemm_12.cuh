@@ -282,6 +282,7 @@ __global__  __launch_bounds__(256) void ft_sgemm_12(int N, int K, float *A, floa
         B_c += __shfl_xor_sync(0xffffffff, B_c, 4, 32);
         B_c += __shfl_xor_sync(0xffffffff, B_c, 8, 32);
         B_c += __shfl_xor_sync(0xffffffff, B_c, 16, 32);
+        //B_c = __reduce_add_sync(0xffffffff, B_c);
 
         
         // __syncthreads();        
@@ -295,7 +296,7 @@ __global__  __launch_bounds__(256) void ft_sgemm_12(int N, int K, float *A, floa
         A_r[0] += __shfl_xor_sync(0xffffffff, A_r[0], 4, 32);
         A_r[0] += __shfl_xor_sync(0xffffffff, A_r[0], 8, 32);
         A_r[0] += __shfl_xor_sync(0xffffffff, A_r[0], 16, 32);
-
+        //A_r[0] = __reduce_add_sync(0xffffffff, A_r[0]);
 
         saxpy(B_c, pre_A, block_level_B_c);
         
