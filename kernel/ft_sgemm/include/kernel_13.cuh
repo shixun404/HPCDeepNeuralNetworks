@@ -29,16 +29,17 @@ __global__  __launch_bounds__(256) void sgemm_13(int N, int K, float *A, float *
     int idx = tx & 31, idy = tx >> 5;
     memset(t, 0, sizeof(t));
     int idx_4 = (idx<<2), idy_128 = (idy << 7), by_128 = (by << 7);
-    A = A + ((tx>>1) + by_128) * N + ((tx & 1) << 2);
+    A = A + idx_4 + (by << 7) + idy * N;
     B = B + idx_4 + (bx << 7) + idy * N;
     pre_B = *(float4*)B;
     pre_A = *(float4*)A;
     //int shared_offset = 0;
     ((float4*)sb)[tx] = pre_B;
-    sa[(tx>>1) + ((((tx&1)<<2) + 0)<<7)]= pre_A.x;
-    sa[(tx>>1) + ((((tx&1)<<2)+1)<<7) ]= pre_A.y;
-    sa[(tx>>1) + ((((tx&1)<<2) + 2)<<7)]= pre_A.z; 
-    sa[(tx>>1) + ((((tx&1)<<2) + 3)<<7)]= pre_A.w;
+    ((float4*)sa)[tx] = pre_A;
+    // sa[(tx>>1) + ((((tx&1)<<2) + 0)<<7)]= pre_A.x;
+    // sa[(tx>>1) + ((((tx&1)<<2)+1)<<7) ]= pre_A.y;
+    // sa[(tx>>1) + ((((tx&1)<<2) + 2)<<7)]= pre_A.z; 
+    // sa[(tx>>1) + ((((tx&1)<<2) + 3)<<7)]= pre_A.w;
     __syncthreads();
     bb0[0] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3));
     bb1[0] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3) + 4);
@@ -47,7 +48,7 @@ __global__  __launch_bounds__(256) void sgemm_13(int N, int K, float *A, float *
 
     for(int k = 0; k < K; k += 8){
         B += (N<<3);
-        A += 8; 
+        A += (N << 3); 
         int shared_offset = ((((k>>3) + 1)&1)<<10);
         pre_B = *(float4*)B;
         pre_A = *(float4*)A;
@@ -82,10 +83,11 @@ __global__  __launch_bounds__(256) void sgemm_13(int N, int K, float *A, float *
     sb = (float*)shared_B + shared_offset;
     sa = (float*)shared_A + shared_offset;
     ((float4*)sb)[tx] = pre_B;
-    sa[(tx>>1) + ((((tx&1)<<2) + 0)<<7)]= pre_A.x;
-    sa[(tx>>1) + ((((tx&1)<<2)+1)<<7) ]= pre_A.y;
-    sa[(tx>>1) + ((((tx&1)<<2) + 2)<<7)]= pre_A.z; 
-    sa[(tx>>1) + ((((tx&1)<<2) + 3)<<7)]= pre_A.w;
+    ((float4*)sa)[tx] = pre_A;
+    // sa[(tx>>1) + ((((tx&1)<<2) + 0)<<7)]= pre_A.x;
+    // sa[(tx>>1) + ((((tx&1)<<2)+1)<<7) ]= pre_A.y;
+    // sa[(tx>>1) + ((((tx&1)<<2) + 2)<<7)]= pre_A.z; 
+    // sa[(tx>>1) + ((((tx&1)<<2) + 3)<<7)]= pre_A.w;
     __syncthreads();
     bb0[0] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3));
     bb1[0] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3) + 4);

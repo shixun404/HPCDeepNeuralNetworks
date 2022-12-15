@@ -16,7 +16,7 @@ int main(int argc, char **argv)
     // printf("value: %f, %d\n", (c * 2 + r / 4), index);
     //  return 0;                           
     int kernel_number = atoi(argv[1]);
-    int num_tests = 1;
+    int num_tests = 10;
     int start_size = atoi(argv[2]);       
     int end_size =  atoi(argv[3]);      
     int start_kernel = atoi(argv[4]);
@@ -69,6 +69,7 @@ int main(int argc, char **argv)
     fill_vector(check_C_row, 0.0, max_size);
     fill_vector(check_A_row_mul_C, 0.0, max_size);
     fill_vector(check_B_row_mul_C, 0.0, max_size); 
+    copy_matrix(C, C_ref, max_size);
     for(int i = 1; i <= max_size; ++i)E_[i] = (float)i;
     
     
@@ -95,26 +96,34 @@ int main(int argc, char **argv)
         CUDA_CALLER(cudaMemcpy(dcheck_A_col_mul_B, check_A_row_mul_C, sizeof(float) * max_size, cudaMemcpyHostToDevice));
         CUDA_CALLER(cudaMemcpy(dcheck_B_row_mul_A, check_B_row_mul_C, sizeof(float) * max_size, cudaMemcpyHostToDevice));
         CUDA_CALLER(cudaMemcpy(dRes, Res, sizeof(float), cudaMemcpyHostToDevice));    
-    }
+    } 
     CUDA_CALLER(cudaMemcpy(dA, A, sizeof(float) * max_size * max_size, cudaMemcpyHostToDevice));
     CUDA_CALLER(cudaMemcpy(dB, B, sizeof(float) * max_size * max_size, cudaMemcpyHostToDevice));
     CUDA_CALLER(cudaMemcpy(dC, C, sizeof(float) * max_size * max_size, cudaMemcpyHostToDevice));      
-    CUDA_CALLER(cudaMemcpy(dC_ref, C_ref, sizeof(float) * max_size * max_size, cudaMemcpyHostToDevice));
-      
-    cublasHandle_t handle;     
-    cublasCreate(&handle);   
-    cublasSgemm(handle, CUBLAS_OP_N,CUBLAS_OP_N,max_size, max_size,  max_size, &alpha, dB, max_size, dA, max_size, &beta, dC_ref, max_size);
+    CUDA_CALLER(cudaMemcpy(dC_ref, C, sizeof(float) * max_size * max_size, cudaMemcpyHostToDevice));
+    if (!verify_matrix(C_ref, C, max_size)) { 
+        printf("Failed to pass the correctness verification against NVIDIA cuBLAS. Exited.\n");
+        exit(-3);
+    }
+    printf("start!\n");
+    cublasHandle_t handle;       
+    cublasCreate(&handle);    
+    cudaDeviceSynchronize(); 
+    cublasSgemm(handle, CUBLAS_OP_N,CUBLAS_OP_T,max_size, max_size,  max_size, &alpha, dB, max_size, dA, max_size, &beta, dC_ref, max_size);
     // test_kernel(kernel_number, max_size, dA, dB, dC, alpha, beta);
-    if(false){       
+    if(true){       
         dim3 blockDim(256);
-        dim3 gridDim(CEIL_DIV(max_size, 128 ), CEIL_DIV(max_size, 128    ));
-         ft_sgemm_11 <<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta); 
-    }                  
-    // cudaDeviceSynchronize();
-    // cudaMemcpy(C, dC, sizeof(float) * max_size * max_size, cudaMemcpyDeviceToHost);
-    // cudaDeviceSynchronize();
-    // cudaMemcpy(C_ref, dC_ref, sizeof(float) * max_size * max_size, cudaMemcpyDeviceToHost);
-    // cudaDeviceSynchronize();                                                 
+        dim3 gridDim(CEIL_DIV(max_size, 128 ), CEIL_DIV(max_size, 128));
+        cudaDeviceSynchronize(); 
+        ft_sgemm_12 <<<gridDim, blockDim>>>(max_size, max_size, dA, dB, dC, alpha, beta);  
+        //  sgemm_13 <<<gridDim, blockDim>>>(max_size, max_size, dA, dB, dC, alpha, beta);  
+    }   
+    printf("finish verified!\n");                
+    cudaDeviceSynchronize();
+    cudaMemcpy(C, dC, sizeof(float) * max_size * max_size, cudaMemcpyDeviceToHost);
+    cudaDeviceSynchronize();
+    cudaMemcpy(C_ref, dC_ref, sizeof(float) * max_size * max_size, cudaMemcpyDeviceToHost);
+    cudaDeviceSynchronize();                                                 
 
     // if (!verify_matrix(C_ref, C, max_size)) { 
     //     printf("Failed to pass the correctness verification against NVIDIA cuBLAS. Exited.\n");
@@ -137,7 +146,7 @@ int main(int argc, char **argv)
         int K_min = end_size, K_max = end_size;
         if (k_num == 12 || k_num == 1 || k_num == 0){
             K_min = 256;
-            K_max = 1024;
+            K_max = 1024; 
         }
         kernel_number = k_num;
         printf("##########################################################\n");
@@ -170,7 +179,7 @@ int main(int argc, char **argv)
              ft_sgemm_1(num_tests, max_size, K, handle, dA, dB, dC, dE, dRes, dcheck_C_row, dcheck_C_col, dcheck_A_col_mul_B, dcheck_B_row_mul_A, dcheck_A_col, dcheck_B_row,  alpha, beta, negative_1);
              cudaEventRecord(end);
              cudaEventSynchronize(beg);  
-             cudaEventSynchronize(end); 
+             cudaEventSynchronize(end);  
         }   
         else if (kernel_number == 20){ 
             cudaEventRecord(beg); 
@@ -191,7 +200,7 @@ int main(int argc, char **argv)
              dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
              for(int ii = 0; ii < num_tests; ++ii){
                  cudaDeviceSynchronize();
-                 ft_sgemm_20<<<gridDim, blockDim>>>(max_size, max_size, dA, dB, dC, alpha, beta);
+                 ft_sgemm_12<<<gridDim, blockDim>>>(max_size, max_size, dA, dB, dC, alpha, beta);
                  cudaDeviceSynchronize();
              }
              cudaEventRecord(end);
@@ -199,7 +208,7 @@ int main(int argc, char **argv)
              cudaEventSynchronize(end);
          }
 
-        else if (kernel_number == 12){ 
+        else if (kernel_number == 12){  
             cudaEventRecord(beg); 
             dim3 blockDim(256);
             dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));

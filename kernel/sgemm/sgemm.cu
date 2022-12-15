@@ -63,8 +63,8 @@ int main(int argc, char **argv)
     cublasCreate(&handle);      
     if (!verify_matrix(C_ref, C, max_size)) {
         printf("Failed to pass the correctness verification against NVIDIA cuBLAS. Exited.\n");
-        exit(-3);
-    }
+        exit(-3); 
+    } 
     for(int max_size = start_size; max_size <= end_size; max_size += gap_size){
     cublasSgemm(handle, CUBLAS_OP_N,CUBLAS_OP_N,max_size, max_size,  max_size, &alpha, dB, max_size, dA, max_size, &beta, dC_ref, max_size);
     // test_kernel(kernel_number, max_size, dA, dB, dC, alpha, beta);
@@ -102,7 +102,7 @@ int main(int argc, char **argv)
         dim3 blockDim(threads_x / 2, threads_x / 2);
         dim3 gridDim(CEIL_DIV(max_size, threads_x * 2), CEIL_DIV(max_size, threads_x * 2));
         sgemm_7 <<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
-    }
+    } 
     else if(kernel_number == 8){
         dim3 blockDim(16, 16);
         dim3 gridDim(CEIL_DIV(max_size, 64), CEIL_DIV(max_size, 64));
@@ -147,10 +147,10 @@ int main(int argc, char **argv)
     cudaMemcpy(C_ref, dC_ref, sizeof(float) * max_size * max_size, cudaMemcpyDeviceToHost);
     cudaDeviceSynchronize();
 
-    //if (!verify_matrix(C_ref, C, max_size)) {
-        //  printf("Failed to pass the correctness verification against NVIDIA cuBLAS. Exited.\n");
-    //    exit(-3);
-    //}
+    if (!verify_matrix(C_ref, C, max_size)) {
+         printf("Failed to pass the correctness verification against NVIDIA cuBLAS. Exited.\n");
+       exit(-3);
+    }
     // saxpy_timer t;
     // print_matrix(C, max_size);
     // printf("CPU \n");
