@@ -314,8 +314,8 @@ __global__  __launch_bounds__(256) void ft_sgemm_18(int N, int K, float *A, floa
         // C_c += *(sAr + (5 << 7));
         // C_c += *(sAr + (6 << 7));
         // C_c += *(sAr + (7 << 7));
-        *(((float*)(t + c * 2 + r / 4)) + r % 4) += C_c + block_level_A_r.x + block_level_B_c.x;
-        bb[0] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3));
+        //*(((float*)(t + c * 2 + r / 4)) + r % 4) += C_c + block_level_A_r.x + block_level_B_c.x;
+        bb[0] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3));// +  C_c + block_level_A_r.x + block_level_B_c.x;
         bb[1] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3) + 4);
         aa[0] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3));
         aa[1] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3) + 4);

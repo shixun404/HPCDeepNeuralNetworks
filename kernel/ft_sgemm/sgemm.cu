@@ -129,8 +129,8 @@ int main(int argc, char **argv)
     // cublasSdot(handle, max_size, dcheck_C_row, 1, dE, 1, dRes);
     // cudaMemcpy(Res, dRes, sizeof(float), cudaMemcpyDeviceToHost);
     // printf("delta row sum %f\n", Res);
-    
-    for(int k_num = 0; k_num <= 19; k_num++){ 
+      
+    for(int k_num = 16; k_num <= 19; k_num++){ 
         if (k_num >= 3 && k_num <= 11)continue;
         int K_min = end_size, K_max = end_size;
         if (k_num == 2 || k_num == 12 || k_num == 1 || k_num == 0){
