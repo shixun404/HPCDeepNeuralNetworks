@@ -1,8 +1,8 @@
 
-void ft_sgemm_1(int num_tests, int max_size, cublasHandle_t handle, float* dA, float* dB, float* dC, float* dE, float* dRes, float* dcheck_C_row, float* dcheck_C_col, float* dcheck_A_col_mul_B, float* dcheck_B_row_mul_A, float* dcheck_A_col, float* dcheck_B_row,  float alpha, float beta, float negative_1){
+void ft_sgemm_1(int num_tests, int max_size, int K,  cublasHandle_t handle, float* dA, float* dB, float* dC, float* dE, float* dRes, float* dcheck_C_row, float* dcheck_C_col, float* dcheck_A_col_mul_B, float* dcheck_B_row_mul_A, float* dcheck_A_col, float* dcheck_B_row,  float alpha, float beta, float negative_1){
     
     for(int ii = 0; ii < num_tests; ++ii){
-        for (int i = 0; i < max_size; i += 256){
+        for (int i = 0; i < K; i += 256){
         cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, max_size, max_size,  256, &alpha, dA + i * max_size, max_size, dB  + i * max_size, max_size, &beta, dC, max_size);
         cudaDeviceSynchronize();
         // row sum of C

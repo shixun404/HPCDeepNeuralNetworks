@@ -37,7 +37,7 @@
     a.z += __shfl_down_sync(0xffffffff, a.z, i, 32); \
     a.w += __shfl_down_sync(0xffffffff, a.w, i, 32);
 
-__global__  __launch_bounds__(256) void ft_sgemm_12(int N, int K, float *A, float *B, float *C, float alpha, float beta){
+__global__  __launch_bounds__(256) void ft_sgemm_14(int N, int K, float *A, float *B, float *C, float alpha, float beta){
     __shared__ float shared[4][1024]; // blockDim * 2 for sublocks of A and B
     float* sa, *sb;
     float* sAr, *sBc;
@@ -83,12 +83,12 @@ __global__  __launch_bounds__(256) void ft_sgemm_12(int N, int K, float *A, floa
     sa[(tx>>1) + ((((tx&1)<<2)+1)<<7) ]= pre_A.y;
     sa[(tx>>1) + ((((tx&1)<<2) + 2)<<7)]= pre_A.z; 
     sa[(tx>>1) + ((((tx&1)<<2) + 3)<<7)]= pre_A.w;
-    B_c = pre_B.x + pre_B.y + pre_B.z + pre_B.w;
-    B_c += __shfl_xor_sync(0xffffffff, B_c, 1, 32);
-    B_c += __shfl_xor_sync(0xffffffff, B_c, 2, 32);
-    B_c += __shfl_xor_sync(0xffffffff, B_c, 4, 32);
-    B_c += __shfl_xor_sync(0xffffffff, B_c, 8, 32);
-    B_c += __shfl_xor_sync(0xffffffff, B_c, 16, 32);
+    // B_c = pre_B.x + pre_B.y + pre_B.z + pre_B.w;
+    // B_c += __shfl_xor_sync(0xffffffff, B_c, 1, 32);
+    // B_c += __shfl_xor_sync(0xffffffff, B_c, 2, 32);
+    // B_c += __shfl_xor_sync(0xffffffff, B_c, 4, 32);
+    // B_c += __shfl_xor_sync(0xffffffff, B_c, 8, 32);
+    // B_c += __shfl_xor_sync(0xffffffff, B_c, 16, 32);
 
     
     __syncthreads();        
@@ -277,12 +277,12 @@ __global__  __launch_bounds__(256) void ft_sgemm_12(int N, int K, float *A, floa
         sa[(tx>>1) + ((((tx&1)<<2) + 3)<<7)]= pre_A.w;
         
         
-        B_c = pre_B.x + pre_B.y + pre_B.z + pre_B.w;
-        B_c += __shfl_xor_sync(0xffffffff, B_c, 1, 32);
-        B_c += __shfl_xor_sync(0xffffffff, B_c, 2, 32);
-        B_c += __shfl_xor_sync(0xffffffff, B_c, 4, 32);
-        B_c += __shfl_xor_sync(0xffffffff, B_c, 8, 32);
-        B_c += __shfl_xor_sync(0xffffffff, B_c, 16, 32);
+        // B_c = pre_B.x + pre_B.y + pre_B.z + pre_B.w;
+        // B_c += __shfl_xor_sync(0xffffffff, B_c, 1, 32);
+        // B_c += __shfl_xor_sync(0xffffffff, B_c, 2, 32);
+        // B_c += __shfl_xor_sync(0xffffffff, B_c, 4, 32);
+        // B_c += __shfl_xor_sync(0xffffffff, B_c, 8, 32);
+        // B_c += __shfl_xor_sync(0xffffffff, B_c, 16, 32);
 
         
         // __syncthreads();        

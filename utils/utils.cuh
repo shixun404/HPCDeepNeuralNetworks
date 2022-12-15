@@ -39,7 +39,7 @@ private:
     std::chrono::high_resolution_clock::time_point t0_;
 };
 
-__global__ void fill(float *a , float x, int N);
+//__global__ void fill(float *a , float x, int N);
 
 cudaDeviceProp getDetails(int deviceId);
 
