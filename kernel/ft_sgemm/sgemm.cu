@@ -144,7 +144,7 @@ int main(int argc, char **argv)
     for(int k_num = start_kernel; k_num <= end_kernel; k_num++){ 
         if (k_num >= 3 && k_num <= 11)continue;
         int K_min = end_size, K_max = end_size;
-        if (k_num == 12 || k_num == 1 || k_num == 0){
+        if (k_num == 2 || k_num == 12 || k_num == 1 || k_num == 0){
             K_min = 256;
             K_max = 1024; 
         }
@@ -179,8 +179,35 @@ int main(int argc, char **argv)
              ft_sgemm_1(num_tests, max_size, K, handle, dA, dB, dC, dE, dRes, dcheck_C_row, dcheck_C_col, dcheck_A_col_mul_B, dcheck_B_row_mul_A, dcheck_A_col, dcheck_B_row,  alpha, beta, negative_1);
              cudaEventRecord(end);
              cudaEventSynchronize(beg);  
+<<<<<<< HEAD
              cudaEventSynchronize(end);  
         }   
+=======
+             cudaEventSynchronize(end); 
+        }
+      else if (kernel_number == 22){
+              cudaEventRecord(beg);
+              ft_sgemm_1(num_tests, max_size, max_size, handle, dA, dB, dC, dE, dRes, dcheck_C_row, dcheck_C_col, dcheck_A_col_mul_B, dcheck_B_row_mul_A, dcheck_A_col, dcheck_B_row,  alpha,   beta, negative_1);
+              cudaEventRecord(end);
+              cudaEventSynchronize(beg);
+              cudaEventSynchronize(end);
+         }
+
+        else if (kernel_number == 2){
+             cudaEventRecord(beg);
+             dim3 blockDim(256);
+             dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
+             for(int ii = 0; ii < num_tests; ++ii){
+                 cudaDeviceSynchronize();
+                 sgemm_13<<<gridDim, blockDim>>>(max_size, K, dA, dB, dC, alpha, beta);
+                 cudaDeviceSynchronize();
+             }
+             cudaEventRecord(end);
+             cudaEventSynchronize(beg);
+             cudaEventSynchronize(end);
+         }
+
+>>>>>>> 37fcbff9bb723bdc55898f80600834a133e46f2b
         else if (kernel_number == 20){ 
             cudaEventRecord(beg); 
             dim3 blockDim(256);
@@ -316,7 +343,7 @@ int main(int argc, char **argv)
             
             // double gflops = double(2 * num_tests * double(max_size) * double(max_size) * double(max_size) + num_tests * 4 * double(max_size) * double(max_size) * (1.0 + 1.0 / 256.0)) / (1e9);
             double gflops  = 0.;
-            if(kernel_number <= 12 && kernel_number !=2)gflops = double(2 * num_tests * double(max_size) * double(max_size) * double(K)) / (1e9);
+            if(kernel_number <= 12)gflops = double(2 * num_tests * double(max_size) * double(max_size) * double(K)) / (1e9);
             else gflops = double(2 * num_tests * double(max_size) * double(max_size) * double(max_size)) / (1e9);
             double perf = gflops / (elapsed / 1e3);
             printf("%8.2f,", perf);
