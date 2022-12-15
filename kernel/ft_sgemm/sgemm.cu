@@ -19,6 +19,8 @@ int main(int argc, char **argv)
     int num_tests = 1;
     int start_size = atoi(argv[2]);       
     int end_size =  atoi(argv[3]);      
+    int start_kernel = atoi(argv[4]);
+    int end_kernel = atoi(argv[5]);
     int gap_size = 256;                    
     for(int max_size = start_size; max_size <= end_size; max_size += gap_size){
         printf("%8.2d|", max_size);
@@ -129,11 +131,11 @@ int main(int argc, char **argv)
     // cublasSdot(handle, max_size, dcheck_C_row, 1, dE, 1, dRes);
     // cudaMemcpy(Res, dRes, sizeof(float), cudaMemcpyDeviceToHost);
     // printf("delta row sum %f\n", Res);
-      
-    for(int k_num = 16; k_num <= 19; k_num++){ 
+           
+    for(int k_num = start_kernel; k_num <= end_kernel; k_num++){ 
         if (k_num >= 3 && k_num <= 11)continue;
         int K_min = end_size, K_max = end_size;
-        if (k_num == 2 || k_num == 12 || k_num == 1 || k_num == 0){
+        if (k_num == 12 || k_num == 1 || k_num == 0){
             K_min = 256;
             K_max = 1024;
         }
@@ -170,19 +172,33 @@ int main(int argc, char **argv)
              cudaEventSynchronize(beg);  
              cudaEventSynchronize(end); 
         }   
-        else if (kernel_number == 2){ 
+        else if (kernel_number == 20){ 
             cudaEventRecord(beg); 
             dim3 blockDim(256);
             dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
             for(int ii = 0; ii < num_tests; ++ii){      
                 cudaDeviceSynchronize();       
-                sgemm_13<<<gridDim, blockDim>>>(max_size, K, dA, dB, dC, alpha, beta);
+                sgemm_13<<<gridDim, blockDim>>>(max_size, max_size, dA, dB, dC, alpha, beta);
                 cudaDeviceSynchronize();
             }
             cudaEventRecord(end);
             cudaEventSynchronize(beg);
             cudaEventSynchronize(end);   
         } 
+         else if (kernel_number == 21){
+             cudaEventRecord(beg);
+             dim3 blockDim(256);
+             dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
+             for(int ii = 0; ii < num_tests; ++ii){
+                 cudaDeviceSynchronize();
+                 ft_sgemm_20<<<gridDim, blockDim>>>(max_size, max_size, dA, dB, dC, alpha, beta);
+                 cudaDeviceSynchronize();
+             }
+             cudaEventRecord(end);
+             cudaEventSynchronize(beg);
+             cudaEventSynchronize(end);
+         }
+
         else if (kernel_number == 12){ 
             cudaEventRecord(beg); 
             dim3 blockDim(256);
@@ -291,7 +307,7 @@ int main(int argc, char **argv)
             
             // double gflops = double(2 * num_tests * double(max_size) * double(max_size) * double(max_size) + num_tests * 4 * double(max_size) * double(max_size) * (1.0 + 1.0 / 256.0)) / (1e9);
             double gflops  = 0.;
-            if(kernel_number <= 12)gflops = double(2 * num_tests * double(max_size) * double(max_size) * double(K)) / (1e9);
+            if(kernel_number <= 12 && kernel_number !=2)gflops = double(2 * num_tests * double(max_size) * double(max_size) * double(K)) / (1e9);
             else gflops = double(2 * num_tests * double(max_size) * double(max_size) * double(max_size)) / (1e9);
             double perf = gflops / (elapsed / 1e3);
             printf("%8.2f,", perf);

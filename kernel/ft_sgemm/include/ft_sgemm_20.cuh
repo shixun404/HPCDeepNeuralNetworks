@@ -37,7 +37,7 @@
     a.z += __shfl_down_sync(0xffffffff, a.z, i, 32); \
     a.w += __shfl_down_sync(0xffffffff, a.w, i, 32);
 
-__global__  __launch_bounds__(256) void ft_sgemm_12(int N, int K, float *A, float *B, float *C, float alpha, float beta){
+__global__  __launch_bounds__(256) void ft_sgemm_20(int N, int K, float *A, float *B, float *C, float alpha, float beta){
     __shared__ float shared[4][1024]; // blockDim * 2 for sublocks of A and B
     float* sa, *sb;
     float* sAr, *sBc;
