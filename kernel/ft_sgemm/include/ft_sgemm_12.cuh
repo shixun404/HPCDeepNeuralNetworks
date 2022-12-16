@@ -156,7 +156,7 @@ __global__  __launch_bounds__(256) void ft_sgemm_12(int N, int K, float *A, floa
             tab(t[14], bb[prefetch * 2], aa[prefetch * 2 + 1].w);
             tab(t[15], bb[prefetch * 2 + 1], aa[prefetch * 2 + 1].w);
         }
-        if((k % 256) == 0){
+        if((k %256) == 0){
             checksum_8(C_c1[0].x, t[0], t[1])
             checksum_8(C_c1[0].y, t[2], t[3])
             checksum_8(C_c1[0].z, t[4], t[5])
@@ -254,7 +254,8 @@ __global__  __launch_bounds__(256) void ft_sgemm_12(int N, int K, float *A, floa
             checksum_8(error, (*(float4*)((float*)shared + (wid_b * 64 + inter_warp_id_b * 8))), (*(float4*)((float*)shared + (wid_b * 64 + inter_warp_id_b * 8) + 4)));
             checksum_8(error1, (*(float4*)((float*)shared + (wid_a * 32 + inter_warp_id_a * 8))), (*(float4*)((float*)shared + (wid_a * 32 + inter_warp_id_b * 8) + 4)));
             // if((error - err_bound > 0) || (error + err_bound < 0)){
-            if(abs(error) !=0.1 || abs(error1) > 0.1){
+            if (true){
+            //if(abs(error) !=0.1 || abs(error1) > 0.1){
             r = -1, c = -1;
             r = 0, c = 0;
             *(((float*)(t + c * 2 + r / 4)) + r % 4) += error + error1 + C_c_;
@@ -280,7 +281,7 @@ __global__  __launch_bounds__(256) void ft_sgemm_12(int N, int K, float *A, floa
         //B_c = __reduce_add_sync(0xffffffff, B_c);
 
         
-        __syncthreads();        
+        //__syncthreads();        
         int shared_offset_ = ((((k>>3))&1)<<10);
         sAr = (float*)shared + shared_offset_;
         sBc = (float*)shared + 2048 + shared_offset_;
