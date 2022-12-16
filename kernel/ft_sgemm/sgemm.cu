@@ -87,7 +87,7 @@ int main(int argc, char **argv)
         CUDA_CALLER(cudaMalloc((void**) &dcheck_A_col_mul_B, sizeof(float) * max_size));
         CUDA_CALLER(cudaMalloc((void**) &dcheck_B_row_mul_A, sizeof(float) * max_size));  
         CUDA_CALLER(cudaMalloc((void**) &dRes, sizeof(float)));
-        CUDA_CALLER(cudaMemcpy(dE, E, sizeof(float) * max_size, cudaMemcpyHostToDevice));  
+        CUDA_CALLER(cudaMemcpy(dE, E, sizeof(float) * max_size, cudaMemcpyHostToDevice));   
         CUDA_CALLER(cudaMemcpy(dE_, E_, sizeof(float) * max_size, cudaMemcpyHostToDevice)); 
         CUDA_CALLER(cudaMemcpy(dcheck_A_col, dcheck_A_col, sizeof(float) * max_size, cudaMemcpyHostToDevice));
         CUDA_CALLER(cudaMemcpy(dcheck_B_row, check_B_row, sizeof(float) * max_size, cudaMemcpyHostToDevice));
@@ -178,11 +178,7 @@ int main(int argc, char **argv)
              cudaEventRecord(beg);
              ft_sgemm_1(num_tests, max_size, K, handle, dA, dB, dC, dE, dRes, dcheck_C_row, dcheck_C_col, dcheck_A_col_mul_B, dcheck_B_row_mul_A, dcheck_A_col, dcheck_B_row,  alpha, beta, negative_1);
              cudaEventRecord(end);
-             cudaEventSynchronize(beg);  
-<<<<<<< HEAD
-             cudaEventSynchronize(end);  
-        }   
-=======
+             cudaEventSynchronize(beg);   
              cudaEventSynchronize(end); 
         }
       else if (kernel_number == 22){
@@ -207,7 +203,6 @@ int main(int argc, char **argv)
              cudaEventSynchronize(end);
          }
 
->>>>>>> 37fcbff9bb723bdc55898f80600834a133e46f2b
         else if (kernel_number == 20){ 
             cudaEventRecord(beg); 
             dim3 blockDim(256);
@@ -227,7 +222,7 @@ int main(int argc, char **argv)
              dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
              for(int ii = 0; ii < num_tests; ++ii){
                  cudaDeviceSynchronize();
-                 ft_sgemm_12<<<gridDim, blockDim>>>(max_size, max_size, dA, dB, dC, alpha, beta);
+                 ft_sgemm_20<<<gridDim, blockDim>>>(max_size, max_size, dA, dB, dC, alpha, beta);
                  cudaDeviceSynchronize();
              }
              cudaEventRecord(end);

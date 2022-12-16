@@ -37,7 +37,7 @@
     a.z += __shfl_down_sync(0xffffffff, a.z, i, 32); \
     a.w += __shfl_down_sync(0xffffffff, a.w, i, 32);
 
-__global__  __launch_bounds__(256) void ft_sgemm_16(int N, int K, float *A, float *B, float *C, float alpha, float beta){
+__global__  __launch_bounds__(256) void ft_sgemm_16(int N, int K,  float *A, float *B, float *C, float alpha, float beta){
     __shared__ float shared[4][1024]; // blockDim * 2 for sublocks of A and B
     float* sa, *sb;
     float* sAr, *sBc;
@@ -314,8 +314,8 @@ __global__  __launch_bounds__(256) void ft_sgemm_16(int N, int K, float *A, floa
         C_c += *(sAr + (5 << 7));
         C_c += *(sAr + (6 << 7));
         C_c += *(sAr + (7 << 7));
-        //*(((float*)(t + c * 2 + r / 4)) + r % 4) += C_c + block_level_A_r.x + block_level_B_c.x;
-        bb[0] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3));//+  C_c + block_level_A_r.x + block_level_B_c.x;
+        *(((float*)(t + c * 2 + r / 4)) + r % 4) += C_c + block_level_A_r.x + block_level_B_c.x;
+        bb[0] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3));
         bb[1] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3) + 4);
         aa[0] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3));
         aa[1] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3) + 4);
