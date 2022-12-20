@@ -22,3 +22,4 @@
 #include "./include/sgemm_small.cuh"
 #include "./include/sgemm_medium.cuh"
 #include "./include/sgemm_large.cuh"
+#include "./include/sgemm_tall.cuh"

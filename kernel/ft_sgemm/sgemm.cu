@@ -106,10 +106,10 @@ int main(int argc, char **argv)
     cublasSgemm(handle, CUBLAS_OP_N,CUBLAS_OP_T,max_size, max_size,  max_size, &alpha, dB, max_size, dA, max_size, &beta, dC_ref, max_size);
     // test_kernel(kernel_number, max_size, dA, dB, dC, alpha, beta);
     if(true){       
-        dim3 blockDim(64);
-        dim3 gridDim(CEIL_DIV(max_size, 64 ), CEIL_DIV(max_size, 64));
+        dim3 blockDim(128);
+        dim3 gridDim(CEIL_DIV(max_size, 128 ), CEIL_DIV(max_size, 32));
         cudaDeviceSynchronize(); 
-        sgemm_large <<<gridDim, blockDim>>>(max_size, max_size, dB, dA, dC, alpha, beta);  
+        sgemm_tall <<<gridDim, blockDim>>>(max_size, max_size, dB, dA, dC, alpha, beta);  
     }   
     // printf("finish verified!\n");                  
     cudaDeviceSynchronize();
@@ -218,6 +218,19 @@ int main(int argc, char **argv)
             for(int ii = 0; ii < num_tests; ++ii){
                 cudaDeviceSynchronize();
                 sgemm_large<<<gridDim, blockDim>>>(max_size, K, dB, dA, dC, alpha, beta);
+                cudaDeviceSynchronize();
+            }
+            cudaEventRecord(end);     
+            cudaEventSynchronize(beg);
+            cudaEventSynchronize(end); 
+        } 
+        else if (kernel_number == 28){
+            cudaEventRecord(beg);
+            dim3 blockDim(128);
+            dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 32));
+            for(int ii = 0; ii < num_tests; ++ii){
+                cudaDeviceSynchronize();
+                sgemm_tall<<<gridDim, blockDim>>>(max_size, K, dB, dA, dC, alpha, beta);
                 cudaDeviceSynchronize();
             }
             cudaEventRecord(end);     
