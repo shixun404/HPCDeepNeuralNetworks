@@ -24,8 +24,8 @@ __global__  __launch_bounds__(256) void sgemm_medium(int N, int K, float *A, flo
     // warp row id:  
 
     // global memory read
-    // tile A size = ms x ks = 16 * 16, col major
-    // tile B size = ns x ks = 16 * 16, row major
+    // tile A size = ms x ks = 32 * 8, col major
+    // tile B size = ns x ks = 32 * 8, row major
     // init double buffer with size ms * ks * 2 + ns * ks * 2 = 1024 in shared memory
     // [buffer_A_1, buffer_A_2, buffer_B_1, buffer_B_2]
     __shared__ float sAB[1024]; 

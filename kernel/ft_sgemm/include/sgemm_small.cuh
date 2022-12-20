@@ -13,7 +13,7 @@
     
 __global__  __launch_bounds__(256) void sgemm_small(int N, int K, float *A, float *B, float *C, float alpha, float beta){
     // ms = ns = ks = 16
-    // mw = 16, nw = 8
+    // mw = 8, nw = 16
     // mr = 2, nr = 2
     // blockId, warpId, and threadIdx
     int ms = 16, ns = 16, ks = 16, mw = 8, nw = 16, mr = 2, nr = 2;
