@@ -1,74 +1,55 @@
 #include <stdio.h>
 //#include "../kernels.cuh"
 #define m 8
+#define err_bound 3e-1
 #define kk_max 1024
 #define tab(t, a, b)t.x += a.x * b;t.y += a.y * b;  t.z += a.z * b;t.w += a.w * b;  
-#define checksum_8(t, a, b) t += a.x; t += a.y; t += a.z; t += a.w; t += b.x; t += b.y; t += b.z; t += b.w;
-#define saxpy(t1,t2, a, b1,b2) t1.x += a * b1.x; t1.y += a * b1.y; t1.z += a * b1.z; t1.w += a * b1.w; \
-                               t2.x += a * b2.x; t2.y += a * b2.y; t2.z += a * b2.z; t2.w += a * b2.w;
+
+#define checksum_8(t, a, b) t = a.x; t += a.y; t += a.z; t += a.w; t += b.x; t += b.y; t += b.z; t += b.w;
+#define checksum_8_(t, a, b) t += a.x; t += a.y; t += a.z; t += a.w; t += b.x; t += b.y; t += b.z; t += b.w;
+#define negative_checksum_8(t, a, b) t -= a.x; t -= a.y; t -= a.z; t -= a.w; t -= b.x; t -= b.y; t -= b.z; t -= b.w;
+#define saxpy(alpha, a,b) b.x = alpha * a.x; b.y = alpha * a.y; b.z = alpha * a.z; b.w = alpha * a.w;
+#define saxpy_(alpha, a,b) b.x += alpha * a.x; b.y += alpha * a.y; b.z += alpha * a.z; b.w += alpha * a.w;
 // #define tcab(t, c, alpha, beta) c = alpha * t + beta * c;
 #define tcab(t, c, alpha, beta) \
     c.x = alpha * t.x + beta * c.x;\
     c.y = alpha * t.y + beta * c.y;\
     c.z = alpha * t.z + beta * c.z;\
     c.w = alpha * t.w + beta * c.w;
-#define shared_vec_write(s, offset, vec) \
-        (*(float4*)((float*)s + offset)).x += vec[0].x; \
-        (*(float4*)((float*)s + offset)).y += vec[0].y; \
-        (*(float4*)((float*)s + offset)).z += vec[0].z; \
-        (*(float4*)((float*)s + offset)).w += vec[0].w; \
-        (*(float4*)((float*)s + offset + 4)).x += vec[1].x; \
-        (*(float4*)((float*)s + offset + 4)).y += vec[1].y; \
-        (*(float4*)((float*)s + offset + 4)).z += vec[1].z; \
-        (*(float4*)((float*)s + offset + 4)).w += vec[1].w;
 
-// #define shared_vec_write(s, offset, vec, tmp) \
-//         tmp = (*(float4*)((float*)s + offset));\
-//         tmp.x += vec[0].x; \
-//         tmp.y += vec[0].y; \
-//         tmp.z += vec[0].z; \
-//         tmp.w += vec[0].w; \
-//         (*(float4*)((float*)s + offset)) = tmp;\
-//         tmp = (*(float4*)((float*)s + offset + 4));\
-//         tmp.x += vec[1].x; \
-//         tmp.y += vec[1].y; \
-//         tmp.z += vec[1].z; \
-//         tmp.w += vec[1].w; \
-//         (*(float4*)((float*)s + offset + 4)) = tmp;
+#define copy_float4(a, b) \
+    a.x = b.x;\
+    a.y = b.y;\
+    a.z = b.z;\
+    a.w = b.w;
 
+#define float4_set_zero(t) t.x = 0.; t.y = 0.; t.z = 0.; t.w = 0.; 
+#define comp_and_record(checksum, r, offset) \
+    if(checksum.x > err_bound) r = 0 + offset; \ 
+    if(checksum.y > err_bound) r = 1 + offset; \ 
+    if(checksum.z > err_bound) r = 2 + offset; \ 
+    if(checksum.w > err_bound) r = 3 + offset; 
+
+// #define print_float4(a, b, id) if(a.x != a.x || a.y != a.y || a.z != a.z || a.w != a.w || b.x != b.x || b.y != b.y || b.z != b.z || b.w != b.w)printf("%d, %f, %f, %f, %f, %f, %f, %f, %f\n", id,  a.x, a.y, a.z, a.w, b.x, b.y, b.z, b.w);
+#define print_float4(a, b, id) printf("%f, %f, %f, %f, %f, %f, %f, %f, %f\n", id,  a.x, a.y, a.z, a.w, b.x, b.y, b.z, b.w);
 #define warp_shfl_down(a, i) \
     a.x += __shfl_down_sync(0xffffffff, a.x, i, 32); \
     a.y += __shfl_down_sync(0xffffffff, a.y, i, 32); \
     a.z += __shfl_down_sync(0xffffffff, a.z, i, 32); \
     a.w += __shfl_down_sync(0xffffffff, a.w, i, 32);
-    
 
-__global__  __launch_bounds__(256) void ft_sgemm_6(int N, float *A, float *B, float *C, float alpha, float beta){
-    __shared__ float shared_A[1024]; // blockDim * 2 for sublocks of A and B
-    __shared__ float shared_B[1024];
-    // __shared__ float shared_C + 128[2048];
-    // __shared__ float shared_C[2048];
-    // __shared__ float shared_C + 384[2048];
-    // __shared__ float shared_C + 256[2048];
-    __shared__ float shared_C[512];
-    // __shared__ float shared_C + 128[128], shared_C[128], shared_C + 384[128], shared_C + 256[128];
-    
-    
-    
-    
+__global__  __launch_bounds__(256) void ft_sgemm_6(int N, int K, float *A, float *B, float *C, float alpha, float beta){
+    __shared__ float shared[4][1024]; // blockDim * 2 for sublocks of A and B
+    float* sa, *sb;
+    float* sAr, *sBc;
+    sAr = (float*)(shared) + 1024;
+    sBc = (float*)(shared) + 1024 + 2048;
+    sa = (float*)shared;
+    sb = (float*)shared + 2048;
     int tx = threadIdx.x;
-    float2 sc;
-    sc.x = 0;
-    sc.y = 0;
-    *((float2*)(shared_C + tx * 2)) = sc;
-    // if(tx / 128 == 0){
-    //     shared_C + 128[tx & 127] = 0;
-    //     shared_C + 384[tx & 127] = 0;
-    // }
-    // else{
-    //     shared_C[tx & 127] = 0;
-    //     shared_C + 256[tx & 127] = 0;
-    // }
+    float2 bb0[2];
+    float aa0[2];
+    float tmp;
     int bx = blockIdx.x, by = blockIdx.y;
     int wid = (tx >> 5);
     int wid_b = (wid >> 2), wid_a = (wid & 3);
@@ -76,201 +57,223 @@ __global__  __launch_bounds__(256) void ft_sgemm_6(int N, float *A, float *B, fl
     int inter_warp_id_a = ((tx&31) & 3);
     int i1 = (wid_b << 6) + (inter_warp_id_b << 3) + (bx<<7);
     int j1 = (wid_a << 5) + (inter_warp_id_a << 3) + (by<<7);
-    float4 t[16], bb0,aa0,bb1, aa1, C1[16], C_c[2], C_r[2], C_c_ref[2], C_r_ref[2], tmp;
-    // float8 tmp1;
-    float A_c, B_r = 0.; 
+    int A_r_checksum_id = ((tx&31) >> 2);
+    float4 t[16], bb[4],aa[4], C1[16], pre_A, pre_B, pre_A_sum, C_c1[2], C_r1[2];
+    float4 block_level_B_c = {0, 0, 0, 0}, block_level_A_r = {0, 0, 0, 0};
+    float4 C_c2[2], C_r2[2];
+    float C_c; 
+    float checksum_B_c[2], checksum_A_r[2];
+    float A_r[2] = {0.,0.}, B_c = 0, checksum_sum = 0; 
     int idx = tx & 31, idy = tx >> 5;
+    int r = -1, c = -1;
+    int tmp_1 =  (((tx & 31) >> 2) & 1 );
     memset(t, 0, sizeof(t));
-    memset(C_c_ref, 0, sizeof(C_c_ref));
-    memset(C_r_ref, 0, sizeof(C_r_ref));
-    memset(C_c, 0, sizeof(C_c));
-    memset(C_r, 0, sizeof(C_r));
+    C_c = 0.0;
+    memset(C_c1, 0, sizeof(C_c1));
+    memset(C_r1, 0, sizeof(C_r1));
+    memset(checksum_B_c, 0, sizeof(checksum_B_c));
+    memset(checksum_A_r, 0, sizeof(checksum_A_r));
     int idx_4 = (idx<<2), idy_128 = (idy << 7), by_128 = (by << 7);
-    A = A + ((tx>>1) + by_128) * N + ((tx & 1) << 2);
+    A = A + idx_4 + (by << 7) + idy * N;
     B = B + idx_4 + (bx << 7) + idy * N;
+    pre_B = *(float4*)B;
+    pre_A = *(float4*)A;
+    //int shared_offset = 0;
+    ((float4*)sb)[tx] = pre_B;
+    ((float4*)sa)[tx] = pre_A;
 
-    for(int k = 0; k < N; k += 8){
-        bb0 = *(float4*)B;
-        aa0 = *(float4*)A;
-        
-        *((float4*)(shared_B) + tx) = bb0;
-        shared_A[(tx>>1) + ((((tx&1)<<2) + 0)<<7)]= aa0.x;
-        shared_A[(tx>>1) + ((((tx&1)<<2)+1)<<7) ]= aa0.y;
-        shared_A[(tx>>1) + ((((tx&1)<<2) + 2)<<7)]= aa0.z; 
-        shared_A[(tx>>1) + ((((tx&1)<<2) + 3)<<7)]= aa0.w;
-        B += (N<<3);
-        A += 8; 
-        A_c = 0;
-        B_r = 0;
-        __syncthreads(); 
+
+    int N_8 = (N << 3);
+    __syncthreads();
+    int offset_2048 = tx > 128?0:2048;
+    int offset_2048_ = tx > 128?2048:0;
+    int tx_128 = (tx & 127);
+    int tx_div_128_mul_4 =  4 * (tx > 128?0:1);
+    int tx_div_128_mul_7 = 7 * (tx > 128?1:0);
+    sAr += offset_2048 + (tx & 127);
+    C_c += *(sAr + (0 << 7));
+    C_c += *(sAr + (1 << 7));
+    C_c += *(sAr + (2 << 7));
+    C_c += *(sAr + (3 << 7));
+    C_c += *(sAr + (4 << 7));
+    C_c += *(sAr + (5 << 7));
+    C_c += *(sAr + (6 << 7));
+    C_c += *(sAr + (7 << 7));
+    bb[0] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3));
+    bb[1] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3) + 4);
+    aa[0] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3));
+    aa[1] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3) + 4);
+
+    for(int k = 0; k < K; k += 8){
+        B += N_8;
+        A += N_8; 
+        int shared_offset = ((((k>>3) + 1)&1)<<10);
+        pre_B = *(float4*)B;
+        pre_A = *(float4*)A;
+
         #pragma unroll
         for(int kk = 0; kk < 8; kk+=1){
-            bb0 = *(float4*)(shared_B + (wid_b << 6) + (inter_warp_id_b << 3) + (kk<<7));
-            bb1 = *(float4*)(shared_B + (wid_b << 6) + (inter_warp_id_b << 3) + 4 + (kk<<7));
-            aa0 = *(float4*)(shared_A + (wid_a << 5) + (inter_warp_id_a << 3) + (kk<<7));
-            aa1 = *(float4*)(shared_A + (wid_a << 5) + (inter_warp_id_a << 3) + 4 + (kk<<7));
-            tab(t[0], bb0, aa0.x);
-            tab(t[1], bb1, aa0.x);
-            tab(t[2], bb0, aa0.y);
-            tab(t[3], bb1, aa0.y);
-            tab(t[4], bb0, aa0.z);
-            tab(t[5], bb1, aa0.z);
-            tab(t[6], bb0, aa0.w);
-            tab(t[7], bb1, aa0.w);
+            int prefetch_next = ((kk + 1)&1);
+            int prefetch = ((kk)&1);
+            int kk_ = ((kk + 1)&7);
 
-            tab(t[8], bb0, aa1.x);
-            tab(t[9], bb1, aa1.x);
-            tab(t[10], bb0, aa1.y);
-            tab(t[11], bb1, aa1.y);
-            tab(t[12], bb0, aa1.z);
-            tab(t[13], bb1, aa1.z);
-            tab(t[14], bb0, aa1.w);
-            tab(t[15], bb1, aa1.w);
+            bb[prefetch_next * 2 + 0] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3) + (kk_<<7));
+            bb[prefetch_next * 2 + 1] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3) + 4 + (kk_<<7));
+            aa[prefetch_next * 2 + 0] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3) + (kk_<<7));
+            aa[prefetch_next * 2 + 1] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3) + 4 + (kk_<<7));
+            tab(t[0], bb[prefetch * 2], aa[prefetch * 2 + 0].x);
+            tab(t[1], bb[prefetch * 2 + 1], aa[prefetch * 2 + 0].x);
+            tab(t[2], bb[prefetch * 2], aa[prefetch * 2 + 0].y);  
+            tab(t[3], bb[prefetch * 2 + 1], aa[prefetch * 2 + 0].y);
+            tab(t[4], bb[prefetch * 2], aa[prefetch * 2 + 0].z);
+            tab(t[5], bb[prefetch * 2 + 1], aa[prefetch * 2 + 0].z);
+            tab(t[6], bb[prefetch * 2], aa[prefetch * 2 + 0].w);
+            tab(t[7], bb[prefetch * 2 + 1], aa[prefetch * 2 + 0].w);
 
-            checksum_8(A_c, aa0, aa1);
-            checksum_8(B_r, bb0, bb1);
-            saxpy(C_c[0], C_c[1], A_c, bb0, bb1);
-            saxpy(C_r[0], C_r[1], B_r, aa0, aa1);
+            tab(t[8], bb[prefetch * 2], aa[prefetch * 2 + 1].x);
+            tab(t[9], bb[prefetch * 2 + 1], aa[prefetch * 2 + 1].x);
+            tab(t[10], bb[prefetch * 2], aa[prefetch * 2 + 1].y);   
+            tab(t[11], bb[prefetch * 2 + 1], aa[prefetch * 2 + 1].y);
+            tab(t[12], bb[prefetch * 2], aa[prefetch * 2 + 1].z);
+            tab(t[13], bb[prefetch * 2 + 1], aa[prefetch * 2 + 1].z);
+            tab(t[14], bb[prefetch * 2], aa[prefetch * 2 + 1].w);
+            tab(t[15], bb[prefetch * 2 + 1], aa[prefetch * 2 + 1].w);
 
+            checksum_8_(A_r[0], aa[prefetch * 2], aa[prefetch * 2 + 1]);
+            checksum_8_(B_c, bb[prefetch * 2], bb[prefetch * 2 + 1]);
+            saxpy_(A_r[0], bb[prefetch * 2], C_r2[0]);
+            saxpy_(A_r[0], bb[prefetch * 2 + 1], C_r2[1]);
+            saxpy_(B_c, aa[prefetch * 2], C_c2[0]);
+            saxpy_(B_c, aa[prefetch * 2 + 1], C_c2[1]);
         }
-        __syncthreads();
-    }
-    checksum_8(C_c_ref[0].x, t[0], t[1])
-    checksum_8(C_c_ref[0].y, t[2], t[3])
-    checksum_8(C_c_ref[0].z, t[4], t[5])
-    checksum_8(C_c_ref[0].w, t[6], t[7])
-    checksum_8(C_c_ref[1].x, t[8], t[9])
-    checksum_8(C_c_ref[1].y, t[10], t[11])
-    checksum_8(C_c_ref[1].z, t[12], t[13])
-    checksum_8(C_c_ref[1].w, t[14], t[15])
-    
-    // C_r_ref[0] = t[0] + t[2] + t[4] + t[6] + t[8] + t[10] + t[12] + t[14];
-    tcab(t[0], C_r_ref[0], 1.0, 1.0)
-    tcab(t[2], C_r_ref[0], 1.0, 1.0)
-    tcab(t[4], C_r_ref[0], 1.0, 1.0)
-    tcab(t[6], C_r_ref[0], 1.0, 1.0)
-    tcab(t[8], C_r_ref[0], 1.0, 1.0)
-    tcab(t[10], C_r_ref[0], 1.0, 1.0)
-    tcab(t[12], C_r_ref[0], 1.0, 1.0)
-    tcab(t[14], C_r_ref[0], 1.0, 1.0)
-    
-    // C_r_ref[1] = t[1] + t[3] + t[5] + t[7] + t[9] + t[11] + t[13] + t[15];
-    tcab(t[1], C_r_ref[1], 1.0, 1.0)
-    tcab(t[3], C_r_ref[1], 1.0, 1.0)
-    tcab(t[5], C_r_ref[1], 1.0, 1.0)
-    tcab(t[7], C_r_ref[1], 1.0, 1.0)
-    tcab(t[9], C_r_ref[1], 1.0, 1.0)
-    tcab(t[11], C_r_ref[1], 1.0, 1.0)
-    tcab(t[13], C_r_ref[1], 1.0, 1.0)
-    tcab(t[15], C_r_ref[1], 1.0, 1.0)
+        if((k % 256) == 0){
+            checksum_8(C_c1[0].x, t[0], t[1])
+            checksum_8(C_c1[0].y, t[2], t[3])
+            checksum_8(C_c1[0].z, t[4], t[5])
+            checksum_8(C_c1[0].w, t[6], t[7])
+            checksum_8(C_c1[1].x, t[8], t[9])
+            checksum_8(C_c1[1].y, t[10], t[11])
+            checksum_8(C_c1[1].z, t[12], t[13])
+            checksum_8(C_c1[1].w, t[14], t[15])
+            
+            tcab(t[0], C_r1[0], 1.0, 0.0)
+            tcab(t[2], C_r1[0], 1.0, 1.0)
+            tcab(t[4], C_r1[0], 1.0, 1.0)
+            tcab(t[6], C_r1[0], 1.0, 1.0)
+            tcab(t[8], C_r1[0], 1.0, 1.0)
+            tcab(t[10], C_r1[0], 1.0, 1.0)
+            tcab(t[12], C_r1[0], 1.0, 1.0)
+            tcab(t[14], C_r1[0], 1.0, 1.0)
+            tcab(t[1], C_r1[1], 1.0, 0.0)
+            tcab(t[3], C_r1[1], 1.0, 1.0)
+            tcab(t[5], C_r1[1], 1.0, 1.0)
+            tcab(t[7], C_r1[1], 1.0, 1.0)
+            tcab(t[9], C_r1[1], 1.0, 1.0)
+            tcab(t[11], C_r1[1], 1.0, 1.0)
+            tcab(t[13], C_r1[1], 1.0, 1.0)
+            tcab(t[15], C_r1[1], 1.0, 1.0)
 
-    // put to shared memory for reduction
-    int shared_col_idx = (((wid_a << 2) + inter_warp_id_a) << 7) + (((wid_b << 3) + inter_warp_id_b) << 3);
-    int shared_row_idx = (((wid_b << 3) + inter_warp_id_b) << 7) + (((wid_a << 2) + inter_warp_id_a) << 3);
-    
+            __syncthreads();
+            
+            float* s = ((float*)(shared) + ((wid_b) << 3) + (wid_a << 9) + inter_warp_id_b + (inter_warp_id_a << 7) + 0);
+            // float* s_ = ((float*)(shared_B) + ((wid_a) << 2) + (wid_b << 10) + inter_warp_id_a + (inter_warp_id_b << 7) + 0);
+            float* s_ = ((float*)(shared) + 2048 + ((wid_a) << 9) + (wid_b << 6) + (inter_warp_id_a<<7) + (inter_warp_id_b << 3) + 0);
+            *s = C_c1[0].x;
+            *(s + (1 << 4)) = C_c1[0].y;
+            *(s + (2 << 4)) = C_c1[0].z;
+            *(s + (3 << 4)) = C_c1[0].w;
+            *(s + (4 << 4)) = C_c1[1].x;
+            *(s + (5 << 4)) = C_c1[1].y;
+            *(s + (6 << 4)) = C_c1[1].z;
+            *(s + (7 << 4)) = C_c1[1].w;
 
-    // *(float4*)((float*)shared_C + shared_col_idx) = C_c[0]; 
-    // *(float4*)((float*)shared_C + shared_col_idx) = C_c[1];  
-    // *(float4*)((float*)shared_C + 128 + shared_row_idx) = C_r[0]; 
-    // *(float4*)((float*)shared_C + 128 + shared_row_idx + 4) = C_r[1];
 
-    // *(float4*)((float*)shared_C + 256 + shared_col_idx) = C_c_ref[0]; 
-    // *(float4*)((float*)shared_C + 256 + shared_col_idx + 4) = C_c_ref[1];  
-    // *(float4*)((float*)shared_C + 384 + shared_row_idx) = C_r_ref[0]; 
-    // *(float4*)((float*)shared_C + 384 + shared_row_idx + 4) = C_r_ref[1];  
+            *((float4*)s_) = C_r1[0];
+            *((float4*)(s_ + 4)) = C_r1[1];
+            
+            __syncthreads();
+            float C_c_ = C_c;
+            checksum_8_(C_c_, C_c2[0], C_c2[1]);
+            checksum_8_(C_c_, C_r2[0], C_r2[1]);
+            if (tx < 128){
+                float4 r_ = *((float4*)((float*)shared + (tx << 4)));
+                C_c_ -= r_.x;
+                C_c_ -= r_.y;
+                C_c_ -= r_.z;
+                C_c_ -= r_.w;
+                r_ = *((float4*)((float*)shared + (tx << 4) + 4));
+                C_c_ -= r_.x;
+                C_c_ -= r_.y;
+                C_c_ -= r_.z;
+                C_c_ -= r_.w;
+                r_ = *((float4*)((float*)shared + (tx << 4) + 8));
+                C_c_ -= r_.x;
+                C_c_ -= r_.y;
+                C_c_ -= r_.z;
+                C_c_ -= r_.w;
+                r_ = *((float4*)((float*)shared + (tx << 4) + 12));
+                C_c_ -= r_.x;
+                C_c_ -= r_.y;
+                C_c_ -= r_.z;
+                C_c_ -= r_.w;
+            }
+            else{
+                float *r_ = ((float*)shared + 2048 + (tx&127));
+                C_c_ -= *r_;
+                C_c_ -= *(r_ + (1 << 7));
+                C_c_ -= *(r_ + (2 << 7));
+                C_c_ -= *(r_ + (3 << 7));
+                C_c_ -= *(r_ + (4 << 7));
+                C_c_ -= *(r_ + (5 << 7));
+                C_c_ -= *(r_ + (6 << 7));
+                C_c_ -= *(r_ + (7 << 7));
+                C_c_ -= *(r_ + (8 << 7));
+                C_c_ -= *(r_ + (9 << 7));
+                C_c_ -= *(r_ + (10 << 7));
+                C_c_ -= *(r_ + (11 << 7));
+                C_c_ -= *(r_ + (12 << 7));
+                C_c_ -= *(r_ + (13 << 7));
+                C_c_ -= *(r_ + (14 << 7));
+                C_c_ -= *(r_ + (15 << 7));
+            }
+            *((float*)shared + tx) = C_c_;
+            __syncthreads();
+            // float error = abs(C_c_ / (abs(C_c) + 1)) + 1;
+            // if((error - err_bound > 0) || (error + err_bound < 0)){
+            if(abs(C_c_) != 0){
+                r = -1, c = -1;
+                r = 0, c = 0;
+                *(((float*)(t + c * 2 + r / 4)) + r % 4) += C_c_;
+            }
+            // __syncthreads();
+            // C_c = 0;
+            // tcab(C_c1[0], C_c1[0], -1, 0);
+            // tcab(C_c1[1], C_c1[1], -1, 0)
+        }
 
-    // reduction
-    __syncthreads();
-    warp_shfl_down(C_c[0], 1);
-    warp_shfl_down(C_c[1], 1);
-    warp_shfl_down(C_c_ref[0], 1);
-    warp_shfl_down(C_c_ref[1], 1);
-    __syncthreads();
-    int i = 8;
-    while(i <= 16){
-        // printf("%d, %d\n",(tx&31),  (__shfl_down_sync(0xffffffff, tx, 8,32)&31));
-        warp_shfl_down(C_r[0], i);
-        warp_shfl_down(C_r[1], i);
-        warp_shfl_down(C_r_ref[0], i);
-        warp_shfl_down(C_r_ref[1], i);
 
-        warp_shfl_down(C_c[0], i / 4);
-        warp_shfl_down(C_c[1], i / 4);
-        warp_shfl_down(C_c_ref[0], i / 4);
-        warp_shfl_down(C_c_ref[1], i / 4);
-        __syncthreads();
-        i *= 2;
-    }
-    
-    
-    int wx = ((wid_b << 3) + inter_warp_id_b), wy = ((wid_a << 2) + inter_warp_id_a);
-    // if(inter_warp_id_a == 0){
-    //     atomicAdd(shared_C + 128 + wx * 8, C_r[0].x);
-    //     atomicAdd(shared_C + 128 + wx * 8 + 1, C_r[0].y);
-    //     atomicAdd(shared_C + 128 + wx * 8 + 2, C_r[0].z);
-    //     atomicAdd(shared_C + 128 + wx * 8 + 3, C_r[0].w);
-    //     atomicAdd(shared_C + 128 + wx * 8 + 4, C_r[1].x);
-    //     atomicAdd(shared_C + 128 + wx * 8 + 5, C_r[1].y);
-    //     atomicAdd(shared_C + 128 + wx * 8 + 6, C_r[1].z);
-    //     atomicAdd(shared_C + 128 + wx * 8 + 7, C_r[1].w);
-    //     atomicAdd(shared_C + 384 + wx * 8, C_r_ref[0].x);
-    //     atomicAdd(shared_C + 384 + wx * 8 + 1, C_r_ref[0].y);
-    //     atomicAdd(shared_C + 384 + wx * 8 + 2, C_r_ref[0].z);
-    //     atomicAdd(shared_C + 384 + wx * 8 + 3, C_r_ref[0].w);
-    //     atomicAdd(shared_C + 384 + wx * 8 + 4, C_r_ref[1].x);
-    //     atomicAdd(shared_C + 384 + wx * 8 + 5, C_r_ref[1].y);
-    //     atomicAdd(shared_C + 384 + wx * 8 + 6, C_r_ref[1].z);
-    //     atomicAdd(shared_C + 384 + wx * 8 + 7, C_r_ref[1].w);
- 
-    // }
-    
-    // if(wx == 0){
-    //     // printf("%d, %d\n", wx, inter_warp_id_b);
-    //     shared_vec_write(shared_C, wy * 8, C_c);
-    //     shared_vec_write(shared_C + 256, wy * 8, C_c_ref);
-    //     // shared_vec_write(shared_C, wy * 8, C_c, tmp);
-    //     // shared_vec_write(shared_C + 256, wy * 8, C_c_ref, tmp);
-    // }
-    if(wy == 0){
-        //printf("%d, %d\n", wy, inter_warp_id_a);
-        shared_vec_write(shared_C + 128, wx * 8, C_r);
-        shared_vec_write(shared_C + 384, wx * 8, C_r_ref);
-        // shared_vec_write(shared_C + 128, wx * 8, C_r, tmp);
-        // shared_vec_write(shared_C + 384, wx * 8, C_r_ref, tmp);
-    }
-    __syncthreads();
-    // if(wx == 8){
-    //     // printf("%d, %d\n", wx, inter_warp_id_b);
-    //     shared_vec_write(shared_C, wy * 8, C_c);
-    //     shared_vec_write(shared_C + 256, wy * 8, C_c_ref);
-    //     // shared_vec_write(shared_C, wy * 8, C_c, tmp);
-    //     // shared_vec_write(shared_C + 256, wy * 8, C_c_ref, tmp);
-    // }
-    if(wy == 4){
-        //printf("%d, %d\n", wy, inter_warp_id_a);
-        shared_vec_write(shared_C + 128, wx * 8, C_r);
-        shared_vec_write(shared_C + 384, wx * 8, C_r_ref);
-        // shared_vec_write(shared_C + 128, wx * 8, C_r, tmp);
-        // shared_vec_write(shared_C + 384, wx * 8, C_r_ref, tmp);
-    }
-    __syncthreads();
-    if(wy == 8){
-        //printf("%d, %d\n", wy, inter_warp_id_a);
-        shared_vec_write(shared_C + 128, wx * 8, C_r);
-        shared_vec_write(shared_C + 384, wx * 8, C_r_ref);
-        // shared_vec_write(shared_C + 128, wx * 8, C_r, tmp);
-        // shared_vec_write(shared_C + 384, wx * 8, C_r_ref, tmp);
-    }
-    __syncthreads();
-    if(wy == 12){
-        //printf("%d, %d\n", wy, inter_warp_id_a);
-        shared_vec_write(shared_C + 128, wx * 8, C_r);
-        shared_vec_write(shared_C + 384, wx * 8, C_r_ref);
-        // shared_vec_write(shared_C + 128, wx * 8, C_r, tmp);
-        // shared_vec_write(shared_C + 384, wx * 8, C_r_ref, tmp);
-    }
-    __syncthreads();
+        sb = (float*)shared + 2048 + shared_offset;
+        sa = (float*)shared + shared_offset;
+        int shared_offset_ = ((((k>>3))&1)<<10);
+        sAr = (float*)shared + shared_offset_;
+        sBc = (float*)shared + 2048 + shared_offset_;
+        ((float4*)sb)[tx] = pre_B;
+        ((float4*)sa)[tx] = pre_A;
+        A_r[0] = pre_A.x + pre_A.y + pre_A.z + pre_A.w;
+        B_c = pre_B.x + pre_B.y + pre_B.z + pre_B.w;
+        // ((float*)sBc)[tx] = B_c;
+        // ((float*)sAr)[tx] = A_r[0];
+        
 
+        
+        __syncthreads();        
+
+        bb[0] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3));
+        bb[1] = *(float4*)(sb + (wid_b << 6) + (inter_warp_id_b << 3) + 4);
+        aa[0] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3));
+        aa[1] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3) + 4);
+        
+    }
     C1[0] = *(float4*)(C + i1 + j1 * N);
     C1[1] = *(float4*)(C + i1 + 4 + j1 * N);
     
