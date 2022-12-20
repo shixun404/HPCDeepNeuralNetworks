@@ -11,7 +11,7 @@
     c.z = alpha * t.z + beta * c.z;\
     c.w = alpha * t.w + beta * c.w;
     
-__global__  __launch_bounds__(256) void sgemm_small(int N, int K, float *A, float *B, float *C, float alpha, float beta){
+__global__  __launch_bounds__(256) void ft_sgemm_small(int N, int K, float *A, float *B, float *C, float alpha, float beta){
     // ms = ns = ks = 16
     // mw = 8, nw = 16
     // mr = 2, nr = 2
@@ -151,7 +151,59 @@ __global__  __launch_bounds__(256) void sgemm_small(int N, int K, float *A, floa
     // load the vectors from buffer to registers
     vec_A[offset_prefetch_register_kk] = *(float2*)(buffer_A + offset_vec_A_warp + offset_vec_A_thread + offset_load_vec_A_kk);
     vec_B[offset_prefetch_register_kk] = *(float2*)(buffer_B + offset_vec_B_warp + offset_vec_B_thread + offset_load_vec_B_kk);
+
+    // ABFT
+    float4 block_level_A_c = {0., 0., 0., 0.}, block_level_B_r = {0., 0., 0., 0.};
+    float A_c = prefetch_vector_tile_A.x + prefetch_vector_tile_A.y + prefetch_vector_tile_A.z + prefetch_vector_tile_A.w;
+    float B_r = prefetch_vector_tile_B.x + prefetch_vector_tile_B.y + prefetch_vector_tile_B.z + prefetch_vector_tile_B.w;
+    A_c += __shfl_xor_sync(0xffffffff, A_c, 1, 32);
+    A_c += __shfl_xor_sync(0xffffffff, A_c, 2, 32);
+    B_r += __shfl_xor_sync(0xffffffff, B_r, 1, 32);
+    B_r += __shfl_xor_sync(0xffffffff, B_r, 2, 32);
     
+    // saxpy
+    block_level_A_c.x += prefetch_vector_tile_B.x * A_c;
+    block_level_A_c.y += prefetch_vector_tile_B.y * A_c;
+    block_level_A_c.z += prefetch_vector_tile_B.z * A_c;
+    block_level_A_c.w += prefetch_vector_tile_B.w * A_c;
+
+    block_level_B_r.x += prefetch_vector_tile_A.x * B_r;
+    block_level_B_r.y += prefetch_vector_tile_A.y * B_r;
+    block_level_B_r.z += prefetch_vector_tile_A.z * B_r;
+    block_level_B_r.w += prefetch_vector_tile_A.w * B_r;
+
+    // store into buffer
+
+    // offset to store the saxpy result
+    int offset_store_checksum = (((k / ks) + 1) & 1);
+    
+    // get the pointer to prefetched buffer A and prefetched buffer B
+    float* checksum_buffer_A = (float*)(sAB) + buffer_A_offset + offset_store_checksum * ms * ks;
+    float* checksum_buffer_B = (float*)(sAB) + buffer_B_offset + offset_store_checksum * ns * ks;
+
+    *(((float4*)checksum_buffer_A) + tx) = block_level_A_c;
+    *(((float4*)checksum_buffer_B) + tx) = block_level_B_r;
+
+    __syncthreads();
+    // offset C checksum each thread
+    // 
+    int offset_A_B = (tx >= (blockDim.x / 2)) ? (buffer_A_offset + offset_store_checksum * ms * ks): (buffer_B_offset + offset_store_checksum * ns * ks);
+    float checksum = 0.;
+    checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 0);
+    checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 1);
+    checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 3);
+    checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 4);
+    checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 5);
+    checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 6);
+    checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 7);
+    checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 8);
+    checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 9);
+    checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 10);
+    checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 11);
+    checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 12);
+    checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 13);
+    checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 14);
+    checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 15);
 
     // K loop
     for(k = 0; k < K; k += ks){
@@ -181,6 +233,10 @@ __global__  __launch_bounds__(256) void sgemm_small(int N, int K, float *A, floa
             res[3] += vec_A[offset_register_kk].y * vec_B[offset_register_kk].y;
         }
         
+        if(k % 256 == 0){
+            res[(tx&1)] += checksum;
+        }
+
         // update offset to store the prefetch vector
         offset_store_prefetch = (((int)(k / ks) + 1) & 1);
         
@@ -205,7 +261,59 @@ __global__  __launch_bounds__(256) void sgemm_small(int N, int K, float *A, floa
         // offset of vec A and vec B w.r.t kk:
         offset_load_vec_A_kk = ((kk + 1) % ks) * ms;
         offset_load_vec_B_kk = ((kk + 1) % ks) * ns;
+        // ABFT
         
+        A_c = prefetch_vector_tile_A.x + prefetch_vector_tile_A.y + prefetch_vector_tile_A.z + prefetch_vector_tile_A.w;
+        B_r = prefetch_vector_tile_B.x + prefetch_vector_tile_B.y + prefetch_vector_tile_B.z + prefetch_vector_tile_B.w;
+        A_c += __shfl_xor_sync(0xffffffff, A_c, 1, 32);
+        A_c += __shfl_xor_sync(0xffffffff, A_c, 2, 32);
+        B_r += __shfl_xor_sync(0xffffffff, B_r, 1, 32);
+        B_r += __shfl_xor_sync(0xffffffff, B_r, 2, 32);
+        
+        // saxpy
+        block_level_A_c.x += prefetch_vector_tile_B.x * A_c;
+        block_level_A_c.y += prefetch_vector_tile_B.y * A_c;
+        block_level_A_c.z += prefetch_vector_tile_B.z * A_c;
+        block_level_A_c.w += prefetch_vector_tile_B.w * A_c;
+
+        block_level_B_r.x += prefetch_vector_tile_A.x * B_r;
+        block_level_B_r.y += prefetch_vector_tile_A.y * B_r;
+        block_level_B_r.z += prefetch_vector_tile_A.z * B_r;
+        block_level_B_r.w += prefetch_vector_tile_A.w * B_r;
+
+        // store into buffer
+
+        // offset to store the saxpy result
+        offset_store_checksum = (((k / ks)) & 1);
+        
+        // get the pointer to prefetched buffer A and prefetched buffer B
+        checksum_buffer_A = (float*)(sAB) + buffer_A_offset + offset_store_checksum * ms * ks;
+        checksum_buffer_B = (float*)(sAB) + buffer_B_offset + offset_store_checksum * ns * ks;
+
+        *(((float4*)checksum_buffer_A) + tx) = block_level_A_c;
+        *(((float4*)checksum_buffer_B) + tx) = block_level_B_r;
+
+        __syncthreads();
+        
+        // offset C checksum each thread
+        // 
+        offset_A_B = (tx >= (blockDim.x / 2)) ? (buffer_A_offset + offset_store_checksum * ms * ks): (buffer_B_offset + offset_store_checksum * ns * ks);
+        checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 0);
+        checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 1);
+        checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 3);
+        checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 4);
+        checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 5);
+        checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 6);
+        checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 7);
+        checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 8);
+        checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 9);
+        checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 10);
+        checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 11);
+        checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 12);
+        checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 13);
+        checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 14);
+        checksum += *((float*)(sAB) + offset_A_B + (tx & 15) + 16 * 15);
+
         // load the vectors from buffer to registers
         vec_A[offset_prefetch_register_kk] = *(float2*)(buffer_A + offset_vec_A_warp + offset_vec_A_thread + offset_load_vec_A_kk);
         vec_B[offset_prefetch_register_kk] = *(float2*)(buffer_B + offset_vec_B_warp + offset_vec_B_thread + offset_load_vec_B_kk);
