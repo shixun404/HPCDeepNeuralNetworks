@@ -17,7 +17,7 @@ __global__  __launch_bounds__(256) void sgemm_small(int N, int K, float *A, floa
     // mr = 2, nr = 2
     // blockId, warpId, and threadIdx
     int ms = 16, ns = 16, ks = 16, mw = 8, nw = 16, mr = 2, nr = 2;
-    int bx = blockIdx.x, by = blockIdx.ytx = threadIdx.x; 
+    int bx = blockIdx.x, by = blockIdx.y, tx = threadIdx.x; 
     // initial global read column
     int k = 0;
     // block row range: blockIdx.x * ms ~ blockIdx.x * ms + ms - 1
@@ -91,8 +91,8 @@ __global__  __launch_bounds__(256) void sgemm_small(int N, int K, float *A, floa
     int num_warp_A = int(ms / mw);
     int num_warp_B = int(ns / nw);
     
-    // 1D warp id =  tx % 32
-    int id_warp = (tx & 31)
+    // 1D warp id =  tx / 32
+    int id_warp = (int)(tx / 32);
     
     // 2D warp arrangement, row major
     // 2D warp idB = 1D warp id % num_warp_B
@@ -119,8 +119,8 @@ __global__  __launch_bounds__(256) void sgemm_small(int N, int K, float *A, floa
 
     //2D thread idB = tx % (nw / nr)
     //          idA = tx / (nw / nr)
-    int idB_thread = tx % (nw / nr);
-    int idA_thread = int(tx / (nw / nr));
+    int idB_thread = ((tx & 31) % ((int)(nw / nr)));
+    int idA_thread = int((tx & 31) / (nw / nr));
 
     // offset for the threads
     // offset vec A = 2D thread idA * mr
@@ -133,10 +133,11 @@ __global__  __launch_bounds__(256) void sgemm_small(int N, int K, float *A, floa
     // prefetch with the double buffer
     float2 vec_A[2]  = {0.0, 0.0};
     float2 vec_B[2]  = {0.0, 0.0};
-    
+    float res[4];
+    memset(res, 0, sizeof(res));
     // initial outer product column
     int kk = -1;
-    
+      
     // offset of register store for prefetching
     int offset_prefetch_register_kk = ((kk + 1) & 1);
     
@@ -145,7 +146,7 @@ __global__  __launch_bounds__(256) void sgemm_small(int N, int K, float *A, floa
     
     // offset of vec A and vec B w.r.t kk:
     int offset_load_vec_A_kk = ((kk + 1) % ks) * ms;
-    int offset_load_vec_b_kk = ((kk + 1) % ks) * ns;
+    int offset_load_vec_B_kk = ((kk + 1) % ks) * ns;
     
     // load the vectors from buffer to registers
     vec_A[offset_prefetch_register_kk] = *(float2*)(buffer_A + offset_vec_A_warp + offset_vec_A_thread + offset_load_vec_A_kk);
@@ -161,25 +162,26 @@ __global__  __launch_bounds__(256) void sgemm_small(int N, int K, float *A, floa
         prefetch_vector_tile_B = *((float4*)B);
 
         // inner k loop, 16
-        for(int kk = 0; kk < ks; ++kk){
-            offset_read_register_kk = ((kk) & 1);
+        for(kk = 0; kk < ks; ++kk){
+            offset_register_kk = ((kk) & 1);
             offset_prefetch_register_kk = ((kk + 1) & 1);
     
             // offset of vec A and vec B w.r.t kk:
             offset_load_vec_A_kk = ((kk + 1) % ks) * ms;
-            offset_load_vec_b_kk = ((kk + 1) % ks) * ns;
+            offset_load_vec_B_kk = ((kk + 1) % ks) * ns;
             
             // load the vectors from buffer to registers
             vec_A[offset_prefetch_register_kk] = *(float2*)(buffer_A + offset_vec_A_warp + offset_vec_A_thread + offset_load_vec_A_kk);
             vec_B[offset_prefetch_register_kk] = *(float2*)(buffer_B + offset_vec_B_warp + offset_vec_B_thread + offset_load_vec_B_kk);
 
-            
-
-            
+            res[0] += vec_A[offset_register_kk].x * vec_B[offset_register_kk].x;
+            res[1] += vec_A[offset_register_kk].x * vec_B[offset_register_kk].y;
+            res[2] += vec_A[offset_register_kk].y * vec_B[offset_register_kk].x;
+            res[3] += vec_A[offset_register_kk].y * vec_B[offset_register_kk].y;
         }
         
         // update offset to store the prefetch vector
-        offset_store_prefetch = (((int)(k / ks)) & 1);
+        offset_store_prefetch = (((int)(k / ks) + 1) & 1);
         
         // update the pointer to prefetched buffer A and prefetched buffer B
         buffer_A = (float*)(sAB) + buffer_A_offset + offset_store_prefetch * ms * ks;
@@ -197,7 +199,7 @@ __global__  __launch_bounds__(256) void sgemm_small(int N, int K, float *A, floa
         
         // offset of vec A and vec B w.r.t kk:
         offset_load_vec_A_kk = ((kk + 1) % ks) * ms;
-        offset_load_vec_b_kk = ((kk + 1) % ks) * ns;
+        offset_load_vec_B_kk = ((kk + 1) % ks) * ns;
         
         // load the vectors from buffer to registers
         vec_A[offset_prefetch_register_kk] = *(float2*)(buffer_A + offset_vec_A_warp + offset_vec_A_thread + offset_load_vec_A_kk);
@@ -205,5 +207,17 @@ __global__  __launch_bounds__(256) void sgemm_small(int N, int K, float *A, floa
 
     }
     
+    C += bx * ms + offset_vec_A_warp + offset_vec_A_thread;
+    C += (by * ns + offset_vec_B_warp + offset_vec_B_thread) * N;
 
+    float2 C_res[2];
+    C_res[0] = *((float2 *)C);
+    C_res[1] = *((float2 *)(C + N));
+    C_res[0].x = alpha * res[0] + beta * C_res[0].x;
+    C_res[0].y = alpha * res[2] + beta * C_res[0].y;
+    C_res[1].x = alpha * res[1] + beta * C_res[1].x;
+    C_res[1].y = alpha * res[3] + beta * C_res[1].y;
+
+    *((float2 *)C) = C_res[0];
+    *((float2 *)(C + N)) = C_res[1];
 }
