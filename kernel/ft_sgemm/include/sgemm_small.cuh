@@ -16,10 +16,8 @@ __global__  __launch_bounds__(256) void sgemm_small(int N, int K, float *A, floa
     // mw = 16, nw = 8
     // mr = 2, nr = 2
     // blockId, warpId, and threadIdx
-    int ms = 16, ns = 16, ks = 16, mw = 16, nw = 8, mr = 2, nr = 2;
-    int bx = blockIdx.x, by = blockIdx.y, wid = (threadIdx.x >> 5), wx = 0, wy = 0, tx = threadIdx.x; 
-    // threadIdx in the warp
-    int tx_w = ((tx & 31) & 7), ty_w = ((tx & 31) >> 3);
+    int ms = 16, ns = 16, ks = 16, mw = 8, nw = 16, mr = 2, nr = 2;
+    int bx = blockIdx.x, by = blockIdx.ytx = threadIdx.x; 
     // initial column
     int k = 0;
     // block row range: blockIdx.x * ms ~ blockIdx.x * ms + ms - 1
@@ -75,7 +73,79 @@ __global__  __launch_bounds__(256) void sgemm_small(int N, int K, float *A, floa
     *(((float4*)buffer_B) + tx) = prefetch_vector_tile_B;
 
     __syncthreads();
+    
+    // warp size mw x nw (8 x 16)
+    //           -----------------
+    //          |      vec B      |
+    //           -----------------                 
+    //  -----    -----------------    -             -
+    // |     |  |     warp 0      |   | mw = 8      | ms = 16
+    // | vec |  |                 |   |             | 
+    // |     |   -----------------    -             |
+    // |  A  |  |     warp 1      |                 | 
+    // |     |  |                 |                 |
+    //  -----    -----------------                  -
+    //              ns = nw = 16
 
+    // numbers of warp along A vector and B vector
+    int num_warp_A = int(ms / mw);
+    int num_warp_B = int(ns / nw);
+    
+    // 1D warp id =  tx % 32
+    int id_warp = (tx & 31)
+    
+    // 2D warp arrangement, row major
+    // 2D warp idB = 1D warp id % num_warp_B
+    //         idA = 1D warp id / num_warp_B    
+    int idB_warp = id_warp % num_warp_B;
+    int idA_warp = int(id_warp / num_warp_B);
+    
+    // offset for the warp tile
+    // offset vec A = 2D warp idA * mw
+    // offset vec B = 2D warp idB * nw
+    int offset_vec_A_warp = idA_warp * mw;
+    int offset_vec_B_warp = idB_warp * nw;
+
+    // inner warp thread arrangement 1, row major
+    //                warp 0
+    //      --------------------------             -
+    //     |  0  1  2  3  4  5  6  7  |  mr = 2    |  mw = 8  
+    //     |  8  9 10 11 12 13 14 15  |            |
+    //     | 16 17 18 19 20 21 22 23  |            |
+    //     | 24 25 26 27 28 29 30 31  |            |
+    //      --------------------------             -
+    //      nr = 2
+    //      nw = nr * 8 = 16
+
+    //2D thread idB = tx % (nw / nr)
+    //          idA = tx / (nw / nr)
+    int idB_thread = tx % (nw / nr);
+    int idA_thread = int(tx / (nw / nr));
+
+    // offset for the threads
+    // offset vec A = 2D thread idA * mr
+    // offset vec B = 2D thread idA * nr
+    int offset_vec_A_thread = idA_thread * mr;
+    int offset_vec_B_thread = idB_thread * nr;
+    
+    // inner warp thread arrangement 2, col major
+    //                warp 0
+    //      --------------------------             -
+    //     |  0  4  8 12 16 20 24 28  |  mr = 2    |  mw = 8  
+    //     |  1  5  9 13 17 21 25 29  |            |
+    //     |  2  6 10 14 18 22 26 30  |            |
+    //     |  3  7 11 15 19 23 27 31  |            |
+    //      --------------------------             -
+    //      nr = 2
+    //      nw = nr * 8 = 16
+
+    
+    
+    
+    // load two vectors with size 2 from buffer A and buffer B into registers
+    // mr = 2, nr = 2
+    float2 vec_A  = {0.0, 0.0};
+    float2 vec_B  = {0.0, 0.0};
     // K loop
     for(k = 0; k < K; k += ks){
         // tile A abd tile B global offsets move forward ks columns
@@ -89,8 +159,20 @@ __global__  __launch_bounds__(256) void sgemm_small(int N, int K, float *A, floa
         for(int kk = 0; kk < ks; ++kk){
             
         }
-
         
+        // update offset to store the prefetch vector
+        offset_store_prefetch = (((int)(k / ks)) & 1);
+        
+        // update the pointer to prefetched buffer A and prefetched buffer B
+        buffer_A = (float*)(sAB) + buffer_A_offset + offset_store_prefetch * ms * ks;
+        buffer_B = (float*)(sAB) + buffer_B_offset + offset_store_prefetch * ns * ks;
+        
+        // store the vectors in the prefetched buffer A and prefetched buffer B
+        *(((float4*)buffer_A) + tx) = prefetch_vector_tile_A;
+        *(((float4*)buffer_B) + tx) = prefetch_vector_tile_B;
+        __syncthreads();
+
+
     }
     
 
