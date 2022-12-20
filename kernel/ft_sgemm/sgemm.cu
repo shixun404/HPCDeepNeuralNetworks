@@ -98,7 +98,7 @@ int main(int argc, char **argv)
     if (!verify_matrix(C_ref, C, max_size)) {  
         printf("Failed to pass the correctness verification against NVIDIA cuBLAS. Exited.\n");
         exit(-3); 
-    }
+    } 
     printf("start!\n"); 
     cublasHandle_t handle;       
     cublasCreate(&handle);    
@@ -107,9 +107,9 @@ int main(int argc, char **argv)
     // test_kernel(kernel_number, max_size, dA, dB, dC, alpha, beta);
     if(true){       
         dim3 blockDim(128);
-        dim3 gridDim(CEIL_DIV(max_size, 128 ), CEIL_DIV(max_size, 32));
+        dim3 gridDim(CEIL_DIV(max_size, 32 ), CEIL_DIV(max_size, 128));
         cudaDeviceSynchronize(); 
-        sgemm_tall <<<gridDim, blockDim>>>(max_size, max_size, dB, dA, dC, alpha, beta);  
+        sgemm_wide <<<gridDim, blockDim>>>(max_size, max_size, dB, dA, dC, alpha, beta);  
     }   
     // printf("finish verified!\n");                  
     cudaDeviceSynchronize();
@@ -237,7 +237,19 @@ int main(int argc, char **argv)
             cudaEventSynchronize(beg);
             cudaEventSynchronize(end); 
         } 
-
+        else if (kernel_number == 29){
+            cudaEventRecord(beg);
+            dim3 blockDim(128);
+            dim3 gridDim(CEIL_DIV(max_size, 32), CEIL_DIV(max_size, 128));
+            for(int ii = 0; ii < num_tests; ++ii){
+                cudaDeviceSynchronize();
+                sgemm_wide<<<gridDim, blockDim>>>(max_size, K, dB, dA, dC, alpha, beta);
+                cudaDeviceSynchronize();
+            }
+            cudaEventRecord(end);     
+            cudaEventSynchronize(beg);
+            cudaEventSynchronize(end); 
+        } 
         else if (kernel_number == 20){        
             cudaEventRecord(beg); 
             dim3 blockDim(256);

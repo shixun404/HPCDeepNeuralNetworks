@@ -175,7 +175,7 @@ __global__  __launch_bounds__(256) void sgemm_tall(int N, int K, float *A, float
         prefetch_vector_tile_A[1] = *((float4*)A + 1);
         prefetch_vector_tile_B    = *((float2*)B);
 
-        // inner k loop, 16
+        // inner k loop, 8
         for(kk = 0; kk < ks; ++kk){
             offset_register_kk = ((kk) & 1);
             offset_prefetch_register_kk = ((kk + 1) & 1);
@@ -276,7 +276,7 @@ __global__  __launch_bounds__(256) void sgemm_tall(int N, int K, float *A, float
 
     C_res[0].x = alpha * res[0 ] + beta * C_res[0].x;
     C_res[0].y = alpha * res[4 ] + beta * C_res[0].y;
-    C_res[0].z = alpha * res[8] + beta * C_res[0].z;
+    C_res[0].z = alpha * res[8 ] + beta * C_res[0].z;
     C_res[0].w = alpha * res[12] + beta * C_res[0].w;
 
     C_res[1].x = alpha * res[16] + beta * C_res[1].x;
@@ -286,7 +286,7 @@ __global__  __launch_bounds__(256) void sgemm_tall(int N, int K, float *A, float
 
     C_res[2].x = alpha * res[1 ] + beta * C_res[2].x;
     C_res[2].y = alpha * res[5 ] + beta * C_res[2].y;
-    C_res[2].z = alpha * res[9] + beta * C_res[2].z;
+    C_res[2].z = alpha * res[9 ] + beta * C_res[2].z;
     C_res[2].w = alpha * res[13] + beta * C_res[2].w;
 
     C_res[3].x = alpha * res[17] + beta * C_res[3].x;

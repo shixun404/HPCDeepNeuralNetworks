@@ -161,7 +161,7 @@ __global__  __launch_bounds__(256) void sgemm_medium(int N, int K, float *A, flo
         prefetch_vector_tile_A = *((float4*)A);
         prefetch_vector_tile_B = *((float4*)B);
 
-        // inner k loop, 16
+        // inner k loop, 8
         for(kk = 0; kk < ks; ++kk){
             offset_register_kk = ((kk) & 1);
             offset_prefetch_register_kk = ((kk + 1) & 1);
