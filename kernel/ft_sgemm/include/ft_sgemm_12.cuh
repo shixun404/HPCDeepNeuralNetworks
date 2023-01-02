@@ -271,29 +271,75 @@ __global__  __launch_bounds__(256) void ft_sgemm_12(int N, int K, float *A, floa
         sa = (float*)shared + shared_offset;
         ((float4*)sb)[tx] = pre_B;
         ((float4*)sa)[tx] = pre_A;
-        
+        int shared_offset_ = ((((k>>3))&1)<<10);
+        sAr = (float*)shared + shared_offset_;
+        sBc = (float*)shared + 2048 + shared_offset_;
+
         B_c = pre_B.x + pre_B.y + pre_B.z + pre_B.w;
-        B_c += __shfl_xor_sync(0xffffffff, B_c, 1, 32);
-        B_c += __shfl_xor_sync(0xffffffff, B_c, 2, 32);
-        B_c += __shfl_xor_sync(0xffffffff, B_c, 4, 32);
-        B_c += __shfl_xor_sync(0xffffffff, B_c, 8, 32);
-        B_c += __shfl_xor_sync(0xffffffff, B_c, 16, 32);
+        *(sBc + tx) = B_c;
+        // B_c += __shfl_xor_sync(0xffffffff, B_c, 1, 32);
+        // B_c += __shfl_xor_sync(0xffffffff, B_c, 2, 32);
+        // B_c += __shfl_xor_sync(0xffffffff, B_c, 4, 32);
+        // B_c += __shfl_xor_sync(0xffffffff, B_c, 8, 32);
+        // B_c += __shfl_xor_sync(0xffffffff, B_c, 16, 32);
         //B_c = __reduce_add_sync(0xffffffff, B_c);
 
         
         //__syncthreads();        
-        int shared_offset_ = ((((k>>3))&1)<<10);
-        sAr = (float*)shared + shared_offset_;
-        sBc = (float*)shared + 2048 + shared_offset_;
         // pre_A = ((float4*)sa)[tx];
         A_r[0] = pre_A.x + pre_A.y + pre_A.z + pre_A.w;
-        A_r[0] += __shfl_xor_sync(0xffffffff, A_r[0], 1, 32);
-        A_r[0] += __shfl_xor_sync(0xffffffff, A_r[0], 2, 32);
-        A_r[0] += __shfl_xor_sync(0xffffffff, A_r[0], 4, 32);
-        A_r[0] += __shfl_xor_sync(0xffffffff, A_r[0], 8, 32);
-        A_r[0] += __shfl_xor_sync(0xffffffff, A_r[0], 16, 32);
-        //A_r[0] = __reduce_add_sync(0xffffffff, A_r[0]);
-
+        *(sAr + tx) = A_r[0];
+        // A_r[0] += __shfl_xor_sync(0xffffffff, A_r[0], 1, 32);
+        // A_r[0] += __shfl_xor_sync(0xffffffff, A_r[0], 2, 32);
+        // A_r[0] += __shfl_xor_sync(0xffffffff, A_r[0], 4, 32);
+        // A_r[0] += __shfl_xor_sync(0xffffffff, A_r[0], 8, 32);
+        // A_r[0] += __shfl_xor_sync(0xffffffff, A_r[0], 16, 32);
+        // A_r[0] = __reduce_add_sync(0xffffffff, A_r[0]);
+        __syncthreads();
+        if(tx % 32 == 0){
+            pre_B = *(float4*)(sBc + tx + 0);
+            B_c += pre_B.x;  B_c += pre_B.y; B_c += pre_B.z; B_c += pre_B.w;
+            pre_B = *(float4*)(sBc + tx + 4);
+            B_c += pre_B.x;  B_c += pre_B.y; B_c += pre_B.z; B_c += pre_B.w;
+            pre_B = *(float4*)(sBc + tx + 8);
+            B_c += pre_B.x;  B_c += pre_B.y; B_c += pre_B.z; B_c += pre_B.w;
+            pre_B = *(float4*)(sBc + tx + 12);
+            B_c += pre_B.x;  B_c += pre_B.y; B_c += pre_B.z; B_c += pre_B.w;
+            pre_B = *(float4*)(sBc + tx + 16);
+            B_c += pre_B.x;  B_c += pre_B.y; B_c += pre_B.z; B_c += pre_B.w;
+            pre_B = *(float4*)(sBc + tx + 20);
+            B_c += pre_B.x;  B_c += pre_B.y; B_c += pre_B.z; B_c += pre_B.w;
+            pre_B = *(float4*)(sBc + tx + 24);
+            B_c += pre_B.x;  B_c += pre_B.y; B_c += pre_B.z; B_c += pre_B.w;
+            pre_B = *(float4*)(sBc + tx + 28);
+            B_c += pre_B.x;  B_c += pre_B.y; B_c += pre_B.z; B_c += pre_B.w;
+            pre_B = *(float4*)(sAr + tx + 0);
+A_r[0] += pre_B.x;  A_r[0] += pre_B.y; A_r[0] += pre_B.z; A_r[0] += pre_B.w;
+pre_B = *(float4*)(sAr + tx + 4);
+A_r[0] += pre_B.x;  A_r[0] += pre_B.y; A_r[0] += pre_B.z; A_r[0] += pre_B.w;
+pre_B = *(float4*)(sAr + tx + 8);
+A_r[0] += pre_B.x;  A_r[0] += pre_B.y; A_r[0] += pre_B.z; A_r[0] += pre_B.w;
+pre_B = *(float4*)(sAr + tx + 12);
+A_r[0] += pre_B.x;  A_r[0] += pre_B.y; A_r[0] += pre_B.z; A_r[0] += pre_B.w;
+pre_B = *(float4*)(sAr + tx + 16);
+A_r[0] += pre_B.x;  A_r[0] += pre_B.y; A_r[0] += pre_B.z; A_r[0] += pre_B.w;
+pre_B = *(float4*)(sAr + tx + 20);
+A_r[0] += pre_B.x;  A_r[0] += pre_B.y; A_r[0] += pre_B.z; A_r[0] += pre_B.w;
+pre_B = *(float4*)(sAr + tx + 24);
+A_r[0] += pre_B.x;  A_r[0] += pre_B.y; A_r[0] += pre_B.z; A_r[0] += pre_B.w;
+pre_B = *(float4*)(sAr + tx + 28);
+A_r[0] += pre_B.x;  A_r[0] += pre_B.y; A_r[0] += pre_B.z; A_r[0] += pre_B.w;
+            // A_r[0] += *(sAr + tx + 0);  A_r[0] += *(sAr + tx + 1); A_r[0] += *(sAr + tx + 2); A_r[0] += *(sAr + tx + 3);
+            // A_r[0] += *(sAr + tx + 4);  A_r[0] += *(sAr + tx + 5); A_r[0] += *(sAr + tx + 6); A_r[0] += *(sAr + tx + 7);
+            // A_r[0] += *(sAr + tx + 8);  A_r[0] += *(sAr + tx + 9); A_r[0] += *(sAr + tx + 10); A_r[0] += *(sAr + tx + 11);
+            // A_r[0] += *(sAr + tx + 12); A_r[0] += *(sAr + tx + 13); A_r[0] += *(sAr + tx + 14); A_r[0] += *(sAr + tx + 15);
+            // A_r[0] += *(sAr + tx + 16); A_r[0] += *(sAr + tx + 17); A_r[0] += *(sAr + tx + 18); A_r[0] += *(sAr + tx + 19);
+            // A_r[0] += *(sAr + tx + 20); A_r[0] += *(sAr + tx + 21); A_r[0] += *(sAr + tx + 22); A_r[0] += *(sAr + tx + 23);
+            // A_r[0] += *(sAr + tx + 24); A_r[0] += *(sAr + tx + 25); A_r[0] += *(sAr + tx + 26); A_r[0] += *(sAr + tx + 27);
+            // A_r[0] += *(sAr + tx + 28); A_r[0] += *(sAr + tx + 29); A_r[0] += *(sAr + tx + 30); A_r[0] += *(sAr + tx + 31);
+        }
+        B_c = __shfl_sync(0xffffffff, B_c, 0);
+        A_r[0] = __shfl_sync(0xffffffff, A_r[0], 0);
         saxpy(B_c, pre_A, block_level_B_c);
         
         *(((float4*)sBc) + tx) = block_level_B_c;

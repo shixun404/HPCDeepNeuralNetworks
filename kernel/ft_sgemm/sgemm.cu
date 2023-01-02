@@ -10,11 +10,11 @@
 int main(int argc, char **argv)    
  {                                 
     int kernel_number = atoi(argv[1]);
-    int num_tests = 10;
+    int num_tests = 10; 
     int start_size = atoi(argv[2]);       
-    int end_size =  atoi(argv[3]);      
+    int end_size =  atoi(argv[3]);       
     int start_kernel = atoi(argv[4]);
-    int end_kernel = atoi(argv[5]);
+    int end_kernel = atoi(argv[5]); 
     int gap_size = 256;                    
     for(int max_size = start_size; max_size <= end_size; max_size += gap_size){
         printf("%8.2d|", max_size);
@@ -25,7 +25,7 @@ int main(int argc, char **argv)
     }
 
     printf("\n"); 
-    float alpha = 1.0;  
+    float alpha = 1.0;   
     float negative_1 = -1.0;   
 	float beta = -1.5; 
     int max_size = end_size;
@@ -111,8 +111,8 @@ int main(int argc, char **argv)
         cudaDeviceSynchronize(); 
         sgemm_wide <<<gridDim, blockDim>>>(max_size, max_size, dB, dA, dC, alpha, beta);  
     }   
-    // printf("finish verified!\n");                  
-    cudaDeviceSynchronize();
+    // printf("finish verified!\n");                   
+    cudaDeviceSynchronize(); 
     cudaMemcpy(C, dC, sizeof(float) * max_size * max_size, cudaMemcpyDeviceToHost);
     cudaDeviceSynchronize();
     cudaMemcpy(C_ref, dC_ref, sizeof(float) * max_size * max_size, cudaMemcpyDeviceToHost);
@@ -120,21 +120,21 @@ int main(int argc, char **argv)
 
     if (!verify_matrix(C_ref, C, max_size)) { 
         printf("Failed to pass the correctness verification against NVIDIA cuBLAS. Exited.\n");
-        exit(-3);
+        exit(-3); 
     }   
     printf("finish verified!\n");     
     cudaDeviceSynchronize(); 
     for(int k_num = start_kernel; k_num <= end_kernel; k_num++){ 
         if (k_num >= 3 && k_num <= 11)continue;
         int K_min = end_size, K_max = end_size;
-        if (k_num == 2 || k_num == 12 || k_num == 1 || k_num == 0){
+        if (k_num == 2 || k_num == 12 || k_num == 1 || k_num == 0 || k_num >= 25 ){
             K_min = 256;
             K_max = 1024; 
         }
         kernel_number = k_num;
         printf("##########################################################\n");
         printf("##################### kernel %d #########################\n", kernel_number);
-        printf("abft_kernel_%d = th.as_tensor[", kernel_number);
+        printf("abft_kernel_%d = th.as_tensor([", kernel_number);
         CUDA_CALLER(cudaMemcpy(dC, C, sizeof(float) * end_size * end_size, cudaMemcpyHostToDevice));      
 
     for(int K = K_min; K <= K_max; K *= 2){
@@ -145,7 +145,7 @@ int main(int argc, char **argv)
         cudaEventCreate(&beg);
         cudaEventCreate(&end); 
         float elapsed = 0;       
-        if (kernel_number == 0){    
+        if (kernel_number == 0){     
             cudaEventRecord(beg);
             //printf("I am here!\n");
             for(int ii = 0; ii < num_tests; ++ii){
@@ -164,14 +164,13 @@ int main(int argc, char **argv)
              cudaEventSynchronize(beg);  
              cudaEventSynchronize(end); 
         }
-      else if (kernel_number == 22){
+        else if (kernel_number == 22){
               cudaEventRecord(beg);
               ft_sgemm_1(num_tests, max_size, max_size, handle, dA, dB, dC, dE, dRes, dcheck_C_row, dcheck_C_col, dcheck_A_col_mul_B, dcheck_B_row_mul_A, dcheck_A_col, dcheck_B_row,  alpha,   beta, negative_1);
               cudaEventRecord(end);
               cudaEventSynchronize(beg);
               cudaEventSynchronize(end);
          }
-    
         else if (kernel_number == 2){
              cudaEventRecord(beg);
              dim3 blockDim(256);
@@ -272,24 +271,24 @@ int main(int argc, char **argv)
                 sgemm_13<<<gridDim, blockDim>>>(max_size, max_size, dA, dB, dC, alpha, beta);
                 cudaDeviceSynchronize();
             }
-            cudaEventRecord(end);
-            cudaEventSynchronize(beg);       
-            cudaEventSynchronize(end);    
-        }  
-         else if (kernel_number == 21){
+            cudaEventRecord(end); 
+            cudaEventSynchronize(beg);        
+            cudaEventSynchronize(end);     
+        }   
+        else if (kernel_number == 21){  
              cudaEventRecord(beg);
-             dim3 blockDim(256);
+             dim3 blockDim(256); 
              dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
              for(int ii = 0; ii < num_tests; ++ii){
                  cudaDeviceSynchronize(); 
                  ft_sgemm_20<<<gridDim, blockDim>>>(max_size, max_size, dA, dB, dC, alpha, beta);
                  cudaDeviceSynchronize();
-             }
+             } 
              cudaEventRecord(end);
              cudaEventSynchronize(beg);
              cudaEventSynchronize(end);
          }
-                else if (kernel_number == 23){
+        else if (kernel_number == 23){
               cudaEventRecord(beg);
               dim3 blockDim(256);
               dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
@@ -302,7 +301,7 @@ int main(int argc, char **argv)
               cudaEventSynchronize(beg);
               cudaEventSynchronize(end);
           }
-          else if (kernel_number == 24){
+        else if (kernel_number == 24){
               cudaEventRecord(beg);
               dim3 blockDim(256);
               dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
@@ -315,7 +314,6 @@ int main(int argc, char **argv)
               cudaEventSynchronize(beg);
               cudaEventSynchronize(end);
           }
- 
         else if (kernel_number == 12){  
             cudaEventRecord(beg); 
             dim3 blockDim(256);
@@ -333,7 +331,7 @@ int main(int argc, char **argv)
             
             // double gflops = double(2 * num_tests * double(max_size) * double(max_size) * double(max_size) + num_tests * 4 * double(max_size) * double(max_size) * (1.0 + 1.0 / 256.0)) / (1e9);
             double gflops  = 0.;
-            if(kernel_number <= 12)gflops = double(2 * num_tests * double(max_size) * double(max_size) * double(K)) / (1e9);
+            if(kernel_number <= 12 || kernel_number >= 25)gflops = double(2 * num_tests * double(max_size) * double(max_size) * double(K)) / (1e9);
             else gflops = double(2 * num_tests * double(max_size) * double(max_size) * double(max_size)) / (1e9);
             double perf = gflops / (elapsed / 1e3);
             printf("%8.2f,", perf);
@@ -341,6 +339,6 @@ int main(int argc, char **argv)
         fflush(stdout);
     } 
     }
-    printf("]\n");
+    printf("])\n");
     }
 }
