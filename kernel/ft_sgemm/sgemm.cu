@@ -13,9 +13,9 @@ int main(int argc, char **argv)
     int num_tests = 10; 
     int start_size = atoi(argv[2]);       
     int end_size =  atoi(argv[3]);       
-    int start_kernel = atoi(argv[4]);
-    int end_kernel = atoi(argv[5]); 
-    int gap_size = 256;                    
+    int gap_size =  atoi(argv[4]);       
+    int start_kernel = atoi(argv[5]);
+    int end_kernel = atoi(argv[6]);              
     for(int max_size = start_size; max_size <= end_size; max_size += gap_size){
         printf("%8.2d|", max_size);
     }          
@@ -155,7 +155,7 @@ int main(int argc, char **argv)
             }
             cudaEventRecord(end);
             cudaEventSynchronize(beg);
-            cudaEventSynchronize(end);
+            cudaEventSynchronize(end); 
         }   
         else if (kernel_number == 1){
              cudaEventRecord(beg);
@@ -184,7 +184,7 @@ int main(int argc, char **argv)
              cudaEventSynchronize(beg);
              cudaEventSynchronize(end); 
          }  
-        else if (kernel_number == 25){
+        else if (kernel_number == 25){ 
             cudaEventRecord(beg);
             dim3 blockDim(64);
             dim3 gridDim(CEIL_DIV(max_size, 16), CEIL_DIV(max_size, 16));
@@ -256,6 +256,19 @@ int main(int argc, char **argv)
             for(int ii = 0; ii < num_tests; ++ii){
                 cudaDeviceSynchronize();
                 ft_sgemm_small<<<gridDim, blockDim>>>(max_size, K, dB, dA, dC, alpha, beta);
+                cudaDeviceSynchronize();
+            }
+            cudaEventRecord(end);     
+            cudaEventSynchronize(beg);
+            cudaEventSynchronize(end); 
+        } 
+        else if (kernel_number == 31){
+            cudaEventRecord(beg);
+            dim3 blockDim(64);
+            dim3 gridDim(CEIL_DIV(max_size, 32), CEIL_DIV(max_size, 32));
+            for(int ii = 0; ii < num_tests; ++ii){
+                cudaDeviceSynchronize();
+                ft_sgemm_medium<<<gridDim, blockDim>>>(max_size, K, dB, dA, dC, alpha, beta);
                 cudaDeviceSynchronize();
             }
             cudaEventRecord(end);     

@@ -25,3 +25,4 @@
 #include "./include/sgemm_tall.cuh"
 #include "./include/sgemm_wide.cuh"
 #include "./include/ft_sgemm_small.cuh"
+#include "./include/ft_sgemm_medium.cuh"
