@@ -80,11 +80,9 @@ bool verify_matrix(float *mat1, float *mat2, int n){
 	    diff = fabs( (double)mat1[i * n + j] - (double)mat2[i * n + j] );
         // if (diff / double(mat1[i * n  + j]) > 5e-5) {
         if (diff > 1e-2){
-        
             printf("error is %8.5f.  %8.5f,%8.5f. id: %d, %d\n",diff,  mat1[i * n + j], mat2[i * n + j], i, j);
             return false;
         }
-        // else printf("OK, %d, %d\n", i, j); 
         }
     }
     return true;

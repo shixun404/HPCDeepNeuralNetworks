@@ -279,15 +279,15 @@ __global__  __launch_bounds__(256) void ft_sgemm_medium(int N, int K, float *A, 
         B_r += __shfl_xor_sync(0xffffffff, B_r, 4, 32);
         
         // saxpy
-        block_level_A_c.x += prefetch_vector_tile_B.x * A_c;
-        block_level_A_c.y += prefetch_vector_tile_B.y * A_c;
-        block_level_A_c.z += prefetch_vector_tile_B.z * A_c;
-        block_level_A_c.w += prefetch_vector_tile_B.w * A_c;
+        block_level_A_c.x = prefetch_vector_tile_B.x * A_c;
+        block_level_A_c.y = prefetch_vector_tile_B.y * A_c;
+        block_level_A_c.z = prefetch_vector_tile_B.z * A_c;
+        block_level_A_c.w = prefetch_vector_tile_B.w * A_c;
 
-        block_level_B_r.x += prefetch_vector_tile_A.x * B_r;
-        block_level_B_r.y += prefetch_vector_tile_A.y * B_r;
-        block_level_B_r.z += prefetch_vector_tile_A.z * B_r;
-        block_level_B_r.w += prefetch_vector_tile_A.w * B_r;
+        block_level_B_r.x = prefetch_vector_tile_A.x * B_r;
+        block_level_B_r.y = prefetch_vector_tile_A.y * B_r;
+        block_level_B_r.z = prefetch_vector_tile_A.z * B_r;
+        block_level_B_r.w = prefetch_vector_tile_A.w * B_r;
 
         // store into buffer
 
