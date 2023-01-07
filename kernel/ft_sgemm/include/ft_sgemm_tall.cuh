@@ -208,27 +208,30 @@ __global__  __launch_bounds__(256) void ft_sgemm_tall(int N, int K, float *A, fl
     *(((float4*)checksum_buffer_A) + tx * 2 + 1) = block_level_A_c[1];
     *(((float2*)checksum_buffer_B) + tx) = block_level_B_r[0];
 
-    __syncthreads();
+    __syncthreads(); 
     // offset C checksum each thread
-    int offset_A_B = (tx >= (3 * blockDim.x / 4)) ? (buffer_A_offset + offset_store_checksum * ms * ks): (buffer_B_offset + offset_store_checksum * ns * ks);
-    int ws = (tx >= (3 * blockDim.x / 4)) ? ms: ns;
+    int offset_A_B = (tx < (3 * blockDim.x / 4)) ? (buffer_A_offset + offset_store_checksum * ms * ks): (buffer_B_offset + offset_store_checksum * ns * ks);
+    int ws = (tx < (3 * blockDim.x / 4)) ? ms: ns;
+    int ws_1 = (tx < (3 * blockDim.x / 4)) ? 2: 1;
+    int ws_2 = (tx < (3 * blockDim.x / 4)) ? 1: 0;
+    offset_A_B +=  (tx & (int)(ws / ws_1 - 1)) * ws_1;
     float checksum[2] = {0., 0.};
-    float2 tmp = *(float2*)((float*)(sAB) + offset_A_B + (tx & (ws / 2 - 1)) * 2 + ws * 0);
-    checksum[0] += tmp.x; checksum[1] += tmp.y;
-    tmp = *(float2*)((float*)(sAB) + offset_A_B + (tx & (ws / 2 - 1)) * 2 + ws * 1);
-    checksum[0] += tmp.x; checksum[1] += tmp.y;
-    tmp = *(float2*)((float*)(sAB) + offset_A_B + (tx & (ws / 2 - 1)) * 2 + ws * 2);
-    checksum[0] += tmp.x; checksum[1] += tmp.y;
-    tmp = *(float2*)((float*)(sAB) + offset_A_B + (tx & (ws / 2 - 1)) * 2 + ws * 3);
-    checksum[0] += tmp.x; checksum[1] += tmp.y;
-    tmp = *(float2*)((float*)(sAB) + offset_A_B + (tx & (ws / 2 - 1)) * 2 + ws * 4);
-    checksum[0] += tmp.x; checksum[1] += tmp.y;
-    tmp = *(float2*)((float*)(sAB) + offset_A_B + (tx & (ws / 2 - 1)) * 2 + ws * 5);
-    checksum[0] += tmp.x; checksum[1] += tmp.y;
-    tmp = *(float2*)((float*)(sAB) + offset_A_B + (tx & (ws / 2 - 1)) * 2 + ws * 6);
-    checksum[0] += tmp.x; checksum[1] += tmp.y;
-    tmp = *(float2*)((float*)(sAB) + offset_A_B + (tx & (ws / 2 - 1)) * 2 + ws * 7);
-    checksum[0] += tmp.x; checksum[1] += tmp.y;
+    checksum[0] +=  *(((float*)(sAB) + offset_A_B + ws * 0));
+    checksum[1] +=  *(((float*)(sAB) + offset_A_B + ws_2 + ws * 0));
+    checksum[0] +=  *(((float*)(sAB) + offset_A_B + ws * 1));
+    checksum[1] +=  *(((float*)(sAB) + offset_A_B + ws_2 + ws * 1));
+    checksum[0] +=  *(((float*)(sAB) + offset_A_B + ws * 2));
+    checksum[1] +=  *(((float*)(sAB) + offset_A_B + ws_2 + ws * 2));
+    checksum[0] +=  *(((float*)(sAB) + offset_A_B + ws * 3));
+    checksum[1] +=  *(((float*)(sAB) + offset_A_B + ws_2 + ws * 3));
+    checksum[0] +=  *(((float*)(sAB) + offset_A_B + ws * 4));
+    checksum[1] +=  *(((float*)(sAB) + offset_A_B + ws_2 + ws * 4));
+    checksum[0] +=  *(((float*)(sAB) + offset_A_B + ws * 5));
+    checksum[1] +=  *(((float*)(sAB) + offset_A_B + ws_2 + ws * 5));
+    checksum[0] +=  *(((float*)(sAB) + offset_A_B + ws * 6));
+    checksum[1] +=  *(((float*)(sAB) + offset_A_B + ws_2 + ws * 6));
+    checksum[0] +=  *(((float*)(sAB) + offset_A_B + ws * 7));
+    checksum[1] +=  *(((float*)(sAB) + offset_A_B + ws_2 + ws * 7));
 
 
     // K loop
@@ -370,23 +373,24 @@ __global__  __launch_bounds__(256) void ft_sgemm_tall(int N, int K, float *A, fl
 
         __syncthreads();
         // offset C checksum each thread
-        offset_A_B = (tx >= (blockDim.x / 2)) ? (buffer_A_offset + offset_store_checksum * ms * ks): (buffer_B_offset + offset_store_checksum * ns * ks);
-        tmp = *(float2*)((float*)(sAB) + offset_A_B + (tx & (ws / 2 - 1)) * 2 + ws * 0);
-        checksum[0] += tmp.x; checksum[1] += tmp.y;
-        tmp = *(float2*)((float*)(sAB) + offset_A_B + (tx & (ws / 2 - 1)) * 2 + ws * 1);
-        checksum[0] += tmp.x; checksum[1] += tmp.y;
-        tmp = *(float2*)((float*)(sAB) + offset_A_B + (tx & (ws / 2 - 1)) * 2 + ws * 2);
-        checksum[0] += tmp.x; checksum[1] += tmp.y;
-        tmp = *(float2*)((float*)(sAB) + offset_A_B + (tx & (ws / 2 - 1)) * 2 + ws * 3);
-        checksum[0] += tmp.x; checksum[1] += tmp.y;
-        tmp = *(float2*)((float*)(sAB) + offset_A_B + (tx & (ws / 2 - 1)) * 2 + ws * 4);
-        checksum[0] += tmp.x; checksum[1] += tmp.y;
-        tmp = *(float2*)((float*)(sAB) + offset_A_B + (tx & (ws / 2 - 1)) * 2 + ws * 5);
-        checksum[0] += tmp.x; checksum[1] += tmp.y;
-        tmp = *(float2*)((float*)(sAB) + offset_A_B + (tx & (ws / 2 - 1)) * 2 + ws * 6);
-        checksum[0] += tmp.x; checksum[1] += tmp.y;
-        tmp = *(float2*)((float*)(sAB) + offset_A_B + (tx & (ws / 2 - 1)) * 2 + ws * 7);
-        checksum[0] += tmp.x; checksum[1] += tmp.y;
+        offset_A_B = (tx < (3 * blockDim.x / 4)) ? (buffer_A_offset + offset_store_checksum * ms * ks): (buffer_B_offset + offset_store_checksum * ns * ks);
+        offset_A_B +=  (tx & (int)(ws / ws_1 - 1)) * ws_1;
+        checksum[0] +=  *(((float*)(sAB) + offset_A_B + ws * 0));
+        checksum[1] +=  *(((float*)(sAB) + offset_A_B + ws_2 + ws * 0));
+        checksum[0] +=  *(((float*)(sAB) + offset_A_B + ws * 1));
+        checksum[1] +=  *(((float*)(sAB) + offset_A_B + ws_2 + ws * 1));
+        checksum[0] +=  *(((float*)(sAB) + offset_A_B + ws * 2));
+        checksum[1] +=  *(((float*)(sAB) + offset_A_B + ws_2 + ws * 2));
+        checksum[0] +=  *(((float*)(sAB) + offset_A_B + ws * 3));
+        checksum[1] +=  *(((float*)(sAB) + offset_A_B + ws_2 + ws * 3));
+        checksum[0] +=  *(((float*)(sAB) + offset_A_B + ws * 4));
+        checksum[1] +=  *(((float*)(sAB) + offset_A_B + ws_2 + ws * 4));
+        checksum[0] +=  *(((float*)(sAB) + offset_A_B + ws * 5));
+        checksum[1] +=  *(((float*)(sAB) + offset_A_B + ws_2 + ws * 5));
+        checksum[0] +=  *(((float*)(sAB) + offset_A_B + ws * 6));
+        checksum[1] +=  *(((float*)(sAB) + offset_A_B + ws_2 + ws * 6));
+        checksum[0] +=  *(((float*)(sAB) + offset_A_B + ws * 7));
+        checksum[1] +=  *(((float*)(sAB) + offset_A_B + ws_2 + ws * 7));
     }
     
     C += bx * ms + offset_vec_A_warp + offset_vec_A_thread;

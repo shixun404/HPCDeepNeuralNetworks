@@ -38,20 +38,20 @@ int main(int argc, char **argv){
     cudaDeviceProp props = getDetails(deviceId);           
     A = (float *)malloc(sizeof(float) * max_size * max_size);
     B = (float *)malloc(sizeof(float) * max_size * max_size);   
-    C = (float *)malloc(sizeof(float) * max_size * max_size);                     
+    C = (float *)malloc(sizeof(float) * max_size * max_size);                      
     E = (float *)malloc(sizeof(float) * max_size);
-    E_ = (float *)malloc(sizeof(float) * max_size);
+    E_ = (float *)malloc(sizeof(float) * max_size); 
     Res = (float *)malloc(sizeof(float) * 1);
-    check_A_col = (float *)malloc(sizeof(float) * max_size);
+    check_A_col = (float *)malloc(sizeof(float) * max_size); 
     check_B_row = (float *)malloc(sizeof(float) * max_size);
-    check_C_col = (float *)malloc(sizeof(float) * max_size);
+    check_C_col = (float *)malloc(sizeof(float) * max_size);     
     check_C_row = (float *)malloc(sizeof(float) * max_size);
     check_A_row_mul_C = (float *)malloc(sizeof(float) * max_size);
     check_B_row_mul_C = (float  *)malloc(sizeof(float) * max_size);
-    
+            
     C_ref = (float *)malloc(sizeof(float) * max_size * max_size); 
-    generate_random_matrix(A, max_size);
-    generate_random_matrix(B, max_size);        
+    generate_random_matrix(A, max_size)   ;
+    generate_random_matrix(B, max_size);                     
     generate_random_matrix(C, max_size); 
     fill_vector(Res, 0.0, 1);       
     fill_vector(C, 0.0, max_size * max_size);
@@ -168,11 +168,11 @@ int main(int argc, char **argv){
             cudaEventSynchronize(end);  
         }  
         else if (kernel_number == 3){  
-            cudaEventRecord(beg);
-            dim3 blockDim(64);
+            cudaEventRecord(beg);               
+            dim3 blockDim(64);                           
             dim3 gridDim(CEIL_DIV(max_size, 64), CEIL_DIV(max_size, 64));
             for(int ii = 0; ii < num_tests; ++ii){
-                cudaDeviceSynchronize();
+                cudaDeviceSynchronize(); 
                 sgemm_large<<<gridDim, blockDim>>>(max_size, K, dB, dA, dC, alpha, beta);
                 cudaDeviceSynchronize();
             }
@@ -226,7 +226,7 @@ int main(int argc, char **argv){
             cudaEventSynchronize(beg);  
             cudaEventSynchronize(end); 
         }
-        else if (kernel_number == 11){
+        else if (kernel_number == 11){ 
             cudaEventRecord(beg);
             dim3 blockDim(64);
             dim3 gridDim(CEIL_DIV(max_size, 16), CEIL_DIV(max_size, 16));
@@ -250,11 +250,11 @@ int main(int argc, char **argv){
             }
             cudaEventRecord(end);     
             cudaEventSynchronize(beg);
-            cudaEventSynchronize(end); 
-        } 
-        else if (kernel_number == 13){
-            cudaEventRecord(beg);
-            dim3 blockDim(64);
+            cudaEventSynchronize(end);  
+        }  
+        else if (kernel_number == 13){                                      
+            cudaEventRecord(beg);                                  
+            dim3 blockDim(64);                
             dim3 gridDim(CEIL_DIV(max_size, 64), CEIL_DIV(max_size, 64));
             for(int ii = 0; ii < num_tests; ++ii){
                 cudaDeviceSynchronize();
@@ -277,7 +277,7 @@ int main(int argc, char **argv){
             cudaEventRecord(end);     
             cudaEventSynchronize(beg);
             cudaEventSynchronize(end); 
-        } 
+        }  
         else if (kernel_number == 15){
             cudaEventRecord(beg);
             dim3 blockDim(128);
