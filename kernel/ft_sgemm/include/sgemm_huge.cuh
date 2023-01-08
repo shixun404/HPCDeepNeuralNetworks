@@ -11,7 +11,7 @@
     c.z = alpha * t.z + beta * c.z;\
     c.w = alpha * t.w + beta * c.w;
     
-__global__  __launch_bounds__(256) void sgemm_huge(int N, int K, float *A, float *B, float *C, float alpha, float beta){
+__global__  __launch_bounds__(256) void sgemm_huge(int M, int N, int K, float *B, float *A, float *C, float alpha, float beta){
     __shared__ float shared_A[2][1024]; // blockDim * 2 for sublocks of A and B
     __shared__ float shared_B[2][1024];
     float* sa, *sb;
@@ -30,7 +30,7 @@ __global__  __launch_bounds__(256) void sgemm_huge(int N, int K, float *A, float
     memset(t, 0, sizeof(t));
     int idx_4 = (idx<<2), idy_128 = (idy << 7), by_128 = (by << 7);
     A = A + idx_4 + (by << 7) + idy * N;
-    B = B + idx_4 + (bx << 7) + idy * N;
+    B = B + idx_4 + (bx << 7) + idy * M;
     pre_B = *(float4*)B;
     pre_A = *(float4*)A;
     //int shared_offset = 0;
@@ -47,7 +47,7 @@ __global__  __launch_bounds__(256) void sgemm_huge(int N, int K, float *A, float
     aa1[0] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3) + 4);
 
     for(int k = 0; k < K; k += 8){
-        B += (N<<3);
+        B += (M << 3);
         A += (N << 3); 
         int shared_offset = ((((k>>3) + 1)&1)<<10);
         pre_B = *(float4*)B;
@@ -90,29 +90,29 @@ __global__  __launch_bounds__(256) void sgemm_huge(int N, int K, float *A, float
     aa0[0] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3));
     aa1[0] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3) + 4);
     }
-    C1[0] = *(float4*)(C + i1 + j1 * N);
-    C1[1] = *(float4*)(C + i1 + 4 + j1 * N);
+    C1[0] = *(float4*)(C + i1 + j1 * M);
+    C1[1] = *(float4*)(C + i1 + 4 + j1 * M);
     
-    C1[2] = *(float4*)(C + i1 + (j1 + 1) * N);
-    C1[3] = *(float4*)(C + i1 + 4 + (j1 + 1) * N);
+    C1[2] = *(float4*)(C + i1 + (j1 + 1) * M);
+    C1[3] = *(float4*)(C + i1 + 4 + (j1 + 1) * M);
 
-    C1[4] = *(float4*)(C + i1 + (j1 + 2) * N);
-    C1[5] = *(float4*)(C + i1 + 4 + (j1 + 2) * N);
+    C1[4] = *(float4*)(C + i1 + (j1 + 2) * M);
+    C1[5] = *(float4*)(C + i1 + 4 + (j1 + 2) * M);
 
-    C1[6] = *(float4*)(C + i1 + (j1 + 3) * N);
-    C1[7] = *(float4*)(C + i1 + 4 + (j1 + 3) * N);
+    C1[6] = *(float4*)(C + i1 + (j1 + 3) * M);
+    C1[7] = *(float4*)(C + i1 + 4 + (j1 + 3) * M);
 
-    C1[8] = *(float4*)(C + i1 + (j1 + 4) * N);
-    C1[9] = *(float4*)(C + i1 + 4 + (j1 + 4) * N);
+    C1[8] = *(float4*)(C + i1 + (j1 + 4) * M);
+    C1[9] = *(float4*)(C + i1 + 4 + (j1 + 4) * M);
     
-    C1[10] = *(float4*)(C + i1 + (j1 + 5) * N);
-    C1[11] = *(float4*)(C + i1 + 4 + (j1 + 5) * N);
+    C1[10] = *(float4*)(C + i1 + (j1 + 5) * M);
+    C1[11] = *(float4*)(C + i1 + 4 + (j1 + 5) * M);
 
-    C1[12] = *(float4*)(C + i1 + (j1 + 6) * N);
-    C1[13] = *(float4*)(C + i1 + 4 + (j1 + 6) * N);
+    C1[12] = *(float4*)(C + i1 + (j1 + 6) * M);
+    C1[13] = *(float4*)(C + i1 + 4 + (j1 + 6) * M);
 
-    C1[14] = *(float4*)(C + i1 + (j1 + 7) * N);
-    C1[15] = *(float4*)(C + i1 + 4 + (j1 + 7) * N);
+    C1[14] = *(float4*)(C + i1 + (j1 + 7) * M);
+    C1[15] = *(float4*)(C + i1 + 4 + (j1 + 7) * M);
     
     tcab(t[0], C1[0], alpha, beta);
     tcab(t[1], C1[1], alpha, beta);
@@ -130,28 +130,28 @@ __global__  __launch_bounds__(256) void sgemm_huge(int N, int K, float *A, float
     tcab(t[13], C1[13], alpha, beta);
     tcab(t[14], C1[14], alpha, beta);
     tcab(t[15], C1[15], alpha, beta);
-    *(float4*)(C + i1 + j1 * N) = C1[0]; 
-    *(float4*)(C + i1 + 4 + j1 * N) = C1[1];
+    *(float4*)(C + i1 + j1 * M) = C1[0]; 
+    *(float4*)(C + i1 + 4 + j1 * M) = C1[1];
 
 
-    *(float4*)(C + i1 + (j1 + 1) * N) = C1[2];
-    *(float4*)(C + i1 + 4 + (j1 + 1) * N) = C1[3];
+    *(float4*)(C + i1 + (j1 + 1) * M) = C1[2];
+    *(float4*)(C + i1 + 4 + (j1 + 1) * M) = C1[3];
     
-    *(float4*)(C + i1 + (j1 + 2) * N) = C1[4];
-    *(float4*)(C + i1 + 4 + (j1 + 2) * N) = C1[5];
+    *(float4*)(C + i1 + (j1 + 2) * M) = C1[4];
+    *(float4*)(C + i1 + 4 + (j1 + 2) * M) = C1[5];
     
-    *(float4*)(C + i1 + (j1 + 3) * N) = C1[6];
-    *(float4*)(C + i1 + 4 + (j1 + 3) * N) = C1[7];
+    *(float4*)(C + i1 + (j1 + 3) * M) = C1[6];
+    *(float4*)(C + i1 + 4 + (j1 + 3) * M) = C1[7];
     
-    *(float4*)(C + i1 + (j1 + 4) * N) = C1[8];
-    *(float4*)(C + i1 + 4 + (j1 + 4) * N) = C1[9];
+    *(float4*)(C + i1 + (j1 + 4) * M) = C1[8];
+    *(float4*)(C + i1 + 4 + (j1 + 4) * M) = C1[9];
 
-    *(float4*)(C + i1 + (j1 + 5) * N) = C1[10];
-    *(float4*)(C + i1 + 4 + (j1 + 5) * N) = C1[11];
+    *(float4*)(C + i1 + (j1 + 5) * M) = C1[10];
+    *(float4*)(C + i1 + 4 + (j1 + 5) * M) = C1[11];
 
-    *(float4*)(C + i1 + (j1 + 6) * N) = C1[12];
-    *(float4*)(C + i1 + 4 + (j1 + 6) * N) = C1[13];
+    *(float4*)(C + i1 + (j1 + 6) * M) = C1[12];
+    *(float4*)(C + i1 + 4 + (j1 + 6) * M) = C1[13];
 
-    *(float4*)(C + i1 + (j1 + 7) * N) = C1[14];
-    *(float4*)(C + i1 + 4 + (j1 + 7) * N) = C1[15];
+    *(float4*)(C + i1 + (j1 + 7) * M) = C1[14];
+    *(float4*)(C + i1 + 4 + (j1 + 7) * M) = C1[15];
 }

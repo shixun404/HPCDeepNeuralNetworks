@@ -13,3 +13,5 @@
 #include "./include/ft_sgemm_tall.cuh"
 #include "./include/ft_sgemm_wide.cuh"
 #include "./include/ft_sgemm_huge.cuh"
+
+#include "./include/ft_sgemm_tall_struct.cuh"

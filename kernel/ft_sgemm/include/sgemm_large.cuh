@@ -11,7 +11,7 @@
     c.z = alpha * t.z + beta * c.z;\
     c.w = alpha * t.w + beta * c.w;
     
-__global__  __launch_bounds__(256) void sgemm_large(int N, int K, float *A, float *B, float *C, float alpha, float beta){
+__global__  __launch_bounds__(256) void sgemm_large(int M, int N, int K, float *A, float *B, float *C, float alpha, float beta){
     // ms = ns = 64, ks = 8
     // mw = 32, nw = 64
     // mr = 8, nr = 8
@@ -46,7 +46,7 @@ __global__  __launch_bounds__(256) void sgemm_large(int N, int K, float *A, floa
     int load_tile_A_num_threads_one_col = (int)(ms / load_tile_A_num_floats_one_thread);
     // thread tx load 8 floats with rows = [(tx % 8 threads) * 8, (tx % 8 threads) * 8 + 7],
     //                              col  = (tx / 8 threads) of tile A
-    A += (tx % load_tile_A_num_threads_one_col) * (load_tile_A_num_floats_one_thread) + (int)(tx / load_tile_A_num_threads_one_col) * N;
+    A += (tx % load_tile_A_num_threads_one_col) * (load_tile_A_num_floats_one_thread) + (int)(tx / load_tile_A_num_threads_one_col) * M;
 
     // tile B inner offset.
     // each thread load (64 * 8) / 64 = 8 floats from B.
@@ -162,7 +162,7 @@ __global__  __launch_bounds__(256) void sgemm_large(int N, int K, float *A, floa
     // K loop
     for(k = 0; k < K; k += ks){
         // tile A abd tile B global offsets move forward ks columns
-        A += ks * N; 
+        A += ks * M; 
         B += ks * N; 
         // prefetch the vector from A and B in global memory 
         prefetch_vector_tile_A[0] = *((float4*)A);  
@@ -299,25 +299,25 @@ __global__  __launch_bounds__(256) void sgemm_large(int N, int K, float *A, floa
     }
     
     C += bx * ms + offset_vec_A_warp + offset_vec_A_thread;
-    C += (by * ns + offset_vec_B_warp + offset_vec_B_thread) * N;
+    C += (by * ns + offset_vec_B_warp + offset_vec_B_thread) * M;
 
     float4 C_res[16];
-    C_res[ 0] = *((float4 *)(C + 0 + N * 0));
-    C_res[ 1] = *((float4 *)(C + 4 + N * 0));
-    C_res[ 2] = *((float4 *)(C + 0 + N * 1));
-    C_res[ 3] = *((float4 *)(C + 4 + N * 1));
-    C_res[ 4] = *((float4 *)(C + 0 + N * 2));
-    C_res[ 5] = *((float4 *)(C + 4 + N * 2));
-    C_res[ 6] = *((float4 *)(C + 0 + N * 3));
-    C_res[ 7] = *((float4 *)(C + 4 + N * 3));
-    C_res[ 8] = *((float4 *)(C + 0 + N * 4));
-    C_res[ 9] = *((float4 *)(C + 4 + N * 4));
-    C_res[10] = *((float4 *)(C + 0 + N * 5));
-    C_res[11] = *((float4 *)(C + 4 + N * 5));
-    C_res[12] = *((float4 *)(C + 0 + N * 6));
-    C_res[13] = *((float4 *)(C + 4 + N * 6));
-    C_res[14] = *((float4 *)(C + 0 + N * 7));
-    C_res[15] = *((float4 *)(C + 4 + N * 7));
+    C_res[ 0] = *((float4 *)(C + 0 + M * 0));
+    C_res[ 1] = *((float4 *)(C + 4 + M * 0));
+    C_res[ 2] = *((float4 *)(C + 0 + M * 1));
+    C_res[ 3] = *((float4 *)(C + 4 + M * 1));
+    C_res[ 4] = *((float4 *)(C + 0 + M * 2));
+    C_res[ 5] = *((float4 *)(C + 4 + M * 2));
+    C_res[ 6] = *((float4 *)(C + 0 + M * 3));
+    C_res[ 7] = *((float4 *)(C + 4 + M * 3));
+    C_res[ 8] = *((float4 *)(C + 0 + M * 4));
+    C_res[ 9] = *((float4 *)(C + 4 + M * 4));
+    C_res[10] = *((float4 *)(C + 0 + M * 5));
+    C_res[11] = *((float4 *)(C + 4 + M * 5));
+    C_res[12] = *((float4 *)(C + 0 + M * 6));
+    C_res[13] = *((float4 *)(C + 4 + M * 6));
+    C_res[14] = *((float4 *)(C + 0 + M * 7));
+    C_res[15] = *((float4 *)(C + 4 + M * 7));
     
 
     C_res[0].x = alpha * res[0 ] + beta * C_res[0].x;
@@ -400,20 +400,20 @@ __global__  __launch_bounds__(256) void sgemm_large(int N, int K, float *A, floa
     C_res[15].z = alpha * res[55] + beta * C_res[15].z;
     C_res[15].w = alpha * res[63] + beta * C_res[15].w;
 
-    *((float4 *)(C + 0 + N * 0)) = C_res[ 0];
-    *((float4 *)(C + 4 + N * 0)) = C_res[ 1];
-    *((float4 *)(C + 0 + N * 1)) = C_res[ 2];
-    *((float4 *)(C + 4 + N * 1)) = C_res[ 3];
-    *((float4 *)(C + 0 + N * 2)) = C_res[ 4];
-    *((float4 *)(C + 4 + N * 2)) = C_res[ 5];
-    *((float4 *)(C + 0 + N * 3)) = C_res[ 6];
-    *((float4 *)(C + 4 + N * 3)) = C_res[ 7];
-    *((float4 *)(C + 0 + N * 4)) = C_res[ 8];
-    *((float4 *)(C + 4 + N * 4)) = C_res[ 9];
-    *((float4 *)(C + 0 + N * 5)) = C_res[10];
-    *((float4 *)(C + 4 + N * 5)) = C_res[11];
-    *((float4 *)(C + 0 + N * 6)) = C_res[12];
-    *((float4 *)(C + 4 + N * 6)) = C_res[13];
-    *((float4 *)(C + 0 + N * 7)) = C_res[14];
-    *((float4 *)(C + 4 + N * 7)) = C_res[15];
+    *((float4 *)(C + 0 + M * 0)) = C_res[ 0];
+    *((float4 *)(C + 4 + M * 0)) = C_res[ 1];
+    *((float4 *)(C + 0 + M * 1)) = C_res[ 2];
+    *((float4 *)(C + 4 + M * 1)) = C_res[ 3];
+    *((float4 *)(C + 0 + M * 2)) = C_res[ 4];
+    *((float4 *)(C + 4 + M * 2)) = C_res[ 5];
+    *((float4 *)(C + 0 + M * 3)) = C_res[ 6];
+    *((float4 *)(C + 4 + M * 3)) = C_res[ 7];
+    *((float4 *)(C + 0 + M * 4)) = C_res[ 8];
+    *((float4 *)(C + 4 + M * 4)) = C_res[ 9];
+    *((float4 *)(C + 0 + M * 5)) = C_res[10];
+    *((float4 *)(C + 4 + M * 5)) = C_res[11];
+    *((float4 *)(C + 0 + M * 6)) = C_res[12];
+    *((float4 *)(C + 4 + M * 6)) = C_res[13];
+    *((float4 *)(C + 0 + M * 7)) = C_res[14];
+    *((float4 *)(C + 4 + M * 7)) = C_res[15];
 }

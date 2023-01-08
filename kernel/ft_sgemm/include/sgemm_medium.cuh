@@ -11,7 +11,7 @@
     c.z = alpha * t.z + beta * c.z;\
     c.w = alpha * t.w + beta * c.w;
     
-__global__  __launch_bounds__(256) void sgemm_medium(int N, int K, float *A, float *B, float *C, float alpha, float beta){
+__global__  __launch_bounds__(256) void sgemm_medium(int M, int N, int K, float *A, float *B, float *C, float alpha, float beta){
     // ms = ns = 32, ks = 8
     // mw = 16, nw = 32
     // mr = 4, nr = 4
@@ -46,7 +46,7 @@ __global__  __launch_bounds__(256) void sgemm_medium(int N, int K, float *A, flo
     int load_tile_A_num_threads_one_col = (int)(ms / load_tile_A_num_floats_one_thread);
     // thread tx load 4 floats with rows = [(tx % 4 threads) * 4, (tx % 4  threads) * 4 + 3],
     //                              col  = (tx / 4 threads) of tile A
-    A += (tx % load_tile_A_num_threads_one_col) * (load_tile_A_num_floats_one_thread) + (int)(tx / load_tile_A_num_threads_one_col) * N;
+    A += (tx % load_tile_A_num_threads_one_col) * (load_tile_A_num_floats_one_thread) + (int)(tx / load_tile_A_num_threads_one_col) * M;
 
     // tile B inner offset.
     // each thread load (32 * 8) / 64 = 4 floats from B.
@@ -155,7 +155,7 @@ __global__  __launch_bounds__(256) void sgemm_medium(int N, int K, float *A, flo
     // K loop
     for(k = 0; k < K; k += ks){
         // tile A abd tile B global offsets move forward ks columns
-        A += ks * N; 
+        A += ks * M; 
         B += ks * N; 
         // prefetch the vector from A and B in global memory 
         prefetch_vector_tile_A = *((float4*)A);
@@ -223,13 +223,13 @@ __global__  __launch_bounds__(256) void sgemm_medium(int N, int K, float *A, flo
     }
     
     C += bx * ms + offset_vec_A_warp + offset_vec_A_thread;
-    C += (by * ns + offset_vec_B_warp + offset_vec_B_thread) * N;
+    C += (by * ns + offset_vec_B_warp + offset_vec_B_thread) * M;
 
     float4 C_res[4];
     C_res[0] = *((float4 *)C);
-    C_res[1] = *((float4 *)(C + N));
-    C_res[2] = *((float4 *)(C + 2 * N));
-    C_res[3] = *((float4 *)(C + 3 * N));
+    C_res[1] = *((float4 *)(C + M));
+    C_res[2] = *((float4 *)(C + 2 * M));
+    C_res[3] = *((float4 *)(C + 3 * M));
 
     C_res[0].x = alpha * res[0 ] + beta * C_res[0].x;
     C_res[0].y = alpha * res[4 ] + beta * C_res[0].y;
@@ -252,7 +252,7 @@ __global__  __launch_bounds__(256) void sgemm_medium(int N, int K, float *A, flo
     C_res[3].w = alpha * res[15] + beta * C_res[3].w;
 
     *((float4 *)C) = C_res[0];
-    *((float4 *)(C + N)) = C_res[1];
-    *((float4 *)(C + 2 * N)) = C_res[2];
-    *((float4 *)(C + 3 * N)) = C_res[3];
+    *((float4 *)(C + M)) = C_res[1];
+    *((float4 *)(C + 2 * M)) = C_res[2];
+    *((float4 *)(C + 3 * M)) = C_res[3];
 }

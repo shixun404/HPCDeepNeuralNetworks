@@ -11,7 +11,7 @@
     c.z = alpha * t.z + beta * c.z;\
     c.w = alpha * t.w + beta * c.w;
     
-__global__  __launch_bounds__(256) void sgemm_tall(int N, int K, float *A, float *B, float *C, float alpha, float beta){
+__global__  __launch_bounds__(256) void sgemm_tall(int M, int N, int K, float *A, float *B, float *C, float alpha, float beta){
     // ms = 128, ns = 32, ks = 8
     // mw = 64, nw = 16
     // mr = 8, nr = 4
@@ -46,7 +46,7 @@ __global__  __launch_bounds__(256) void sgemm_tall(int N, int K, float *A, float
     int load_tile_A_num_threads_one_col = (int)(ms / load_tile_A_num_floats_one_thread);
     // thread tx load 8 floats with rows = [(tx % 16 threads) * 8, (tx % 16 threads) * 8 + 7],
     //                              col  = (tx / 16 threads) of tile A
-    A += (tx % load_tile_A_num_threads_one_col) * (load_tile_A_num_floats_one_thread) + (int)(tx / load_tile_A_num_threads_one_col) * N;
+    A += (tx % load_tile_A_num_threads_one_col) * (load_tile_A_num_floats_one_thread) + (int)(tx / load_tile_A_num_threads_one_col) * M;
 
     // tile B inner offset.
     // each thread load (32 * 8) / 128 = 2 floats from B.
@@ -168,7 +168,7 @@ __global__  __launch_bounds__(256) void sgemm_tall(int N, int K, float *A, float
     // K loop
     for(k = 0; k < K; k += ks){
         // tile A abd tile B global offsets move forward ks columns
-        A += ks * N; 
+        A += ks * M; 
         B += ks * N; 
         // prefetch the vector from A and B in global memory 
         prefetch_vector_tile_A[0] = *((float4*)A);  
@@ -261,17 +261,17 @@ __global__  __launch_bounds__(256) void sgemm_tall(int N, int K, float *A, float
     }
     
     C += bx * ms + offset_vec_A_warp + offset_vec_A_thread;
-    C += (by * ns + offset_vec_B_warp + offset_vec_B_thread) * N;
+    C += (by * ns + offset_vec_B_warp + offset_vec_B_thread) * M;
 
     float4 C_res[8];
-    C_res[ 0] = *((float4 *)(C + 0 + N * 0));
-    C_res[ 1] = *((float4 *)(C + 4 + N * 0));
-    C_res[ 2] = *((float4 *)(C + 0 + N * 1));
-    C_res[ 3] = *((float4 *)(C + 4 + N * 1));
-    C_res[ 4] = *((float4 *)(C + 0 + N * 2));
-    C_res[ 5] = *((float4 *)(C + 4 + N * 2));
-    C_res[ 6] = *((float4 *)(C + 0 + N * 3));
-    C_res[ 7] = *((float4 *)(C + 4 + N * 3));
+    C_res[ 0] = *((float4 *)(C + 0 + M * 0));
+    C_res[ 1] = *((float4 *)(C + 4 + M * 0));
+    C_res[ 2] = *((float4 *)(C + 0 + M * 1));
+    C_res[ 3] = *((float4 *)(C + 4 + M * 1));
+    C_res[ 4] = *((float4 *)(C + 0 + M * 2));
+    C_res[ 5] = *((float4 *)(C + 4 + M * 2));
+    C_res[ 6] = *((float4 *)(C + 0 + M * 3));
+    C_res[ 7] = *((float4 *)(C + 4 + M * 3));
     
 
     C_res[0].x = alpha * res[0 ] + beta * C_res[0].x;
@@ -314,12 +314,12 @@ __global__  __launch_bounds__(256) void sgemm_tall(int N, int K, float *A, float
     C_res[7].z = alpha * res[27] + beta * C_res[7].z;
     C_res[7].w = alpha * res[31] + beta * C_res[7].w;
 
-    *((float4 *)(C + 0 + N * 0)) = C_res[ 0];
-    *((float4 *)(C + 4 + N * 0)) = C_res[ 1];
-    *((float4 *)(C + 0 + N * 1)) = C_res[ 2];
-    *((float4 *)(C + 4 + N * 1)) = C_res[ 3];
-    *((float4 *)(C + 0 + N * 2)) = C_res[ 4];
-    *((float4 *)(C + 4 + N * 2)) = C_res[ 5];
-    *((float4 *)(C + 0 + N * 3)) = C_res[ 6];
-    *((float4 *)(C + 4 + N * 3)) = C_res[ 7];
+    *((float4 *)(C + 0 + M * 0)) = C_res[ 0];
+    *((float4 *)(C + 4 + M * 0)) = C_res[ 1];
+    *((float4 *)(C + 0 + M * 1)) = C_res[ 2];
+    *((float4 *)(C + 4 + M * 1)) = C_res[ 3];
+    *((float4 *)(C + 0 + M * 2)) = C_res[ 4];
+    *((float4 *)(C + 4 + M * 2)) = C_res[ 5];
+    *((float4 *)(C + 0 + M * 3)) = C_res[ 6];
+    *((float4 *)(C + 4 + M * 3)) = C_res[ 7];
 }
