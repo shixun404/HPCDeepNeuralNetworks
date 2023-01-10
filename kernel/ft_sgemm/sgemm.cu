@@ -2,14 +2,14 @@
 #include <cublas_v2.h>     
 #include "utils/utils.cuh"          
 #define PPP 1
-#include <cuda_runtime.h>
+#include <cuda_runtime.h> 
 #include <helper_functions.h>
 #include <helper_cuda.h>
-#include "kernels.cuh"     
+#include "kernels.cuh"      
 #define multi 20   
 int main(int argc, char **argv){                                 
     // Iinitialization
-    int kernel_number = atoi(argv[1]);
+    int kernel_number = atoi(argv[1]); 
     int start_size = atoi(argv[2]);       
     int end_size =  atoi(argv[3]);       
     int gap_size =  atoi(argv[4]);       
@@ -22,14 +22,14 @@ int main(int argc, char **argv){
     // printf("\n");  
     // for(int max_size = start_size; max_size <= end_size; max_size += gap_size){
     //     printf("%8.2f|", min(8.1, double(max_size) * 31.25 / 1e3));
-    // }
+    // } 
     // printf("\n"); 
     float alpha = 1.0;    
     float negative_1 = -1.0;   
 	float beta = -1.5; 
     int max_size = end_size;
     int M, N, K;
-    M = 256; N = max_size; K = max_size;
+    M = max_size; N = max_size; K = max_size;
     float *A = NULL, *B = NULL, *C_ref = NULL, *C = NULL, *E = NULL, *E_ = NULL, *Res=NULL;
     float *check_A_col = NULL, *check_B_row = NULL, *check_C_col = NULL, *check_C_row = NULL, *check_A_row_mul_C=NULL, *check_B_row_mul_C=NULL;
     float *dA = NULL,*dB = NULL, *dC_ref = NULL, *dC = NULL, *dE=NULL, *dE_ = NULL, *dRes =NULL;
@@ -91,20 +91,50 @@ int main(int argc, char **argv){
         CUDA_CALLER(cudaMemcpy(dcheck_A_col_mul_B, check_A_row_mul_C, sizeof(float) * max_size, cudaMemcpyHostToDevice));
         CUDA_CALLER(cudaMemcpy(dcheck_B_row_mul_A, check_B_row_mul_C, sizeof(float) * max_size, cudaMemcpyHostToDevice));
         CUDA_CALLER(cudaMemcpy(dRes, Res, sizeof(float), cudaMemcpyHostToDevice));    
-    } 
-    CUDA_CALLER(cudaMemcpy(dA, A, sizeof(float) * max_size * max_size, cudaMemcpyHostToDevice));
+    }  
+    CUDA_CALLER(cudaMemcpy(dA, A, sizeof(float) * max_size * max_size, cudaMemcpyHostToDevice));     
     CUDA_CALLER(cudaMemcpy(dB, B, sizeof(float) * max_size * max_size, cudaMemcpyHostToDevice));
-    CUDA_CALLER(cudaMemcpy(dC, C, sizeof(float) * max_size * max_size, cudaMemcpyHostToDevice));      
+    CUDA_CALLER(cudaMemcpy(dC, C, sizeof(float) * max_size * max_size, cudaMemcpyHostToDevice));        
     CUDA_CALLER(cudaMemcpy(dC_ref, C, sizeof(float) * max_size * max_size, cudaMemcpyHostToDevice));
     
     
-    // Verification 
+    // Verification  
     cublasHandle_t handle;         
-    cublasCreate(&handle);    
-    cudaDeviceSynchronize(); 
+    cublasCreate(&handle);     
+    cudaDeviceSynchronize();  
     cublasSgemm(handle, CUBLAS_OP_N,CUBLAS_OP_T, M, N, K, &alpha, dA, M, dB, K, &beta, dC_ref, M);
-    if(true){       
-        dim3 blockDim(256);
+    if(kernel_number == 1){       
+        dim3 blockDim(64);  
+        dim3 gridDim(CEIL_DIV(M, 16), CEIL_DIV(N, 16));
+        cudaDeviceSynchronize(); 
+        sgemm_small<<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta);  
+    }  
+    if(kernel_number == 2){       
+        dim3 blockDim(64);  
+        dim3 gridDim(CEIL_DIV(M, 32), CEIL_DIV(N, 32));
+        cudaDeviceSynchronize(); 
+        sgemm_medium<<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta);  
+    }   
+    if(kernel_number == 3){       
+        dim3 blockDim(64);  
+        dim3 gridDim(CEIL_DIV(M, 64), CEIL_DIV(N, 64));
+        cudaDeviceSynchronize(); 
+        sgemm_large<<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta);  
+    } 
+    if(kernel_number == 4){ 
+        dim3 blockDim(128);    
+        dim3 gridDim(CEIL_DIV(M, 128), CEIL_DIV(N, 32));
+        cudaDeviceSynchronize(); 
+        sgemm_tall<<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta);  
+    }  
+    if(kernel_number == 5){
+        dim3 blockDim(128);  
+        dim3 gridDim(CEIL_DIV(M, 32), CEIL_DIV(N, 128));
+        cudaDeviceSynchronize(); 
+        sgemm_wide<<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta);  
+    } 
+    if(kernel_number == 6){
+        dim3 blockDim(256);  
         dim3 gridDim(CEIL_DIV(M, 128), CEIL_DIV(N, 128));
         cudaDeviceSynchronize(); 
         sgemm_huge<<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta);  
@@ -171,15 +201,15 @@ int main(int argc, char **argv){
             cudaEventSynchronize(end);  
         }  
         else if (kernel_number == 3){  
-            cudaEventRecord(beg);               
+            cudaEventRecord(beg);                
             dim3 blockDim(64);                           
             dim3 gridDim(CEIL_DIV(max_size, 64), CEIL_DIV(max_size, 64));
             for(int ii = 0; ii < num_tests; ++ii){
                 cudaDeviceSynchronize(); 
                 sgemm_large<<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta);
-                cudaDeviceSynchronize();
+                cudaDeviceSynchronize(); 
             }
-            cudaEventRecord(end);     
+            cudaEventRecord(end);      
             cudaEventSynchronize(beg);
             cudaEventSynchronize(end); 
         } 
@@ -191,7 +221,7 @@ int main(int argc, char **argv){
                 cudaDeviceSynchronize();
                 sgemm_tall<<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta);
                 cudaDeviceSynchronize();
-            }
+            } 
             cudaEventRecord(end);     
             cudaEventSynchronize(beg);
             cudaEventSynchronize(end); 
@@ -307,22 +337,9 @@ int main(int argc, char **argv){
             cudaEventSynchronize(beg);
             cudaEventSynchronize(end); 
         }      
-        else if (kernel_number == 24){
-            cudaEventRecord(beg);
-            dim3 blockDim(128);
-            dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 32));
-            for(int ii = 0; ii < num_tests; ++ii){
-                cudaDeviceSynchronize();
-                ft_sgemm_tall_struct  <<<gridDim, blockDim>>>(max_size, K, dB, dA, dC, alpha, beta);
-                cudaDeviceSynchronize();
-            }
-            cudaEventRecord(end);     
-            cudaEventSynchronize(beg);
-            cudaEventSynchronize(end); 
-        }     
         cudaEventElapsedTime(&elapsed, beg, end);                     
         double gflops  = 0.;
-        gflops = double(2 * num_tests * double(max_size) * double(max_size) * double(K)) / (1e9);
+        gflops = double(2 * num_tests * double(M) * double(N) * double(K)) / (1e9);
         double perf = gflops / (elapsed / 1e3);
         printf("%8.2f,", perf);
         fflush(stdout);

@@ -1,7 +1,4 @@
 #include <stdio.h>
-
-#define m 8
-#define kk_max 1024
 #define ms_tall 128
 #define ns_tall 32
 #define ks_tall 8
@@ -18,7 +15,7 @@
     c.z = alpha * t.z + beta * c.z;\
     c.w = alpha * t.w + beta * c.w;
     
-__global__  __launch_bounds__(128) void ft_sgemm_tall(int M, int N, int K, float *A, float *B, float *C, float alpha, float beta){
+__global__  __launch_bounds__(ms_tall) void ft_sgemm_tall(int M, int N, int K, float *A, float *B, float *C, float alpha, float beta){
     // ms_tall = 128, ns_tall = 32, ks_tall = 8
     // mw_tall = 64, nw_tall = 16
     // mr_tall = 8, nr_tall = 4
@@ -219,8 +216,8 @@ __global__  __launch_bounds__(128) void ft_sgemm_tall(int M, int N, int K, float
 
     __syncthreads(); 
     // offset C checksum each thread
-    int offset_A_B = (tx < (3 * blockDim.x / 4)) ? (buffer_A_offset + offset_store_checksum * ms_tall * ks_tall): (buffer_B_offset + offset_store_checksum * ns_tall * ks_tall);
-    int ws = (tx < (3 * blockDim.x / 4)) ? ms_tall: ns_tall;
+    int offset_A_B = (tx < (2 * blockDim.x / 4)) ? (buffer_A_offset + offset_store_checksum * ms_tall * ks_tall): (buffer_B_offset + offset_store_checksum * ns_tall * ks_tall);
+    int ws = (tx < (2 * blockDim.x / 4)) ? ms_tall: ns_tall;
     int ws_1 = 2;//(tx < (3 * blockDim.x / 4)) ? 2: 2;
     int ws_2 = 1;//(tx < (3 * blockDim.x / 4)) ? 1: 1;
     offset_A_B +=  (tx & (int)(ws / ws_1 - 1)) * ws_1;
