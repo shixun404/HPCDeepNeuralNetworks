@@ -24,19 +24,19 @@ int main(int argc, char **argv){
     // for(int max_size = start_size; max_size <= end_size; max_size += gap_size){
     //     printf("%8.2f|", min(8.1, double(max_size) * 31.25 / 1e3));
     // } 
-    // printf("\n"); 
+    // printf("\n");  
     float alpha = 1.0;    
     float negative_1 = -1.0;   
 	float beta = -1.5; 
     int max_size = end_size;
-    int M, N, K;
+    int M, N, K; 
     M = max_size; N = max_size; K = max_size; K = 1024;
     float *A = NULL, *B = NULL, *C_ref = NULL, *C = NULL, *E = NULL, *E_ = NULL, *Res=NULL;
     float *check_A_col = NULL, *check_B_row = NULL, *check_C_col = NULL, *check_C_row = NULL, *check_A_row_mul_C=NULL, *check_B_row_mul_C=NULL;
     float *dA = NULL,*dB = NULL, *dC_ref = NULL, *dC = NULL, *dE=NULL, *dE_ = NULL, *dRes =NULL;
     float *dcheck_A_col = NULL, *dcheck_B_row = NULL, *dcheck_C_col = NULL, *dcheck_C_row = NULL, *dcheck_A_col_mul_B=NULL, *dcheck_B_row_mul_A=NULL;
     int size = max_size * sizeof (int);             
-    int deviceId;     
+    int deviceId;       
     cudaGetDevice(&deviceId); 
     cudaDeviceProp props = getDetails(deviceId);           
     A = (float *)malloc(sizeof(float) * MAX_SIZE * MAX_SIZE);
@@ -340,7 +340,33 @@ int main(int argc, char **argv){
             cudaEventRecord(end);     
             cudaEventSynchronize(beg);
             cudaEventSynchronize(end); 
-        }      
+        } 
+        else if (kernel_number == 17){
+            cudaEventRecord(beg);
+            dim3 blockDim(256);
+            dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
+            for(int ii = 0; ii < num_tests; ++ii){
+                cudaDeviceSynchronize();
+                ft_sgemm_huge_thread<<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta);
+                cudaDeviceSynchronize();
+            } 
+            cudaEventRecord(end);     
+            cudaEventSynchronize(beg);
+            cudaEventSynchronize(end); 
+        }
+        else if (kernel_number == 18){
+            cudaEventRecord(beg);
+            dim3 blockDim(256);
+            dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
+            for(int ii = 0; ii < num_tests; ++ii){
+                cudaDeviceSynchronize();
+                ft_sgemm_huge_warp<<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta);
+                cudaDeviceSynchronize();
+            }
+            cudaEventRecord(end);     
+            cudaEventSynchronize(beg);
+            cudaEventSynchronize(end); 
+        } 
         cudaEventElapsedTime(&elapsed, beg, end);                     
         double gflops  = 0.;
         gflops = double(2 * num_tests * double(M) * double(N) * double(K)) / (1e9);

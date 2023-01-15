@@ -18,7 +18,7 @@ int main(int argc, char **argv)
     int num_tests = 10;
     int start_size = atoi(argv[2]);
     int end_size = atoi(argv[3]);
-    int gap_size = 256;
+    int gap_size = 128;
     for(int max_size = start_size; max_size <= end_size; max_size += gap_size){
         printf("%8.2d|", max_size);
     }
