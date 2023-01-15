@@ -1,4 +1,4 @@
-BINARY_NAME = sgemm #sdot saxpy
+BINARY_NAME = ft_sgemm #sdot saxpy
 CUDA_PATH   = /usr/local/cuda
 CC          = $(CUDA_PATH)/bin/nvcc -arch=sm_75 #--ptxas-options=-v 
 CFLAGS      = -O3 -std=c++11 
