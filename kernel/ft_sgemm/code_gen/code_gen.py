@@ -113,7 +113,7 @@ __global__  __launch_bounds__({total_thread_num}) void '''+ f'''{function_name}'
     float* buffer_B = (float*)(sAB) + buffer_B_offset + offset_store_prefetch * ns * ks;
 
     // store the vectors in the prefetched buffer A and prefetched buffer B
-    '''
+    ''' 
     for i in range(global_read_vector_A_length):
         ft_sgemm += f'''*((({global_read_vector_type_A}*)buffer_A) + {global_read_vector_A_length} * tx + {i}) = prefetch_vector_tile_A[{i}];
     '''

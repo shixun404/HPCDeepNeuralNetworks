@@ -7,7 +7,7 @@
 #include <helper_functions.h>
 #include <helper_cuda.h>
 //#include "kernel_9.cu"
-#define multi 20
+#define multi 20 
 int main(int argc, char **argv)
 {       
     if (argc < 2) {
@@ -28,8 +28,8 @@ int main(int argc, char **argv)
     }
 
     printf("\n");
-    int threads_per_block = atoi(argv[2]);
-    int threads_x = atoi(argv[3]);
+    int threads_per_block = atoi(argv[4]);
+    int threads_x = atoi(argv[4]); 
     float alpha = 1.5;
 	float beta = -1.0; 
     int max_size = end_size;
@@ -39,8 +39,6 @@ int main(int argc, char **argv)
     int deviceId;
     cudaGetDevice(&deviceId);
     cudaDeviceProp props = getDetails(deviceId);
-    int number_of_blocks = 0;
-    number_of_blocks =  (max_size * max_size + threads_per_block - 1) / threads_per_block; 
     A = (float *)malloc(sizeof(float) * max_size * max_size);
     B = (float *)malloc(sizeof(float) * max_size * max_size);
     C = (float *)malloc(sizeof(float) * max_size * max_size);
@@ -67,12 +65,13 @@ int main(int argc, char **argv)
     } 
     for(int max_size = start_size; max_size <= end_size; max_size += gap_size){
     cublasSgemm(handle, CUBLAS_OP_N,CUBLAS_OP_N,max_size, max_size,  max_size, &alpha, dB, max_size, dA, max_size, &beta, dC_ref, max_size);
-    // test_kernel(kernel_number, max_size, dA, dB, dC, alpha, beta);
+    
+    //test_kernel(kernel_number, max_size, dA, dB, dC, alpha, beta);
     if(kernel_number == 1){
         dim3 blockDim(threads_x, threads_x);
         dim3 gridDim(CEIL_DIV(max_size, threads_x), CEIL_DIV(max_size, threads_x));
-        sgemm_1 <<<number_of_blocks, threads_per_block>>>(max_size, dA, dB, dC, alpha, beta);
-    }
+        sgemm_1 <<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta); 
+    } 
     else if(kernel_number == 2){
         dim3 blockDim(threads_x, threads_x);
         dim3 gridDim(CEIL_DIV(max_size, threads_x), CEIL_DIV(max_size, threads_x));
@@ -139,6 +138,9 @@ int main(int argc, char **argv)
         dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
         CUDA_CALLER(cudaFuncSetAttribute(sgemm_14, cudaFuncAttributeMaxDynamicSharedMemorySize, sharedMemoryBytes));
         sgemm_14<<<gridDim, blockDim, sharedMemoryBytes>>>(max_size, dA, dB, dC, alpha, beta);
+    }
+    else{
+        cublasSgemm(handle, CUBLAS_OP_N,CUBLAS_OP_N,max_size, max_size,  max_size, &alpha, dB, max_size, dA, max_size, &beta, dC, max_size);
     }
 
     cudaDeviceSynchronize();

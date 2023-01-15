@@ -1,3 +1,4 @@
+#include <stdio.h>
 __global__ void sgemm_1(int N, float *A, float *B, float *C, float alpha, float beta){
     // int idx = threadIdx.x + blockIdx.x * blockDim.x;
     int i = threadIdx.x + blockIdx.x * blockDim.x;
