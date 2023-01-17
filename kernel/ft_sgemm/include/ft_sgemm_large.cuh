@@ -334,7 +334,7 @@ __global__  __launch_bounds__(256) void ft_sgemm_large(int M, int N, int K, floa
             res[62] += vec_A[offset_register_kk * 2 + 1].w * vec_B[offset_register_kk * 2 + 1].z;
             res[63] += vec_A[offset_register_kk * 2 + 1].w * vec_B[offset_register_kk * 2 + 1].w;
         }
-        if(k % 256 == 0){
+        if(k % 256 == 0 || k == K-1){
             res[(tx&1)] += checksum[0] + checksum[1];
         }
         // update offset to store the prefetch vector

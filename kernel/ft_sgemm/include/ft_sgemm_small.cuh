@@ -234,7 +234,7 @@ __global__  __launch_bounds__(256) void ft_sgemm_small(int M, int N, int K, floa
             res[3] += vec_A[offset_register_kk].y * vec_B[offset_register_kk].y;
         }
         
-        if(k % 256 == 0){
+        if(k % 256 == 0 || k == K-1){
             res[(tx&1)] += checksum;
         }
 

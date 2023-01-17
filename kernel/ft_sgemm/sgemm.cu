@@ -7,16 +7,17 @@
 #include <helper_cuda.h>
 #include "kernels.cuh"      
 #define multi 20   
-#define MAX_SIZE 12000
 int main(int argc, char **argv){                                 
+     
     // Iinitialization
     int kernel_number = atoi(argv[1]); 
     int start_size = atoi(argv[2]);       
     int end_size =  atoi(argv[3]);       
     int gap_size =  atoi(argv[4]);       
+    int MAX_SIZE = atoi(argv[3]) + 1024;
     // int start_kernel = atoi(argv[5]);
     // int end_kernel = atoi(argv[6]);   
-    int num_tests = 10;            
+    int num_tests = 20;            
     // for(int max_size = start_size; max_size <= end_size; max_size += gap_size){
     //     printf("%8.2d|", max_size);
     // }          
@@ -103,7 +104,7 @@ int main(int argc, char **argv){
     cublasHandle_t handle;         
     cublasCreate(&handle);     
     cudaDeviceSynchronize();  
-    cublasSgemm(handle, CUBLAS_OP_N,CUBLAS_OP_T, M, N, K, &alpha, dA, M, dB, N, &beta, dC_ref, M);
+    for(int i = 0; i < 100; ++i)cublasSgemm(handle, CUBLAS_OP_N,CUBLAS_OP_T, M, N, K, &alpha, dA, M, dB, N, &beta, dC_ref, M);
     if(kernel_number == 1){       
         dim3 blockDim(64);  
         dim3 gridDim(CEIL_DIV(M, 16), CEIL_DIV(N, 16));
