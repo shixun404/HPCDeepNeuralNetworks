@@ -14,7 +14,17 @@ def addlabels(x,y):
 barWidth = 0.2
 plt.rc('font', size=20)
 fig = plt.subplots(figsize =(20, 10))
-
+def print_average(tensor, name):
+    avg = tensor.mean() #(tensor.sum() - tensor.max() - tensor.min()) / tensor.shape[0]
+    print(f'################### {name} ############################')
+    print("overhead:", avg.item()*100, '%')
+    print(tensor.sort()[0].numpy(), tensor.sort()[1].numpy())
+print("\n\n################# small kernel #####################")
+s = 0
+print_average((cublas[s:s+4] - gemm[s:s+4]) / cublas[s:s+4], "cublas vs sgemm")
+print_average((cublas[s:s+4] - abft[s:s+4]) / cublas[s:s+4], "cublas vs abft")
+print_average((bs[s:s+4] - abft[s:s+4]) / bs[s:s+4], "ABFT bs vs abft")
+    
 # set height of bar
 cublas = th.as_tensor([78.64,  126.98,  152.33,  206.32,  
                        376.97,  554.35,  724.04,  803.14,
@@ -46,7 +56,7 @@ br1 = np.arange(len(bs))
 br2 = [x + barWidth for x in br1]
 br3 = [x + barWidth for x in br2]
 br4 = [x + barWidth for x in br3]
- 
+
 # Make the plot
 plt.bar(br1, bs / cublas, color = color[0], width = barWidth,
         edgecolor ='grey', label ='ABFT baseline',)

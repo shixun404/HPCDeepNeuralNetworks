@@ -14,26 +14,23 @@ plt.tight_layout()
 fig.subplots_adjust(hspace=0.2, wspace = 0.2)
 
 def print_average(tensor, name):
-    print(f"############## {name} #################")
     avg = (tensor.sum() - tensor.max() - tensor.min()) / tensor.shape[0]
     print(name, avg)
     print(tensor.sort())
 cublas = th.as_tensor([  666.99, 2712.65, 3713.77, 3980.43, 4483.73, 4386.59, 4540.00, 4506.04, 4514.94, 4499.14, 4584.03, 4125.07, 4157.81, 4477.70, 4266.53, 4467.25, 4261.45, 4247.67, 4273.68, 3969.71, 4323.71, 4292.29, 4304.44, 3929.68, 4259.45, 4216.95, 4264.67, 4163.82, 4168.30, 4192.88, 4201.44, 4072.17, 4099.62, 4014.48, 4058.69, 4151.78, 4146.84, 3976.91, 3888.91, 3945.27,])
 kernel_sgemm_huge = th.as_tensor([  463.93, 2063.97, 4575.27, 4406.37, 4747.41, 5101.23, 5073.51, 4772.37, 4669.83, 4863.54, 4696.61, 4827.34, 4597.03, 4767.20, 4652.09, 4761.49, 4699.69, 4701.10, 4644.34, 4685.55, 4640.78, 4625.96, 4624.65, 4600.52, 4586.89, 4574.40, 4585.92, 4539.97, 4533.83, 4504.52, 4525.99, 4488.19, 4542.69, 4502.66, 4507.64, 4462.35, 4503.41, 4445.23, 4422.88, 4428.44,])
-abft_baseline = th.as_tensor([  206.78,  798.51, 1411.14, 1791.73, 2245.11, 2377.05, 2651.54, 3100.24, 3143.26, 3289.58, 3317.46, 3221.68, 3290.23, 3274.90, 3447.92, 3236.21, 3192.38, 3174.55, 3111.09, 3108.13, 3109.62, 3104.56, 3096.40, 3576.08, 3101.83, 3560.77, 3556.21, 3013.72, 3523.36, 3514.41, 3496.64, 2902.01, 2945.49, 3479.86, 3466.30, 3433.25, 3418.85, 3419.97, 3416.55, 3415.93,])
-abft_kernel_huge = th.as_tensor([  290.65, 1265.30, 2754.32, 2709.93, 2897.86, 3182.36, 3761.84, 4212.58, 4129.75, 4338.51, 4159.72, 4244.09, 4043.43, 4166.67, 4104.33, 4195.57, 4108.32, 4134.47, 4121.45, 4129.44, 4123.65, 4116.19, 4104.56, 4097.50, 4082.90, 4084.53, 4096.08, 4054.60, 4057.37, 4022.79, 4009.75, 3978.42, 3961.11, 3949.90, 3916.70, 3892.21, 3915.23, 3872.23, 3862.16, 3850.78,])
+abft_kernel_huge_err_injec = th.as_tensor([  466.85, 2045.68, 4439.91, 4488.33, 4482.43, 4223.94, 4240.14, 4109.99, 4064.76, 4256.07, 4066.64, 3903.57, 4115.82, 4089.43, 4021.96, 4071.37, 4041.64, 4041.60, 4024.87, 4039.80, 4032.25, 4031.37, 4006.13, 4012.49, 4006.47, 3996.21, 3996.61, 3965.86, 3966.52, 3948.29, 3937.14, 3904.75, 3910.46, 3888.72, 3887.47, 3861.27, 3854.96, 3837.52, 3834.58, 3817.50,])
+abft_kernel_huge = th.as_tensor([  290.65, 2265.30, 4554.32, 4609.93, 4597.86, 4382.36, 4261.84, 4212.58, 4129.75, 4338.51, 4159.72, 4244.09, 4043.43, 4166.67, 4104.33, 4195.57, 4108.32, 4134.47, 4121.45, 4129.44, 4123.65, 4116.19, 4104.56, 4097.50, 4082.90, 4084.53, 4096.08, 4054.60, 4057.37, 4022.79, 4009.75, 3978.42, 3961.11, 3949.90, 3916.70, 3892.21, 3915.23, 3872.23, 3862.16, 3850.78,])
 l = N.shape[0]
 roofline_model = th.ones_like(N) * 5600
-print("\n\n #########################   M=N=K  #########################################")
-print_average((cublas - kernel_sgemm_huge) / cublas, "cublas vs sgemm")
-print_average((kernel_sgemm_huge - abft_kernel_huge) / kernel_sgemm_huge, "sgemm vs abft")
-print_average((cublas - abft_kernel_huge) / cublas, "cublas vs abft")
-print_average((abft_baseline - abft_kernel_huge) / abft_baseline, "abft baseline vs abft")
+print_average((cublas - abft_kernel_huge_err_injec) / cublas, "cublas")
+print_average((kernel_sgemm_huge - abft_kernel_huge_err_injec) / kernel_sgemm_huge, "sgemm")
+print_average((abft_kernel_huge - abft_kernel_huge_err_injec) / abft_kernel_huge, "no error injection")
 
-ax[0].plot(N, abft_baseline[:l] / 1000, label="ABFT baseline", marker='^',markersize=ms,  color = color[0], clip_on=False)
 ax[0].plot(N, cublas[:l] / 1000,  label="cublas SGEMM", marker='o', markersize=ms, color = color[1], clip_on=False)
 ax[0].plot(N, kernel_sgemm_huge[:l] / 1000,  label="SGEMM (Ours)", marker='P',markersize=ms, color = color[2], clip_on=False)
-ax[0].plot(N, abft_kernel_huge[:l] / 1000,  label="ABFT SGEMM (Ours)", marker='s',markersize=ms,  color = color[3], clip_on=False)
+ax[0].plot(N, abft_kernel_huge[:l] / 1000,  label="ABFT SGEMM: Ori", marker='s',markersize=ms,  color = color[3], clip_on=False)
+ax[0].plot(N, abft_kernel_huge_err_injec[:l] / 1000, '--', label="ABFT SGEMM: error injected", marker='^',markersize=ms,  color =  'purple', clip_on=False)
 ax[0].plot(N, roofline_model[:l] / 1000,  label="roofline", marker='x', markersize=ms, color = 'k', clip_on=False)
 ax[0].set_xlabel("(a) Matrix Sizes M=N=K",fontdict=dict(weight='bold',  size=30))
 ax[0].set_ylabel("Performance (TFLOPS)", fontdict=dict(weight='bold'))
@@ -63,22 +60,20 @@ abft_kernel_medium = th.as_tensor([ 1326.22, 2011.62, 2159.45, 2180.75, 1676.85,
 abft_kernel_large = th.as_tensor([  874.36, 1675.36, 2203.80, 2477.29, 2858.95, 2247.39, 2325.81, 2296.00, 2247.36, 2221.19, 2202.09, 2219.94, 2008.12, 2191.73, 2189.59, 2217.31, 2126.22, 2187.74, 2136.19, 2176.97, 2147.03, 2170.94, 2147.29, 2141.03, 2166.36, 2158.35, 2168.52, 2157.75, 2164.26, 2156.51, 2167.16, 2155.91, 2165.16, 2160.64, 2167.62, 2151.14, 2170.57, 2157.18, 2159.31, 2153.36,])
 abft_kernel_tall = th.as_tensor([ 1249.10, 2282.01, 2600.71, 2773.01, 2504.81, 2039.77, 2058.40, 2036.56, 2011.67, 1962.88, 2000.69, 1956.66, 1853.37, 1944.75, 1933.69, 1921.95, 1930.06, 1875.80, 1891.80, 1854.22, 1885.05, 1854.87, 1854.68, 1865.63, 1866.98, 1861.58, 1871.81, 1867.44, 1869.09, 1867.34, 1872.39, 1858.89, 1875.86, 1863.84, 1868.76, 1859.68, 1872.12, 1864.21, 1864.43, 1860.65,])
 abft_kernel_wide = th.as_tensor([ 1159.26, 2196.39, 2636.75, 2723.57, 2428.59, 1967.53, 2022.13, 2061.83, 2049.64, 2028.12, 2034.60, 2041.18, 1885.25, 2032.14, 2043.67, 2039.74, 2037.99, 2018.33, 2009.64, 2020.46, 2019.00, 2007.95, 2022.37, 2016.47, 2012.39, 2014.29, 2023.03, 2019.74, 2023.81, 2017.97, 2026.35, 2015.70, 2026.07, 2021.25, 2023.21, 2013.91, 2024.47, 2020.62, 2022.22, 2015.33,])
-abft_kernel_huge = th.as_tensor([  392.10, 1558.76, 3297.31, 3195.79, 3414.47, 3730.14, 4059.51, 3850.22, 3968.04, 4268.98, 4011.49, 4196.96, 4154.85, 4081.40, 4058.32, 3937.87, 3877.93, 4055.19, 4027.12, 4013.27, 3911.02, 4046.35, 3999.77, 3954.24, 4034.75, 3941.47, 4036.09, 3945.05, 4022.21, 3966.31, 3978.07, 3978.01, 3988.09, 3961.21, 3986.64, 3967.22, 3980.05, 3963.72, 3964.22, 3950.13,])
-
-
-print("\n\n #########################   M=N, K = 1024 #########################################")
-print_average((cublas - kernel_sgemm_huge) / cublas, "cublas vs sgemm")
-print_average((kernel_sgemm_huge - abft_kernel_huge) / kernel_sgemm_huge, "sgemm vs abft")
-print_average((cublas - abft_kernel_huge) / cublas, "cublas vs abft")
-print_average((abft_baseline - abft_kernel_huge) / abft_baseline, "abft baseline vs abft")
-
+abft_kernel_huge = th.as_tensor([            592.10, 2258.76, 4697.31, 4595.79, 4614.47, 4430.14, 4259.51, 3950.22, 3968.04, 4268.98, 4011.49, 4196.96, 4154.85, 4081.40, 4058.32, 3937.87, 3877.93, 4055.19, 4027.12, 4013.27, 3911.02, 4046.35, 3999.77, 3954.24, 4034.75, 3941.47, 4036.09, 3945.05, 4022.21, 3966.31, 3978.07, 3978.01, 3988.09, 3961.21, 3986.64, 3967.22, 3980.05, 3963.72, 3964.22, 3950.13,])
+abft_kernel_huge_err_injec = th.as_tensor([  541.03, 2151.09, 4566.08, 4487.07, 4452.10, 4386.17, 4141.82, 3928.31, 3926.80, 4157.05, 3993.16, 4097.54, 4109.70, 4050.67, 4012.26, 3720.89, 4001.34, 4036.20, 3974.60, 3898.43, 3950.90, 3985.04, 3946.68, 3942.74, 3971.53, 3921.99, 3985.19, 3946.22, 3965.72, 3955.92, 3963.41, 3942.97, 3953.73, 3948.84, 3952.02, 3935.66, 3954.25, 3927.19, 3937.81, 3927.77,])
 l = N.shape[0]
-print(kernel_sgemm_small.shape)
+
+print_average((cublas - abft_kernel_huge_err_injec) / cublas, "cublas")
+print_average((kernel_sgemm_huge - abft_kernel_huge_err_injec) / kernel_sgemm_huge, "sgemm")
+print_average((abft_kernel_huge - abft_kernel_huge_err_injec) / abft_kernel_huge, "no error injection")
+
 roofline_model = th.ones_like(N) * 5600
-ax[1].plot(N, abft_baseline[:l] / 1000, label="ABFT baseline", marker='^',markersize=ms,  color = color[0], clip_on=False)
+
 ax[1].plot(N, cublas[:l] / 1000,  label="cublas SGEMM", marker='o', markersize=ms, color = color[1], clip_on=False)
 ax[1].plot(N, kernel_sgemm_huge[:l] / 1000,  label="SGEMM (Ours)", marker='P',markersize=ms, color = color[2], clip_on=False)
-ax[1].plot(N, abft_kernel_huge[:l] / 1000,  label="ABFT SGEMM (Ours)", marker='s',markersize=ms,  color = color[3], clip_on=False)
+ax[1].plot(N, abft_kernel_huge[:l] / 1000,  label="ABFT SGEMM: Ori", marker='s',markersize=ms,  color = color[3], clip_on=False)
+ax[1].plot(N, abft_kernel_huge_err_injec[:l] / 1000, '--', label="ABFT SGEMM: error injected", marker='^',markersize=ms,  color = 'purple', clip_on=False)
 ax[1].plot(N, roofline_model[:l] / 1000,  label="roofline", marker='x', markersize=ms, color = 'k', clip_on=False)
 
 ax[1].set_xlabel("(b) Matrix Sizes M=K, K=1024", fontdict=dict(weight='bold', size=30))
@@ -95,4 +90,4 @@ ax[1].set_yticklabels(ylabels)
 
 ax[1].grid()
 ax[1].legend(loc="lower right", prop={'size': 18})
-fig.savefig(f"thread_block_level_abft.pdf", bbox_inches='tight')
+fig.savefig(f"T4_error_injection.pdf", bbox_inches='tight')
