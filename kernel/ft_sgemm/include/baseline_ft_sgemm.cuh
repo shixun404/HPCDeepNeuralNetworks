@@ -32,3 +32,60 @@ void baseline_ft_sgemm(int num_tests, int M, int N, int K,  cublasHandle_t handl
         }
     }
 }
+
+
+void offline_ft_sgemm(int num_tests, int M, int N, int K,  cublasHandle_t handle, float* dA, float* dB, float* dC, float* dE, float* dRes, float* dcheck_C_row, float* dcheck_C_col, float* dcheck_A_col_mul_B, float* dcheck_B_row_mul_A, float* dcheck_A_col, float* dcheck_B_row,  float alpha, float beta, float negative_1){
+    
+    for(int ii = 0; ii < num_tests; ++ii){
+        for (int i = 0; i < K; i += 256){
+
+        cublasSgemm(handle, CUBLAS_OP_N,CUBLAS_OP_T, M, N, 256, &alpha, dA + i * M, M, dB + i * N, N, &beta, dC, M);
+        cudaDeviceSynchronize();
+        // row sum of C
+        cublasSgemv(handle, CUBLAS_OP_N, M, N, &alpha, dC, M, dE, 1, &beta, dcheck_C_row, 1);
+
+        cublasSdot(handle, N, dcheck_C_row, 1, dE, 1, dRes);
+
+        
+        
+        // // col sum of C
+
+        
+        // col sum of A
+        
+        cublasSgemv(handle, CUBLAS_OP_T, M, 256, &alpha, dA  + i * M, M, dE, 1, &beta, dcheck_A_col, 1);
+
+        cublasSdot(handle, 256, dcheck_A_col, 1, dE, 1, dRes);
+
+        // row sum of B
+        cublasSgemv(handle, CUBLAS_OP_N, 256, N, &alpha, dB + i * N, N, dE, 1, &beta, dcheck_B_row, 1);
+        
+        cublasSdot(handle, 256, dcheck_B_row, 1, dE, 1, dRes);
+        
+        cudaDeviceSynchronize();
+        
+        cublasSgemm(handle, CUBLAS_OP_N,CUBLAS_OP_T, M, N, 256, &alpha, dA + i * M, M, dB + i * N, N, &beta, dC, M);
+        cudaDeviceSynchronize();
+        // row sum of C
+        cublasSgemv(handle, CUBLAS_OP_N, M, N, &alpha, dC, M, dE, 1, &beta, dcheck_C_row, 1);
+
+        cublasSdot(handle, N, dcheck_C_row, 1, dE, 1, dRes);
+        
+        
+        // col sum of A
+        
+        cublasSgemv(handle, CUBLAS_OP_T, M, 256, &alpha, dA  + i * M, M, dE, 1, &beta, dcheck_A_col, 1);
+
+        cublasSdot(handle, 256, dcheck_A_col, 1, dE, 1, dRes);
+
+        // row sum of B
+        cublasSgemv(handle, CUBLAS_OP_N, 256, N, &alpha, dB + i * N, N, dE, 1, &beta, dcheck_B_row, 1);
+        
+        cublasSdot(handle, 256, dcheck_B_row, 1, dE, 1, dRes);
+
+        cudaDeviceSynchronize();
+        
+        
+        }
+    }
+}

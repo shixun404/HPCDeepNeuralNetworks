@@ -90,7 +90,7 @@ __global__  __launch_bounds__(256) void ft_sgemm_huge_warp(int M, int N, int K, 
     aa[0] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3));
     aa[1] = *(float4*)(sa + (wid_a << 5) + (inter_warp_id_a << 3) + 4);
 
-    for(int k = 0; k < N; k += 8){
+    for(int k = 0; k < K; k += 8){
         B += (N<<3);
         A += 8; 
         int shared_offset = ((((k>>3) + 1)&1)<<10);

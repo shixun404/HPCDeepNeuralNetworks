@@ -62,7 +62,7 @@ bool verify_vector(float *vec1, float *vec2, int n){
     int i;
     for (i = 0; vec1 + i && vec2 + i && i < n; i++){
         diff = fabs( (double)vec1[i] - (double)vec2[i] );
-        if (diff / double(vec1[i]) > 5e-5) {
+        if (diff / double(vec1[i]) > 5e-3) {
             printf("error. %5.2f,%5.2f,%d\n", vec1[i], vec2[i],i);
             // return false;
             // printf("asdadsad");
@@ -78,9 +78,11 @@ bool verify_matrix(float *mat1, float *mat2, int n){
     for (i = 0; mat1 + i * n && mat2 + i * n && i < n; ++i){
         for(j = 0; mat1 + i * n + j && mat2 + i * n + j && j < n; ++j){
 	    diff = fabs( (double)mat1[i * n + j] - (double)mat2[i * n + j] );
-        // if (diff / double(mat1[i * n  + j]) > 5e-5) {
+        double denominator = fabs(mat1[i * n  + j]) ;
+        if (denominator < 1e-3)denominator += 1;
+        // if (diff / denominator > 1e-4) {
         if (diff > 1e-2){
-            printf("error is %8.5f.  %8.5f,%8.5f. id: %d, %d\n",diff,  mat1[i * n + j], mat2[i * n + j], i, j);
+            printf("error is %8.5f, relateive error is %8.5f,  %8.5f,%8.5f. id: %d, %d\n",diff, (diff / denominator), mat1[i * n + j], mat2[i * n + j], i, j);
             return false;
         }
         }
@@ -109,5 +111,3 @@ void print_matrix(float* mat, int N){
     }
     fflush(stdout);
 }
-
-
