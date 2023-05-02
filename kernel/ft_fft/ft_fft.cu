@@ -61,10 +61,18 @@ int main(int argc, char *argv[]) {
                 cudaDeviceSynchronize(); 
         }
         if(kernel_number == 3){
-            dim3 blockDim(1); 
+            dim3 blockDim(1);  
             dim3 gridDim(1);
             for(int i = 0; i < num_tests; ++i){ 
                 radix2_exp2<<<gridDim, blockDim>>>(fft_size, d_data_1, 1);
+                cudaDeviceSynchronize(); 
+            }
+        }
+        if(kernel_number == 4){
+            dim3 blockDim(1); 
+            dim3 gridDim(1);
+            for(int i = 0; i < num_tests; ++i){ 
+                radix2_exp3<<<gridDim, blockDim>>>(fft_size, d_data_1, 1);
                 cudaDeviceSynchronize(); 
             }
         }
@@ -87,9 +95,17 @@ int main(int argc, char *argv[]) {
         CUDA_RT_CALL(cudaMemcpy(data1.data(), d_data_1, sizeof(data_type) * data1.size(), cudaMemcpyDeviceToHost));
         CUDA_RT_CALL(cudaStreamSynchronize(stream));
         for (auto &i : data1) {    
-            
-            double error_bound = 0.1;
+             
+            double error_bound = 0.1;  
             if(kernel_number == 3 && k < fft_size){
+                if(fabs(i.real()- data[k % fft_size].real()) / (fabs(data[k % fft_size].real()) + 0.0001) > error_bound 
+                || fabs(i.imag()-data[k % fft_size].imag()) / (fabs(data[k % fft_size].imag()) + 0.0001) > error_bound){
+                    if_verified=false; 
+                    printf("error k=%d, k-fft_size=%d\n", k, k-fft_size);
+                    printf("%f %f j | %f %f j \n", i.real(), i.imag(), data[k % fft_size].real(),data[k % fft_size].imag());
+                }
+            }
+            if(kernel_number == 4 && k < fft_size){
                 if(fabs(i.real()- data[k % fft_size].real()) / (fabs(data[k % fft_size].real()) + 0.0001) > error_bound 
                 || fabs(i.imag()-data[k % fft_size].imag()) / (fabs(data[k % fft_size].imag()) + 0.0001) > error_bound){
                     if_verified=false; 
@@ -158,6 +174,19 @@ int main(int argc, char *argv[]) {
             cudaEventRecord(beg1);  
             for(int i = 0; i < num_tests; ++i){ 
                 radix2_exp2<<<gridDim, blockDim>>>(fft_size, d_data_1, 1);
+                cudaDeviceSynchronize(); 
+            }
+            cudaEventRecord(end1);     
+            cudaEventSynchronize(beg1);
+            cudaEventSynchronize(end1); 
+            cudaEventElapsedTime(&elapsed, beg1, end1);
+        }
+        else if(kernel_number == 4){
+            dim3 blockDim(1); 
+            dim3 gridDim(1);
+            cudaEventRecord(beg1);  
+            for(int i = 0; i < num_tests; ++i){ 
+                radix2_exp3<<<gridDim, blockDim>>>(fft_size, d_data_1, 1);
                 cudaDeviceSynchronize(); 
             }
             cudaEventRecord(end1);     

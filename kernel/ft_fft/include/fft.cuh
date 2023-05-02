@@ -67,12 +67,6 @@ __global__ void __launch_bounds__(1) radix2_exp2 (int N, float2* input, int ns){
     float2 x[4], tmp[4], tmp1, tmp2;
     *(float4*)x = *(float4*)input;
     *(float4*)(x + 2) = *(float4*)(input + 2);
-    // printf("%d\n", N);
-    // printf("%f+%f i\n", input[0].x, input[0].y);
-    // printf("%f+%f i\n", input[1].x, input[1].y);
-    // printf("%f+%f i\n", input[2].x, input[2].y);
-    // printf("%f+%f i\n", input[3].x, input[3].y);
-    
     MY_ADD(x[0], x[2], tmp[0]);
     MY_SUB(x[0], x[2], tmp[1]);
 
@@ -97,5 +91,93 @@ __global__ void __launch_bounds__(1) radix2_exp2 (int N, float2* input, int ns){
 
     *(float4*)input = *(float4*)tmp;
     *(float4*)(input + 2) = *(float4*)(tmp + 2);
+        
+}
+
+__global__ void __launch_bounds__(1) radix2_exp3 (int N, float2* input, int ns){
+    float2 x[8], tmp[8], tmp1, tmp2;
+    *(float4*)x = *(float4*)input;
+    *(float4*)(x + 2) = *(float4*)(input + 2);
+    *(float4*)(x + 4) = *(float4*)(input + 4);
+    *(float4*)(x + 6) = *(float4*)(input + 6);
+    
+    
+    MY_ADD(x[0], x[4], tmp[0]);
+    MY_SUB(x[0], x[4], tmp[1]);
+
+    MY_ADD(x[1], x[5], tmp[2]);
+    MY_SUB(x[1], x[5], tmp[3]);
+
+    MY_ADD(x[2], x[6], tmp[4]);
+    MY_SUB(x[2], x[6], tmp[5]);
+
+    MY_ADD(x[3], x[7], tmp[6]);
+    MY_SUB(x[3], x[7], tmp[7]);
+    
+    MY_ANGLE2COMPLEX(0, tmp2);
+    MY_MUL_REPLACE(tmp[4], tmp2, tmp[4], tmp1);
+    MY_ANGLE2COMPLEX(-M_PI/2.f, tmp2);
+    MY_MUL_REPLACE(tmp[5], tmp2, tmp[5], tmp1);
+
+    MY_ANGLE2COMPLEX(0, tmp2);
+    MY_MUL_REPLACE(tmp[6], tmp2, tmp[6], tmp1);
+    MY_ANGLE2COMPLEX(-M_PI/2.f, tmp2);
+    MY_MUL_REPLACE(tmp[7], tmp2, tmp[7], tmp1);
+
+    x[0] = tmp[0];
+    x[1] = tmp[1];
+    x[2] = tmp[2];
+    x[3] = tmp[3];
+    x[4] = tmp[4];
+    x[5] = tmp[5];
+    x[6] = tmp[6];
+    x[7] = tmp[7];
+
+    MY_ADD(x[0], x[4], tmp[0]);
+    MY_SUB(x[0], x[4], tmp[2]);
+
+    MY_ADD(x[1], x[5], tmp[1]);
+    MY_SUB(x[1], x[5], tmp[3]);
+
+    MY_ADD(x[2], x[6], tmp[4]);
+    MY_SUB(x[2], x[6], tmp[6]);
+
+    MY_ADD(x[3], x[7], tmp[5]);
+    MY_SUB(x[3], x[7], tmp[7]);
+
+    MY_ANGLE2COMPLEX(0, tmp2);
+    MY_MUL_REPLACE(tmp[4], tmp2, tmp[4], tmp1);
+    MY_ANGLE2COMPLEX(-M_PI / 4.f, tmp2);
+    MY_MUL_REPLACE(tmp[5], tmp2, tmp[5], tmp1);
+    MY_ANGLE2COMPLEX(-M_PI * 2.f / 4.f, tmp2);
+    MY_MUL_REPLACE(tmp[6], tmp2, tmp[6], tmp1);
+    MY_ANGLE2COMPLEX(-M_PI * 3.f / 4.f, tmp2);
+    MY_MUL_REPLACE(tmp[7], tmp2, tmp[7], tmp1);
+
+    x[0] = tmp[0];
+    x[1] = tmp[1];
+    x[2] = tmp[2];
+    x[3] = tmp[3];
+    x[4] = tmp[4];
+    x[5] = tmp[5];
+    x[6] = tmp[6];
+    x[7] = tmp[7];
+
+    MY_ADD(x[0], x[4], tmp[0]);
+    MY_SUB(x[0], x[4], tmp[4]);
+
+    MY_ADD(x[1], x[5], tmp[1]);
+    MY_SUB(x[1], x[5], tmp[5]);
+
+    MY_ADD(x[2], x[6], tmp[2]);
+    MY_SUB(x[2], x[6], tmp[6]);
+
+    MY_ADD(x[3], x[7], tmp[3]);
+    MY_SUB(x[3], x[7], tmp[7]);
+
+    *(float4*)input = *(float4*)tmp;
+    *(float4*)(input + 2) = *(float4*)(tmp + 2);
+    *(float4*)(input + 4) = *(float4*)(tmp + 4);
+    *(float4*)(input + 6) = *(float4*)(tmp + 6);
         
 }
