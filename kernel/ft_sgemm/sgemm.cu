@@ -57,7 +57,7 @@
     check_B_row_mul_C = (float  *)malloc(sizeof(float) * MAX_SIZE);
             
     C_ref = (float *)malloc(sizeof(float) * MAX_SIZE * MAX_SIZE); 
-    generate_random_matrix(A, MAX_SIZE)   ;
+    generate_random_matrix(A, MAX_SIZE);
     generate_random_matrix(B, MAX_SIZE);                                                       
     generate_random_matrix(C, MAX_SIZE); 
     fill_vector(Res, 0.0, 1);       
