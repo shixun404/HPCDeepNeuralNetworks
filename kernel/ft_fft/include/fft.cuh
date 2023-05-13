@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <math_constants.h>
+#include <cuda_runtime.h>
+#include <cufftXt.h>
 #define M_PI 3.14159265358979312f
 #define MY_SUB(a, b, c) c.x = a.x - b.x; c.y = a.y - b.y;
 #define MY_ADD(a, b, c) c.x = a.x + b.x; c.y = a.y + b.y;
