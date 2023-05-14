@@ -45,7 +45,7 @@ __global__ void __launch_bounds__(16) fft_logN7 (float2* inputs, float2* outputs
 		}
 		offset = offset > 0 ? 0 : 8;
 	}
-	// printf("#############################\n");
+	
 	#if defined(LOG_ON)
 	if(tx==0)printf("##########reg to shared ##########\n");
 	#endif
@@ -86,12 +86,12 @@ __global__ void __launch_bounds__(16) fft_logN7 (float2* inputs, float2* outputs
 		#pragma unroll
 		for(int j = 0; j < 4; ++j){
 			int tmp_id = (__id[8 - offset + j] / n_global) * 2 * n_global + (__id[8 - offset + j] % n_global);
-			int tmp_id_left = tmp_id / blockDim.x;
-			int tmp_id_right = (tmp_id + n_global) / blockDim.x;
+			int tmp_id_left = (j / n) * 2 * n + (j % n);
+			int tmp_id_right = (j / n) * 2 * n + (j % n) + n;
 			MY_ADD(temp[j + 8 - offset], temp[j + 4 + 8 - offset], temp[offset + tmp_id_left]);
 			MY_SUB(temp[j + 8 - offset], temp[j + 4 + 8 - offset], temp[offset + tmp_id_right]);
 			#if defined(LOG_ON)
-			if(tx==0)printf("tx %d, left __id[%d] = %d, right __id[%d] = %d\n", tx,  tmp_id_left, tmp_id, tmp_id_right, tmp_id + n_global);
+			if(tx==0)printf("tx %d, left __id[%d] = %d, right __id[%d] = %d\n", tx,  (j / n) * 2 * n + (j % n), tmp_id, (j / n) * 2 * n + (j % n) + n, tmp_id + n_global);
 			#endif
 			__id[offset + tmp_id_left] = tmp_id;
 			__id[offset + tmp_id_right] = tmp_id + n_global;

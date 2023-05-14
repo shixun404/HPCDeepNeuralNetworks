@@ -9,7 +9,6 @@ __global__ void __launch_bounds__(2) fft_logN4 (float2* inputs, float2* outputs)
 	// load from global
 	#pragma unroll
 	for(int i = 0; i < 8; ++i){
-		// printf("tx %d, inputs id %d\n", tx,  i * 2 + tx);
 		temp[i] = inputs[i * 2 + tx];
 		__id[i] = tx + (i * N) / 8;
 	}
@@ -23,7 +22,6 @@ __global__ void __launch_bounds__(2) fft_logN4 (float2* inputs, float2* outputs)
 		for(int i = 0; i < 8; ++i){
 			int j = __id[8 - offset + i] / (N / radix);
 			int k = __id[8 - offset + i] % n;
-			if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  i, __id[8-offset + i]);
 			MY_ANGLE2COMPLEX((float)(-M_PI * j * k) / (float)n, tmp_angle);
 			MY_MUL(temp[8 - offset + i], tmp_angle, tmp);
 			temp[8 - offset + i] = tmp;
@@ -36,16 +34,10 @@ __global__ void __launch_bounds__(2) fft_logN4 (float2* inputs, float2* outputs)
 			__id[offset + (j / n) * 2 * n + (j % n) + n] = (__id[8 - offset + j] / n) * 2 * n + (__id[8 - offset + j] % n) + n;
 		}
 		offset = offset > 0 ? 0 : 8;
-		if(tx==0)printf("#############################\n");
 	}
-	// printf("#############################\n");
-	if(tx==0)printf("##########reg to shared ##########\n");
 	for(int i = 0; i < 8; ++i){
-		
-		if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  i, __id[8-offset + i]);
 		sdata[__id[8-offset + i]] = temp[8-offset + i];
 	}
-	if(tx==0)printf("####################\n");
 	__syncthreads();
 	for(int i = 0; i < 8; ++i){
 		temp[i] = sdata[i * 2 + tx];
@@ -56,7 +48,6 @@ __global__ void __launch_bounds__(2) fft_logN4 (float2* inputs, float2* outputs)
 		for(int i = 0; i < 8; ++i){
 			int j = __id[8 - offset + i] / (N / radix);
 			int k = __id[8 - offset + i] % n_global;
-			if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  i, __id[8-offset + i]);
 			MY_ANGLE2COMPLEX((float)(-M_PI * j * k) / (float)n_global, tmp_angle);
 			MY_MUL(temp[8 - offset + i], tmp_angle, tmp);
 			temp[8 - offset + i] = tmp;
@@ -67,13 +58,9 @@ __global__ void __launch_bounds__(2) fft_logN4 (float2* inputs, float2* outputs)
 			__id[offset + j] = (__id[8 - offset + j] / n_global) * 2 * n_global + (__id[8 - offset + j] % n_global);
 			__id[offset + j + 4] = (__id[8 - offset + j] / n_global) * 2 * n_global + (__id[8 - offset + j] % n_global) + n_global;
 		}
-		if(tx==0)printf("#############################\n");
 		offset = offset > 0 ? 0 : 8;
 	}
-	if(tx==0)printf("##########reg to global ##########\n");
 	for(int i = 0; i < 8; ++i){
-		
-		if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  i, __id[8-offset + i]);
 		outputs[__id[8-offset + i]] = temp[8-offset + i];
 	}		
 }
