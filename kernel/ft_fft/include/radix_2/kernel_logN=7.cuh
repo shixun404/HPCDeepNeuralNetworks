@@ -1,9 +1,9 @@
 extern __shared__ float shared[];
-__global__ void __launch_bounds__(8) fft_logN6 (float2* inputs, float2* outputs) {
+__global__ void __launch_bounds__(16) fft_logN7 (float2* inputs, float2* outputs) {
 	float2* sdata = (float2*)shared;
 	float2 temp[16];
 	int tx = threadIdx.x;
-	int N = 64;
+	int N = 128;
 	int __id[16];
 	// load from global
 	#pragma unroll
@@ -18,7 +18,13 @@ __global__ void __launch_bounds__(8) fft_logN6 (float2* inputs, float2* outputs)
 	float2 tmp;
 	float2 tmp_angle;
 	int n = 1, n_global = 1;
+
+	#pragma unroll
 	for(n = 1; n < 8; n *= 2, n_global *= 2){
+		#if defined(LOG_ON)
+		if(tx==0)printf("############ n_global %d ###########\n", n_global);
+		#endif
+		#pragma unroll
 		for(int i = 0; i < 8; ++i){
 			int j = __id[8 - offset + i] / (N / radix);
 			int k = __id[8 - offset + i] % n_global;
@@ -30,6 +36,7 @@ __global__ void __launch_bounds__(8) fft_logN6 (float2* inputs, float2* outputs)
 			temp[8 - offset + i] = tmp;
 		}
 		
+		#pragma unroll
 		for(int j = 0; j < 4; ++j){
 			MY_ADD(temp[j + 8 - offset], temp[j + 4 + 8 - offset], temp[offset + (j / n) * 2 * n + (j % n)]);
 			MY_SUB(temp[j + 8 - offset], temp[j + 4 + 8 - offset], temp[offset + (j / n) * 2 * n + (j % n) + n]);
@@ -37,32 +44,34 @@ __global__ void __launch_bounds__(8) fft_logN6 (float2* inputs, float2* outputs)
 			__id[offset + (j / n) * 2 * n + (j % n) + n] = (__id[8 - offset + j] / n_global) * 2 * n_global + (__id[8 - offset + j] % n_global) + n_global;
 		}
 		offset = offset > 0 ? 0 : 8;
-		#if defined(LOG)
-		if(tx==0)printf("#############################\n");
-		#endif
 	}
 	// printf("#############################\n");
 	#if defined(LOG_ON)
 	if(tx==0)printf("##########reg to shared ##########\n");
 	#endif
 
+	#pragma unroll
 	for(int i = 0; i < 8; ++i){
 		#if defined(LOG_ON)
 		if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  i, __id[8-offset + i]);
 		#endif
 		sdata[__id[8-offset + i]] = temp[8-offset + i];
 	}
-	#if defined(LOG_ON)
-	if(tx==0)printf("####################\n");
-	#endif
 	__syncthreads();
+
+	#pragma unroll
 	for(int i = 0; i < 8; ++i){
 		temp[i] = sdata[i * blockDim.x + tx];
 		__id[i] = tx + (i * N) / 8;
 	}
 	offset = 8;
 	
-	for(n = 1; n < 4; n *= 2, n_global *= 2){
+	#pragma unroll
+	for(n = 1; n < 8; n *= 2, n_global *= 2){
+		#if defined(LOG_ON)
+		if(tx==0)printf("############ n_global %d ###########\n", n_global);
+		#endif
+		#pragma unroll
 		for(int i = 0; i < 8; ++i){
 			int j = __id[8 - offset + i] / (N / radix);
 			int k = __id[8 - offset + i] % n_global;
@@ -74,6 +83,7 @@ __global__ void __launch_bounds__(8) fft_logN6 (float2* inputs, float2* outputs)
 			temp[8 - offset + i] = tmp;
 		}
 		
+		#pragma unroll
 		for(int j = 0; j < 4; ++j){
 			int tmp_id = (__id[8 - offset + j] / n_global) * 2 * n_global + (__id[8 - offset + j] % n_global);
 			int tmp_id_left = tmp_id / blockDim.x;
@@ -87,12 +97,36 @@ __global__ void __launch_bounds__(8) fft_logN6 (float2* inputs, float2* outputs)
 			__id[offset + tmp_id_right] = tmp_id + n_global;
 		}
 		offset = offset > 0 ? 0 : 8;
-		#if defined(LOG_ON)
-		if(tx==0)printf("#############################\n");
-		#endif
 	}
+	
+	#if defined(LOG_ON)
+	if(tx==0)printf("##########reg to shared ##########\n");
+	#endif
+	__syncthreads();
+	#pragma unroll
+	for(int i = 0; i < 8; ++i){
+		#if defined(LOG_ON)
+		if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  i, __id[8-offset + i]);
+		#endif
+		sdata[__id[8-offset + i]] = temp[8-offset + i];
+	}
+	__syncthreads();
 
+	#pragma unroll
+	for(int i = 0; i < 8; ++i){
+		temp[i] = sdata[i * blockDim.x + tx];
+		__id[i] = tx + (i * N) / 8;
+	}
+	offset = 8;
+	
+	
+	
+	#pragma unroll
 	for(n = 1; n < 2; n *= 2, n_global *= 2){
+		#if defined(LOG_ON)
+		if(tx==0)printf("############ n_global %d ###########\n", n_global);
+		#endif
+		#pragma unroll
 		for(int i = 0; i < 8; ++i){
 			int j = __id[8 - offset + i] / (N / radix);
 			int k = __id[8 - offset + i] % n_global;
@@ -103,20 +137,21 @@ __global__ void __launch_bounds__(8) fft_logN6 (float2* inputs, float2* outputs)
 			MY_MUL(temp[8 - offset + i], tmp_angle, tmp);
 			temp[8 - offset + i] = tmp;
 		}
+		
+		#pragma unroll
 		for(int j = 0; j < 4; ++j){
 			MY_ADD(temp[j + 8 - offset], temp[j + 4 + 8 - offset], temp[offset + j]);
 			MY_SUB(temp[j + 8 - offset], temp[j + 4 + 8 - offset], temp[offset + j + 4]);
 			__id[offset + j] = (__id[8 - offset + j] / n_global) * 2 * n_global + (__id[8 - offset + j] % n_global);
 			__id[offset + j + 4] = (__id[8 - offset + j] / n_global) * 2 * n_global + (__id[8 - offset + j] % n_global) + n_global;
 		}
-		#if defined(LOG_ON)
-		if(tx==0)printf("#############################\n");
-		#endif
 		offset = offset > 0 ? 0 : 8;
 	}
 	#if defined(LOG_ON)
 	if(tx==0)printf("##########reg to global ##########\n");
 	#endif
+	
+	#pragma unroll
 	for(int i = 0; i < 8; ++i){
 		#if defined(LOG_ON)
 		if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  i, __id[8-offset + i]);

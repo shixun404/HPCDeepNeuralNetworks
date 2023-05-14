@@ -6,10 +6,10 @@
 #include "utils/utils.cuh"   
 #define FLOAT2_NORM(a, res) res = a.x * a.x + a.y * a.y;
 int main(int argc, char** argv){  
-    int N = 16;
+    int N = 128; 
     int random_seed = 10;  
-    int num_tests = 1 ;     
-    srandom(random_seed);
+    int num_tests = 10;     
+    srandom(random_seed); 
     float *input = (float*)calloc(N * 2, sizeof(float)); 
     float *output_ref, *output;
     
@@ -22,26 +22,26 @@ int main(int argc, char** argv){
     cudaMalloc((void**)&output_d, sizeof(float) * N * 2);
     cudaMalloc((void**)&output_d_ref, sizeof(float) * N * 2);
 
-    // dim3 gridDim(1, 1, 1);
-    // dim3 blockDim(4, 1, 1);
+    dim3 gridDim(1, 1, 1);
+    dim3 blockDim(16, 1, 1);
     
-    // for(int i = 0; i < num_tests; ++i){
-    //     vkfft_logN5 <<<gridDim, blockDim, sizeof(float) * 2 * 48 >>> ((float2*)input_d, (float2*)output_d);
+    // for(int i = 0; i < num_tests; ++i){ 
+    //     fft_logN5 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
     //     cudaDeviceSynchronize(); 
-    // }
-
+    // }  
+ 
 
     // dim3 gridDim(1, 1, 1);
     // dim3 blockDim(1, 1, 1);
     // for(int i = 0; i < num_tests; ++i){
-    //     vkfft_logN3 <<<gridDim, blockDim>>> ((float2*)input_d, (float2*)output_d);
+    //     fft_logN3 <<<gridDim, blockDim>>> ((float2*)input_d, (float2*)output_d);
     //     cudaDeviceSynchronize(); 
     // }
 
-    dim3 gridDim(1, 1, 1);
-    dim3 blockDim(2, 1, 1);
+    // dim3 gridDim(1, 1, 1);
+    // dim3 blockDim(2, 1, 1);
     // for(int i = 0; i < num_tests; ++i){
-    //     vkfft_logN4 <<<gridDim, blockDim, sizeof(float) * 2 * 16>>> ((float2*)input_d, (float2*)output_d);
+    //     fft_logN4 <<<gridDim, blockDim, sizeof(float) * 2 * 16>>> ((float2*)input_d, (float2*)output_d);
     //     cudaDeviceSynchronize(); 
     // }
  
@@ -51,34 +51,39 @@ int main(int argc, char** argv){
 
     cufftHandle plan;  
     cufftCreate(&plan);
-    cufftPlan1d(&plan, N, CUFFT_C2C, 1);
+    cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
      
     for(int i = 0; i < num_tests; ++i){
         cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d_ref, CUFFT_FORWARD);
         cudaDeviceSynchronize(); 
-    }
-    
+    } 
+     
     cudaMemcpy((void*)input_d, (void*)input, 2 * N * sizeof(float), cudaMemcpyHostToDevice);
 
     
     cudaEvent_t fft_begin, fft_end;
-    float elapsed_time_ref, elapsed_time;
+    float elapsed_time_ref, elapsed_time; 
     cudaEventCreate(&fft_begin);
     cudaEventCreate(&fft_end);
     cudaEventRecord(fft_begin);
+    
+    for(int i = 0; i < num_tests; ++i){
+        fft_logN7 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
+        cudaDeviceSynchronize(); 
+    }
     // for(int i = 0; i < num_tests; ++i){
-    //     vkfft_logN5 <<<gridDim, blockDim, sizeof(float) * 2 * 48 >>> ((float2*)input_d, (float2*)output_d);
+    //     fft_logN6 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
     //     cudaDeviceSynchronize(); 
     // }
     // for(int i = 0; i < num_tests; ++i){
-    //     vkfft_logN3 <<<gridDim, blockDim>>> ((float2*)input_d, (float2*)output_d);
+    //     fft_logN3 <<<gridDim, blockDim>>> ((float2*)input_d, (float2*)output_d);
     //     cudaDeviceSynchronize(); 
     // }
 
-    for(int i = 0; i < num_tests; ++i){
-        vkfft_logN4 <<<gridDim, blockDim, sizeof(float) * 2 * 16>>> ((float2*)input_d, (float2*)output_d);
-        cudaDeviceSynchronize(); 
-    }
+    // for(int i = 0; i < num_tests; ++i){
+    //     fft_logN4 <<<gridDim, blockDim, sizeof(float) * 2 * 16>>> ((float2*)input_d, (float2*)output_d);
+    //     cudaDeviceSynchronize(); 
+    // }
 
     cudaEventRecord(fft_end);  
     cudaEventSynchronize(fft_begin);

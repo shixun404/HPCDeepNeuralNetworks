@@ -1,4 +1,7 @@
 #include "./include/fft.cuh"
 #include "./include/hadmard.cuh"
 #include "./include/radix_2/kernel_logN=5.cuh"
+#include "./include/radix_2/kernel_logN=3.cuh"
+#include "./include/radix_2/kernel_logN=4.cuh"
 #include "./include/radix_2/kernel_logN=6.cuh"
+#include "./include/radix_2/kernel_logN=7.cuh"
