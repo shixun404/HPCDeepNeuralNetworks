@@ -46,49 +46,6 @@ int main(int argc, char** argv){
     for(N = 8; N <= 8192; N *= 2){
         dim3 gridDim(1, 1, 1);
         dim3 blockDim(int(N / 8), 1, 1);
-    
-        // for(int i = 0; i < num_tests; ++i){ 
-        //     fft_logN5 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
-        //     cudaDeviceSynchronize(); 
-        // }  
-        // for(int i = 0; i < num_tests; ++i){ 
-        //     fft_logN7 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
-        //     cudaDeviceSynchronize(); 
-        // }  
-        // for(int i = 0; i < num_tests; ++i){ 
-        //     fft_logN8 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
-        //     cudaDeviceSynchronize(); 
-        // }  
-        // for(int i = 0; i < num_tests; ++i){ 
-        //     fft_logN10 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
-        //     cudaDeviceSynchronize(); 
-        // }  
-        // for(int i = 0; i < num_tests; ++i){ 
-        //     fft_logN12 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
-        //     cudaDeviceSynchronize(); 
-        // }  
-        // for(int i = 0; i < num_tests; ++i){ 
-        //     fft_logN9 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
-        //     cudaDeviceSynchronize(); 
-        // }  
- 
-
-        // dim3 gridDim(1, 1, 1);
-        // dim3 blockDim(1, 1, 1);
-        // for(int i = 0; i < num_tests; ++i){
-        //     fft_logN3 <<<gridDim, blockDim>>> ((float2*)input_d, (float2*)output_d);
-        //     cudaDeviceSynchronize(); 
-        // }
-
-        // dim3 gridDim(1, 1, 1);
-        // dim3 blockDim(2, 1, 1);
-        // for(int i = 0; i < num_tests; ++i){
-        //     fft_logN4 <<<gridDim, blockDim, sizeof(float) * 2 * 16>>> ((float2*)input_d, (float2*)output_d);
-        //     cudaDeviceSynchronize(); 
-        // }
- 
-        
-        
         cudaEvent_t fft_begin, fft_end;
         float elapsed_time_ref, elapsed_time; 
         cudaEventCreate(&fft_begin);
