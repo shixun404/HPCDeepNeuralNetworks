@@ -390,14 +390,14 @@ int main(int argc, char** argv){
     else if(log_N == 12){
         {
             dim3 gridDim(1, 1, 1);
-            dim3 blockDim(512, 1, 1);
+            dim3 blockDim(256, 1, 1);
             for(int i = 0; i < num_tests; ++i){
-                fft_logN12 <<<gridDim, blockDim, 32768>>> ((float2*)input_d, (float2*)output_d_1);
+                fft_logN12_reg16 <<<gridDim, blockDim, 32768>>> ((float2*)input_d, (float2*)output_d_1);
                 cudaDeviceSynchronize();
             }
             cudaEventRecord(fft_begin);
             for(int i = 0; i < num_tests; ++i){
-                fft_logN12 <<<gridDim, blockDim, 32768>>> ((float2*)input_d, (float2*)output_d_1);
+                fft_logN12_reg16 <<<gridDim, blockDim, 32768>>> ((float2*)input_d, (float2*)output_d_1);
                 cudaDeviceSynchronize();
             }    
             cudaEventRecord(fft_end);  
@@ -405,6 +405,23 @@ int main(int argc, char** argv){
             cudaEventSynchronize(fft_end);
             cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);    
         }
+        // {
+        //     dim3 gridDim(1, 1, 1);
+        //     dim3 blockDim(512, 1, 1);
+        //     for(int i = 0; i < num_tests; ++i){
+        //         fft_logN12 <<<gridDim, blockDim, 32768>>> ((float2*)input_d, (float2*)output_d_1);
+        //         cudaDeviceSynchronize();
+        //     }
+        //     cudaEventRecord(fft_begin);
+        //     for(int i = 0; i < num_tests; ++i){
+        //         fft_logN12 <<<gridDim, blockDim, 32768>>> ((float2*)input_d, (float2*)output_d_1);
+        //         cudaDeviceSynchronize();
+        //     }    
+        //     cudaEventRecord(fft_end);  
+        //     cudaEventSynchronize(fft_begin);
+        //     cudaEventSynchronize(fft_end);
+        //     cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);    
+        // }
         
         {
             dim3 gridDim(1, 1, 1);
@@ -483,6 +500,7 @@ int main(int argc, char** argv){
         cudaEventSynchronize(fft_end);
         cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
         
+        cudaEventRecord(fft_begin);
         for(int i = 0; i < num_tests; ++i){
             
             dim3 gridDim(16, 1, 1);
@@ -526,6 +544,7 @@ int main(int argc, char** argv){
         cudaEventSynchronize(fft_end);
         cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
         
+        cudaEventRecord(fft_begin);
         for(int i = 0; i < num_tests; ++i){
             
             dim3 gridDim(32, 1, 1);
@@ -569,6 +588,7 @@ int main(int argc, char** argv){
         cudaEventSynchronize(fft_end);
         cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
         
+        cudaEventRecord(fft_begin);
         for(int i = 0; i < num_tests; ++i){
             
             dim3 gridDim(32, 1, 1);
@@ -603,13 +623,13 @@ int main(int argc, char** argv){
         FLOAT2_NORM(res_ref, norm_ref);
         
         float err = fabs(norm - norm_ref);
-        // if(err > 0.1){
+        if(err > 0.1){
             pass = false;
             printf("error %f detected at %d\n", err, i / 2);
             printf("ref[%d]: %.3f + %.3f i\n",  i / 2, res_ref.x, res_ref.y);
             printf("res[%d]: %.3f + %.3f i\n\n",  i / 2, res.x, res.y);
-            // break;
-        // }   
+            break;
+        }   
     }
     if(pass) printf("Pass!\n");
     else printf("Fail!\n");
@@ -618,9 +638,9 @@ int main(int argc, char** argv){
     #if defined(PROFILING)
     elapsed_time /= num_tests;
     elapsed_time_ref /= num_tests;
-    if(N == 8)printf("| SIZE |Execution Time(us)|   Shared   | #threads |\n");
-    if(N == 8)printf("|log(N)|  Ours  |  cuFFT  | Memory (KB)|          |\n");
-    printf("|%6d| %2.3f | %2.3f  |%8.3f    |%10d|\n", int(log2f((float)N)), elapsed_time * 1000, elapsed_time_ref  * 1000, (float)sizeof(float) * (float)N * 2.f / 1024.f, N / 8);
+    if(N == 8)printf("| SIZE |  Execution Time (us) |   Shared   | #threads |\n");
+    if(N == 8)printf("|log(N)|   Ours   |   cuFFT   | Memory (KB)|          |\n");
+    printf("|%6d| %8.3f | %8.3f  |%8.3f    |%10d|\n", int(log2f((float)N)), elapsed_time * 1000, elapsed_time_ref  * 1000, (float)sizeof(float) * (float)N * 2.f / 1024.f, N / 8);
     }
     #endif
     return 0;

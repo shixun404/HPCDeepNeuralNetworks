@@ -11,6 +11,7 @@
 #include "./include/radix_2/kernel_logN=11.cuh"
 #include "./include/radix_2/kernel_logN=11_reg16.cuh"
 #include "./include/radix_2/kernel_logN=12.cuh"
+#include "./include/radix_2/kernel_logN=12_reg16.cuh"
 #include "./include/radix_2/kernel_logN=13.cuh"
 #include "./include/radix_2/kernel_logN=14_upload=1.cuh"
 #include "./include/radix_2/kernel_logN=14_upload=2.cuh"
