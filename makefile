@@ -5,7 +5,9 @@ CFLAGS      = -O3 -std=c++11
 LDFLAGS     = -L$(CUDA_PATH)/lib64 -lcudart -lcublas -lcufft
 INCFLAGS    = -I$(CUDA_PATH)/include -I$(CUDA_PATH)/samples/common/inc -I. 
 LOG = LOG_OFF
+V = VERIFY_OFF
 CFLAGS += -D$(LOG)
+CFLAGS += -D$(V)
 
 
 
