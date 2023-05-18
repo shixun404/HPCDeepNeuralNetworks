@@ -24,7 +24,9 @@ __global__ void __launch_bounds__(4) fft_logN5 (float2* inputs, float2* outputs)
 		for(int i = 0; i < 8; ++i){
 			int j = __id[8 - offset + i] / (N / radix);
 			int k = __id[8 - offset + i] % n_global;
+			#if defined(PROFILING)
 			MY_ANGLE2COMPLEX((float)(-M_PI * j * k) / (float)n_global, tmp_angle);
+			#endif
 			MY_MUL(temp[8 - offset + i], tmp_angle, tmp);
 			temp[8 - offset + i] = tmp;
 		}
@@ -37,14 +39,17 @@ __global__ void __launch_bounds__(4) fft_logN5 (float2* inputs, float2* outputs)
 		}
 		offset = offset > 0 ? 0 : 8;
 	}
+	
 	#pragma unroll
 	for(int i = 0; i < 8; ++i){
-		sdata[__id[8-offset + i]] = temp[8-offset + i];
+		// sdata[__id[8-offset + i]] = temp[8-offset + i];
+		sdata[(__id[8-offset + i] / 16) * 17 + __id[8-offset + i] % 16] = temp[8-offset + i];
 	}
 	__syncthreads();
 	#pragma unroll
 	for(int i = 0; i < 8; ++i){
-		temp[i] = sdata[i * 4 + tx];
+		temp[i] = sdata[((i * 4 + tx) / 16 ) * 17 + (i * 4 + tx) % 16];
+		// temp[i] = sdata[i * 4 + tx];
 		__id[i] = tx + (i * N) / 8;
 	}
 	offset = 8;

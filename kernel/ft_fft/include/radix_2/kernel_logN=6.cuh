@@ -18,19 +18,25 @@ __global__ void __launch_bounds__(8) fft_logN6 (float2* inputs, float2* outputs)
 	float2 tmp;
 	float2 tmp_angle;
 	int n = 1, n_global = 1;
+	#pragma unroll
 	for(n = 1; n < 8; n *= 2, n_global *= 2){
+		#pragma unroll
 		for(int i = 0; i < 8; ++i){
 			int j = __id[8 - offset + i] / (N / radix);
 			int k = __id[8 - offset + i] % n_global;
 			#if defined(LOG_ON)
 			if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  i, __id[8-offset + i]);
 			#endif
+			#if defined(PROFILING)
 			MY_ANGLE2COMPLEX((float)(-M_PI * j * k) / (float)n_global, tmp_angle);
+			#endif
 			MY_MUL(temp[8 - offset + i], tmp_angle, tmp);
 			temp[8 - offset + i] = tmp;
 		}
 		
+		#pragma unroll
 		for(int j = 0; j < 4; ++j){
+			#pragma unroll
 			MY_ADD(temp[j + 8 - offset], temp[j + 4 + 8 - offset], temp[offset + (j / n) * 2 * n + (j % n)]);
 			MY_SUB(temp[j + 8 - offset], temp[j + 4 + 8 - offset], temp[offset + (j / n) * 2 * n + (j % n) + n]);
 			__id[offset + (j / n) * 2 * n + (j % n)] = (__id[8 - offset + j] / n_global) * 2 * n_global + (__id[8 - offset + j] % n_global);
@@ -46,23 +52,28 @@ __global__ void __launch_bounds__(8) fft_logN6 (float2* inputs, float2* outputs)
 	if(tx==0)printf("##########reg to shared ##########\n");
 	#endif
 
+	#pragma unroll
 	for(int i = 0; i < 8; ++i){
 		#if defined(LOG_ON)
 		if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  i, __id[8-offset + i]);
 		#endif
-		sdata[__id[8-offset + i]] = temp[8-offset + i];
+		sdata[(__id[8 - offset + i] / 16) * 17 + __id[8 - offset + i] % 16] = temp[8-offset + i];
+		// sdata[__id[8-offset + i]] = temp[8-offset + i];
 	}
 	#if defined(LOG_ON)
 	if(tx==0)printf("####################\n");
 	#endif
 	__syncthreads();
+	#pragma unroll
 	for(int i = 0; i < 8; ++i){
-		temp[i] = sdata[i * blockDim.x + tx];
+		temp[i] = sdata[(i * blockDim.x + tx) / 16 * 17 + (i * blockDim.x + tx) % 16];
 		__id[i] = tx + (i * N) / 8;
 	}
 	offset = 8;
 	
+	#pragma unroll
 	for(n = 1; n < 4; n *= 2, n_global *= 2){
+		#pragma unroll
 		for(int i = 0; i < 8; ++i){
 			int j = __id[8 - offset + i] / (N / radix);
 			int k = __id[8 - offset + i] % n_global;
@@ -73,7 +84,7 @@ __global__ void __launch_bounds__(8) fft_logN6 (float2* inputs, float2* outputs)
 			MY_MUL(temp[8 - offset + i], tmp_angle, tmp);
 			temp[8 - offset + i] = tmp;
 		}
-		
+		#pragma unroll
 		for(int j = 0; j < 4; ++j){
 			int tmp_id = (__id[8 - offset + j] / n_global) * 2 * n_global + (__id[8 - offset + j] % n_global);
 			int tmp_id_left = tmp_id / blockDim.x;
@@ -92,7 +103,9 @@ __global__ void __launch_bounds__(8) fft_logN6 (float2* inputs, float2* outputs)
 		#endif
 	}
 
+	#pragma unroll
 	for(n = 1; n < 2; n *= 2, n_global *= 2){
+		#pragma unroll
 		for(int i = 0; i < 8; ++i){
 			int j = __id[8 - offset + i] / (N / radix);
 			int k = __id[8 - offset + i] % n_global;
@@ -103,6 +116,7 @@ __global__ void __launch_bounds__(8) fft_logN6 (float2* inputs, float2* outputs)
 			MY_MUL(temp[8 - offset + i], tmp_angle, tmp);
 			temp[8 - offset + i] = tmp;
 		}
+		#pragma unroll
 		for(int j = 0; j < 4; ++j){
 			MY_ADD(temp[j + 8 - offset], temp[j + 4 + 8 - offset], temp[offset + j]);
 			MY_SUB(temp[j + 8 - offset], temp[j + 4 + 8 - offset], temp[offset + j + 4]);
@@ -117,6 +131,7 @@ __global__ void __launch_bounds__(8) fft_logN6 (float2* inputs, float2* outputs)
 	#if defined(LOG_ON)
 	if(tx==0)printf("##########reg to global ##########\n");
 	#endif
+	#pragma unroll
 	for(int i = 0; i < 8; ++i){
 		#if defined(LOG_ON)
 		if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  i, __id[8-offset + i]);

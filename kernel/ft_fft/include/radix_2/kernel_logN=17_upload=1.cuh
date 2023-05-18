@@ -125,7 +125,9 @@ __global__ void __launch_bounds__(256) fft_logN17_1(float2 *inputs, float2 *outp
 	}
 
 	for(n = 1; n < 2; n *= 2, n_global *= 2){
+		#if defined(LOG_ON)
 		if(tx == 0 && bx == 0 && ty == 0)printf("############ n_global %d ###########\n", n_global);
+		#endif
 		for(int i = 0; i < 16; ++i){
 			int j = __id[16 - offset + i] / (N / radix);
 			int k = __id[16 - offset + i] % n_global;

@@ -31,7 +31,9 @@ __global__ void __launch_bounds__(32) fft_logN8 (float2* inputs, float2* outputs
 			#if defined(LOG_ON)
 			if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  i, __id[8-offset + i]);
 			#endif
+			#if defined(PROFILING)
 			MY_ANGLE2COMPLEX((float)(-M_PI * j * k) / (float)n_global, tmp_angle);
+			#endif
 			MY_MUL(temp[8 - offset + i], tmp_angle, tmp);
 			temp[8 - offset + i] = tmp;
 		}
@@ -49,19 +51,21 @@ __global__ void __launch_bounds__(32) fft_logN8 (float2* inputs, float2* outputs
 	#if defined(LOG_ON)
 	if(tx==0)printf("##########reg to shared ##########\n");
 	#endif
-
+	__syncthreads();
 	#pragma unroll
 	for(int i = 0; i < 8; ++i){
 		#if defined(LOG_ON)
 		if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  i, __id[8-offset + i]);
 		#endif
 		sdata[__id[8-offset + i]] = temp[8-offset + i];
+		// sdata[(__id[8-offset + i] / 16) * 17 + __id[8-offset + i] % 16] = temp[8-offset + i];
 	}
 	__syncthreads();
 
 	#pragma unroll
 	for(int i = 0; i < 8; ++i){
-		temp[i] = sdata[i * blockDim.x + tx];
+		temp[i] = sdata[(i * blockDim.x + tx)];
+		// temp[i] = sdata[((i * blockDim.x + tx) / 16) * 17 + (i * blockDim.x + tx) % 16];
 		__id[i] = tx + (i * N) / 8;
 	}
 	offset = 8;
@@ -109,12 +113,14 @@ __global__ void __launch_bounds__(32) fft_logN8 (float2* inputs, float2* outputs
 		if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  i, __id[8-offset + i]);
 		#endif
 		sdata[__id[8-offset + i]] = temp[8-offset + i];
+		// sdata[(__id[8-offset + i] / 16) * 17 + __id[8-offset + i] % 16] = temp[8-offset + i];
 	}
 	__syncthreads();
 
 	#pragma unroll
 	for(int i = 0; i < 8; ++i){
-		temp[i] = sdata[i * blockDim.x + tx];
+		temp[i] = sdata[(i * blockDim.x + tx)];
+		// temp[i] = sdata[((i * blockDim.x + tx) / 16) * 17 + (i * blockDim.x + tx) % 16];
 		__id[i] = tx + (i * N) / 8;
 	}
 	offset = 8;
