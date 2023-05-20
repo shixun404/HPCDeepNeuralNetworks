@@ -5,11 +5,16 @@ CFLAGS      = -O3 -std=c++11
 LDFLAGS     = -L$(CUDA_PATH)/lib64 -lcudart -lcublas -lcufft
 INCFLAGS    = -I$(CUDA_PATH)/include -I$(CUDA_PATH)/samples/common/inc -I. 
 LOG = LOG_OFF
-V = VERIFY_OFF
-P = NO_PROFILING
+V_FFT = 0
+P_FFT = 0
+K_FFT = 2
 CFLAGS += -D$(LOG)
-CFLAGS += -D$(V)
-CFLAGS += -D$(P)
+CFLAGS += -DV_FFT=$(V_FFT)
+CFLAGS += -DP_FFT=$(P_FFT)
+CFLAGS += -DK_FFT=$(K_FFT)
+# CFLAGS += -DV=$(V)
+# CFLAGS += -DP=$(P)
+# CFLAGS += -DP=$(K)
 
 
 
