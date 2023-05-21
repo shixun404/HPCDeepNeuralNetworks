@@ -15,8 +15,8 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     int N = 8192;
     int __id[8];
     float2 tmp;
-    float2 tmp_angle;
-    float j;
+    float2 tmp_angle, tmp_angle_rot;
+    int j;
     int k;
     int tmp_id;
     int n = 1, n_global = 1;
@@ -45,39 +45,45 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     j = 1;
     k = __id[4] % 1;
-    #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  4, __id[4]);
-    #endif			
     MY_ANGLE2COMPLEX((float)(j * k) * -3.141592653589793f, tmp_angle);
+    
+    #if defined(LOG_ON)
+    if(tx==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
+    #endif
+    tmp_angle_rot.x = 1.0f;
+    tmp_angle_rot.y = 0.0f;
+    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+    tmp_angle = tmp;
+    tmp_angle_rot.x = tmp_angle.y;
+    tmp_angle_rot.y = -tmp_angle.x;
+    
     MY_MUL(temp_4, tmp_angle, tmp);
     temp_4 = tmp;
-    
-    j = 1;
-    k = __id[5] % 1;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  5, __id[5]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -3.141592653589793f, tmp_angle);
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 4,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[4], j, k, j*k, n_global);
+    #endif
+    
     MY_MUL(temp_5, tmp_angle, tmp);
     temp_5 = tmp;
-    
-    j = 1;
-    k = __id[6] % 1;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  6, __id[6]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -3.141592653589793f, tmp_angle);
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 5,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[5], j, k, j*k, n_global);
+    #endif
+    
     MY_MUL(temp_6, tmp_angle, tmp);
     temp_6 = tmp;
-    
-    j = 1;
-    k = __id[7] % 1;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  7, __id[7]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -3.141592653589793f, tmp_angle);
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 6,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[6], j, k, j*k, n_global);
+    #endif
+    
     MY_MUL(temp_7, tmp_angle, tmp);
     temp_7 = tmp;
+    #if defined(LOG_ON)
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 7,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[7], j, k, j*k, n_global);
+    #endif
     
     tmp = temp_0;
     MY_ADD(tmp, temp_4, temp_0);
@@ -119,39 +125,45 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     j = 1;
     k = __id[2] % 2;
-    #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  4, __id[2]);
-    #endif			
     MY_ANGLE2COMPLEX((float)(j * k) * -1.5707963267948966f, tmp_angle);
+    
+    #if defined(LOG_ON)
+    if(tx==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
+    #endif
+    tmp_angle_rot.x = 1.0f;
+    tmp_angle_rot.y = 0.0f;
+    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+    tmp_angle = tmp;
+    tmp_angle_rot.x = tmp_angle.y;
+    tmp_angle_rot.y = -tmp_angle.x;
+    
     MY_MUL(temp_2, tmp_angle, tmp);
     temp_2 = tmp;
-    
-    j = 1;
-    k = __id[6] % 2;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  5, __id[6]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -1.5707963267948966f, tmp_angle);
-    MY_MUL(temp_6, tmp_angle, tmp);
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 4,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[2], j, k, j*k, n_global);
+    #endif
+    
+    MY_MUL(temp_6, tmp_angle_rot, tmp);
     temp_6 = tmp;
-    
-    j = 1;
-    k = __id[3] % 2;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  6, __id[3]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -1.5707963267948966f, tmp_angle);
+    if(tx==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 5,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[6], j, k, j*k, n_global);
+    #endif
+    
     MY_MUL(temp_3, tmp_angle, tmp);
     temp_3 = tmp;
-    
-    j = 1;
-    k = __id[7] % 2;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  7, __id[7]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -1.5707963267948966f, tmp_angle);
-    MY_MUL(temp_7, tmp_angle, tmp);
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 6,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[3], j, k, j*k, n_global);
+    #endif
+    
+    MY_MUL(temp_7, tmp_angle_rot, tmp);
     temp_7 = tmp;
+    #if defined(LOG_ON)
+    if(tx==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 7,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[7], j, k, j*k, n_global);
+    #endif
     
     tmp = temp_0;
     MY_ADD(tmp, temp_2, temp_0);
@@ -193,39 +205,55 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     j = 1;
     k = __id[1] % 4;
-    #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  4, __id[1]);
-    #endif			
     MY_ANGLE2COMPLEX((float)(j * k) * -0.7853981633974483f, tmp_angle);
+    
+    #if defined(LOG_ON)
+    if(tx==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
+    #endif
+    tmp_angle_rot.x = 1.0f;
+    tmp_angle_rot.y = 0.0f;
+    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+    tmp_angle = tmp;
+    tmp_angle_rot.x = tmp_angle.y;
+    tmp_angle_rot.y = -tmp_angle.x;
+    
     MY_MUL(temp_1, tmp_angle, tmp);
     temp_1 = tmp;
-    
-    j = 1;
-    k = __id[5] % 4;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  5, __id[5]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.7853981633974483f, tmp_angle);
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 4,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[1], j, k, j*k, n_global);
+    #endif
+    
+    MY_MUL(temp_3, tmp_angle_rot, tmp);
+    temp_3 = tmp;
+    #if defined(LOG_ON)
+    if(tx==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 6,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[3], j, k, j*k, n_global);
+    #endif
+    
+    #if defined(LOG_ON)
+    if(tx==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
+    #endif
+    tmp_angle_rot.x = 0.7071067811865476f;
+    tmp_angle_rot.y = -0.7071067811865475f;
+    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+    tmp_angle = tmp;
+    tmp_angle_rot.x = tmp_angle.y;
+    tmp_angle_rot.y = -tmp_angle.x;
+    
     MY_MUL(temp_5, tmp_angle, tmp);
     temp_5 = tmp;
-    
-    j = 1;
-    k = __id[3] % 4;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  6, __id[3]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.7853981633974483f, tmp_angle);
-    MY_MUL(temp_3, tmp_angle, tmp);
-    temp_3 = tmp;
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 5,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[5], j, k, j*k, n_global);
+    #endif
     
-    j = 1;
-    k = __id[7] % 4;
-    #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  7, __id[7]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.7853981633974483f, tmp_angle);
-    MY_MUL(temp_7, tmp_angle, tmp);
+    MY_MUL(temp_7, tmp_angle_rot, tmp);
     temp_7 = tmp;
+    #if defined(LOG_ON)
+    if(tx==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 7,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[7], j, k, j*k, n_global);
+    #endif
     
     tmp = temp_0;
     MY_ADD(tmp, temp_1, temp_0);
@@ -261,86 +289,97 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     n_global *= 2;
     
-        sdata[__id[0]] = temp_0;
+    
+    sdata[__id[0]] = temp_0;
+    
+    sdata[__id[4]] = temp_4;
+    
+    sdata[__id[2]] = temp_2;
+    
+    sdata[__id[6]] = temp_6;
+    
+    sdata[__id[1]] = temp_1;
+    
+    sdata[__id[5]] = temp_5;
+    
+    sdata[__id[3]] = temp_3;
+    
+    sdata[__id[7]] = temp_7;
+    
+    __syncthreads();
+    #if defined(LOG_ON)
+    if(tx==0)printf("################### syncthreads ####################\n");
+    #endif			
         
-        sdata[__id[4]] = temp_4;
-        
-        sdata[__id[2]] = temp_2;
-        
-        sdata[__id[6]] = temp_6;
-        
-        sdata[__id[1]] = temp_1;
-        
-        sdata[__id[5]] = temp_5;
-        
-        sdata[__id[3]] = temp_3;
-        
-        sdata[__id[7]] = temp_7;
-        __syncthreads();
-        
-        temp_0 = sdata[0 * blockDim.x + tx];
-        __id[0] = tx + 0 * 1024;
-        
-        temp_1 = sdata[1 * blockDim.x + tx];
-        __id[1] = tx + 1 * 1024;
-        
-        temp_2 = sdata[2 * blockDim.x + tx];
-        __id[2] = tx + 2 * 1024;
-        
-        temp_3 = sdata[3 * blockDim.x + tx];
-        __id[3] = tx + 3 * 1024;
-        
-        temp_4 = sdata[4 * blockDim.x + tx];
-        __id[4] = tx + 4 * 1024;
-        
-        temp_5 = sdata[5 * blockDim.x + tx];
-        __id[5] = tx + 5 * 1024;
-        
-        temp_6 = sdata[6 * blockDim.x + tx];
-        __id[6] = tx + 6 * 1024;
-        
-        temp_7 = sdata[7 * blockDim.x + tx];
-        __id[7] = tx + 7 * 1024;
-        
+    temp_0 = sdata[0 * blockDim.x + tx];
+    __id[0] = tx + 0 * 1024;
+    
+    temp_1 = sdata[1 * blockDim.x + tx];
+    __id[1] = tx + 1 * 1024;
+    
+    temp_2 = sdata[2 * blockDim.x + tx];
+    __id[2] = tx + 2 * 1024;
+    
+    temp_3 = sdata[3 * blockDim.x + tx];
+    __id[3] = tx + 3 * 1024;
+    
+    temp_4 = sdata[4 * blockDim.x + tx];
+    __id[4] = tx + 4 * 1024;
+    
+    temp_5 = sdata[5 * blockDim.x + tx];
+    __id[5] = tx + 5 * 1024;
+    
+    temp_6 = sdata[6 * blockDim.x + tx];
+    __id[6] = tx + 6 * 1024;
+    
+    temp_7 = sdata[7 * blockDim.x + tx];
+    __id[7] = tx + 7 * 1024;
+    
     #if defined(LOG_ON)
     if(tx==0)printf("############ n_global %d ###########\n", n_global);
     #endif
     
     j = 1;
     k = __id[4] % 8;
-    #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  4, __id[4]);
-    #endif			
     MY_ANGLE2COMPLEX((float)(j * k) * -0.39269908169872414f, tmp_angle);
+    
+    #if defined(LOG_ON)
+    if(tx==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
+    #endif
+    tmp_angle_rot.x = 1.0f;
+    tmp_angle_rot.y = 0.0f;
+    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+    tmp_angle = tmp;
+    tmp_angle_rot.x = tmp_angle.y;
+    tmp_angle_rot.y = -tmp_angle.x;
+    
     MY_MUL(temp_4, tmp_angle, tmp);
     temp_4 = tmp;
-    
-    j = 1;
-    k = __id[5] % 8;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  5, __id[5]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.39269908169872414f, tmp_angle);
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 4,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[4], j, k, j*k, n_global);
+    #endif
+    
     MY_MUL(temp_5, tmp_angle, tmp);
     temp_5 = tmp;
-    
-    j = 1;
-    k = __id[6] % 8;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  6, __id[6]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.39269908169872414f, tmp_angle);
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 5,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[5], j, k, j*k, n_global);
+    #endif
+    
     MY_MUL(temp_6, tmp_angle, tmp);
     temp_6 = tmp;
-    
-    j = 1;
-    k = __id[7] % 8;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  7, __id[7]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.39269908169872414f, tmp_angle);
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 6,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[6], j, k, j*k, n_global);
+    #endif
+    
     MY_MUL(temp_7, tmp_angle, tmp);
     temp_7 = tmp;
+    #if defined(LOG_ON)
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 7,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[7], j, k, j*k, n_global);
+    #endif
     
     tmp = temp_0;
     MY_ADD(tmp, temp_4, temp_0);
@@ -382,39 +421,45 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     j = 1;
     k = __id[2] % 16;
-    #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  4, __id[2]);
-    #endif			
     MY_ANGLE2COMPLEX((float)(j * k) * -0.19634954084936207f, tmp_angle);
+    
+    #if defined(LOG_ON)
+    if(tx==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
+    #endif
+    tmp_angle_rot.x = 1.0f;
+    tmp_angle_rot.y = 0.0f;
+    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+    tmp_angle = tmp;
+    tmp_angle_rot.x = tmp_angle.y;
+    tmp_angle_rot.y = -tmp_angle.x;
+    
     MY_MUL(temp_2, tmp_angle, tmp);
     temp_2 = tmp;
-    
-    j = 1;
-    k = __id[6] % 16;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  5, __id[6]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.19634954084936207f, tmp_angle);
-    MY_MUL(temp_6, tmp_angle, tmp);
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 4,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[2], j, k, j*k, n_global);
+    #endif
+    
+    MY_MUL(temp_6, tmp_angle_rot, tmp);
     temp_6 = tmp;
-    
-    j = 1;
-    k = __id[3] % 16;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  6, __id[3]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.19634954084936207f, tmp_angle);
+    if(tx==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 5,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[6], j, k, j*k, n_global);
+    #endif
+    
     MY_MUL(temp_3, tmp_angle, tmp);
     temp_3 = tmp;
-    
-    j = 1;
-    k = __id[7] % 16;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  7, __id[7]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.19634954084936207f, tmp_angle);
-    MY_MUL(temp_7, tmp_angle, tmp);
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 6,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[3], j, k, j*k, n_global);
+    #endif
+    
+    MY_MUL(temp_7, tmp_angle_rot, tmp);
     temp_7 = tmp;
+    #if defined(LOG_ON)
+    if(tx==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 7,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[7], j, k, j*k, n_global);
+    #endif
     
     tmp = temp_0;
     MY_ADD(tmp, temp_2, temp_0);
@@ -456,39 +501,55 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     j = 1;
     k = __id[1] % 32;
-    #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  4, __id[1]);
-    #endif			
     MY_ANGLE2COMPLEX((float)(j * k) * -0.09817477042468103f, tmp_angle);
+    
+    #if defined(LOG_ON)
+    if(tx==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
+    #endif
+    tmp_angle_rot.x = 1.0f;
+    tmp_angle_rot.y = 0.0f;
+    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+    tmp_angle = tmp;
+    tmp_angle_rot.x = tmp_angle.y;
+    tmp_angle_rot.y = -tmp_angle.x;
+    
     MY_MUL(temp_1, tmp_angle, tmp);
     temp_1 = tmp;
-    
-    j = 1;
-    k = __id[5] % 32;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  5, __id[5]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.09817477042468103f, tmp_angle);
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 4,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[1], j, k, j*k, n_global);
+    #endif
+    
+    MY_MUL(temp_3, tmp_angle_rot, tmp);
+    temp_3 = tmp;
+    #if defined(LOG_ON)
+    if(tx==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 6,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[3], j, k, j*k, n_global);
+    #endif
+    
+    #if defined(LOG_ON)
+    if(tx==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
+    #endif
+    tmp_angle_rot.x = 0.7071067811865476f;
+    tmp_angle_rot.y = -0.7071067811865475f;
+    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+    tmp_angle = tmp;
+    tmp_angle_rot.x = tmp_angle.y;
+    tmp_angle_rot.y = -tmp_angle.x;
+    
     MY_MUL(temp_5, tmp_angle, tmp);
     temp_5 = tmp;
-    
-    j = 1;
-    k = __id[3] % 32;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  6, __id[3]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.09817477042468103f, tmp_angle);
-    MY_MUL(temp_3, tmp_angle, tmp);
-    temp_3 = tmp;
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 5,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[5], j, k, j*k, n_global);
+    #endif
     
-    j = 1;
-    k = __id[7] % 32;
-    #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  7, __id[7]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.09817477042468103f, tmp_angle);
-    MY_MUL(temp_7, tmp_angle, tmp);
+    MY_MUL(temp_7, tmp_angle_rot, tmp);
     temp_7 = tmp;
+    #if defined(LOG_ON)
+    if(tx==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 7,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[7], j, k, j*k, n_global);
+    #endif
     
     tmp = temp_0;
     MY_ADD(tmp, temp_1, temp_0);
@@ -524,86 +585,98 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     n_global *= 2;
     
-        sdata[__id[0]] = temp_0;
+    __syncthreads();
+    
+    sdata[__id[0]] = temp_0;
+    
+    sdata[__id[4]] = temp_4;
+    
+    sdata[__id[2]] = temp_2;
+    
+    sdata[__id[6]] = temp_6;
+    
+    sdata[__id[1]] = temp_1;
+    
+    sdata[__id[5]] = temp_5;
+    
+    sdata[__id[3]] = temp_3;
+    
+    sdata[__id[7]] = temp_7;
+    
+    __syncthreads();
+    #if defined(LOG_ON)
+    if(tx==0)printf("################### syncthreads ####################\n");
+    #endif			
         
-        sdata[__id[4]] = temp_4;
-        
-        sdata[__id[2]] = temp_2;
-        
-        sdata[__id[6]] = temp_6;
-        
-        sdata[__id[1]] = temp_1;
-        
-        sdata[__id[5]] = temp_5;
-        
-        sdata[__id[3]] = temp_3;
-        
-        sdata[__id[7]] = temp_7;
-        __syncthreads();
-        
-        temp_0 = sdata[0 * blockDim.x + tx];
-        __id[0] = tx + 0 * 1024;
-        
-        temp_1 = sdata[1 * blockDim.x + tx];
-        __id[1] = tx + 1 * 1024;
-        
-        temp_2 = sdata[2 * blockDim.x + tx];
-        __id[2] = tx + 2 * 1024;
-        
-        temp_3 = sdata[3 * blockDim.x + tx];
-        __id[3] = tx + 3 * 1024;
-        
-        temp_4 = sdata[4 * blockDim.x + tx];
-        __id[4] = tx + 4 * 1024;
-        
-        temp_5 = sdata[5 * blockDim.x + tx];
-        __id[5] = tx + 5 * 1024;
-        
-        temp_6 = sdata[6 * blockDim.x + tx];
-        __id[6] = tx + 6 * 1024;
-        
-        temp_7 = sdata[7 * blockDim.x + tx];
-        __id[7] = tx + 7 * 1024;
-        
+    temp_0 = sdata[0 * blockDim.x + tx];
+    __id[0] = tx + 0 * 1024;
+    
+    temp_1 = sdata[1 * blockDim.x + tx];
+    __id[1] = tx + 1 * 1024;
+    
+    temp_2 = sdata[2 * blockDim.x + tx];
+    __id[2] = tx + 2 * 1024;
+    
+    temp_3 = sdata[3 * blockDim.x + tx];
+    __id[3] = tx + 3 * 1024;
+    
+    temp_4 = sdata[4 * blockDim.x + tx];
+    __id[4] = tx + 4 * 1024;
+    
+    temp_5 = sdata[5 * blockDim.x + tx];
+    __id[5] = tx + 5 * 1024;
+    
+    temp_6 = sdata[6 * blockDim.x + tx];
+    __id[6] = tx + 6 * 1024;
+    
+    temp_7 = sdata[7 * blockDim.x + tx];
+    __id[7] = tx + 7 * 1024;
+    
     #if defined(LOG_ON)
     if(tx==0)printf("############ n_global %d ###########\n", n_global);
     #endif
     
     j = 1;
     k = __id[4] % 64;
-    #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  4, __id[4]);
-    #endif			
     MY_ANGLE2COMPLEX((float)(j * k) * -0.04908738521234052f, tmp_angle);
+    
+    #if defined(LOG_ON)
+    if(tx==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
+    #endif
+    tmp_angle_rot.x = 1.0f;
+    tmp_angle_rot.y = 0.0f;
+    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+    tmp_angle = tmp;
+    tmp_angle_rot.x = tmp_angle.y;
+    tmp_angle_rot.y = -tmp_angle.x;
+    
     MY_MUL(temp_4, tmp_angle, tmp);
     temp_4 = tmp;
-    
-    j = 1;
-    k = __id[5] % 64;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  5, __id[5]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.04908738521234052f, tmp_angle);
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 4,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[4], j, k, j*k, n_global);
+    #endif
+    
     MY_MUL(temp_5, tmp_angle, tmp);
     temp_5 = tmp;
-    
-    j = 1;
-    k = __id[6] % 64;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  6, __id[6]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.04908738521234052f, tmp_angle);
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 5,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[5], j, k, j*k, n_global);
+    #endif
+    
     MY_MUL(temp_6, tmp_angle, tmp);
     temp_6 = tmp;
-    
-    j = 1;
-    k = __id[7] % 64;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  7, __id[7]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.04908738521234052f, tmp_angle);
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 6,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[6], j, k, j*k, n_global);
+    #endif
+    
     MY_MUL(temp_7, tmp_angle, tmp);
     temp_7 = tmp;
+    #if defined(LOG_ON)
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 7,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[7], j, k, j*k, n_global);
+    #endif
     
     tmp = temp_0;
     MY_ADD(tmp, temp_4, temp_0);
@@ -645,39 +718,45 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     j = 1;
     k = __id[2] % 128;
-    #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  4, __id[2]);
-    #endif			
     MY_ANGLE2COMPLEX((float)(j * k) * -0.02454369260617026f, tmp_angle);
+    
+    #if defined(LOG_ON)
+    if(tx==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
+    #endif
+    tmp_angle_rot.x = 1.0f;
+    tmp_angle_rot.y = 0.0f;
+    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+    tmp_angle = tmp;
+    tmp_angle_rot.x = tmp_angle.y;
+    tmp_angle_rot.y = -tmp_angle.x;
+    
     MY_MUL(temp_2, tmp_angle, tmp);
     temp_2 = tmp;
-    
-    j = 1;
-    k = __id[6] % 128;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  5, __id[6]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.02454369260617026f, tmp_angle);
-    MY_MUL(temp_6, tmp_angle, tmp);
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 4,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[2], j, k, j*k, n_global);
+    #endif
+    
+    MY_MUL(temp_6, tmp_angle_rot, tmp);
     temp_6 = tmp;
-    
-    j = 1;
-    k = __id[3] % 128;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  6, __id[3]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.02454369260617026f, tmp_angle);
+    if(tx==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 5,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[6], j, k, j*k, n_global);
+    #endif
+    
     MY_MUL(temp_3, tmp_angle, tmp);
     temp_3 = tmp;
-    
-    j = 1;
-    k = __id[7] % 128;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  7, __id[7]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.02454369260617026f, tmp_angle);
-    MY_MUL(temp_7, tmp_angle, tmp);
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 6,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[3], j, k, j*k, n_global);
+    #endif
+    
+    MY_MUL(temp_7, tmp_angle_rot, tmp);
     temp_7 = tmp;
+    #if defined(LOG_ON)
+    if(tx==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 7,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[7], j, k, j*k, n_global);
+    #endif
     
     tmp = temp_0;
     MY_ADD(tmp, temp_2, temp_0);
@@ -719,39 +798,55 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     j = 1;
     k = __id[1] % 256;
-    #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  4, __id[1]);
-    #endif			
     MY_ANGLE2COMPLEX((float)(j * k) * -0.01227184630308513f, tmp_angle);
+    
+    #if defined(LOG_ON)
+    if(tx==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
+    #endif
+    tmp_angle_rot.x = 1.0f;
+    tmp_angle_rot.y = 0.0f;
+    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+    tmp_angle = tmp;
+    tmp_angle_rot.x = tmp_angle.y;
+    tmp_angle_rot.y = -tmp_angle.x;
+    
     MY_MUL(temp_1, tmp_angle, tmp);
     temp_1 = tmp;
-    
-    j = 1;
-    k = __id[5] % 256;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  5, __id[5]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.01227184630308513f, tmp_angle);
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 4,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[1], j, k, j*k, n_global);
+    #endif
+    
+    MY_MUL(temp_3, tmp_angle_rot, tmp);
+    temp_3 = tmp;
+    #if defined(LOG_ON)
+    if(tx==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 6,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[3], j, k, j*k, n_global);
+    #endif
+    
+    #if defined(LOG_ON)
+    if(tx==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
+    #endif
+    tmp_angle_rot.x = 0.7071067811865476f;
+    tmp_angle_rot.y = -0.7071067811865475f;
+    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+    tmp_angle = tmp;
+    tmp_angle_rot.x = tmp_angle.y;
+    tmp_angle_rot.y = -tmp_angle.x;
+    
     MY_MUL(temp_5, tmp_angle, tmp);
     temp_5 = tmp;
-    
-    j = 1;
-    k = __id[3] % 256;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  6, __id[3]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.01227184630308513f, tmp_angle);
-    MY_MUL(temp_3, tmp_angle, tmp);
-    temp_3 = tmp;
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 5,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[5], j, k, j*k, n_global);
+    #endif
     
-    j = 1;
-    k = __id[7] % 256;
-    #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  7, __id[7]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.01227184630308513f, tmp_angle);
-    MY_MUL(temp_7, tmp_angle, tmp);
+    MY_MUL(temp_7, tmp_angle_rot, tmp);
     temp_7 = tmp;
+    #if defined(LOG_ON)
+    if(tx==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 7,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[7], j, k, j*k, n_global);
+    #endif
     
     tmp = temp_0;
     MY_ADD(tmp, temp_1, temp_0);
@@ -787,86 +882,98 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     n_global *= 2;
     
-        sdata[__id[0]] = temp_0;
+    __syncthreads();
+    
+    sdata[__id[0]] = temp_0;
+    
+    sdata[__id[4]] = temp_4;
+    
+    sdata[__id[2]] = temp_2;
+    
+    sdata[__id[6]] = temp_6;
+    
+    sdata[__id[1]] = temp_1;
+    
+    sdata[__id[5]] = temp_5;
+    
+    sdata[__id[3]] = temp_3;
+    
+    sdata[__id[7]] = temp_7;
+    
+    __syncthreads();
+    #if defined(LOG_ON)
+    if(tx==0)printf("################### syncthreads ####################\n");
+    #endif			
         
-        sdata[__id[4]] = temp_4;
-        
-        sdata[__id[2]] = temp_2;
-        
-        sdata[__id[6]] = temp_6;
-        
-        sdata[__id[1]] = temp_1;
-        
-        sdata[__id[5]] = temp_5;
-        
-        sdata[__id[3]] = temp_3;
-        
-        sdata[__id[7]] = temp_7;
-        __syncthreads();
-        
-        temp_0 = sdata[0 * blockDim.x + tx];
-        __id[0] = tx + 0 * 1024;
-        
-        temp_1 = sdata[1 * blockDim.x + tx];
-        __id[1] = tx + 1 * 1024;
-        
-        temp_2 = sdata[2 * blockDim.x + tx];
-        __id[2] = tx + 2 * 1024;
-        
-        temp_3 = sdata[3 * blockDim.x + tx];
-        __id[3] = tx + 3 * 1024;
-        
-        temp_4 = sdata[4 * blockDim.x + tx];
-        __id[4] = tx + 4 * 1024;
-        
-        temp_5 = sdata[5 * blockDim.x + tx];
-        __id[5] = tx + 5 * 1024;
-        
-        temp_6 = sdata[6 * blockDim.x + tx];
-        __id[6] = tx + 6 * 1024;
-        
-        temp_7 = sdata[7 * blockDim.x + tx];
-        __id[7] = tx + 7 * 1024;
-        
+    temp_0 = sdata[0 * blockDim.x + tx];
+    __id[0] = tx + 0 * 1024;
+    
+    temp_1 = sdata[1 * blockDim.x + tx];
+    __id[1] = tx + 1 * 1024;
+    
+    temp_2 = sdata[2 * blockDim.x + tx];
+    __id[2] = tx + 2 * 1024;
+    
+    temp_3 = sdata[3 * blockDim.x + tx];
+    __id[3] = tx + 3 * 1024;
+    
+    temp_4 = sdata[4 * blockDim.x + tx];
+    __id[4] = tx + 4 * 1024;
+    
+    temp_5 = sdata[5 * blockDim.x + tx];
+    __id[5] = tx + 5 * 1024;
+    
+    temp_6 = sdata[6 * blockDim.x + tx];
+    __id[6] = tx + 6 * 1024;
+    
+    temp_7 = sdata[7 * blockDim.x + tx];
+    __id[7] = tx + 7 * 1024;
+    
     #if defined(LOG_ON)
     if(tx==0)printf("############ n_global %d ###########\n", n_global);
     #endif
     
     j = 1;
     k = __id[4] % 512;
-    #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  4, __id[4]);
-    #endif			
     MY_ANGLE2COMPLEX((float)(j * k) * -0.006135923151542565f, tmp_angle);
+    
+    #if defined(LOG_ON)
+    if(tx==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
+    #endif
+    tmp_angle_rot.x = 1.0f;
+    tmp_angle_rot.y = 0.0f;
+    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+    tmp_angle = tmp;
+    tmp_angle_rot.x = tmp_angle.y;
+    tmp_angle_rot.y = -tmp_angle.x;
+    
     MY_MUL(temp_4, tmp_angle, tmp);
     temp_4 = tmp;
-    
-    j = 1;
-    k = __id[5] % 512;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  5, __id[5]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.006135923151542565f, tmp_angle);
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 4,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[4], j, k, j*k, n_global);
+    #endif
+    
     MY_MUL(temp_5, tmp_angle, tmp);
     temp_5 = tmp;
-    
-    j = 1;
-    k = __id[6] % 512;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  6, __id[6]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.006135923151542565f, tmp_angle);
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 5,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[5], j, k, j*k, n_global);
+    #endif
+    
     MY_MUL(temp_6, tmp_angle, tmp);
     temp_6 = tmp;
-    
-    j = 1;
-    k = __id[7] % 512;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  7, __id[7]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.006135923151542565f, tmp_angle);
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 6,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[6], j, k, j*k, n_global);
+    #endif
+    
     MY_MUL(temp_7, tmp_angle, tmp);
     temp_7 = tmp;
+    #if defined(LOG_ON)
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 7,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[7], j, k, j*k, n_global);
+    #endif
     
     tmp = temp_0;
     MY_ADD(tmp, temp_4, temp_0);
@@ -908,39 +1015,45 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     j = 1;
     k = __id[2] % 1024;
-    #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  4, __id[2]);
-    #endif			
     MY_ANGLE2COMPLEX((float)(j * k) * -0.0030679615757712823f, tmp_angle);
+    
+    #if defined(LOG_ON)
+    if(tx==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
+    #endif
+    tmp_angle_rot.x = 1.0f;
+    tmp_angle_rot.y = 0.0f;
+    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+    tmp_angle = tmp;
+    tmp_angle_rot.x = tmp_angle.y;
+    tmp_angle_rot.y = -tmp_angle.x;
+    
     MY_MUL(temp_2, tmp_angle, tmp);
     temp_2 = tmp;
-    
-    j = 1;
-    k = __id[6] % 1024;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  5, __id[6]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.0030679615757712823f, tmp_angle);
-    MY_MUL(temp_6, tmp_angle, tmp);
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 4,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[2], j, k, j*k, n_global);
+    #endif
+    
+    MY_MUL(temp_6, tmp_angle_rot, tmp);
     temp_6 = tmp;
-    
-    j = 1;
-    k = __id[3] % 1024;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  6, __id[3]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.0030679615757712823f, tmp_angle);
+    if(tx==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 5,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[6], j, k, j*k, n_global);
+    #endif
+    
     MY_MUL(temp_3, tmp_angle, tmp);
     temp_3 = tmp;
-    
-    j = 1;
-    k = __id[7] % 1024;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  7, __id[7]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.0030679615757712823f, tmp_angle);
-    MY_MUL(temp_7, tmp_angle, tmp);
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 6,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[3], j, k, j*k, n_global);
+    #endif
+    
+    MY_MUL(temp_7, tmp_angle_rot, tmp);
     temp_7 = tmp;
+    #if defined(LOG_ON)
+    if(tx==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 7,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[7], j, k, j*k, n_global);
+    #endif
     
     tmp = temp_0;
     MY_ADD(tmp, temp_2, temp_0);
@@ -982,39 +1095,55 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     j = 1;
     k = __id[1] % 2048;
-    #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  4, __id[1]);
-    #endif			
     MY_ANGLE2COMPLEX((float)(j * k) * -0.0015339807878856412f, tmp_angle);
+    
+    #if defined(LOG_ON)
+    if(tx==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
+    #endif
+    tmp_angle_rot.x = 1.0f;
+    tmp_angle_rot.y = 0.0f;
+    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+    tmp_angle = tmp;
+    tmp_angle_rot.x = tmp_angle.y;
+    tmp_angle_rot.y = -tmp_angle.x;
+    
     MY_MUL(temp_1, tmp_angle, tmp);
     temp_1 = tmp;
-    
-    j = 1;
-    k = __id[5] % 2048;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  5, __id[5]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.0015339807878856412f, tmp_angle);
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 4,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[1], j, k, j*k, n_global);
+    #endif
+    
+    MY_MUL(temp_3, tmp_angle_rot, tmp);
+    temp_3 = tmp;
+    #if defined(LOG_ON)
+    if(tx==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 6,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[3], j, k, j*k, n_global);
+    #endif
+    
+    #if defined(LOG_ON)
+    if(tx==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
+    #endif
+    tmp_angle_rot.x = 0.7071067811865476f;
+    tmp_angle_rot.y = -0.7071067811865475f;
+    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+    tmp_angle = tmp;
+    tmp_angle_rot.x = tmp_angle.y;
+    tmp_angle_rot.y = -tmp_angle.x;
+    
     MY_MUL(temp_5, tmp_angle, tmp);
     temp_5 = tmp;
-    
-    j = 1;
-    k = __id[3] % 2048;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  6, __id[3]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.0015339807878856412f, tmp_angle);
-    MY_MUL(temp_3, tmp_angle, tmp);
-    temp_3 = tmp;
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 5,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[5], j, k, j*k, n_global);
+    #endif
     
-    j = 1;
-    k = __id[7] % 2048;
-    #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  7, __id[7]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.0015339807878856412f, tmp_angle);
-    MY_MUL(temp_7, tmp_angle, tmp);
+    MY_MUL(temp_7, tmp_angle_rot, tmp);
     temp_7 = tmp;
+    #if defined(LOG_ON)
+    if(tx==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 7,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[7], j, k, j*k, n_global);
+    #endif
     
     tmp = temp_0;
     MY_ADD(tmp, temp_1, temp_0);
@@ -1050,85 +1179,107 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     n_global *= 2;
     
-        sdata[__id[0]] = temp_0;
+    __syncthreads();
+    
+    sdata[__id[0]] = temp_0;
+    
+    sdata[__id[4]] = temp_4;
+    
+    sdata[__id[2]] = temp_2;
+    
+    sdata[__id[6]] = temp_6;
+    
+    sdata[__id[1]] = temp_1;
+    
+    sdata[__id[5]] = temp_5;
+    
+    sdata[__id[3]] = temp_3;
+    
+    sdata[__id[7]] = temp_7;
+    
+    __syncthreads();
+    #if defined(LOG_ON)
+    if(tx==0)printf("################### syncthreads ####################\n");
+    #endif			
         
-        sdata[__id[4]] = temp_4;
-        
-        sdata[__id[2]] = temp_2;
-        
-        sdata[__id[6]] = temp_6;
-        
-        sdata[__id[1]] = temp_1;
-        
-        sdata[__id[5]] = temp_5;
-        
-        sdata[__id[3]] = temp_3;
-        
-        sdata[__id[7]] = temp_7;
-        __syncthreads();
-        
-        temp_0 = sdata[0 * blockDim.x + tx];
-        __id[0] = tx + 0 * 1024;
-        
-        temp_1 = sdata[1 * blockDim.x + tx];
-        __id[1] = tx + 1 * 1024;
-        
-        temp_2 = sdata[2 * blockDim.x + tx];
-        __id[2] = tx + 2 * 1024;
-        
-        temp_3 = sdata[3 * blockDim.x + tx];
-        __id[3] = tx + 3 * 1024;
-        
-        temp_4 = sdata[4 * blockDim.x + tx];
-        __id[4] = tx + 4 * 1024;
-        
-        temp_5 = sdata[5 * blockDim.x + tx];
-        __id[5] = tx + 5 * 1024;
-        
-        temp_6 = sdata[6 * blockDim.x + tx];
-        __id[6] = tx + 6 * 1024;
-        
-        temp_7 = sdata[7 * blockDim.x + tx];
-        __id[7] = tx + 7 * 1024;
-        #if defined(LOG_ON)
+    temp_0 = sdata[0 * blockDim.x + tx];
+    __id[0] = tx + 0 * 1024;
+    
+    temp_1 = sdata[1 * blockDim.x + tx];
+    __id[1] = tx + 1 * 1024;
+    
+    temp_2 = sdata[2 * blockDim.x + tx];
+    __id[2] = tx + 2 * 1024;
+    
+    temp_3 = sdata[3 * blockDim.x + tx];
+    __id[3] = tx + 3 * 1024;
+    
+    temp_4 = sdata[4 * blockDim.x + tx];
+    __id[4] = tx + 4 * 1024;
+    
+    temp_5 = sdata[5 * blockDim.x + tx];
+    __id[5] = tx + 5 * 1024;
+    
+    temp_6 = sdata[6 * blockDim.x + tx];
+    __id[6] = tx + 6 * 1024;
+    
+    temp_7 = sdata[7 * blockDim.x + tx];
+    __id[7] = tx + 7 * 1024;
+    #if defined(LOG_ON)
     if(tx==0)printf("############ n_global %d ###########\n", n_global);
     #endif
     
     j = 1;
     k = __id[4] % 4096;
-    #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  4, __id[4]);
-    #endif			
     MY_ANGLE2COMPLEX((float)(j * k) * -0.0007669903939428206f, tmp_angle);
+    
+    #if defined(LOG_ON)
+    if(tx==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
+    #endif
+    tmp_angle_rot.x = 1.0f;
+    tmp_angle_rot.y = 0.0f;
+    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+    tmp_angle = tmp;
+    tmp_angle_rot.x = tmp_angle.y;
+    tmp_angle_rot.y = -tmp_angle.x;
+    
     MY_MUL(temp_4, tmp_angle, tmp);
     temp_4 = tmp;
-    
-    j = 1;
-    k = __id[5] % 4096;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  5, __id[5]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.0007669903939428206f, tmp_angle);
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f,  local_id 4,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[4], j, k, j*k, n_global);
+    #endif
+    
+    MY_MUL(temp_6, tmp_angle_rot, tmp);
+    temp_6 = tmp;
+    #if defined(LOG_ON)
+    if(tx==0)printf("tx %d,  a_rot.real %f,  a_rot.imag %f, local_id 6,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[6], j, k, j*k, n_global);
+    #endif
+    
+    #if defined(LOG_ON)
+    if(tx==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
+    #endif
+    tmp_angle_rot.x = 0.7071067811865476f;
+    tmp_angle_rot.y = -0.7071067811865475f;
+    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+    tmp_angle = tmp;
+    tmp_angle_rot.x = tmp_angle.y;
+    tmp_angle_rot.y = -tmp_angle.x;
+    
     MY_MUL(temp_5, tmp_angle, tmp);
     temp_5 = tmp;
-    
-    j = 1;
-    k = __id[6] % 4096;
     #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  6, __id[6]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.0007669903939428206f, tmp_angle);
-    MY_MUL(temp_6, tmp_angle, tmp);
-    temp_6 = tmp;
+    if(tx==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f,  local_id 5,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle.x, tmp_angle.y, __id[5], j, k, j*k, n_global);
+    #endif
     
-    j = 1;
-    k = __id[7] % 4096;
-    #if defined(LOG_ON)
-    if(tx==0)printf("tx %d, __id[%d] = %d\n", tx,  7, __id[7]);
-    #endif			
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.0007669903939428206f, tmp_angle);
-    MY_MUL(temp_7, tmp_angle, tmp);
+    MY_MUL(temp_7, tmp_angle_rot, tmp);
     temp_7 = tmp;
+    #if defined(LOG_ON)
+    if(tx==0)printf("tx %d,  a_rot.real %f,  a_rot.imag %f, local_id 7,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
+                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[7], j, k, j*k, n_global);
+    #endif
     
     tmp = temp_0;
     MY_ADD(tmp, temp_4, temp_0);
