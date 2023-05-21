@@ -1,5 +1,5 @@
 extern __shared__ float shared[];
-__global__ void __launch_bounds__(128) fft_logN11_reg16 (float2* inputs, float2* outputs) {
+__global__ void __launch_bounds__(128) fft_radix2_logN11_reg16 (float2* inputs, float2* outputs) {
 	float2* sdata = (float2*)shared;
 	float2 temp[32];
 	int tx = threadIdx.x;
@@ -197,7 +197,7 @@ __global__ void __launch_bounds__(128) fft_logN11_reg16 (float2* inputs, float2*
 
 
 // extern __shared__ float shared[];
-// __global__ void __launch_bounds__(4) vkfft_logN5 (float2* inputs, float2* outputs) {
+// __global__ void __launch_bounds__(4) vkfft_radix2_logN5 (float2* inputs, float2* outputs) {
 // unsigned int sharedStride = 48;
 // float2* sdata = (float2*)shared;
 // 	int stride = 16;

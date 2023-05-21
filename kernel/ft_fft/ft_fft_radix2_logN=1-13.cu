@@ -35,11 +35,11 @@ int main(int argc, char** argv){
         cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d_ref, CUFFT_FORWARD);
         cudaDeviceSynchronize(); 
     }
-    cudaFuncSetAttribute(fft_logN13, cudaFuncAttributeMaxDynamicSharedMemorySize,sizeof(float) * 2 * N );
+    cudaFuncSetAttribute(fft_radix2_logN13, cudaFuncAttributeMaxDynamicSharedMemorySize,sizeof(float) * 2 * N );
     dim3 gridDim(1, 1, 1);
     dim3 blockDim(int(N / 8), 1, 1);
     for(int i = 0; i < num_tests; ++i){ 
-        fft_logN13 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
+        fft_radix2_logN13 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
         cudaDeviceSynchronize(); 
     }
 
@@ -55,67 +55,67 @@ int main(int argc, char** argv){
         
         if(N == 8){
             for(int i = 0; i < num_tests; ++i){
-                fft_logN3 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN3 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
                 cudaDeviceSynchronize(); 
             }    
         }
         else if(N == 16){
             for(int i = 0; i < num_tests; ++i){
-                fft_logN4 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN4 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
                 cudaDeviceSynchronize(); 
             }    
         }
         else if(N == 32){
             for(int i = 0; i < num_tests; ++i){
-                fft_logN5 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN5 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
                 cudaDeviceSynchronize(); 
             }    
         }
         else if(N == 64){
             for(int i = 0; i < num_tests; ++i){
-                fft_logN6 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN6 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
                 cudaDeviceSynchronize(); 
             }    
         }
         else if(N == 128){
             for(int i = 0; i < num_tests; ++i){
-                fft_logN7 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN7 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
                 cudaDeviceSynchronize(); 
             }    
         }
         else if(N == 256){
             for(int i = 0; i < num_tests; ++i){
-                fft_logN8 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN8 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
                 cudaDeviceSynchronize(); 
             }    
         }
         else if(N == 512){
             for(int i = 0; i < num_tests; ++i){
-                fft_logN9 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN9 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
                 cudaDeviceSynchronize(); 
             }    
         }
         else if(N == 1024){
             for(int i = 0; i < num_tests; ++i){
-                fft_logN10 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN10 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
                 cudaDeviceSynchronize(); 
             }    
         }
         else if(N == 2048){
             for(int i = 0; i < num_tests; ++i){
-                fft_logN11 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN11 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
                 cudaDeviceSynchronize(); 
             }    
         }
         else if(N == 4096){
             for(int i = 0; i < num_tests; ++i){
-                fft_logN12 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN12 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
                 cudaDeviceSynchronize(); 
             }    
         }
         else if(N == 8192){
             for(int i = 0; i < num_tests; ++i){
-                fft_logN13 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN13 <<<gridDim, blockDim, sizeof(float) * 2 * N >>> ((float2*)input_d, (float2*)output_d);
                 cudaDeviceSynchronize(); 
             }    
         }

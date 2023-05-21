@@ -1,5 +1,5 @@
 extern __shared__ float shared[];
-__global__ void __launch_bounds__(4) fft_logN4 (float2* inputs, float2* outputs) {
+__global__ void __launch_bounds__(4) fft_radix2_logN4 (float2* inputs, float2* outputs) {
 	float2* sdata = (float2*)shared;
 	float2 temp[8];
 	int tx = threadIdx.x;

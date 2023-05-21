@@ -1,4 +1,4 @@
-__global__ void __launch_bounds__(1) fft_logN3 (float2* inputs, float2* outputs) {
+__global__ void __launch_bounds__(1) fft_radix2_logN3 (float2* inputs, float2* outputs) {
 	// float2* sdata = (float2*)shared;
 	float2 temp[16];
 	int tx = threadIdx.x;

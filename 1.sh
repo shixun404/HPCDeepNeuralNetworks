@@ -3,4 +3,4 @@ python main.py
 cd -
 make clean; make V_FFT=0 P_FFT=1 LOG=LOG_OFF -j
 # make clean; make V_FFT=0 P_FFT=1 LOG=LOG_OFF -j
-./ft_fft 13
+./ft_fft 19
