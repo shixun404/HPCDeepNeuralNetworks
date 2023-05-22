@@ -1,4 +1,4 @@
-﻿logN,logN1,logN2,signal_per_thread,num_block,num_thread,blockdim_x,blockdim_y,num_block,num_thread,blockdim_x,blockdim_y
+﻿logN,logN1,logN2,signal_per_thread,num_block_1,num_thread_1,blockdim_x_1,blockdim_y_1,num_block_2,num_thread_2,blockdim_x_2,blockdim_y_2
 1,1,0,8,,,,,,,,
 2,2,0,8,,,,,,,,
 3,3,0,8,,,,,,,,
