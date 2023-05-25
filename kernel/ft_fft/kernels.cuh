@@ -105,6 +105,8 @@
 #include "./include/radix_2_codegen/ft_fft_radix2_logN21_reg16_upload=2.cuh"
 #include "./include/radix_2_codegen/ft_fft_radix2_logN22_reg16_upload=1.cuh"
 #include "./include/radix_2_codegen/ft_fft_radix2_logN22_reg16_upload=2.cuh"
+#include "./include/radix_2_codegen/ft_fft_radix2_logN23_reg16_upload=1.cuh"
+#include "./include/radix_2_codegen/ft_fft_radix2_logN23_reg8_upload=2.cuh"
 #include "./include/test/kernel_forwardFFT_logN=14_axisID=0_axisUploadID=1.cuh"
 #include "./include/test/kernel_forwardFFT_logN=14_axisID=0_axisUploadID=2.cuh"
 #include "./include/test/kernel_forwardFFT_logN=15_axisID=0_axisUploadID=1.cuh"
@@ -123,4 +125,7 @@
 #include "./include/test/kernel_forwardFFT_logN=21_axisID=0_axisUploadID=2.cuh"
 #include "./include/test/kernel_forwardFFT_logN=22_axisID=0_axisUploadID=1.cuh"
 #include "./include/test/kernel_forwardFFT_logN=22_axisID=0_axisUploadID=2.cuh"
+#include "./include/test/kernel_forwardFFT_logN=23_axisID=0_axisUploadID=1.cuh"
+#include "./include/test/kernel_forwardFFT_logN=23_axisID=0_axisUploadID=2.cuh"
+#include "./include/test/kernel_forwardFFT_logN=23_axisID=0_axisUploadID=3.cuh"
 #endif
