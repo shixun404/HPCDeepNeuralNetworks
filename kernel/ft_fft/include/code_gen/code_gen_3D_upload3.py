@@ -2,14 +2,18 @@
 from math import *
 import numpy as np
 M_PI = 3.141592653589793
-def ft_3D_fft_code_gen_upload3(N, N1, N2, num_block, num_thread,
+def ft_3D_fft_code_gen_upload3(N, N1, N2, N3, num_block, num_thread,
                        radix=2, signal_per_thread=8, if_abft=False):
     
     exponent = int(log(N, radix))
-    log_threadx = 0# thread to log
-    log_thready = 0# thread to log
-    log_block = 0# thread to log
-    print(f"N={N1}, radix={radix}, N1 / radix = {N1/radix}, signal_per_thread={signal_per_thread}")
+    log_threadx = 0 # thread to log
+    log_thready = 0 # thread to log
+    log_block = 0 # thread to log
+    N2_ = N2
+    N1_ = N1
+    N3_ = N3
+    N2 = N1 * N2
+    N1 = N3
     plan = []
     twiddle_type = []
     blockdim_x = int(num_thread // (N1 // signal_per_thread))
@@ -45,7 +49,7 @@ def ft_3D_fft_code_gen_upload3(N, N1, N2, num_block, num_thread,
     offset = signal_per_thread
     
     ft_fft = f'''extern __shared__ float shared[];
-__global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_1''' + '''(float2* inputs, float2* outputs) {
+__global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_3''' + '''(float2* inputs, float2* outputs) {
 '''
     ft_fft += '''
     '''
@@ -70,18 +74,26 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     n_global = 1
     ft_fft += '''
     '''
+    # ft_fft += f'''
+    # printf("############ before read global bx = %d, tx = %d, ty = %d, ###########\\n", bx, tx, ty);
+    
+    # '''
     for i in range(signal_per_thread):
-        ft_fft += f'''temp_{i} = inputs[(ty + {i} * {(N1 // signal_per_thread)}) * {N2} + tx + bx * {num_thread // (N1 // signal_per_thread)}];
+        ft_fft += f'''temp_{i} = inputs[(tx + {i * blockdim_x}) + (bx / {(N1_ // blockdim_y)}) * {N3_} + (ty + (bx % {N1_ // blockdim_y}) * {blockdim_y}) * {N3_ * N2_}];
+    '''
+    ft_fft += f'''#if defined(LOG_ON)
+    printf("############ after read global bx = %d, tx = %d, ty = %d, ###########\\n", bx, tx, ty);
+    #endif
     '''
     ft_fft += '''
     '''
     for i in range(signal_per_thread):
-        ft_fft += f'''__id[{i}] = {i * blockdim_y} + ty;
+        ft_fft += f'''__id[{i}] = {i * blockdim_x} + tx;
     '''
     for stage_id in range(len(plan)):
         if twiddle_type[stage_id] == 2:
             ft_fft += f'''#if defined(LOG_ON)
-    if(tx=={log_threadx} && bx=={log_block} && ty=={log_thready})printf("############ n_global %d ###########\\n", n_global);
+    printf("############ n_global %d ###########\\n", n_global);
     #endif
     '''
             n = signal_per_thread // 2
@@ -95,7 +107,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
                 i = k + signal_per_thread // radix
                 ft_fft += f'''
     #if defined(LOG_ON)
-    if(tx=={log_threadx} && bx=={log_block} && ty=={log_thready})printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\\ntx %d, j %d, k %d, j * k %d, n_global %d, \\n", tx,  j, k, j*k, n_global);
+    printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\\ntx %d, j %d, k %d, j * k %d, n_global %d, \\n", tx,  j, k, j*k, n_global);
     #endif
     tmp_angle_rot.x = {cos(- M_PI / float(n)) if k != 0 else 1.}f;
     tmp_angle_rot.y = {sin(- M_PI / float(n)) if k != 0 else 0.}f;
@@ -110,7 +122,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle, tmp);
     temp_{order[signal_per_thread - offset + i]} = tmp;
     #if defined(LOG_ON)
-    if(tx=={log_threadx} && bx=={log_block} && ty=={log_thready})printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\\ntx %d, a.real %f,  a.imag %f,  local_id {i},  global_id %d, j %d, k %d, j * k %d, n_global %d, \\n",
+    printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\\ntx %d, a.real %f,  a.imag %f,  local_id {i},  global_id %d, j %d, k %d, j * k %d, n_global %d, \\n",
                         tx, tmp_angle.x, tmp_angle.y, __id[{order[signal_per_thread - offset + i]}], j, k, j*k, n_global);
     #endif
     '''
@@ -120,7 +132,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle_rot, tmp);
     temp_{order[signal_per_thread - offset + i]} = tmp;
     #if defined(LOG_ON)
-    if(tx=={log_threadx} && bx=={log_block} && ty=={log_thready})printf("tx %d,  a_rot.real %f,  a_rot.imag %f, local_id {i},  global_id %d, j %d, k %d, j * k %d, n_global %d, \\n",
+    printf("tx %d,  a_rot.real %f,  a_rot.imag %f, local_id {i},  global_id %d, j %d, k %d, j * k %d, n_global %d, \\n",
                         tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[{order[signal_per_thread - offset + i]}], j, k, j*k, n_global);
     #endif
     '''    
@@ -140,12 +152,10 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
             offset = 0 if  offset > 0 else signal_per_thread
             for i in range(signal_per_thread):
                 ft_fft += f'''
-    
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * {blockdim_x}) * (__id[{order[signal_per_thread - offset + i]}])) / (float)({N}), tmp_angle);
-    MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle, tmp);
-    temp_{order[signal_per_thread - offset + i]} = tmp;
-    outputs[(tx + bx * {blockdim_x}) + {N2} * __id[{order[signal_per_thread - offset + i]}]] = temp_{order[signal_per_thread - offset + i]};
-    // outputs[__id[{order[signal_per_thread - offset + i]}]] = temp_{order[signal_per_thread - offset + i]};
+    //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
+    //inputs[tx + {i * blockdim_x} + ty * {N3_ * N2_} + (bx % {N1_ // blockdim_y}) * {blockdim_y * N3_ * N2_} + (bx / {(N1_ // blockdim_y)} * {N3_})]
+    // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\\n", bx, tx, ty);
+    outputs[(ty + (bx % {N1_ // blockdim_y}) * {blockdim_y}) + (bx / {(N1_ // blockdim_y)}) * {N1_} + (__id[{order[signal_per_thread - offset + i]}]) * {N1_ * N2_}] = temp_{order[signal_per_thread - offset + i]};
     '''
             ft_fft += '''
     }
@@ -157,7 +167,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
             for j in range(plan[stage_id]):
                 ft_fft += f'''
     #if defined(LOG_ON)
-    if(tx=={log_threadx} && bx=={log_block} && ty=={log_thready})printf("############ n_global %d ###########\\n", n_global);
+    printf("############ n_global %d ###########\\n", n_global);
     #endif
     '''
                 # for i in range((signal_per_thread // radix), signal_per_thread):
@@ -173,7 +183,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
                     i = k + signal_per_thread // radix
                     ft_fft += f'''
     #if defined(LOG_ON)
-    if(tx=={log_threadx} && bx=={log_block} && ty=={log_thready})printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\\ntx %d, j %d, k %d, j * k %d, n_global %d, \\n", tx,  j, k, j*k, n_global);
+    printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\\ntx %d, j %d, k %d, j * k %d, n_global %d, \\n", tx,  j, k, j*k, n_global);
     #endif
     tmp_angle_rot.x = {cos(- M_PI / float(n)) if k != 0 else 1.}f;
     tmp_angle_rot.y = {sin(- M_PI / float(n)) if k != 0 else 0.}f;
@@ -188,7 +198,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle, tmp);
     temp_{order[signal_per_thread - offset + i]} = tmp;
     #if defined(LOG_ON)
-    if(tx=={log_threadx} && bx=={log_block} && ty=={log_thready})printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\\ntx %d, a.real %f,  a.imag %f, local_id {i},  global_id %d, j %d, k %d, j * k %d, n_global %d, \\n",
+    printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\\ntx %d, a.real %f,  a.imag %f, local_id {i},  global_id %d, j %d, k %d, j * k %d, n_global %d, \\n",
                         tx, tmp_angle.x, tmp_angle.y, __id[{order[signal_per_thread - offset + i]}], j, k, j*k, n_global);
     #endif
     '''
@@ -198,7 +208,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle_rot, tmp);
     temp_{order[signal_per_thread - offset + i]} = tmp;
     #if defined(LOG_ON)
-    if(tx=={log_threadx} && bx=={log_block} && ty=={log_thready})printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id {i},  global_id %d, j %d, k %d, j * k %d, n_global %d, \\n",
+    printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id {i},  global_id %d, j %d, k %d, j * k %d, n_global %d, \\n",
                         tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[{order[signal_per_thread - offset + i]}], j, k, j*k, n_global);
     #endif
     '''
@@ -230,7 +240,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     '''
             for i in range(signal_per_thread):
                 ft_fft += f'''
-    sdata[tx + {blockdim_x} * __id[{order[signal_per_thread - offset + i]}]] = temp_{order[signal_per_thread - offset + i]};
+    sdata[__id[{order[signal_per_thread - offset + i]}] + ty * {N3_}] = temp_{order[signal_per_thread - offset + i]};
     ''' if True else f'''
     sdata[(__id[{order[signal_per_thread - offset + i]}] / 16) * 17 + 
     (__id[{order[signal_per_thread - offset + i]}] % 16)] = temp_{order[signal_per_thread - offset + i]};
@@ -238,13 +248,13 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
             ft_fft += f'''
     __syncthreads();
     #if defined(LOG_ON)
-    if(tx=={log_threadx} && bx=={log_block} && ty=={log_thready})printf("################### syncthreads ####################\\n");
+    printf("################### syncthreads ####################\\n");
     #endif			
     '''
             for i in range(signal_per_thread):
                 ft_fft += f'''
-    temp_{i} = sdata[tx + {blockdim_x} * ({i * blockdim_y} + ty)];
-    __id[{i}] = ty + {i * blockdim_y};
+    temp_{i} = sdata[tx + {i * blockdim_x} + ty * {N3_}];
+    __id[{i}] = tx + {i * blockdim_x};
     ''' if True else f'''
     temp_{i} = sdata[(({i} * blockDim.x + tx) / 16) * 17 +
                         (({i} * blockDim.x + tx) % 16)];
@@ -259,7 +269,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
             n = n_global // (N1 // signal_per_thread)
             for j in range(plan[stage_id]):
                 ft_fft += f'''#if defined(LOG_ON)
-    if(tx=={log_threadx} && bx=={log_block} && ty=={log_thready})printf("############ n_global %d ###########\\n", n_global);
+    printf("############ n_global %d ###########\\n", n_global);
     #endif
     '''
                 i = 0 + signal_per_thread // radix
@@ -272,7 +282,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
                     i = k + signal_per_thread // radix
                     ft_fft += f'''
     #if defined(LOG_ON)
-    if(tx=={log_threadx} && bx=={log_block} && ty=={log_thready})printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\\ntx %d, j %d, k %d, j * k %d, n_global %d, \\n", tx,  j, k, j*k, n_global);
+    printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\\ntx %d, j %d, k %d, j * k %d, n_global %d, \\n", tx,  j, k, j*k, n_global);
     #endif
     
     tmp_angle_rot.x = {cos(- M_PI / float(n)) if k != 0 else 1.}f;
@@ -288,7 +298,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle, tmp);
     temp_{order[signal_per_thread - offset + i]} = tmp;
     #if defined(LOG_ON)
-    if(tx=={log_threadx} && bx=={log_block} && ty=={log_thready})printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\\ntx %d, a.real %f,  a.imag %f, local_id {i},  global_id %d, j %d, k %d, j * k %d, n_global %d, \\n",
+    printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\\ntx %d, a.real %f,  a.imag %f, local_id {i},  global_id %d, j %d, k %d, j * k %d, n_global %d, \\n",
                         tx, tmp_angle.x, tmp_angle.y, __id[{order[signal_per_thread - offset + i]}], j, k, j*k, n_global);
     #endif
     '''
@@ -298,7 +308,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle_rot, tmp);
     temp_{order[signal_per_thread - offset + i]} = tmp;
     #if defined(LOG_ON)
-    if(tx=={log_threadx} && bx=={log_block} && ty=={log_thready})printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id {i},  global_id %d, j %d, k %d, j * k %d, n_global %d, \\n",
+    printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id {i},  global_id %d, j %d, k %d, j * k %d, n_global %d, \\n",
                         tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[{order[signal_per_thread - offset + i]}], j, k, j*k, n_global);
     #endif
     '''

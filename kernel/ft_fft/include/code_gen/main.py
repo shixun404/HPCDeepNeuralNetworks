@@ -82,18 +82,20 @@ if __name__ =="__main__":
         function_name = f'ft_fft_radix{radix}_logN{i}_reg{signal_per_thread}_upload=2'
         with open(f"../radix_2_codegen/{function_name}.cuh", 'w') as f:
             f.write(fft_kernel)
-        assert 0
+
         
-        # num_block = int(df['num_block_3'][i-1])
-        # num_thread = int(df['num_thread_3'][i-1])
-        # signal_per_thread = int(df['signal_per_thread_3'][i-1])
-        # blockdim_x = int(df['blockdim_x_3'][i-1])
-        # blockdim_y = int(df['blockdim_y_3'][i-1])
-        # fft_kernel = ft_3D_fft_code_gen_upload3(N=N, N1=N1, N2=N2, N3=N3, num_block=num_block, num_thread=num_thread,
-        #                         radix=2, signal_per_thread=signal_per_thread, transpose=blockdim_x<blockdim_y, if_abft=False)
-        # function_name = f'ft_fft_radix{radix}_logN{i}_reg{signal_per_thread}_upload=3'
-        # with open(f"../radix_2_codegen/{function_name}.cuh", 'w') as f:
-        #     f.write(fft_kernel)
+        num_block = int(df['num_block_3'][i-1])
+        num_thread = int(df['num_thread_3'][i-1])
+        signal_per_thread = int(df['signal_per_thread_3'][i-1])
+        blockdim_x = int(df['blockdim_x_3'][i-1])
+        blockdim_y = int(df['blockdim_y_3'][i-1])
+        fft_kernel = ft_3D_fft_code_gen_upload3(N=N, N1=N1, N2=N2, N3=N3, num_block=num_block, num_thread=num_thread,
+                                radix=2, signal_per_thread=signal_per_thread, if_abft=False)
+        function_name = f'ft_fft_radix{radix}_logN{i}_reg{signal_per_thread}_upload=3'
+        with open(f"../radix_2_codegen/{function_name}.cuh", 'w') as f:
+            f.write(fft_kernel)
+        
+        assert 0
         
         i += 1
         N *= 2

@@ -9,6 +9,8 @@ def ft_3D_fft_code_gen_upload2(N, N1, N2, N3, num_block, num_thread,
     log_threadx = 0 # thread to log
     log_thready = 0 # thread to log
     log_block = 0 # thread to log
+    N1_ = N1
+    N3_ = N3
     N2_ = N2
     N2 = N1 * N3
     N1 = N2_
@@ -74,7 +76,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     ft_fft += '''
     '''
     for i in range(signal_per_thread):
-        ft_fft += f'''temp_{i} = inputs[tx + (bx % 16) * 16 + (ty * {N3} + {i * blockdim_y * N3}) + (bx / 16) * {128 * 256}];
+        ft_fft += f'''temp_{i} = inputs[tx + (bx % {N3_ // blockdim_x}) * {N3_ // blockdim_x} + (ty * {N3_} + {i * blockdim_y * N3_}) + (bx / {N3_ // blockdim_x}) * {N2_ * N3_}];
     '''
     ft_fft += '''
     '''
@@ -144,10 +146,10 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
             for i in range(signal_per_thread):
                 ft_fft += f'''
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + bx * {blockdim_x}) % 256) * (__id[{order[signal_per_thread - offset + i]}])) / (float)({N1*N3}), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + bx * {blockdim_x}) % {N3_}) * (__id[{order[signal_per_thread - offset + i]}])) / (float)({N2_ * N3_}), tmp_angle);
     MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle, tmp);
     temp_{order[signal_per_thread - offset + i]} = tmp;
-    outputs[(tx + bx * {blockdim_x}) % 256 + 256 * __id[{order[signal_per_thread - offset + i]}] + ((tx + bx * {blockdim_x}) / 256) * 128 * 256] = temp_{order[signal_per_thread - offset + i]};
+    outputs[(tx + bx * {blockdim_x}) % {N3_} + {N3_} * __id[{order[signal_per_thread - offset + i]}] + ((tx + bx * {blockdim_x}) / {N3_}) * {N2_} * {N3_}] = temp_{order[signal_per_thread - offset + i]};
     // outputs[__id[{order[signal_per_thread - offset + i]}]] = temp_{order[signal_per_thread - offset + i]};
     '''
             ft_fft += '''
