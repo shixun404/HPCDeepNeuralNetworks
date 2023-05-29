@@ -135,7 +135,7 @@ def ft_2D_fft_code_gen_upload2(N, N1, N2, num_block, num_thread,
                 ft_fft += f'''
         n_global *= 2;
         '''
-                print(order, offset)
+                # print(order, offset)
                 offset = 0 if  offset > 0 else signal_per_thread
                 for i in range(signal_per_thread):
                     ft_fft += f'''
@@ -217,7 +217,7 @@ def ft_2D_fft_code_gen_upload2(N, N1, N2, num_block, num_thread,
                     ft_fft += f'''
         n_global *= 2;
         '''
-                    print(order, offset)
+                    # print(order, offset)
                     offset = 0 if  offset > 0 else signal_per_thread
                     n *= radix
                     n_global *= radix
@@ -317,7 +317,7 @@ def ft_2D_fft_code_gen_upload2(N, N1, N2, num_block, num_thread,
                     ft_fft += f'''
         n_global *= 2;
         '''
-                    print(order, offset)
+                    # print(order, offset)
                     offset = 0 if  offset > 0 else signal_per_thread
                     n *= radix
                     n_global *= radix
@@ -452,7 +452,7 @@ def ft_2D_fft_code_gen_upload2(N, N1, N2, num_block, num_thread,
                 ft_fft += f'''
         n_global *= 2;
         '''
-                print(order, offset)
+                # print(order, offset)
                 offset = 0 if  offset > 0 else signal_per_thread
                 for i in range(signal_per_thread):
                     ft_fft += f'''
@@ -534,7 +534,7 @@ def ft_2D_fft_code_gen_upload2(N, N1, N2, num_block, num_thread,
                     ft_fft += f'''
         n_global *= 2;
         '''
-                    print(order, offset)
+                    # print(order, offset)
                     offset = 0 if  offset > 0 else signal_per_thread
                     n *= radix
                     n_global *= radix
@@ -634,7 +634,7 @@ def ft_2D_fft_code_gen_upload2(N, N1, N2, num_block, num_thread,
                     ft_fft += f'''
         n_global *= 2;
         '''
-                    print(order, offset)
+                    # print(order, offset)
                     offset = 0 if  offset > 0 else signal_per_thread
                     n *= radix
                     n_global *= radix

@@ -136,7 +136,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
             ft_fft += f'''
     n_global *= 2;
     '''
-            print(order, offset)
+            # print(order, offset)
             offset = 0 if  offset > 0 else signal_per_thread
             for i in range(signal_per_thread):
                 ft_fft += f'''
@@ -220,7 +220,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
                 ft_fft += f'''
     n_global *= 2;
     '''
-                print(order, offset)
+                # print(order, offset)
                 offset = 0 if  offset > 0 else signal_per_thread
                 n *= radix
                 n_global *= radix
@@ -320,7 +320,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
                 ft_fft += f'''
     n_global *= 2;
     '''
-                print(order, offset)
+                # print(order, offset)
                 offset = 0 if  offset > 0 else signal_per_thread
                 n *= radix
                 n_global *= radix

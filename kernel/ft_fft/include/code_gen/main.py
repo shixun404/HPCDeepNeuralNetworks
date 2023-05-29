@@ -6,6 +6,7 @@ from code_gen_2D_upload2 import ft_2D_fft_code_gen_upload2
 from code_gen_3D_upload1 import ft_3D_fft_code_gen_upload1
 from code_gen_3D_upload2 import ft_3D_fft_code_gen_upload2
 from code_gen_3D_upload3 import ft_3D_fft_code_gen_upload3
+from code_gen_script import code_gen_script
 if __name__ =="__main__":
     import os
     # kernel = os.sys.argv[1]
@@ -20,7 +21,8 @@ if __name__ =="__main__":
     df = pd.read_csv('parameter.csv')
     radix = 2
     while N <= 2 ** 13:
-        signal_per_thread = 16 if (N == 2 ** 11 or N == 2 ** 12) else 8
+        # signal_per_thread = 16 if (N == 2 ** 11 or N == 2 ** 12) else 8
+        signal_per_thread = int(df['signal_per_thread_1'][i-1])
         fft_kernel = ft_1D_fft_code_gen(radix, N, signal_per_thread, if_abft)
         function_name = f'ft_fft_radix{radix}_logN{i}_reg{signal_per_thread}'
         with open(f"../radix_2_codegen/{function_name}.cuh", 'w') as f:
@@ -55,7 +57,7 @@ if __name__ =="__main__":
         
         i += 1
         N *= 2
-    
+    include_list = ''
     while N <= 2 ** 29:
         N = int(radix ** df['logN'][i-1])
         N1 = int(radix ** df['logN1'][i-1])
@@ -70,7 +72,7 @@ if __name__ =="__main__":
         function_name = f'ft_fft_radix{radix}_logN{i}_reg{signal_per_thread}_upload=1'
         with open(f"../radix_2_codegen/{function_name}.cuh", 'w') as f:
             f.write(fft_kernel)
-        
+        include_list += f'#include "./include/radix_2_codegen/{function_name}.cuh"\n'
         
         num_block = int(df['num_block_2'][i-1])
         num_thread = int(df['num_thread_2'][i-1])
@@ -82,7 +84,7 @@ if __name__ =="__main__":
         function_name = f'ft_fft_radix{radix}_logN{i}_reg{signal_per_thread}_upload=2'
         with open(f"../radix_2_codegen/{function_name}.cuh", 'w') as f:
             f.write(fft_kernel)
-
+        include_list += f'#include "./include/radix_2_codegen/{function_name}.cuh"\n'
         
         num_block = int(df['num_block_3'][i-1])
         num_thread = int(df['num_thread_3'][i-1])
@@ -94,8 +96,9 @@ if __name__ =="__main__":
         function_name = f'ft_fft_radix{radix}_logN{i}_reg{signal_per_thread}_upload=3'
         with open(f"../radix_2_codegen/{function_name}.cuh", 'w') as f:
             f.write(fft_kernel)
-        
-        assert 0
-        
+        include_list += f'#include "./include/radix_2_codegen/{function_name}.cuh"\n'
         i += 1
         N *= 2
+    fft_script = code_gen_script()
+    with open(f"../../ft_fft.cu", 'w') as f:
+        f.write(fft_script)
