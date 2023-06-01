@@ -47,38 +47,136 @@ __global__ void __launch_bounds__(256) fft_radix2_logN29_3(float2* inputs, float
     int tmp_id;
     int n = 1, n_global = 1;
     
-    temp_0 = inputs[(tx + 0) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_1 = inputs[(tx + 32) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_2 = inputs[(tx + 64) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_3 = inputs[(tx + 96) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_4 = inputs[(tx + 128) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_5 = inputs[(tx + 160) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_6 = inputs[(tx + 192) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_7 = inputs[(tx + 224) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_8 = inputs[(tx + 256) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_9 = inputs[(tx + 288) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_10 = inputs[(tx + 320) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_11 = inputs[(tx + 352) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_12 = inputs[(tx + 384) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_13 = inputs[(tx + 416) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_14 = inputs[(tx + 448) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_15 = inputs[(tx + 480) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_16 = inputs[(tx + 512) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_17 = inputs[(tx + 544) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_18 = inputs[(tx + 576) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_19 = inputs[(tx + 608) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_20 = inputs[(tx + 640) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_21 = inputs[(tx + 672) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_22 = inputs[(tx + 704) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_23 = inputs[(tx + 736) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_24 = inputs[(tx + 768) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_25 = inputs[(tx + 800) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_26 = inputs[(tx + 832) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_27 = inputs[(tx + 864) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_28 = inputs[(tx + 896) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_29 = inputs[(tx + 928) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_30 = inputs[(tx + 960) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
-    temp_31 = inputs[(tx + 992) + (bx / 128) * 1024 + (ty + (bx % 128) * 8) * 524288];
+    temp_0 = inputs[(tx + 32 * ty + 0 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 0 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_1 = inputs[(tx + 32 * ty + 1 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 1 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_2 = inputs[(tx + 32 * ty + 2 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 2 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_3 = inputs[(tx + 32 * ty + 3 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 3 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_4 = inputs[(tx + 32 * ty + 4 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 4 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_5 = inputs[(tx + 32 * ty + 5 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 5 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_6 = inputs[(tx + 32 * ty + 6 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 6 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_7 = inputs[(tx + 32 * ty + 7 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 7 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_8 = inputs[(tx + 32 * ty + 8 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 8 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_9 = inputs[(tx + 32 * ty + 9 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 9 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_10 = inputs[(tx + 32 * ty + 10 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 10 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_11 = inputs[(tx + 32 * ty + 11 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 11 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_12 = inputs[(tx + 32 * ty + 12 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 12 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_13 = inputs[(tx + 32 * ty + 13 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 13 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_14 = inputs[(tx + 32 * ty + 14 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 14 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_15 = inputs[(tx + 32 * ty + 15 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 15 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_16 = inputs[(tx + 32 * ty + 16 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 16 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_17 = inputs[(tx + 32 * ty + 17 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 17 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_18 = inputs[(tx + 32 * ty + 18 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 18 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_19 = inputs[(tx + 32 * ty + 19 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 19 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_20 = inputs[(tx + 32 * ty + 20 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 20 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_21 = inputs[(tx + 32 * ty + 21 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 21 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_22 = inputs[(tx + 32 * ty + 22 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 22 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_23 = inputs[(tx + 32 * ty + 23 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 23 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_24 = inputs[(tx + 32 * ty + 24 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 24 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_25 = inputs[(tx + 32 * ty + 25 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 25 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_26 = inputs[(tx + 32 * ty + 26 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 26 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_27 = inputs[(tx + 32 * ty + 27 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 27 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_28 = inputs[(tx + 32 * ty + 28 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 28 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_29 = inputs[(tx + 32 * ty + 29 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 29 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_30 = inputs[(tx + 32 * ty + 30 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 30 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    temp_31 = inputs[(tx + 32 * ty + 31 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 31 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
+    
+        sdata[(tx + 32 * ty + 0 * 256) % 1024 + ((tx + 32 * ty + 0 * 256) / 1024) * 1024] = temp_0;
+    
+        sdata[(tx + 32 * ty + 1 * 256) % 1024 + ((tx + 32 * ty + 1 * 256) / 1024) * 1024] = temp_1;
+    
+        sdata[(tx + 32 * ty + 2 * 256) % 1024 + ((tx + 32 * ty + 2 * 256) / 1024) * 1024] = temp_2;
+    
+        sdata[(tx + 32 * ty + 3 * 256) % 1024 + ((tx + 32 * ty + 3 * 256) / 1024) * 1024] = temp_3;
+    
+        sdata[(tx + 32 * ty + 4 * 256) % 1024 + ((tx + 32 * ty + 4 * 256) / 1024) * 1024] = temp_4;
+    
+        sdata[(tx + 32 * ty + 5 * 256) % 1024 + ((tx + 32 * ty + 5 * 256) / 1024) * 1024] = temp_5;
+    
+        sdata[(tx + 32 * ty + 6 * 256) % 1024 + ((tx + 32 * ty + 6 * 256) / 1024) * 1024] = temp_6;
+    
+        sdata[(tx + 32 * ty + 7 * 256) % 1024 + ((tx + 32 * ty + 7 * 256) / 1024) * 1024] = temp_7;
+    
+        sdata[(tx + 32 * ty + 8 * 256) % 1024 + ((tx + 32 * ty + 8 * 256) / 1024) * 1024] = temp_8;
+    
+        sdata[(tx + 32 * ty + 9 * 256) % 1024 + ((tx + 32 * ty + 9 * 256) / 1024) * 1024] = temp_9;
+    
+        sdata[(tx + 32 * ty + 10 * 256) % 1024 + ((tx + 32 * ty + 10 * 256) / 1024) * 1024] = temp_10;
+    
+        sdata[(tx + 32 * ty + 11 * 256) % 1024 + ((tx + 32 * ty + 11 * 256) / 1024) * 1024] = temp_11;
+    
+        sdata[(tx + 32 * ty + 12 * 256) % 1024 + ((tx + 32 * ty + 12 * 256) / 1024) * 1024] = temp_12;
+    
+        sdata[(tx + 32 * ty + 13 * 256) % 1024 + ((tx + 32 * ty + 13 * 256) / 1024) * 1024] = temp_13;
+    
+        sdata[(tx + 32 * ty + 14 * 256) % 1024 + ((tx + 32 * ty + 14 * 256) / 1024) * 1024] = temp_14;
+    
+        sdata[(tx + 32 * ty + 15 * 256) % 1024 + ((tx + 32 * ty + 15 * 256) / 1024) * 1024] = temp_15;
+    
+        sdata[(tx + 32 * ty + 16 * 256) % 1024 + ((tx + 32 * ty + 16 * 256) / 1024) * 1024] = temp_16;
+    
+        sdata[(tx + 32 * ty + 17 * 256) % 1024 + ((tx + 32 * ty + 17 * 256) / 1024) * 1024] = temp_17;
+    
+        sdata[(tx + 32 * ty + 18 * 256) % 1024 + ((tx + 32 * ty + 18 * 256) / 1024) * 1024] = temp_18;
+    
+        sdata[(tx + 32 * ty + 19 * 256) % 1024 + ((tx + 32 * ty + 19 * 256) / 1024) * 1024] = temp_19;
+    
+        sdata[(tx + 32 * ty + 20 * 256) % 1024 + ((tx + 32 * ty + 20 * 256) / 1024) * 1024] = temp_20;
+    
+        sdata[(tx + 32 * ty + 21 * 256) % 1024 + ((tx + 32 * ty + 21 * 256) / 1024) * 1024] = temp_21;
+    
+        sdata[(tx + 32 * ty + 22 * 256) % 1024 + ((tx + 32 * ty + 22 * 256) / 1024) * 1024] = temp_22;
+    
+        sdata[(tx + 32 * ty + 23 * 256) % 1024 + ((tx + 32 * ty + 23 * 256) / 1024) * 1024] = temp_23;
+    
+        sdata[(tx + 32 * ty + 24 * 256) % 1024 + ((tx + 32 * ty + 24 * 256) / 1024) * 1024] = temp_24;
+    
+        sdata[(tx + 32 * ty + 25 * 256) % 1024 + ((tx + 32 * ty + 25 * 256) / 1024) * 1024] = temp_25;
+    
+        sdata[(tx + 32 * ty + 26 * 256) % 1024 + ((tx + 32 * ty + 26 * 256) / 1024) * 1024] = temp_26;
+    
+        sdata[(tx + 32 * ty + 27 * 256) % 1024 + ((tx + 32 * ty + 27 * 256) / 1024) * 1024] = temp_27;
+    
+        sdata[(tx + 32 * ty + 28 * 256) % 1024 + ((tx + 32 * ty + 28 * 256) / 1024) * 1024] = temp_28;
+    
+        sdata[(tx + 32 * ty + 29 * 256) % 1024 + ((tx + 32 * ty + 29 * 256) / 1024) * 1024] = temp_29;
+    
+        sdata[(tx + 32 * ty + 30 * 256) % 1024 + ((tx + 32 * ty + 30 * 256) / 1024) * 1024] = temp_30;
+    
+        sdata[(tx + 32 * ty + 31 * 256) % 1024 + ((tx + 32 * ty + 31 * 256) / 1024) * 1024] = temp_31;
+    
+    __syncthreads();
+    temp_0 = sdata[(tx + 0) + ty * 1024];
+    temp_1 = sdata[(tx + 32) + ty * 1024];
+    temp_2 = sdata[(tx + 64) + ty * 1024];
+    temp_3 = sdata[(tx + 96) + ty * 1024];
+    temp_4 = sdata[(tx + 128) + ty * 1024];
+    temp_5 = sdata[(tx + 160) + ty * 1024];
+    temp_6 = sdata[(tx + 192) + ty * 1024];
+    temp_7 = sdata[(tx + 224) + ty * 1024];
+    temp_8 = sdata[(tx + 256) + ty * 1024];
+    temp_9 = sdata[(tx + 288) + ty * 1024];
+    temp_10 = sdata[(tx + 320) + ty * 1024];
+    temp_11 = sdata[(tx + 352) + ty * 1024];
+    temp_12 = sdata[(tx + 384) + ty * 1024];
+    temp_13 = sdata[(tx + 416) + ty * 1024];
+    temp_14 = sdata[(tx + 448) + ty * 1024];
+    temp_15 = sdata[(tx + 480) + ty * 1024];
+    temp_16 = sdata[(tx + 512) + ty * 1024];
+    temp_17 = sdata[(tx + 544) + ty * 1024];
+    temp_18 = sdata[(tx + 576) + ty * 1024];
+    temp_19 = sdata[(tx + 608) + ty * 1024];
+    temp_20 = sdata[(tx + 640) + ty * 1024];
+    temp_21 = sdata[(tx + 672) + ty * 1024];
+    temp_22 = sdata[(tx + 704) + ty * 1024];
+    temp_23 = sdata[(tx + 736) + ty * 1024];
+    temp_24 = sdata[(tx + 768) + ty * 1024];
+    temp_25 = sdata[(tx + 800) + ty * 1024];
+    temp_26 = sdata[(tx + 832) + ty * 1024];
+    temp_27 = sdata[(tx + 864) + ty * 1024];
+    temp_28 = sdata[(tx + 896) + ty * 1024];
+    temp_29 = sdata[(tx + 928) + ty * 1024];
+    temp_30 = sdata[(tx + 960) + ty * 1024];
+    temp_31 = sdata[(tx + 992) + ty * 1024];
     #if defined(LOG_ON)
     printf("############ after read global bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
     #endif
@@ -1526,170 +1624,171 @@ __global__ void __launch_bounds__(256) fft_radix2_logN29_3(float2* inputs, float
     
     n_global *= 2;
     
+    __syncthreads();
     
-    sdata[__id[0] + ty * 1024] = temp_0;
+    sdata[__id[0] + ty * 1024 ] = temp_0;
     
-    sdata[__id[16] + ty * 1024] = temp_16;
+    sdata[__id[16] + ty * 1024 ] = temp_16;
     
-    sdata[__id[8] + ty * 1024] = temp_8;
+    sdata[__id[8] + ty * 1024 ] = temp_8;
     
-    sdata[__id[24] + ty * 1024] = temp_24;
+    sdata[__id[24] + ty * 1024 ] = temp_24;
     
-    sdata[__id[4] + ty * 1024] = temp_4;
+    sdata[__id[4] + ty * 1024 ] = temp_4;
     
-    sdata[__id[20] + ty * 1024] = temp_20;
+    sdata[__id[20] + ty * 1024 ] = temp_20;
     
-    sdata[__id[12] + ty * 1024] = temp_12;
+    sdata[__id[12] + ty * 1024 ] = temp_12;
     
-    sdata[__id[28] + ty * 1024] = temp_28;
+    sdata[__id[28] + ty * 1024 ] = temp_28;
     
-    sdata[__id[2] + ty * 1024] = temp_2;
+    sdata[__id[2] + ty * 1024 ] = temp_2;
     
-    sdata[__id[18] + ty * 1024] = temp_18;
+    sdata[__id[18] + ty * 1024 ] = temp_18;
     
-    sdata[__id[10] + ty * 1024] = temp_10;
+    sdata[__id[10] + ty * 1024 ] = temp_10;
     
-    sdata[__id[26] + ty * 1024] = temp_26;
+    sdata[__id[26] + ty * 1024 ] = temp_26;
     
-    sdata[__id[6] + ty * 1024] = temp_6;
+    sdata[__id[6] + ty * 1024 ] = temp_6;
     
-    sdata[__id[22] + ty * 1024] = temp_22;
+    sdata[__id[22] + ty * 1024 ] = temp_22;
     
-    sdata[__id[14] + ty * 1024] = temp_14;
+    sdata[__id[14] + ty * 1024 ] = temp_14;
     
-    sdata[__id[30] + ty * 1024] = temp_30;
+    sdata[__id[30] + ty * 1024 ] = temp_30;
     
-    sdata[__id[1] + ty * 1024] = temp_1;
+    sdata[__id[1] + ty * 1024 ] = temp_1;
     
-    sdata[__id[17] + ty * 1024] = temp_17;
+    sdata[__id[17] + ty * 1024 ] = temp_17;
     
-    sdata[__id[9] + ty * 1024] = temp_9;
+    sdata[__id[9] + ty * 1024 ] = temp_9;
     
-    sdata[__id[25] + ty * 1024] = temp_25;
+    sdata[__id[25] + ty * 1024 ] = temp_25;
     
-    sdata[__id[5] + ty * 1024] = temp_5;
+    sdata[__id[5] + ty * 1024 ] = temp_5;
     
-    sdata[__id[21] + ty * 1024] = temp_21;
+    sdata[__id[21] + ty * 1024 ] = temp_21;
     
-    sdata[__id[13] + ty * 1024] = temp_13;
+    sdata[__id[13] + ty * 1024 ] = temp_13;
     
-    sdata[__id[29] + ty * 1024] = temp_29;
+    sdata[__id[29] + ty * 1024 ] = temp_29;
     
-    sdata[__id[3] + ty * 1024] = temp_3;
+    sdata[__id[3] + ty * 1024 ] = temp_3;
     
-    sdata[__id[19] + ty * 1024] = temp_19;
+    sdata[__id[19] + ty * 1024 ] = temp_19;
     
-    sdata[__id[11] + ty * 1024] = temp_11;
+    sdata[__id[11] + ty * 1024 ] = temp_11;
     
-    sdata[__id[27] + ty * 1024] = temp_27;
+    sdata[__id[27] + ty * 1024 ] = temp_27;
     
-    sdata[__id[7] + ty * 1024] = temp_7;
+    sdata[__id[7] + ty * 1024 ] = temp_7;
     
-    sdata[__id[23] + ty * 1024] = temp_23;
+    sdata[__id[23] + ty * 1024 ] = temp_23;
     
-    sdata[__id[15] + ty * 1024] = temp_15;
+    sdata[__id[15] + ty * 1024 ] = temp_15;
     
-    sdata[__id[31] + ty * 1024] = temp_31;
+    sdata[__id[31] + ty * 1024 ] = temp_31;
     
     __syncthreads();
     #if defined(LOG_ON)
     printf("################### syncthreads ####################\n");
     #endif			
     
-    temp_0 = sdata[tx + 0 + ty * 1024];
+    temp_0 = sdata[(tx + 0) + ty * 1024];
     __id[0] = tx + 0;
     
-    temp_1 = sdata[tx + 32 + ty * 1024];
+    temp_1 = sdata[(tx + 32) + ty * 1024];
     __id[1] = tx + 32;
     
-    temp_2 = sdata[tx + 64 + ty * 1024];
+    temp_2 = sdata[(tx + 64) + ty * 1024];
     __id[2] = tx + 64;
     
-    temp_3 = sdata[tx + 96 + ty * 1024];
+    temp_3 = sdata[(tx + 96) + ty * 1024];
     __id[3] = tx + 96;
     
-    temp_4 = sdata[tx + 128 + ty * 1024];
+    temp_4 = sdata[(tx + 128) + ty * 1024];
     __id[4] = tx + 128;
     
-    temp_5 = sdata[tx + 160 + ty * 1024];
+    temp_5 = sdata[(tx + 160) + ty * 1024];
     __id[5] = tx + 160;
     
-    temp_6 = sdata[tx + 192 + ty * 1024];
+    temp_6 = sdata[(tx + 192) + ty * 1024];
     __id[6] = tx + 192;
     
-    temp_7 = sdata[tx + 224 + ty * 1024];
+    temp_7 = sdata[(tx + 224) + ty * 1024];
     __id[7] = tx + 224;
     
-    temp_8 = sdata[tx + 256 + ty * 1024];
+    temp_8 = sdata[(tx + 256) + ty * 1024];
     __id[8] = tx + 256;
     
-    temp_9 = sdata[tx + 288 + ty * 1024];
+    temp_9 = sdata[(tx + 288) + ty * 1024];
     __id[9] = tx + 288;
     
-    temp_10 = sdata[tx + 320 + ty * 1024];
+    temp_10 = sdata[(tx + 320) + ty * 1024];
     __id[10] = tx + 320;
     
-    temp_11 = sdata[tx + 352 + ty * 1024];
+    temp_11 = sdata[(tx + 352) + ty * 1024];
     __id[11] = tx + 352;
     
-    temp_12 = sdata[tx + 384 + ty * 1024];
+    temp_12 = sdata[(tx + 384) + ty * 1024];
     __id[12] = tx + 384;
     
-    temp_13 = sdata[tx + 416 + ty * 1024];
+    temp_13 = sdata[(tx + 416) + ty * 1024];
     __id[13] = tx + 416;
     
-    temp_14 = sdata[tx + 448 + ty * 1024];
+    temp_14 = sdata[(tx + 448) + ty * 1024];
     __id[14] = tx + 448;
     
-    temp_15 = sdata[tx + 480 + ty * 1024];
+    temp_15 = sdata[(tx + 480) + ty * 1024];
     __id[15] = tx + 480;
     
-    temp_16 = sdata[tx + 512 + ty * 1024];
+    temp_16 = sdata[(tx + 512) + ty * 1024];
     __id[16] = tx + 512;
     
-    temp_17 = sdata[tx + 544 + ty * 1024];
+    temp_17 = sdata[(tx + 544) + ty * 1024];
     __id[17] = tx + 544;
     
-    temp_18 = sdata[tx + 576 + ty * 1024];
+    temp_18 = sdata[(tx + 576) + ty * 1024];
     __id[18] = tx + 576;
     
-    temp_19 = sdata[tx + 608 + ty * 1024];
+    temp_19 = sdata[(tx + 608) + ty * 1024];
     __id[19] = tx + 608;
     
-    temp_20 = sdata[tx + 640 + ty * 1024];
+    temp_20 = sdata[(tx + 640) + ty * 1024];
     __id[20] = tx + 640;
     
-    temp_21 = sdata[tx + 672 + ty * 1024];
+    temp_21 = sdata[(tx + 672) + ty * 1024];
     __id[21] = tx + 672;
     
-    temp_22 = sdata[tx + 704 + ty * 1024];
+    temp_22 = sdata[(tx + 704) + ty * 1024];
     __id[22] = tx + 704;
     
-    temp_23 = sdata[tx + 736 + ty * 1024];
+    temp_23 = sdata[(tx + 736) + ty * 1024];
     __id[23] = tx + 736;
     
-    temp_24 = sdata[tx + 768 + ty * 1024];
+    temp_24 = sdata[(tx + 768) + ty * 1024];
     __id[24] = tx + 768;
     
-    temp_25 = sdata[tx + 800 + ty * 1024];
+    temp_25 = sdata[(tx + 800) + ty * 1024];
     __id[25] = tx + 800;
     
-    temp_26 = sdata[tx + 832 + ty * 1024];
+    temp_26 = sdata[(tx + 832) + ty * 1024];
     __id[26] = tx + 832;
     
-    temp_27 = sdata[tx + 864 + ty * 1024];
+    temp_27 = sdata[(tx + 864) + ty * 1024];
     __id[27] = tx + 864;
     
-    temp_28 = sdata[tx + 896 + ty * 1024];
+    temp_28 = sdata[(tx + 896) + ty * 1024];
     __id[28] = tx + 896;
     
-    temp_29 = sdata[tx + 928 + ty * 1024];
+    temp_29 = sdata[(tx + 928) + ty * 1024];
     __id[29] = tx + 928;
     
-    temp_30 = sdata[tx + 960 + ty * 1024];
+    temp_30 = sdata[(tx + 960) + ty * 1024];
     __id[30] = tx + 960;
     
-    temp_31 = sdata[tx + 992 + ty * 1024];
+    temp_31 = sdata[(tx + 992) + ty * 1024];
     __id[31] = tx + 992;
     
     #if defined(LOG_ON)
@@ -3041,165 +3140,360 @@ __global__ void __launch_bounds__(256) fft_radix2_logN29_3(float2* inputs, float
     MY_SUB(tmp, temp_31, temp_31);
     
     n_global *= 2;
+    __syncthreads();
+    
+    sdata[__id[0] + ty * 1024] = temp_0;
+    
+    sdata[__id[16] + ty * 1024] = temp_16;
+    
+    sdata[__id[8] + ty * 1024] = temp_8;
+    
+    sdata[__id[24] + ty * 1024] = temp_24;
+    
+    sdata[__id[4] + ty * 1024] = temp_4;
+    
+    sdata[__id[20] + ty * 1024] = temp_20;
+    
+    sdata[__id[12] + ty * 1024] = temp_12;
+    
+    sdata[__id[28] + ty * 1024] = temp_28;
+    
+    sdata[__id[2] + ty * 1024] = temp_2;
+    
+    sdata[__id[18] + ty * 1024] = temp_18;
+    
+    sdata[__id[10] + ty * 1024] = temp_10;
+    
+    sdata[__id[26] + ty * 1024] = temp_26;
+    
+    sdata[__id[6] + ty * 1024] = temp_6;
+    
+    sdata[__id[22] + ty * 1024] = temp_22;
+    
+    sdata[__id[14] + ty * 1024] = temp_14;
+    
+    sdata[__id[30] + ty * 1024] = temp_30;
+    
+    sdata[__id[1] + ty * 1024] = temp_1;
+    
+    sdata[__id[17] + ty * 1024] = temp_17;
+    
+    sdata[__id[9] + ty * 1024] = temp_9;
+    
+    sdata[__id[25] + ty * 1024] = temp_25;
+    
+    sdata[__id[5] + ty * 1024] = temp_5;
+    
+    sdata[__id[21] + ty * 1024] = temp_21;
+    
+    sdata[__id[13] + ty * 1024] = temp_13;
+    
+    sdata[__id[29] + ty * 1024] = temp_29;
+    
+    sdata[__id[3] + ty * 1024] = temp_3;
+    
+    sdata[__id[19] + ty * 1024] = temp_19;
+    
+    sdata[__id[11] + ty * 1024] = temp_11;
+    
+    sdata[__id[27] + ty * 1024] = temp_27;
+    
+    sdata[__id[7] + ty * 1024] = temp_7;
+    
+    sdata[__id[23] + ty * 1024] = temp_23;
+    
+    sdata[__id[15] + ty * 1024] = temp_15;
+    
+    sdata[__id[31] + ty * 1024] = temp_31;
+    
+    __syncthreads();
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 0 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[0]) * 524288] = temp_0;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[0]) * 524288] = temp_0;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[0]) * 524288] = temp_0; 
+    temp_0 = sdata[((tx + ty * 32 + 0) / 8) + ((tx + ty * 32 + 0) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 0) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 0) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 32 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[16]) * 524288] = temp_16;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[16]) * 524288] = temp_16;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[16]) * 524288] = temp_16; 
+    temp_0 = sdata[((tx + ty * 32 + 256) / 8) + ((tx + ty * 32 + 256) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 256) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 256) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 64 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[8]) * 524288] = temp_8;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[8]) * 524288] = temp_8;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[8]) * 524288] = temp_8; 
+    temp_0 = sdata[((tx + ty * 32 + 512) / 8) + ((tx + ty * 32 + 512) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 512) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 512) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 96 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[24]) * 524288] = temp_24;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[24]) * 524288] = temp_24;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[24]) * 524288] = temp_24; 
+    temp_0 = sdata[((tx + ty * 32 + 768) / 8) + ((tx + ty * 32 + 768) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 768) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 768) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 128 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[4]) * 524288] = temp_4;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[4]) * 524288] = temp_4;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[4]) * 524288] = temp_4; 
+    temp_0 = sdata[((tx + ty * 32 + 1024) / 8) + ((tx + ty * 32 + 1024) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 1024) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 1024) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 160 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[20]) * 524288] = temp_20;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[20]) * 524288] = temp_20;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[20]) * 524288] = temp_20; 
+    temp_0 = sdata[((tx + ty * 32 + 1280) / 8) + ((tx + ty * 32 + 1280) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 1280) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 1280) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 192 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[12]) * 524288] = temp_12;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[12]) * 524288] = temp_12;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[12]) * 524288] = temp_12; 
+    temp_0 = sdata[((tx + ty * 32 + 1536) / 8) + ((tx + ty * 32 + 1536) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 1536) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 1536) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 224 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[28]) * 524288] = temp_28;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[28]) * 524288] = temp_28;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[28]) * 524288] = temp_28; 
+    temp_0 = sdata[((tx + ty * 32 + 1792) / 8) + ((tx + ty * 32 + 1792) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 1792) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 1792) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 256 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[2]) * 524288] = temp_2;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[2]) * 524288] = temp_2;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[2]) * 524288] = temp_2; 
+    temp_0 = sdata[((tx + ty * 32 + 2048) / 8) + ((tx + ty * 32 + 2048) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 2048) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 2048) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 288 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[18]) * 524288] = temp_18;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[18]) * 524288] = temp_18;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[18]) * 524288] = temp_18; 
+    temp_0 = sdata[((tx + ty * 32 + 2304) / 8) + ((tx + ty * 32 + 2304) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 2304) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 2304) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 320 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[10]) * 524288] = temp_10;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[10]) * 524288] = temp_10;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[10]) * 524288] = temp_10; 
+    temp_0 = sdata[((tx + ty * 32 + 2560) / 8) + ((tx + ty * 32 + 2560) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 2560) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 2560) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 352 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[26]) * 524288] = temp_26;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[26]) * 524288] = temp_26;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[26]) * 524288] = temp_26; 
+    temp_0 = sdata[((tx + ty * 32 + 2816) / 8) + ((tx + ty * 32 + 2816) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 2816) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 2816) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 384 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[6]) * 524288] = temp_6;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[6]) * 524288] = temp_6;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[6]) * 524288] = temp_6; 
+    temp_0 = sdata[((tx + ty * 32 + 3072) / 8) + ((tx + ty * 32 + 3072) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 3072) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 3072) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 416 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[22]) * 524288] = temp_22;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[22]) * 524288] = temp_22;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[22]) * 524288] = temp_22; 
+    temp_0 = sdata[((tx + ty * 32 + 3328) / 8) + ((tx + ty * 32 + 3328) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 3328) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 3328) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 448 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[14]) * 524288] = temp_14;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[14]) * 524288] = temp_14;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[14]) * 524288] = temp_14; 
+    temp_0 = sdata[((tx + ty * 32 + 3584) / 8) + ((tx + ty * 32 + 3584) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 3584) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 3584) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 480 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[30]) * 524288] = temp_30;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[30]) * 524288] = temp_30;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[30]) * 524288] = temp_30; 
+    temp_0 = sdata[((tx + ty * 32 + 3840) / 8) + ((tx + ty * 32 + 3840) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 3840) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 3840) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 512 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[1]) * 524288] = temp_1;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[1]) * 524288] = temp_1;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[1]) * 524288] = temp_1; 
+    temp_0 = sdata[((tx + ty * 32 + 4096) / 8) + ((tx + ty * 32 + 4096) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 4096) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 4096) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 544 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[17]) * 524288] = temp_17;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[17]) * 524288] = temp_17;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[17]) * 524288] = temp_17; 
+    temp_0 = sdata[((tx + ty * 32 + 4352) / 8) + ((tx + ty * 32 + 4352) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 4352) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 4352) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 576 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[9]) * 524288] = temp_9;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[9]) * 524288] = temp_9;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[9]) * 524288] = temp_9; 
+    temp_0 = sdata[((tx + ty * 32 + 4608) / 8) + ((tx + ty * 32 + 4608) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 4608) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 4608) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 608 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[25]) * 524288] = temp_25;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[25]) * 524288] = temp_25;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[25]) * 524288] = temp_25; 
+    temp_0 = sdata[((tx + ty * 32 + 4864) / 8) + ((tx + ty * 32 + 4864) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 4864) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 4864) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 640 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[5]) * 524288] = temp_5;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[5]) * 524288] = temp_5;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[5]) * 524288] = temp_5; 
+    temp_0 = sdata[((tx + ty * 32 + 5120) / 8) + ((tx + ty * 32 + 5120) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 5120) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 5120) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 672 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[21]) * 524288] = temp_21;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[21]) * 524288] = temp_21;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[21]) * 524288] = temp_21; 
+    temp_0 = sdata[((tx + ty * 32 + 5376) / 8) + ((tx + ty * 32 + 5376) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 5376) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 5376) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 704 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[13]) * 524288] = temp_13;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[13]) * 524288] = temp_13;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[13]) * 524288] = temp_13; 
+    temp_0 = sdata[((tx + ty * 32 + 5632) / 8) + ((tx + ty * 32 + 5632) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 5632) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 5632) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 736 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[29]) * 524288] = temp_29;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[29]) * 524288] = temp_29;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[29]) * 524288] = temp_29; 
+    temp_0 = sdata[((tx + ty * 32 + 5888) / 8) + ((tx + ty * 32 + 5888) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 5888) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 5888) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 768 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[3]) * 524288] = temp_3;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[3]) * 524288] = temp_3;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[3]) * 524288] = temp_3; 
+    temp_0 = sdata[((tx + ty * 32 + 6144) / 8) + ((tx + ty * 32 + 6144) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 6144) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 6144) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 800 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[19]) * 524288] = temp_19;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[19]) * 524288] = temp_19;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[19]) * 524288] = temp_19; 
+    temp_0 = sdata[((tx + ty * 32 + 6400) / 8) + ((tx + ty * 32 + 6400) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 6400) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 6400) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 832 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[11]) * 524288] = temp_11;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[11]) * 524288] = temp_11;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[11]) * 524288] = temp_11; 
+    temp_0 = sdata[((tx + ty * 32 + 6656) / 8) + ((tx + ty * 32 + 6656) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 6656) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 6656) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 864 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[27]) * 524288] = temp_27;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[27]) * 524288] = temp_27;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[27]) * 524288] = temp_27; 
+    temp_0 = sdata[((tx + ty * 32 + 6912) / 8) + ((tx + ty * 32 + 6912) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 6912) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 6912) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 896 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[7]) * 524288] = temp_7;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[7]) * 524288] = temp_7;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[7]) * 524288] = temp_7; 
+    temp_0 = sdata[((tx + ty * 32 + 7168) / 8) + ((tx + ty * 32 + 7168) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 7168) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 7168) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 928 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[23]) * 524288] = temp_23;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[23]) * 524288] = temp_23;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[23]) * 524288] = temp_23; 
+    temp_0 = sdata[((tx + ty * 32 + 7424) / 8) + ((tx + ty * 32 + 7424) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 7424) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 7424) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 960 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[15]) * 524288] = temp_15;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[15]) * 524288] = temp_15;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[15]) * 524288] = temp_15; 
+    temp_0 = sdata[((tx + ty * 32 + 7680) / 8) + ((tx + ty * 32 + 7680) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 7680) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 7680) / 8) * 524288] = temp_0; 
     
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + 992 + ty * 524288 + (bx % 128) * 4194304 + (bx / 128 * 1024)]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[31]) * 524288] = temp_31;
+    
+    // outputs[(bx / 64) + ((bx % 64) * 8 + ty) * 1024 + (__id[31]) * 524288] = temp_31;
+    // outputs[(ty + (bx % 128) * 8) + (bx / 128) * 1024 + (__id[31]) * 524288] = temp_31; 
+    temp_0 = sdata[((tx + ty * 32 + 7936) / 8) + ((tx + ty * 32 + 7936) % 8) * 1024];
+    outputs[(((tx + ty * 32 + 7936) % 8) + (bx % 128) * 8) + (bx / 128) * 1024 + ((tx + ty * 32 + 7936) / 8) * 524288] = temp_0; 
     
     }

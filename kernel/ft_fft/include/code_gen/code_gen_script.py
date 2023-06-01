@@ -278,51 +278,6 @@ int main(int argc, char** argv){
         cudaEventCreate(&fft_begin);
         cudaEventCreate(&fft_end);
         '''
-        
-        ft_fft_script += f'''
-            cudaEventRecord(fft_begin);
-            timeSt = std::chrono::steady_clock::now();
-            '''
-        ft_fft_script += '''
-            for(int i = 0; i < num_tests; ++i){
-        '''
-        ft_fft_script += f'''{{
-                dim3 gridDim({int(df['num_block_1'][N-1])}, 1, 1);
-                dim3 blockDim({int(df['blockdim_x_1'][N-1])}, {int(df['blockdim_y_1'][N-1])}, 1);
-                fft_radix2_logN{int(df['logN'][N-1])}_1 <<<gridDim, blockDim, {int(df['sm_size_1'][N-1])}>>> ((float2*)input_d, (float2*)output_d);
-                cudaDeviceSynchronize();
-            }}
-        '''
-        ft_fft_script += f'''{{
-                dim3 gridDim({int(df['num_block_2'][N-1])}, 1, 1);
-                dim3 blockDim({int(df['blockdim_x_2'][N-1])}, {int(df['blockdim_y_2'][N-1])}, 1);
-                fft_radix2_logN{int(df['logN'][N-1])}_2 <<<gridDim, blockDim, {int(df['sm_size_2'][N-1])}>>> ((float2*)output_d, (float2*)output_d_1);
-                cudaDeviceSynchronize();
-            }}
-        '''
-        ft_fft_script += f'''{{
-                dim3 gridDim({int(df['num_block_3'][N-1])}, 1, 1);
-                dim3 blockDim({int(df['blockdim_x_3'][N-1])}, {int(df['blockdim_y_3'][N-1])}, 1);
-                fft_radix2_logN{int(df['logN'][N-1])}_3 <<<gridDim, blockDim, {int(df['sm_size_3'][N-1])}>>> ((float2*)output_d_1, (float2*)output_d);
-                cudaDeviceSynchronize();
-            }}
-        '''
-        ft_fft_script += '''
-            }
-            timeEnd = std::chrono::steady_clock::now();
-            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
-            cudaEventRecord(fft_end);  
-            cudaEventSynchronize(fft_begin);
-            cudaEventSynchronize(fft_end);
-            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
-            CUDA_CALLER(cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
-        }
-        '''
-        ft_fft_script += '''
-        {
-        cudaEventCreate(&fft_begin);
-        cudaEventCreate(&fft_end);
-        '''
         ft_fft_script += f'''
             cudaEventRecord(fft_begin);
             timeSt = std::chrono::steady_clock::now();
@@ -378,9 +333,54 @@ int main(int argc, char** argv){
             cudaEventSynchronize(fft_end);
             cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);   
             CUDA_CALLER(cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
-        }
-    }    
+        }    
     '''
+        ft_fft_script += '''
+        {
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
+        '''
+        
+        ft_fft_script += f'''
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            '''
+        ft_fft_script += '''
+            for(int i = 0; i < num_tests; ++i){
+        '''
+        ft_fft_script += f'''{{
+                dim3 gridDim({int(df['num_block_1'][N-1])}, 1, 1);
+                dim3 blockDim({int(df['blockdim_x_1'][N-1])}, {int(df['blockdim_y_1'][N-1])}, 1);
+                fft_radix2_logN{int(df['logN'][N-1])}_1 <<<gridDim, blockDim, {int(df['sm_size_1'][N-1])}>>> ((float2*)input_d, (float2*)output_d);
+                cudaDeviceSynchronize();
+            }}
+        '''
+        ft_fft_script += f'''{{
+                dim3 gridDim({int(df['num_block_2'][N-1])}, 1, 1);
+                dim3 blockDim({int(df['blockdim_x_2'][N-1])}, {int(df['blockdim_y_2'][N-1])}, 1);
+                fft_radix2_logN{int(df['logN'][N-1])}_2 <<<gridDim, blockDim, {int(df['sm_size_2'][N-1])}>>> ((float2*)output_d, (float2*)output_d_1);
+                cudaDeviceSynchronize();
+            }}
+        '''
+        ft_fft_script += f'''{{
+                dim3 gridDim({int(df['num_block_3'][N-1])}, 1, 1);
+                dim3 blockDim({int(df['blockdim_x_3'][N-1])}, {int(df['blockdim_y_3'][N-1])}, 1);
+                fft_radix2_logN{int(df['logN'][N-1])}_3 <<<gridDim, blockDim, {int(df['sm_size_3'][N-1])}>>> ((float2*)output_d_1, (float2*)output_d);
+                cudaDeviceSynchronize();
+            }}
+        '''
+        ft_fft_script += '''
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            CUDA_CALLER(cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
+        }
+        }
+        '''
         N += 1
     
     ft_fft_script += '''

@@ -14,6 +14,7 @@ def ft_2D_fft_code_gen_upload2(N, N1, N2, num_block, num_thread,
         blockdim_x = int((N2 // signal_per_thread))
         blockdim_y = int(num_thread // (N2 // signal_per_thread))
         i = 1
+        N2_ = N2
         while i <= N2 / radix:
             if i == N2 / radix:
                 twiddle_type.append(2)
@@ -70,8 +71,19 @@ def ft_2D_fft_code_gen_upload2(N, N1, N2, num_block, num_thread,
         ft_fft += '''
         '''
         for i in range(signal_per_thread):
-            ft_fft += f'''temp_{i} = inputs[(tx + {i} * {blockdim_x}) + (ty + bx * {blockdim_y}) * {N2}];
+            ft_fft += f'''
+        temp_{i} = inputs[((tx + {blockdim_x} * ty + {i * num_thread}) % {N2_}) + (((tx + {blockdim_x} * ty + {i * num_thread}) / {N2_}) + bx * {blockdim_y}) * {N2}];
+        sdata[((tx + {blockdim_x} * ty + {i * num_thread}) % {N2_}) + ((tx + {blockdim_x} * ty + {i * num_thread}) / {N2_}) * {N2_}] = temp_{i};
         '''
+        ft_fft += '''
+        __syncthreads();
+        '''
+        for i in range(signal_per_thread):
+            ft_fft += f'''temp_{i} = sdata[(tx + {i} * {blockdim_x}) + ty * {N2_}];
+        '''
+        # for i in range(signal_per_thread):
+        #     ft_fft += f'''temp_{i} = inputs[(tx + {i} * {blockdim_x}) + (ty + bx * {blockdim_y}) * {N2}];
+        # '''
         ft_fft += '''
         '''
         for i in range(signal_per_thread):
@@ -134,16 +146,28 @@ def ft_2D_fft_code_gen_upload2(N, N1, N2, num_block, num_thread,
                     order[i + int(signal_per_thread / 2) + offset] = order[i + signal_per_thread + int(signal_per_thread / 2) - offset]
                 ft_fft += f'''
         n_global *= 2;
+        __syncthreads();
         '''
                 # print(order, offset)
                 offset = 0 if  offset > 0 else signal_per_thread
+                
                 for i in range(signal_per_thread):
                     ft_fft += f'''
-        
-        
-        outputs[(ty + bx * {blockdim_y}) + {N1} * __id[{order[signal_per_thread - offset + i]}]] = temp_{order[signal_per_thread - offset + i]};
-        // outputs[__id[{order[signal_per_thread - offset + i]}]] = temp_{order[signal_per_thread - offset + i]};
+        sdata[ty + {blockdim_y} * __id[{order[signal_per_thread - offset + i]}]] = temp_{order[signal_per_thread - offset + i]};
         '''
+                ft_fft += f'''
+        __syncthreads();
+        '''
+                for i in range(signal_per_thread):
+                    ft_fft += f''' 
+                    temp_0 = sdata[((tx + ty * {blockdim_x} + {i * num_thread}) % {blockdim_y}) + {blockdim_y} * ((tx + ty * {blockdim_x} + {i * num_thread}) / {blockdim_y})];
+                    outputs[(((tx + ty * {blockdim_x} + {i * num_thread}) % {blockdim_y}) + bx * {blockdim_y}) + {N1} * ((tx + ty * {blockdim_x} + {i * num_thread}) / {blockdim_y})] = temp_0;
+        '''
+                
+        #         for i in range(signal_per_thread):
+        #             ft_fft += f'''
+        # // outputs[(ty + bx * {blockdim_y}) + {N1} * __id[{order[signal_per_thread - offset + i]}]] = temp_{order[signal_per_thread - offset + i]};
+        # '''
                 ft_fft += '''
         }
     '''
@@ -223,7 +247,6 @@ def ft_2D_fft_code_gen_upload2(N, N1, N2, num_block, num_thread,
                     n_global *= radix
                 ft_fft += f'''
         __syncthreads();
-        ''' if stage_id != 0 else '''
         '''
                 for i in range(signal_per_thread):
                     ft_fft += f'''
