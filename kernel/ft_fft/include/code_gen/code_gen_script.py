@@ -88,6 +88,8 @@ int main(int argc, char** argv){
         cudaFuncSetAttribute(VkFFT_main_logN{int(df['logN'][N-1])}, cudaFuncAttributeMaxDynamicSharedMemorySize, {int(df[f'sm_size_{i}'][N-1])});
         '''
         ft_fft_script += '''
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
         {
         '''
         ft_fft_script += f'''
@@ -171,6 +173,8 @@ int main(int argc, char** argv){
         cudaFuncSetAttribute(VkFFT_main_logN{int(df['logN'][N-1])}_{i}, cudaFuncAttributeMaxDynamicSharedMemorySize, {int(df[f'sm_size_{i}'][N-1])});
         '''
         ft_fft_script += '''
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
         {
         '''
         ft_fft_script += f'''
@@ -271,6 +275,8 @@ int main(int argc, char** argv){
         '''
         ft_fft_script += '''
         {
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
         '''
         
         ft_fft_script += f'''
@@ -309,11 +315,13 @@ int main(int argc, char** argv){
             cudaEventSynchronize(fft_begin);
             cudaEventSynchronize(fft_end);
             cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
-            cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            CUDA_CALLER(cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
         }
         '''
         ft_fft_script += '''
         {
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
         '''
         ft_fft_script += f'''
             cudaEventRecord(fft_begin);
@@ -354,6 +362,8 @@ int main(int argc, char** argv){
         }
         
         {
+            cudaEventCreate(&fft_begin);
+            cudaEventCreate(&fft_end);
             cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
             cudaEventRecord(fft_begin);
             timeSt = std::chrono::steady_clock::now();
@@ -367,7 +377,7 @@ int main(int argc, char** argv){
             cudaEventSynchronize(fft_begin);
             cudaEventSynchronize(fft_end);
             cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);   
-            cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            CUDA_CALLER(cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
         }
     }    
     '''
