@@ -9,6 +9,44 @@
 #define MY_MUL_REPLACE(a, b, c, d) d.x = a.x * b.x - a.y * b.y; d.y = a.y * b.x + a.x * b.y; c = d;
 #define MY_ANGLE2COMPLEX(angle, a) a.x = __cosf(angle); a.y =  __sinf(angle);
 
+#define radix3_a00_x 1.0f;
+#define radix3_a00_y -0.0f;
+
+#define radix3_a01_x 1.0f;
+#define radix3_a01_y -0.0f;
+
+#define radix3_a02_x 1.0f;
+#define radix3_a02_y -0.0f;
+
+#define radix3_a10_x 1.0f;
+#define radix3_a10_y -0.0f;
+
+#define radix3_a11_x -0.4999999999999998f;
+#define radix3_a11_y -0.8660254037844387f;
+
+#define radix3_a12_x -0.5000000000000004f;
+#define radix3_a12_y 0.8660254037844384f;
+
+#define radix3_a20_x 1.0f;
+#define radix3_a20_y -0.0f;
+
+#define radix3_a21_x -0.5000000000000004f;
+#define radix3_a21_y 0.8660254037844384f;
+
+#define radix3_a22_x -0.4999999999999992f;
+#define radix3_a22_y -0.8660254037844392f;
+
+
+#define GEMM_radix3 (b0, b1, b2, c0, c1, c2) \
+c0.x += radix3_a00_x * b0.x - radix3_a00_y * b0.y; c0.y = radix3_a00_y * b0.x + radix3_a00_x * b0.y;\    
+c0.x += radix3_a01_x * b1.x - radix3_a01_y * b1.y; c0.y = radix3_a01_y * b1.x + radix3_a01_x * b1.y;\    
+c0.x += radix3_a02_x * b2.x - radix3_a02_y * b2.y; c0.y = radix3_a02_y * b2.x + radix3_a02_x * b2.y;\    
+c1.x += radix3_a10_x * b0.x - radix3_a10_y * b0.y; c1.y = radix3_a10_y * b0.x + radix3_a10_x * b0.y;\    
+c1.x += radix3_a11_x * b1.x - radix3_a11_y * b1.y; c1.y = radix3_a11_y * b1.x + radix3_a11_x * b1.y;\    
+c1.x += radix3_a12_x * b2.x - radix3_a12_y * b2.y; c1.y = radix3_a12_y * b2.x + radix3_a12_x * b2.y;\    
+c2.x += radix3_a20_x * b0.x - radix3_a20_y * b0.y; c2.y = radix3_a20_y * b0.x + radix3_a20_x * b0.y;\    
+c2.x += radix3_a21_x * b1.x - radix3_a21_y * b1.y; c2.y = radix3_a21_y * b1.x + radix3_a21_x * b1.y;\    
+c2.x += radix3_a22_x * b2.x - radix3_a22_y * b2.y; c2.y = radix3_a22_y * b2.x + radix3_a22_x * b2.y;\
 
 
 __global__ void ft_fft(int N, float2 * data, int ns, int k ){

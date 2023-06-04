@@ -8,6 +8,7 @@ def code_gen_script():
 #include <cuda_runtime.h> 
 #include <cufftXt.h>
 #include "utils/utils.cuh"   
+# define RADIX 3
 #define FLOAT2_NORM(a, res) res = a.x * a.x + a.y * a.y;
 int main(int argc, char** argv){  
     // #if (V == 1)
@@ -27,7 +28,7 @@ int main(int argc, char** argv){
         __log_N_st__ = atoi(argv[1]);
     }
     // #endif
-    int N = pow((double)2, (double)__log_N__); 
+    int N = pow((double)RADIX, (double)__log_N__); 
     int random_seed = 10;  
     #if P_FFT == 1
     int num_tests = 100;
@@ -72,7 +73,7 @@ int main(int argc, char** argv){
     #else
     int log_N = __log_N__;
     #endif
-    N = pow(double(2), double(log_N));
+    N = pow(double(RADIX), double(log_N));
     '''
     
     N = 3
@@ -453,21 +454,21 @@ int main(int argc, char** argv){
     printf("\\n Flops\\n");
     printf("gflops_fft = th.as_tensor([");
     for(int i = 3; i <= __log_N__; ++i ){
-        int N = pow((double)2, (double)i);
+        long long N = pow((double)RADIX, (double)i);
         printf("%8f,", 5 * N * i / t_fft[i] * 1000.f / 1000000000.f);
     }
     printf("])\\n");
 
     printf("gflops_cufft = th.as_tensor([");
     for(int i = 3; i <= __log_N__; ++i ){
-        int N = pow((double)2, (double)i);
+        long long N = pow((double)RADIX, (double)i);
         printf("%8f,", 5 * N * i / t_cufft[i] * 1000.f / 1000000000.f);
     }
     printf("])\\n");
     
     printf("gflops_vkfft = th.as_tensor([");
     for(int i = 3; i <= __log_N__; ++i ){
-        int N = pow((double)2, (double)i);
+        long long N = pow((double)RADIX, (double)i);
         printf("%8f,", 5 * N * i / t_vkfft[i] * 1000.f / 1000000000.f);
     }
     printf("])\\n");

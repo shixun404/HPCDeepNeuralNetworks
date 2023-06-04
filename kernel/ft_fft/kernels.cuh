@@ -52,7 +52,7 @@
 #elif K_FFT == 2
 #include "./include/fft.cuh"
 #include "./include/radix_2_codegen/ft_fft_radix2_logN3_reg8.cuh"
-#include "./include/radix_2_codegen/ft_fft_radix2_logN4_reg8.cuh"
+#include "./include/radix_2_codegen/ft_fft_radix2_logN4_reg4.cuh"
 #include "./include/radix_2_codegen/ft_fft_radix2_logN5_reg8.cuh"
 #include "./include/radix_2_codegen/ft_fft_radix2_logN6_reg8.cuh"
 #include "./include/radix_2_codegen/ft_fft_radix2_logN7_reg8.cuh"
