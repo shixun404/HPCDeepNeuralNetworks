@@ -4,7 +4,7 @@ import numpy as np
 M_PI = 3.141592653589793
 def ft_3D_fft_code_gen_upload2(N, N1, N2, N3, num_block, num_thread,
                        radix=2, signal_per_thread=8, if_abft=False):
-    
+    print(f"N1={N1}, N2={N2}, N3={N3}")
     exponent = int(log(N, radix))
     log_threadx = 0 # thread to log
     log_thready = 0 # thread to log
@@ -76,7 +76,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     ft_fft += '''
     '''
     for i in range(signal_per_thread):
-        ft_fft += f'''temp_{i} = inputs[tx + (bx % {N3_ // blockdim_x}) * {N3_ // blockdim_x} + (ty * {N3_} + {i * blockdim_y * N3_}) + (bx / {N3_ // blockdim_x}) * {N2_ * N3_}];
+        ft_fft += f'''temp_{i} = inputs[tx + (bx % {N3_ // blockdim_x}) * {blockdim_x} + (ty * {N3_} + {i * blockdim_y * N3_}) + (bx / {N3_ // blockdim_x}) * {N2_ * N3_}];
     '''
     ft_fft += '''
     '''
@@ -141,7 +141,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
             ft_fft += f'''
     n_global *= 2;
     '''
-            print(order, offset)
+            # print(order, offset)
             offset = 0 if  offset > 0 else signal_per_thread
             for i in range(signal_per_thread):
                 ft_fft += f'''
@@ -225,7 +225,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
                 ft_fft += f'''
     n_global *= 2;
     '''
-                print(order, offset)
+                # print(order, offset)
                 offset = 0 if  offset > 0 else signal_per_thread
                 n *= radix
                 n_global *= radix
@@ -325,7 +325,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
                 ft_fft += f'''
     n_global *= 2;
     '''
-                print(order, offset)
+                # print(order, offset)
                 offset = 0 if  offset > 0 else signal_per_thread
                 n *= radix
                 n_global *= radix

@@ -1,5 +1,5 @@
 extern __shared__ float shared[];
-extern "C" __global__ void __launch_bounds__(256) VkFFT_main (float2* inputs, float2* outputs) {
+extern "C" __global__ void __launch_bounds__(256) VkFFT_main_logN29_3 (float2* inputs, float2* outputs) {
 unsigned int sharedStride = 1024;
 float2* sdata = (float2*)shared;
 

@@ -1,10 +1,10 @@
-
+ 
 from math import *
 import numpy as np
 M_PI = 3.141592653589793
 def ft_3D_fft_code_gen_upload3(N, N1, N2, N3, num_block, num_thread,
                        radix=2, signal_per_thread=8, if_abft=False):
-    
+    print(f"N1={N1}, N2={N2}, N3={N3}")
     exponent = int(log(N, radix))
     log_threadx = 0 # thread to log
     log_thready = 0 # thread to log
@@ -14,10 +14,11 @@ def ft_3D_fft_code_gen_upload3(N, N1, N2, N3, num_block, num_thread,
     N3_ = N3
     N2 = N1 * N2
     N1 = N3
+    print(f"N={N1}, radix={radix}, N1 / radix = {N1/radix}, signal_per_thread={signal_per_thread}")
     plan = []
     twiddle_type = []
-    blockdim_x = int(num_thread // (N1 // signal_per_thread))
-    blockdim_y = int(N1 // signal_per_thread)
+    blockdim_y = int(num_thread // (N1 // signal_per_thread))
+    blockdim_x = int(N1 // signal_per_thread)
     i = 1
     while i <= N1 / radix:
         if i == N1 / radix:
@@ -78,9 +79,25 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     # printf("############ before read global bx = %d, tx = %d, ty = %d, ###########\\n", bx, tx, ty);
     
     # '''
+    # for i in range(signal_per_thread):
+    #     ft_fft += f'''temp_{i} = inputs[(tx + {i * blockdim_x}) + (bx / {(N1_ // blockdim_y)}) * {N3_} + (ty + (bx % {N1_ // blockdim_y}) * {blockdim_y}) * {N3_ * N2_}];
     for i in range(signal_per_thread):
-        ft_fft += f'''temp_{i} = inputs[(tx + {i * blockdim_x}) + (bx / {(N1_ // blockdim_y)}) * {N3_} + (ty + (bx % {N1_ // blockdim_y}) * {blockdim_y}) * {N3_ * N2_}];
+    #     ft_fft += f'''temp_{i} = inputs[(tx + {blockdim_x} * ty + {i} * {num_thread}) % {N3_} + (((bx % {N2_ // blockdim_y}) * {blockdim_y}) + ((tx + {blockdim_x} * ty + {i} * {num_thread}) / {N3_})) * {N3_} + (bx / {(N2_ // blockdim_y)}) * {N3_ * N2_}];
+    # '''
+        ft_fft += f'''temp_{i} = inputs[(tx + {blockdim_x} * ty + {i} * {num_thread}) % {N3_} + (((bx % {N1_ // blockdim_y}) * {blockdim_y}) + ((tx + {blockdim_x} * ty + {i} * {num_thread}) / {N3_})) * {N3_ * N2_} + (bx / {(N1_ // blockdim_y)}) * {N3_}];
     '''
+    for i in range(signal_per_thread):
+        ft_fft += f'''
+        sdata[(tx + {blockdim_x} * ty + {i} * {num_thread}) % {N3_} + ((tx + {blockdim_x} * ty + {i} * {num_thread}) / {N3_}) * {N3_}] = temp_{i};
+    '''
+    
+    ft_fft += '''
+    __syncthreads();
+    '''
+    for i in range(signal_per_thread):
+        ft_fft += f'''temp_{i} = sdata[(tx + {i * blockdim_x}) + ty * {N3_}];
+    '''
+    
     ft_fft += f'''#if defined(LOG_ON)
     printf("############ after read global bx = %d, tx = %d, ty = %d, ###########\\n", bx, tx, ty);
     #endif
@@ -147,15 +164,28 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
                 order[i + int(signal_per_thread / 2) + offset] = order[i + signal_per_thread + int(signal_per_thread / 2) - offset]
             ft_fft += f'''
     n_global *= 2;
+    __syncthreads();
     '''
-            print(order, offset)
+            # # print(order, offset)
             offset = 0 if  offset > 0 else signal_per_thread
+            for i in range(signal_per_thread):
+                ft_fft += f'''
+    sdata[__id[{order[signal_per_thread - offset + i]}] + ty * {N3_}] = temp_{order[signal_per_thread - offset + i]};
+    '''
+            ft_fft += f'''
+    __syncthreads();
+    '''
+            
             for i in range(signal_per_thread):
                 ft_fft += f'''
     //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
     //inputs[tx + {i * blockdim_x} + ty * {N3_ * N2_} + (bx % {N1_ // blockdim_y}) * {blockdim_y * N3_ * N2_} + (bx / {(N1_ // blockdim_y)} * {N3_})]
     // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\\n", bx, tx, ty);
-    outputs[(ty + (bx % {N1_ // blockdim_y}) * {blockdim_y}) + (bx / {(N1_ // blockdim_y)}) * {N1_} + (__id[{order[signal_per_thread - offset + i]}]) * {N1_ * N2_}] = temp_{order[signal_per_thread - offset + i]};
+    
+    // outputs[(bx / {(N2_ // blockdim_y)}) + ((bx % {(N2_ // blockdim_y)}) * {blockdim_y} + ty) * {N1_} + (__id[{order[signal_per_thread - offset + i]}]) * {N1_ * N2_}] = temp_{order[signal_per_thread - offset + i]};
+    // outputs[(ty + (bx % {N1_ // blockdim_y}) * {blockdim_y}) + (bx / {(N1_ // blockdim_y)}) * {N1_} + (__id[{order[signal_per_thread - offset + i]}]) * {N1_ * N2_}] = temp_{order[signal_per_thread - offset + i]}; 
+    temp_0 = sdata[((tx + ty * {blockdim_x} + {i * num_thread}) / {blockdim_y}) + ((tx + ty * {blockdim_x} + {i * num_thread}) % {blockdim_y}) * {N3_}];
+    outputs[(((tx + ty * {blockdim_x} + {i * num_thread}) % {blockdim_y}) + (bx % {N1_ // blockdim_y}) * {blockdim_y}) + (bx / {(N1_ // blockdim_y)}) * {N1_} + ((tx + ty * {blockdim_x} + {i * num_thread}) / {blockdim_y}) * {N1_ * N2_}] = temp_0; 
     '''
             ft_fft += '''
     }
@@ -230,17 +260,16 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
                 ft_fft += f'''
     n_global *= 2;
     '''
-                print(order, offset)
+                # # print(order, offset)
                 offset = 0 if  offset > 0 else signal_per_thread
                 n *= radix
                 n_global *= radix
             ft_fft += f'''
     __syncthreads();
-    ''' if stage_id != 0 else '''
     '''
             for i in range(signal_per_thread):
                 ft_fft += f'''
-    sdata[__id[{order[signal_per_thread - offset + i]}] + ty * {N3_}] = temp_{order[signal_per_thread - offset + i]};
+    sdata[__id[{order[signal_per_thread - offset + i]}] + ty * {N3_} ] = temp_{order[signal_per_thread - offset + i]};
     ''' if True else f'''
     sdata[(__id[{order[signal_per_thread - offset + i]}] / 16) * 17 + 
     (__id[{order[signal_per_thread - offset + i]}] % 16)] = temp_{order[signal_per_thread - offset + i]};
@@ -253,7 +282,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     '''
             for i in range(signal_per_thread):
                 ft_fft += f'''
-    temp_{i} = sdata[tx + {i * blockdim_x} + ty * {N3_}];
+    temp_{i} = sdata[(tx + {i * blockdim_x}) + ty * {N3_}];
     __id[{i}] = tx + {i * blockdim_x};
     ''' if True else f'''
     temp_{i} = sdata[(({i} * blockDim.x + tx) / 16) * 17 +
@@ -330,7 +359,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
                 ft_fft += f'''
     n_global *= 2;
     '''
-                print(order, offset)
+                # # print(order, offset)
                 offset = 0 if  offset > 0 else signal_per_thread
                 n *= radix
                 n_global *= radix
