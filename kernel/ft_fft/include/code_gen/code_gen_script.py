@@ -1,6 +1,6 @@
 import pandas as pd
 def code_gen_script():
-    df = pd.read_csv('parameter.csv')
+    df = pd.read_csv('parameter_radix2.csv')
     ft_fft_script = '''
 #include <stdlib.h>
 #include <complex>
@@ -8,7 +8,7 @@ def code_gen_script():
 #include <cuda_runtime.h> 
 #include <cufftXt.h>
 #include "utils/utils.cuh"   
-# define RADIX 3
+# define RADIX 2
 #define FLOAT2_NORM(a, res) res = a.x * a.x + a.y * a.y;
 int main(int argc, char** argv){  
     // #if (V == 1)

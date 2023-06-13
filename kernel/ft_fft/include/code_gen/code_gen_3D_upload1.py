@@ -82,10 +82,6 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     '''
     for stage_id in range(len(plan)):
         if twiddle_type[stage_id] == 2:
-            ft_fft += f'''#if defined(LOG_ON)
-    if(tx=={log_threadx} && bx=={log_block} && ty=={log_thready})printf("############ n_global %d ###########\\n", n_global);
-    #endif
-    '''
             n = signal_per_thread // 2
             i = 0 + signal_per_thread // radix
             ft_fft += f'''
@@ -96,9 +92,6 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
             for k in range(max(1, n // 2)):
                 i = k + signal_per_thread // radix
                 ft_fft += f'''
-    #if defined(LOG_ON)
-    if(tx=={log_threadx} && bx=={log_block} && ty=={log_thready})printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\\ntx %d, j %d, k %d, j * k %d, n_global %d, \\n", tx,  j, k, j*k, n_global);
-    #endif
     tmp_angle_rot.x = {cos(- M_PI / float(n)) if k != 0 else 1.}f;
     tmp_angle_rot.y = {sin(- M_PI / float(n)) if k != 0 else 0.}f;
     MY_MUL(tmp_angle, tmp_angle_rot, tmp);
@@ -111,24 +104,52 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
                     ft_fft += f'''
     MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle, tmp);
     temp_{order[signal_per_thread - offset + i]} = tmp;
-    #if defined(LOG_ON)
-    if(tx=={log_threadx} && bx=={log_block} && ty=={log_thready})printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\\ntx %d, a.real %f,  a.imag %f,  local_id {i},  global_id %d, j %d, k %d, j * k %d, n_global %d, \\n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[{order[signal_per_thread - offset + i]}], j, k, j*k, n_global);
-    #endif
     '''
                     if True:
                         i += n // 2
                         ft_fft += f'''
     MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle_rot, tmp);
     temp_{order[signal_per_thread - offset + i]} = tmp;
-    #if defined(LOG_ON)
-    if(tx=={log_threadx} && bx=={log_block} && ty=={log_thready})printf("tx %d,  a_rot.real %f,  a_rot.imag %f, local_id {i},  global_id %d, j %d, k %d, j * k %d, n_global %d, \\n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[{order[signal_per_thread - offset + i]}], j, k, j*k, n_global);
-    #endif
-    '''    
+    '''
+    
+            if if_abft:
+                ft_fft += f'''
+                j = {int(i / (signal_per_thread // radix))};
+                k = __id[{order[signal_per_thread - offset + i]}] % {n_global};
+                MY_ANGLE2COMPLEX((float)(j * k) * {(-2.0 * M_PI / (radix * n_global))}f, tmp_angle);
+                '''
+                for k in range(max(1, n // 2)):
+                    i = k + signal_per_thread // radix
+                    ft_fft += f'''
+        tmp_angle_rot.x = {cos(- M_PI / float(n)) if k != 0 else 1.}f;
+        tmp_angle_rot.y = {sin(- M_PI / float(n)) if k != 0 else 0.}f;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        tmp_angle = tmp;
+        tmp_angle_rot.x = tmp_angle.y;
+        tmp_angle_rot.y = -tmp_angle.x;
+        '''
+                    for kk in range(signal_per_thread // radix // n):
+                        i = kk * n + k + signal_per_thread // radix
+                        ft_fft += f'''
+        MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle, tmp);
+        temp_{order[signal_per_thread - offset + i]} = tmp;
+        '''
+                        if True:
+                            i += n // 2
+                            ft_fft += f'''
+        MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle_rot, tmp);
+        temp_{order[signal_per_thread - offset + i]} = tmp;
+        '''        
+    
 
             for i in range(signal_per_thread // radix):
                 ft_fft += f'''
+    tmp = temp_{order[i + signal_per_thread - offset]};
+    MY_ADD(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread - offset]});
+    MY_SUB(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]});
+    '''
+                if if_abft:
+                    ft_fft += f'''
     tmp = temp_{order[i + signal_per_thread - offset]};
     MY_ADD(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread - offset]});
     MY_SUB(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]});
@@ -147,23 +168,15 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle, tmp);
     temp_{order[signal_per_thread - offset + i]} = tmp;
     outputs[(tx + bx * {blockdim_x}) + {N2} * __id[{order[signal_per_thread - offset + i]}]] = temp_{order[signal_per_thread - offset + i]};
-    // outputs[__id[{order[signal_per_thread - offset + i]}]] = temp_{order[signal_per_thread - offset + i]};
     '''
             ft_fft += '''
     }
 '''
             break
         
-        if twiddle_type[stage_id] == 0:
-            n = 1
+        else:
+            n = 1 if twiddle_type[stage_id] == 0 else n_global // (N1 // signal_per_thread)
             for j in range(plan[stage_id]):
-                ft_fft += f'''
-    #if defined(LOG_ON)
-    if(tx=={log_threadx} && bx=={log_block} && ty=={log_thready})printf("############ n_global %d ###########\\n", n_global);
-    #endif
-    '''
-                # for i in range((signal_per_thread // radix), signal_per_thread):
-                # why n // 2, because rotation pi / 2. 
             
                 i = 0 + signal_per_thread // radix
                 ft_fft += f'''
@@ -189,21 +202,41 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
                         ft_fft += f'''
     MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle, tmp);
     temp_{order[signal_per_thread - offset + i]} = tmp;
-    #if defined(LOG_ON)
-    if(tx=={log_threadx} && bx=={log_block} && ty=={log_thready})printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\\ntx %d, a.real %f,  a.imag %f, local_id {i},  global_id %d, j %d, k %d, j * k %d, n_global %d, \\n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[{order[signal_per_thread - offset + i]}], j, k, j*k, n_global);
-    #endif
     '''
                         if n // 2 != 0:
                             i += n // 2
                             ft_fft += f'''
     MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle_rot, tmp);
     temp_{order[signal_per_thread - offset + i]} = tmp;
-    #if defined(LOG_ON)
-    if(tx=={log_threadx} && bx=={log_block} && ty=={log_thready})printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id {i},  global_id %d, j %d, k %d, j * k %d, n_global %d, \\n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[{order[signal_per_thread - offset + i]}], j, k, j*k, n_global);
-    #endif
     '''
+                if if_abft:
+                    ft_fft += f'''
+        j = {int(i / (signal_per_thread // radix))};
+        k = __id[{order[signal_per_thread - offset + i]}] % {n_global};
+        MY_ANGLE2COMPLEX((float)(j * k) * {(-2.0 * M_PI / (radix * n_global))}f, tmp_angle);
+        '''
+                    for k in range(max(1, n // 2)):
+                        i = k + signal_per_thread // radix
+                        ft_fft += f'''
+        tmp_angle_rot.x = {cos(- M_PI / float(n)) if k != 0 else 1.}f;
+        tmp_angle_rot.y = {sin(- M_PI / float(n)) if k != 0 else 0.}f;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        tmp_angle = tmp;
+        tmp_angle_rot.x = tmp_angle.y;
+        tmp_angle_rot.y = -tmp_angle.x;
+        '''
+                        for kk in range(signal_per_thread // radix // n):
+                            i = kk * n + k + signal_per_thread // radix
+                            ft_fft += f'''
+        MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle, tmp);
+        temp_{order[signal_per_thread - offset + i]} = tmp;
+        '''
+                            if n // 2 != 0:
+                                i += n // 2
+                                ft_fft += f'''
+        MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle_rot, tmp);
+        temp_{order[signal_per_thread - offset + i]} = tmp;
+        '''
     
                 for i in range(signal_per_thread // radix):
                     tmp_id_left = (i // n) * 2 * n + (i % n)
@@ -212,6 +245,8 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     tmp = temp_{order[i + signal_per_thread - offset]};
     MY_ADD(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread - offset]});
     MY_SUB(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]});
+    '''  * (2 if if_abft else 1)
+                    ft_fft += f'''
     tmp_id = __id[{order[i + signal_per_thread - offset]}];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[{order[i + signal_per_thread - offset]}] = tmp_id;
@@ -226,6 +261,8 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
                 offset = 0 if  offset > 0 else signal_per_thread
                 n *= radix
                 n_global *= radix
+
+        if twiddle_type[stage_id] == 0:
             ft_fft += f'''
     __syncthreads();
     ''' if stage_id != 0 else '''
@@ -254,76 +291,4 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     '''
                 order[i] = i
                 offset = signal_per_thread
-
-        if twiddle_type[stage_id] == 1:
-            ft_fft += '''
-    '''
-            n = n_global // (N1 // signal_per_thread)
-            for j in range(plan[stage_id]):
-                ft_fft += f'''#if defined(LOG_ON)
-    if(tx=={log_threadx} && bx=={log_block} && ty=={log_thready})printf("############ n_global %d ###########\\n", n_global);
-    #endif
-    '''
-                i = 0 + signal_per_thread // radix
-                ft_fft += f'''
-    j = {int(i / (signal_per_thread // radix))};
-    k = __id[{order[signal_per_thread - offset + i]}] % {n_global};
-    MY_ANGLE2COMPLEX((float)(j * k) * {(-2.0 * M_PI / (radix * n_global))}f, tmp_angle);
-    '''
-                for k in range(max(1, n // 2)):
-                    i = k + signal_per_thread // radix
-                    ft_fft += f'''
-    #if defined(LOG_ON)
-    if(tx=={log_threadx} && bx=={log_block} && ty=={log_thready})printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\\ntx %d, j %d, k %d, j * k %d, n_global %d, \\n", tx,  j, k, j*k, n_global);
-    #endif
-    
-    tmp_angle_rot.x = {cos(- M_PI / float(n)) if k != 0 else 1.}f;
-    tmp_angle_rot.y = {sin(- M_PI / float(n)) if k != 0 else 0.}f;
-    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-    tmp_angle = tmp;
-    tmp_angle_rot.x = tmp_angle.y;
-    tmp_angle_rot.y = -tmp_angle.x;
-    '''
-                    for kk in range(signal_per_thread // radix // n):
-                        i = kk * n + k + signal_per_thread // radix
-                        ft_fft += f'''
-    MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle, tmp);
-    temp_{order[signal_per_thread - offset + i]} = tmp;
-    #if defined(LOG_ON)
-    if(tx=={log_threadx} && bx=={log_block} && ty=={log_thready})printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\\ntx %d, a.real %f,  a.imag %f, local_id {i},  global_id %d, j %d, k %d, j * k %d, n_global %d, \\n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[{order[signal_per_thread - offset + i]}], j, k, j*k, n_global);
-    #endif
-    '''
-                        if n != 1:
-                            i += n // 2
-                            ft_fft += f'''
-    MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle_rot, tmp);
-    temp_{order[signal_per_thread - offset + i]} = tmp;
-    #if defined(LOG_ON)
-    if(tx=={log_threadx} && bx=={log_block} && ty=={log_thready})printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id {i},  global_id %d, j %d, k %d, j * k %d, n_global %d, \\n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[{order[signal_per_thread - offset + i]}], j, k, j*k, n_global);
-    #endif
-    '''
-                for i in range(signal_per_thread // radix):
-                    tmp_id_left = (i // n) * 2 * n + (i % n)
-                    tmp_id_right = (i // n) * 2 * n + (i % n) + n
-                    # print(i + signal_per_thread + int(signal_per_thread / 2) - offset, i, signal_per_thread, offset)
-                    ft_fft += f'''
-    tmp = temp_{order[i + signal_per_thread - offset]};
-    MY_ADD(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread - offset]});
-    MY_SUB(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]});
-    tmp_id = __id[{order[i + signal_per_thread - offset]}];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[{order[i + signal_per_thread - offset]}] = tmp_id;
-    __id[{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}] = tmp_id + {n_global};
-    '''             
-                    order[tmp_id_left + offset] = order[i + signal_per_thread - offset]
-                    order[tmp_id_right + offset] = order[i + signal_per_thread + int(signal_per_thread / 2) - offset]
-                ft_fft += f'''
-    n_global *= 2;
-    '''
-                # print(order, offset)
-                offset = 0 if  offset > 0 else signal_per_thread
-                n *= radix
-                n_global *= radix
     return ft_fft

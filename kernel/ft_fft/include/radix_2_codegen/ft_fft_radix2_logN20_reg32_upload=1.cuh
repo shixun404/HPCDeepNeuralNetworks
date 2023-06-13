@@ -113,17 +113,10 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     __id[30] = 960 + ty;
     __id[31] = 992 + ty;
     
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("############ n_global %d ###########\n", n_global);
-    #endif
-    
     j = 1;
     k = __id[16] % 1;
     MY_ANGLE2COMPLEX((float)(j * k) * -3.141592653589793f, tmp_angle);
     
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
-    #endif
     tmp_angle_rot.x = 1.0f;
     tmp_angle_rot.y = 0.0f;
     MY_MUL(tmp_angle, tmp_angle_rot, tmp);
@@ -133,119 +126,56 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_16, tmp_angle, tmp);
     temp_16 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 16,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[16], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_17, tmp_angle, tmp);
     temp_17 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 17,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[17], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_18, tmp_angle, tmp);
     temp_18 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 18,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[18], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_19, tmp_angle, tmp);
     temp_19 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 19,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[19], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_20, tmp_angle, tmp);
     temp_20 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 20,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[20], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_21, tmp_angle, tmp);
     temp_21 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 21,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[21], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_22, tmp_angle, tmp);
     temp_22 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 22,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[22], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_23, tmp_angle, tmp);
     temp_23 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 23,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[23], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_24, tmp_angle, tmp);
     temp_24 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 24,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[24], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_25, tmp_angle, tmp);
     temp_25 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 25,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[25], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_26, tmp_angle, tmp);
     temp_26 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 26,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[26], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_27, tmp_angle, tmp);
     temp_27 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 27,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[27], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_28, tmp_angle, tmp);
     temp_28 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 28,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[28], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_29, tmp_angle, tmp);
     temp_29 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 29,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[29], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_30, tmp_angle, tmp);
     temp_30 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 30,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[30], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_31, tmp_angle, tmp);
     temp_31 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 31,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[31], j, k, j*k, n_global);
-    #endif
     
     tmp = temp_0;
     MY_ADD(tmp, temp_16, temp_0);
     MY_SUB(tmp, temp_16, temp_16);
+    
     tmp_id = __id[0];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[0] = tmp_id;
@@ -254,6 +184,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_1;
     MY_ADD(tmp, temp_17, temp_1);
     MY_SUB(tmp, temp_17, temp_17);
+    
     tmp_id = __id[1];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[1] = tmp_id;
@@ -262,6 +193,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_2;
     MY_ADD(tmp, temp_18, temp_2);
     MY_SUB(tmp, temp_18, temp_18);
+    
     tmp_id = __id[2];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[2] = tmp_id;
@@ -270,6 +202,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_3;
     MY_ADD(tmp, temp_19, temp_3);
     MY_SUB(tmp, temp_19, temp_19);
+    
     tmp_id = __id[3];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[3] = tmp_id;
@@ -278,6 +211,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_4;
     MY_ADD(tmp, temp_20, temp_4);
     MY_SUB(tmp, temp_20, temp_20);
+    
     tmp_id = __id[4];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[4] = tmp_id;
@@ -286,6 +220,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_5;
     MY_ADD(tmp, temp_21, temp_5);
     MY_SUB(tmp, temp_21, temp_21);
+    
     tmp_id = __id[5];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[5] = tmp_id;
@@ -294,6 +229,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_6;
     MY_ADD(tmp, temp_22, temp_6);
     MY_SUB(tmp, temp_22, temp_22);
+    
     tmp_id = __id[6];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[6] = tmp_id;
@@ -302,6 +238,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_7;
     MY_ADD(tmp, temp_23, temp_7);
     MY_SUB(tmp, temp_23, temp_23);
+    
     tmp_id = __id[7];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[7] = tmp_id;
@@ -310,6 +247,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_8;
     MY_ADD(tmp, temp_24, temp_8);
     MY_SUB(tmp, temp_24, temp_24);
+    
     tmp_id = __id[8];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[8] = tmp_id;
@@ -318,6 +256,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_9;
     MY_ADD(tmp, temp_25, temp_9);
     MY_SUB(tmp, temp_25, temp_25);
+    
     tmp_id = __id[9];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[9] = tmp_id;
@@ -326,6 +265,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_10;
     MY_ADD(tmp, temp_26, temp_10);
     MY_SUB(tmp, temp_26, temp_26);
+    
     tmp_id = __id[10];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[10] = tmp_id;
@@ -334,6 +274,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_11;
     MY_ADD(tmp, temp_27, temp_11);
     MY_SUB(tmp, temp_27, temp_27);
+    
     tmp_id = __id[11];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[11] = tmp_id;
@@ -342,6 +283,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_12;
     MY_ADD(tmp, temp_28, temp_12);
     MY_SUB(tmp, temp_28, temp_28);
+    
     tmp_id = __id[12];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[12] = tmp_id;
@@ -350,6 +292,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_13;
     MY_ADD(tmp, temp_29, temp_13);
     MY_SUB(tmp, temp_29, temp_29);
+    
     tmp_id = __id[13];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[13] = tmp_id;
@@ -358,6 +301,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_14;
     MY_ADD(tmp, temp_30, temp_14);
     MY_SUB(tmp, temp_30, temp_30);
+    
     tmp_id = __id[14];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[14] = tmp_id;
@@ -366,6 +310,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_15;
     MY_ADD(tmp, temp_31, temp_15);
     MY_SUB(tmp, temp_31, temp_31);
+    
     tmp_id = __id[15];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[15] = tmp_id;
@@ -373,17 +318,10 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     n_global *= 2;
     
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("############ n_global %d ###########\n", n_global);
-    #endif
-    
     j = 1;
     k = __id[8] % 2;
     MY_ANGLE2COMPLEX((float)(j * k) * -1.5707963267948966f, tmp_angle);
     
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
-    #endif
     tmp_angle_rot.x = 1.0f;
     tmp_angle_rot.y = 0.0f;
     MY_MUL(tmp_angle, tmp_angle_rot, tmp);
@@ -393,119 +331,56 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_8, tmp_angle, tmp);
     temp_8 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 16,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[8], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_24, tmp_angle_rot, tmp);
     temp_24 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 17,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[24], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_9, tmp_angle, tmp);
     temp_9 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 18,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[9], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_25, tmp_angle_rot, tmp);
     temp_25 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 19,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[25], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_10, tmp_angle, tmp);
     temp_10 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 20,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[10], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_26, tmp_angle_rot, tmp);
     temp_26 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 21,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[26], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_11, tmp_angle, tmp);
     temp_11 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 22,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[11], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_27, tmp_angle_rot, tmp);
     temp_27 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 23,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[27], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_12, tmp_angle, tmp);
     temp_12 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 24,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[12], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_28, tmp_angle_rot, tmp);
     temp_28 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 25,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[28], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_13, tmp_angle, tmp);
     temp_13 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 26,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[13], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_29, tmp_angle_rot, tmp);
     temp_29 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 27,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[29], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_14, tmp_angle, tmp);
     temp_14 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 28,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[14], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_30, tmp_angle_rot, tmp);
     temp_30 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 29,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[30], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_15, tmp_angle, tmp);
     temp_15 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 30,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[15], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_31, tmp_angle_rot, tmp);
     temp_31 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 31,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[31], j, k, j*k, n_global);
-    #endif
     
     tmp = temp_0;
     MY_ADD(tmp, temp_8, temp_0);
     MY_SUB(tmp, temp_8, temp_8);
+    
     tmp_id = __id[0];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[0] = tmp_id;
@@ -514,6 +389,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_16;
     MY_ADD(tmp, temp_24, temp_16);
     MY_SUB(tmp, temp_24, temp_24);
+    
     tmp_id = __id[16];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[16] = tmp_id;
@@ -522,6 +398,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_1;
     MY_ADD(tmp, temp_9, temp_1);
     MY_SUB(tmp, temp_9, temp_9);
+    
     tmp_id = __id[1];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[1] = tmp_id;
@@ -530,6 +407,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_17;
     MY_ADD(tmp, temp_25, temp_17);
     MY_SUB(tmp, temp_25, temp_25);
+    
     tmp_id = __id[17];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[17] = tmp_id;
@@ -538,6 +416,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_2;
     MY_ADD(tmp, temp_10, temp_2);
     MY_SUB(tmp, temp_10, temp_10);
+    
     tmp_id = __id[2];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[2] = tmp_id;
@@ -546,6 +425,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_18;
     MY_ADD(tmp, temp_26, temp_18);
     MY_SUB(tmp, temp_26, temp_26);
+    
     tmp_id = __id[18];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[18] = tmp_id;
@@ -554,6 +434,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_3;
     MY_ADD(tmp, temp_11, temp_3);
     MY_SUB(tmp, temp_11, temp_11);
+    
     tmp_id = __id[3];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[3] = tmp_id;
@@ -562,6 +443,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_19;
     MY_ADD(tmp, temp_27, temp_19);
     MY_SUB(tmp, temp_27, temp_27);
+    
     tmp_id = __id[19];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[19] = tmp_id;
@@ -570,6 +452,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_4;
     MY_ADD(tmp, temp_12, temp_4);
     MY_SUB(tmp, temp_12, temp_12);
+    
     tmp_id = __id[4];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[4] = tmp_id;
@@ -578,6 +461,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_20;
     MY_ADD(tmp, temp_28, temp_20);
     MY_SUB(tmp, temp_28, temp_28);
+    
     tmp_id = __id[20];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[20] = tmp_id;
@@ -586,6 +470,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_5;
     MY_ADD(tmp, temp_13, temp_5);
     MY_SUB(tmp, temp_13, temp_13);
+    
     tmp_id = __id[5];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[5] = tmp_id;
@@ -594,6 +479,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_21;
     MY_ADD(tmp, temp_29, temp_21);
     MY_SUB(tmp, temp_29, temp_29);
+    
     tmp_id = __id[21];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[21] = tmp_id;
@@ -602,6 +488,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_6;
     MY_ADD(tmp, temp_14, temp_6);
     MY_SUB(tmp, temp_14, temp_14);
+    
     tmp_id = __id[6];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[6] = tmp_id;
@@ -610,6 +497,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_22;
     MY_ADD(tmp, temp_30, temp_22);
     MY_SUB(tmp, temp_30, temp_30);
+    
     tmp_id = __id[22];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[22] = tmp_id;
@@ -618,6 +506,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_7;
     MY_ADD(tmp, temp_15, temp_7);
     MY_SUB(tmp, temp_15, temp_15);
+    
     tmp_id = __id[7];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[7] = tmp_id;
@@ -626,6 +515,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_23;
     MY_ADD(tmp, temp_31, temp_23);
     MY_SUB(tmp, temp_31, temp_31);
+    
     tmp_id = __id[23];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[23] = tmp_id;
@@ -633,17 +523,10 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     n_global *= 2;
     
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("############ n_global %d ###########\n", n_global);
-    #endif
-    
     j = 1;
     k = __id[4] % 4;
     MY_ANGLE2COMPLEX((float)(j * k) * -0.7853981633974483f, tmp_angle);
     
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
-    #endif
     tmp_angle_rot.x = 1.0f;
     tmp_angle_rot.y = 0.0f;
     MY_MUL(tmp_angle, tmp_angle_rot, tmp);
@@ -653,63 +536,28 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_4, tmp_angle, tmp);
     temp_4 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 16,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[4], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_12, tmp_angle_rot, tmp);
     temp_12 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 18,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[12], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_5, tmp_angle, tmp);
     temp_5 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 20,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[5], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_13, tmp_angle_rot, tmp);
     temp_13 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 22,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[13], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_6, tmp_angle, tmp);
     temp_6 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 24,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[6], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_14, tmp_angle_rot, tmp);
     temp_14 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 26,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[14], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_7, tmp_angle, tmp);
     temp_7 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 28,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[7], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_15, tmp_angle_rot, tmp);
     temp_15 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 30,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[15], j, k, j*k, n_global);
-    #endif
     
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
-    #endif
     tmp_angle_rot.x = 0.7071067811865476f;
     tmp_angle_rot.y = -0.7071067811865475f;
     MY_MUL(tmp_angle, tmp_angle_rot, tmp);
@@ -719,63 +567,32 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_20, tmp_angle, tmp);
     temp_20 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 17,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[20], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_28, tmp_angle_rot, tmp);
     temp_28 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 19,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[28], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_21, tmp_angle, tmp);
     temp_21 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 21,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[21], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_29, tmp_angle_rot, tmp);
     temp_29 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 23,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[29], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_22, tmp_angle, tmp);
     temp_22 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 25,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[22], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_30, tmp_angle_rot, tmp);
     temp_30 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 27,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[30], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_23, tmp_angle, tmp);
     temp_23 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 29,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[23], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_31, tmp_angle_rot, tmp);
     temp_31 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 31,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[31], j, k, j*k, n_global);
-    #endif
     
     tmp = temp_0;
     MY_ADD(tmp, temp_4, temp_0);
     MY_SUB(tmp, temp_4, temp_4);
+    
     tmp_id = __id[0];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[0] = tmp_id;
@@ -784,6 +601,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_16;
     MY_ADD(tmp, temp_20, temp_16);
     MY_SUB(tmp, temp_20, temp_20);
+    
     tmp_id = __id[16];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[16] = tmp_id;
@@ -792,6 +610,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_8;
     MY_ADD(tmp, temp_12, temp_8);
     MY_SUB(tmp, temp_12, temp_12);
+    
     tmp_id = __id[8];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[8] = tmp_id;
@@ -800,6 +619,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_24;
     MY_ADD(tmp, temp_28, temp_24);
     MY_SUB(tmp, temp_28, temp_28);
+    
     tmp_id = __id[24];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[24] = tmp_id;
@@ -808,6 +628,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_1;
     MY_ADD(tmp, temp_5, temp_1);
     MY_SUB(tmp, temp_5, temp_5);
+    
     tmp_id = __id[1];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[1] = tmp_id;
@@ -816,6 +637,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_17;
     MY_ADD(tmp, temp_21, temp_17);
     MY_SUB(tmp, temp_21, temp_21);
+    
     tmp_id = __id[17];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[17] = tmp_id;
@@ -824,6 +646,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_9;
     MY_ADD(tmp, temp_13, temp_9);
     MY_SUB(tmp, temp_13, temp_13);
+    
     tmp_id = __id[9];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[9] = tmp_id;
@@ -832,6 +655,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_25;
     MY_ADD(tmp, temp_29, temp_25);
     MY_SUB(tmp, temp_29, temp_29);
+    
     tmp_id = __id[25];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[25] = tmp_id;
@@ -840,6 +664,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_2;
     MY_ADD(tmp, temp_6, temp_2);
     MY_SUB(tmp, temp_6, temp_6);
+    
     tmp_id = __id[2];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[2] = tmp_id;
@@ -848,6 +673,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_18;
     MY_ADD(tmp, temp_22, temp_18);
     MY_SUB(tmp, temp_22, temp_22);
+    
     tmp_id = __id[18];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[18] = tmp_id;
@@ -856,6 +682,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_10;
     MY_ADD(tmp, temp_14, temp_10);
     MY_SUB(tmp, temp_14, temp_14);
+    
     tmp_id = __id[10];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[10] = tmp_id;
@@ -864,6 +691,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_26;
     MY_ADD(tmp, temp_30, temp_26);
     MY_SUB(tmp, temp_30, temp_30);
+    
     tmp_id = __id[26];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[26] = tmp_id;
@@ -872,6 +700,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_3;
     MY_ADD(tmp, temp_7, temp_3);
     MY_SUB(tmp, temp_7, temp_7);
+    
     tmp_id = __id[3];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[3] = tmp_id;
@@ -880,6 +709,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_19;
     MY_ADD(tmp, temp_23, temp_19);
     MY_SUB(tmp, temp_23, temp_23);
+    
     tmp_id = __id[19];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[19] = tmp_id;
@@ -888,6 +718,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_11;
     MY_ADD(tmp, temp_15, temp_11);
     MY_SUB(tmp, temp_15, temp_15);
+    
     tmp_id = __id[11];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[11] = tmp_id;
@@ -896,6 +727,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_27;
     MY_ADD(tmp, temp_31, temp_27);
     MY_SUB(tmp, temp_31, temp_31);
+    
     tmp_id = __id[27];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[27] = tmp_id;
@@ -903,17 +735,10 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     n_global *= 2;
     
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("############ n_global %d ###########\n", n_global);
-    #endif
-    
     j = 1;
     k = __id[2] % 8;
     MY_ANGLE2COMPLEX((float)(j * k) * -0.39269908169872414f, tmp_angle);
     
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
-    #endif
     tmp_angle_rot.x = 1.0f;
     tmp_angle_rot.y = 0.0f;
     MY_MUL(tmp_angle, tmp_angle_rot, tmp);
@@ -923,35 +748,16 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_2, tmp_angle, tmp);
     temp_2 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 16,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[2], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_6, tmp_angle_rot, tmp);
     temp_6 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 20,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[6], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_3, tmp_angle, tmp);
     temp_3 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 24,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[3], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_7, tmp_angle_rot, tmp);
     temp_7 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 28,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[7], j, k, j*k, n_global);
-    #endif
     
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
-    #endif
     tmp_angle_rot.x = 0.9238795325112867f;
     tmp_angle_rot.y = -0.3826834323650898f;
     MY_MUL(tmp_angle, tmp_angle_rot, tmp);
@@ -961,35 +767,16 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_18, tmp_angle, tmp);
     temp_18 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 17,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[18], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_22, tmp_angle_rot, tmp);
     temp_22 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 21,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[22], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_19, tmp_angle, tmp);
     temp_19 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 25,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[19], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_23, tmp_angle_rot, tmp);
     temp_23 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 29,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[23], j, k, j*k, n_global);
-    #endif
     
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
-    #endif
     tmp_angle_rot.x = 0.9238795325112867f;
     tmp_angle_rot.y = -0.3826834323650898f;
     MY_MUL(tmp_angle, tmp_angle_rot, tmp);
@@ -999,35 +786,16 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_10, tmp_angle, tmp);
     temp_10 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 18,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[10], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_14, tmp_angle_rot, tmp);
     temp_14 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 22,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[14], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_11, tmp_angle, tmp);
     temp_11 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 26,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[11], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_15, tmp_angle_rot, tmp);
     temp_15 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 30,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[15], j, k, j*k, n_global);
-    #endif
     
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
-    #endif
     tmp_angle_rot.x = 0.9238795325112867f;
     tmp_angle_rot.y = -0.3826834323650898f;
     MY_MUL(tmp_angle, tmp_angle_rot, tmp);
@@ -1037,35 +805,20 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_26, tmp_angle, tmp);
     temp_26 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 19,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[26], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_30, tmp_angle_rot, tmp);
     temp_30 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 23,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[30], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_27, tmp_angle, tmp);
     temp_27 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 27,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[27], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_31, tmp_angle_rot, tmp);
     temp_31 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 31,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[31], j, k, j*k, n_global);
-    #endif
     
     tmp = temp_0;
     MY_ADD(tmp, temp_2, temp_0);
     MY_SUB(tmp, temp_2, temp_2);
+    
     tmp_id = __id[0];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[0] = tmp_id;
@@ -1074,6 +827,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_16;
     MY_ADD(tmp, temp_18, temp_16);
     MY_SUB(tmp, temp_18, temp_18);
+    
     tmp_id = __id[16];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[16] = tmp_id;
@@ -1082,6 +836,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_8;
     MY_ADD(tmp, temp_10, temp_8);
     MY_SUB(tmp, temp_10, temp_10);
+    
     tmp_id = __id[8];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[8] = tmp_id;
@@ -1090,6 +845,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_24;
     MY_ADD(tmp, temp_26, temp_24);
     MY_SUB(tmp, temp_26, temp_26);
+    
     tmp_id = __id[24];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[24] = tmp_id;
@@ -1098,6 +854,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_4;
     MY_ADD(tmp, temp_6, temp_4);
     MY_SUB(tmp, temp_6, temp_6);
+    
     tmp_id = __id[4];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[4] = tmp_id;
@@ -1106,6 +863,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_20;
     MY_ADD(tmp, temp_22, temp_20);
     MY_SUB(tmp, temp_22, temp_22);
+    
     tmp_id = __id[20];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[20] = tmp_id;
@@ -1114,6 +872,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_12;
     MY_ADD(tmp, temp_14, temp_12);
     MY_SUB(tmp, temp_14, temp_14);
+    
     tmp_id = __id[12];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[12] = tmp_id;
@@ -1122,6 +881,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_28;
     MY_ADD(tmp, temp_30, temp_28);
     MY_SUB(tmp, temp_30, temp_30);
+    
     tmp_id = __id[28];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[28] = tmp_id;
@@ -1130,6 +890,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_1;
     MY_ADD(tmp, temp_3, temp_1);
     MY_SUB(tmp, temp_3, temp_3);
+    
     tmp_id = __id[1];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[1] = tmp_id;
@@ -1138,6 +899,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_17;
     MY_ADD(tmp, temp_19, temp_17);
     MY_SUB(tmp, temp_19, temp_19);
+    
     tmp_id = __id[17];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[17] = tmp_id;
@@ -1146,6 +908,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_9;
     MY_ADD(tmp, temp_11, temp_9);
     MY_SUB(tmp, temp_11, temp_11);
+    
     tmp_id = __id[9];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[9] = tmp_id;
@@ -1154,6 +917,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_25;
     MY_ADD(tmp, temp_27, temp_25);
     MY_SUB(tmp, temp_27, temp_27);
+    
     tmp_id = __id[25];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[25] = tmp_id;
@@ -1162,6 +926,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_5;
     MY_ADD(tmp, temp_7, temp_5);
     MY_SUB(tmp, temp_7, temp_7);
+    
     tmp_id = __id[5];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[5] = tmp_id;
@@ -1170,6 +935,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_21;
     MY_ADD(tmp, temp_23, temp_21);
     MY_SUB(tmp, temp_23, temp_23);
+    
     tmp_id = __id[21];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[21] = tmp_id;
@@ -1178,6 +944,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_13;
     MY_ADD(tmp, temp_15, temp_13);
     MY_SUB(tmp, temp_15, temp_15);
+    
     tmp_id = __id[13];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[13] = tmp_id;
@@ -1186,6 +953,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_29;
     MY_ADD(tmp, temp_31, temp_29);
     MY_SUB(tmp, temp_31, temp_31);
+    
     tmp_id = __id[29];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[29] = tmp_id;
@@ -1193,17 +961,10 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     n_global *= 2;
     
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("############ n_global %d ###########\n", n_global);
-    #endif
-    
     j = 1;
     k = __id[1] % 16;
     MY_ANGLE2COMPLEX((float)(j * k) * -0.19634954084936207f, tmp_angle);
     
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
-    #endif
     tmp_angle_rot.x = 1.0f;
     tmp_angle_rot.y = 0.0f;
     MY_MUL(tmp_angle, tmp_angle_rot, tmp);
@@ -1213,21 +974,10 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_1, tmp_angle, tmp);
     temp_1 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 16,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[1], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_3, tmp_angle_rot, tmp);
     temp_3 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 24,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[3], j, k, j*k, n_global);
-    #endif
     
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
-    #endif
     tmp_angle_rot.x = 0.9807852804032304f;
     tmp_angle_rot.y = -0.19509032201612825f;
     MY_MUL(tmp_angle, tmp_angle_rot, tmp);
@@ -1237,21 +987,10 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_17, tmp_angle, tmp);
     temp_17 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 17,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[17], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_19, tmp_angle_rot, tmp);
     temp_19 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 25,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[19], j, k, j*k, n_global);
-    #endif
     
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
-    #endif
     tmp_angle_rot.x = 0.9807852804032304f;
     tmp_angle_rot.y = -0.19509032201612825f;
     MY_MUL(tmp_angle, tmp_angle_rot, tmp);
@@ -1261,21 +1000,10 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_9, tmp_angle, tmp);
     temp_9 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 18,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[9], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_11, tmp_angle_rot, tmp);
     temp_11 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 26,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[11], j, k, j*k, n_global);
-    #endif
     
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
-    #endif
     tmp_angle_rot.x = 0.9807852804032304f;
     tmp_angle_rot.y = -0.19509032201612825f;
     MY_MUL(tmp_angle, tmp_angle_rot, tmp);
@@ -1285,21 +1013,10 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_25, tmp_angle, tmp);
     temp_25 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 19,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[25], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_27, tmp_angle_rot, tmp);
     temp_27 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 27,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[27], j, k, j*k, n_global);
-    #endif
     
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
-    #endif
     tmp_angle_rot.x = 0.9807852804032304f;
     tmp_angle_rot.y = -0.19509032201612825f;
     MY_MUL(tmp_angle, tmp_angle_rot, tmp);
@@ -1309,21 +1026,10 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_5, tmp_angle, tmp);
     temp_5 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 20,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[5], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_7, tmp_angle_rot, tmp);
     temp_7 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 28,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[7], j, k, j*k, n_global);
-    #endif
     
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
-    #endif
     tmp_angle_rot.x = 0.9807852804032304f;
     tmp_angle_rot.y = -0.19509032201612825f;
     MY_MUL(tmp_angle, tmp_angle_rot, tmp);
@@ -1333,21 +1039,10 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_21, tmp_angle, tmp);
     temp_21 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 21,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[21], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_23, tmp_angle_rot, tmp);
     temp_23 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 29,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[23], j, k, j*k, n_global);
-    #endif
     
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
-    #endif
     tmp_angle_rot.x = 0.9807852804032304f;
     tmp_angle_rot.y = -0.19509032201612825f;
     MY_MUL(tmp_angle, tmp_angle_rot, tmp);
@@ -1357,21 +1052,10 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_13, tmp_angle, tmp);
     temp_13 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 22,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[13], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_15, tmp_angle_rot, tmp);
     temp_15 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 30,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[15], j, k, j*k, n_global);
-    #endif
     
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
-    #endif
     tmp_angle_rot.x = 0.9807852804032304f;
     tmp_angle_rot.y = -0.19509032201612825f;
     MY_MUL(tmp_angle, tmp_angle_rot, tmp);
@@ -1381,21 +1065,14 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_29, tmp_angle, tmp);
     temp_29 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 23,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[29], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_31, tmp_angle_rot, tmp);
     temp_31 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 31,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[31], j, k, j*k, n_global);
-    #endif
     
     tmp = temp_0;
     MY_ADD(tmp, temp_1, temp_0);
     MY_SUB(tmp, temp_1, temp_1);
+    
     tmp_id = __id[0];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[0] = tmp_id;
@@ -1404,6 +1081,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_16;
     MY_ADD(tmp, temp_17, temp_16);
     MY_SUB(tmp, temp_17, temp_17);
+    
     tmp_id = __id[16];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[16] = tmp_id;
@@ -1412,6 +1090,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_8;
     MY_ADD(tmp, temp_9, temp_8);
     MY_SUB(tmp, temp_9, temp_9);
+    
     tmp_id = __id[8];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[8] = tmp_id;
@@ -1420,6 +1099,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_24;
     MY_ADD(tmp, temp_25, temp_24);
     MY_SUB(tmp, temp_25, temp_25);
+    
     tmp_id = __id[24];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[24] = tmp_id;
@@ -1428,6 +1108,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_4;
     MY_ADD(tmp, temp_5, temp_4);
     MY_SUB(tmp, temp_5, temp_5);
+    
     tmp_id = __id[4];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[4] = tmp_id;
@@ -1436,6 +1117,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_20;
     MY_ADD(tmp, temp_21, temp_20);
     MY_SUB(tmp, temp_21, temp_21);
+    
     tmp_id = __id[20];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[20] = tmp_id;
@@ -1444,6 +1126,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_12;
     MY_ADD(tmp, temp_13, temp_12);
     MY_SUB(tmp, temp_13, temp_13);
+    
     tmp_id = __id[12];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[12] = tmp_id;
@@ -1452,6 +1135,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_28;
     MY_ADD(tmp, temp_29, temp_28);
     MY_SUB(tmp, temp_29, temp_29);
+    
     tmp_id = __id[28];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[28] = tmp_id;
@@ -1460,6 +1144,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_2;
     MY_ADD(tmp, temp_3, temp_2);
     MY_SUB(tmp, temp_3, temp_3);
+    
     tmp_id = __id[2];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[2] = tmp_id;
@@ -1468,6 +1153,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_18;
     MY_ADD(tmp, temp_19, temp_18);
     MY_SUB(tmp, temp_19, temp_19);
+    
     tmp_id = __id[18];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[18] = tmp_id;
@@ -1476,6 +1162,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_10;
     MY_ADD(tmp, temp_11, temp_10);
     MY_SUB(tmp, temp_11, temp_11);
+    
     tmp_id = __id[10];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[10] = tmp_id;
@@ -1484,6 +1171,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_26;
     MY_ADD(tmp, temp_27, temp_26);
     MY_SUB(tmp, temp_27, temp_27);
+    
     tmp_id = __id[26];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[26] = tmp_id;
@@ -1492,6 +1180,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_6;
     MY_ADD(tmp, temp_7, temp_6);
     MY_SUB(tmp, temp_7, temp_7);
+    
     tmp_id = __id[6];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[6] = tmp_id;
@@ -1500,6 +1189,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_22;
     MY_ADD(tmp, temp_23, temp_22);
     MY_SUB(tmp, temp_23, temp_23);
+    
     tmp_id = __id[22];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[22] = tmp_id;
@@ -1508,6 +1198,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_14;
     MY_ADD(tmp, temp_15, temp_14);
     MY_SUB(tmp, temp_15, temp_15);
+    
     tmp_id = __id[14];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[14] = tmp_id;
@@ -1516,6 +1207,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_30;
     MY_ADD(tmp, temp_31, temp_30);
     MY_SUB(tmp, temp_31, temp_31);
+    
     tmp_id = __id[30];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[30] = tmp_id;
@@ -1588,10 +1280,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     sdata[tx + 8 * __id[31]] = temp_31;
     
-    __syncthreads();
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("################### syncthreads ####################\n");
-    #endif			
+    __syncthreads();	
     
     temp_0 = sdata[tx + 8 * (0 + ty)];
     __id[0] = ty + 0;
@@ -1689,17 +1378,9 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     temp_31 = sdata[tx + 8 * (992 + ty)];
     __id[31] = ty + 992;
     
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("############ n_global %d ###########\n", n_global);
-    #endif
-    
     j = 1;
     k = __id[16] % 32;
     MY_ANGLE2COMPLEX((float)(j * k) * -0.09817477042468103f, tmp_angle);
-    
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
-    #endif
     
     tmp_angle_rot.x = 1.0f;
     tmp_angle_rot.y = 0.0f;
@@ -1710,119 +1391,56 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_16, tmp_angle, tmp);
     temp_16 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 16,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[16], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_17, tmp_angle, tmp);
     temp_17 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 17,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[17], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_18, tmp_angle, tmp);
     temp_18 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 18,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[18], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_19, tmp_angle, tmp);
     temp_19 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 19,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[19], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_20, tmp_angle, tmp);
     temp_20 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 20,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[20], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_21, tmp_angle, tmp);
     temp_21 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 21,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[21], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_22, tmp_angle, tmp);
     temp_22 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 22,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[22], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_23, tmp_angle, tmp);
     temp_23 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 23,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[23], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_24, tmp_angle, tmp);
     temp_24 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 24,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[24], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_25, tmp_angle, tmp);
     temp_25 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 25,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[25], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_26, tmp_angle, tmp);
     temp_26 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 26,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[26], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_27, tmp_angle, tmp);
     temp_27 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 27,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[27], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_28, tmp_angle, tmp);
     temp_28 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 28,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[28], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_29, tmp_angle, tmp);
     temp_29 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 29,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[29], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_30, tmp_angle, tmp);
     temp_30 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 30,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[30], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_31, tmp_angle, tmp);
     temp_31 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 31,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[31], j, k, j*k, n_global);
-    #endif
     
     tmp = temp_0;
     MY_ADD(tmp, temp_16, temp_0);
     MY_SUB(tmp, temp_16, temp_16);
+    
     tmp_id = __id[0];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[0] = tmp_id;
@@ -1831,6 +1449,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_1;
     MY_ADD(tmp, temp_17, temp_1);
     MY_SUB(tmp, temp_17, temp_17);
+    
     tmp_id = __id[1];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[1] = tmp_id;
@@ -1839,6 +1458,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_2;
     MY_ADD(tmp, temp_18, temp_2);
     MY_SUB(tmp, temp_18, temp_18);
+    
     tmp_id = __id[2];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[2] = tmp_id;
@@ -1847,6 +1467,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_3;
     MY_ADD(tmp, temp_19, temp_3);
     MY_SUB(tmp, temp_19, temp_19);
+    
     tmp_id = __id[3];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[3] = tmp_id;
@@ -1855,6 +1476,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_4;
     MY_ADD(tmp, temp_20, temp_4);
     MY_SUB(tmp, temp_20, temp_20);
+    
     tmp_id = __id[4];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[4] = tmp_id;
@@ -1863,6 +1485,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_5;
     MY_ADD(tmp, temp_21, temp_5);
     MY_SUB(tmp, temp_21, temp_21);
+    
     tmp_id = __id[5];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[5] = tmp_id;
@@ -1871,6 +1494,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_6;
     MY_ADD(tmp, temp_22, temp_6);
     MY_SUB(tmp, temp_22, temp_22);
+    
     tmp_id = __id[6];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[6] = tmp_id;
@@ -1879,6 +1503,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_7;
     MY_ADD(tmp, temp_23, temp_7);
     MY_SUB(tmp, temp_23, temp_23);
+    
     tmp_id = __id[7];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[7] = tmp_id;
@@ -1887,6 +1512,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_8;
     MY_ADD(tmp, temp_24, temp_8);
     MY_SUB(tmp, temp_24, temp_24);
+    
     tmp_id = __id[8];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[8] = tmp_id;
@@ -1895,6 +1521,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_9;
     MY_ADD(tmp, temp_25, temp_9);
     MY_SUB(tmp, temp_25, temp_25);
+    
     tmp_id = __id[9];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[9] = tmp_id;
@@ -1903,6 +1530,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_10;
     MY_ADD(tmp, temp_26, temp_10);
     MY_SUB(tmp, temp_26, temp_26);
+    
     tmp_id = __id[10];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[10] = tmp_id;
@@ -1911,6 +1539,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_11;
     MY_ADD(tmp, temp_27, temp_11);
     MY_SUB(tmp, temp_27, temp_27);
+    
     tmp_id = __id[11];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[11] = tmp_id;
@@ -1919,6 +1548,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_12;
     MY_ADD(tmp, temp_28, temp_12);
     MY_SUB(tmp, temp_28, temp_28);
+    
     tmp_id = __id[12];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[12] = tmp_id;
@@ -1927,6 +1557,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_13;
     MY_ADD(tmp, temp_29, temp_13);
     MY_SUB(tmp, temp_29, temp_29);
+    
     tmp_id = __id[13];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[13] = tmp_id;
@@ -1935,6 +1566,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_14;
     MY_ADD(tmp, temp_30, temp_14);
     MY_SUB(tmp, temp_30, temp_30);
+    
     tmp_id = __id[14];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[14] = tmp_id;
@@ -1943,23 +1575,17 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_15;
     MY_ADD(tmp, temp_31, temp_15);
     MY_SUB(tmp, temp_31, temp_31);
+    
     tmp_id = __id[15];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[15] = tmp_id;
     __id[31] = tmp_id + 32;
     
     n_global *= 2;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("############ n_global %d ###########\n", n_global);
-    #endif
     
     j = 1;
     k = __id[8] % 64;
     MY_ANGLE2COMPLEX((float)(j * k) * -0.04908738521234052f, tmp_angle);
-    
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
-    #endif
     
     tmp_angle_rot.x = 1.0f;
     tmp_angle_rot.y = 0.0f;
@@ -1970,119 +1596,56 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_8, tmp_angle, tmp);
     temp_8 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 16,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[8], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_24, tmp_angle_rot, tmp);
     temp_24 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 17,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[24], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_9, tmp_angle, tmp);
     temp_9 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 18,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[9], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_25, tmp_angle_rot, tmp);
     temp_25 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 19,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[25], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_10, tmp_angle, tmp);
     temp_10 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 20,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[10], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_26, tmp_angle_rot, tmp);
     temp_26 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 21,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[26], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_11, tmp_angle, tmp);
     temp_11 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 22,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[11], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_27, tmp_angle_rot, tmp);
     temp_27 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 23,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[27], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_12, tmp_angle, tmp);
     temp_12 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 24,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[12], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_28, tmp_angle_rot, tmp);
     temp_28 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 25,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[28], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_13, tmp_angle, tmp);
     temp_13 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 26,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[13], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_29, tmp_angle_rot, tmp);
     temp_29 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 27,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[29], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_14, tmp_angle, tmp);
     temp_14 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 28,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[14], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_30, tmp_angle_rot, tmp);
     temp_30 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 29,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[30], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_15, tmp_angle, tmp);
     temp_15 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 30,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[15], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_31, tmp_angle_rot, tmp);
     temp_31 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 31,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[31], j, k, j*k, n_global);
-    #endif
     
     tmp = temp_0;
     MY_ADD(tmp, temp_8, temp_0);
     MY_SUB(tmp, temp_8, temp_8);
+    
     tmp_id = __id[0];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[0] = tmp_id;
@@ -2091,6 +1654,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_16;
     MY_ADD(tmp, temp_24, temp_16);
     MY_SUB(tmp, temp_24, temp_24);
+    
     tmp_id = __id[16];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[16] = tmp_id;
@@ -2099,6 +1663,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_1;
     MY_ADD(tmp, temp_9, temp_1);
     MY_SUB(tmp, temp_9, temp_9);
+    
     tmp_id = __id[1];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[1] = tmp_id;
@@ -2107,6 +1672,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_17;
     MY_ADD(tmp, temp_25, temp_17);
     MY_SUB(tmp, temp_25, temp_25);
+    
     tmp_id = __id[17];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[17] = tmp_id;
@@ -2115,6 +1681,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_2;
     MY_ADD(tmp, temp_10, temp_2);
     MY_SUB(tmp, temp_10, temp_10);
+    
     tmp_id = __id[2];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[2] = tmp_id;
@@ -2123,6 +1690,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_18;
     MY_ADD(tmp, temp_26, temp_18);
     MY_SUB(tmp, temp_26, temp_26);
+    
     tmp_id = __id[18];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[18] = tmp_id;
@@ -2131,6 +1699,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_3;
     MY_ADD(tmp, temp_11, temp_3);
     MY_SUB(tmp, temp_11, temp_11);
+    
     tmp_id = __id[3];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[3] = tmp_id;
@@ -2139,6 +1708,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_19;
     MY_ADD(tmp, temp_27, temp_19);
     MY_SUB(tmp, temp_27, temp_27);
+    
     tmp_id = __id[19];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[19] = tmp_id;
@@ -2147,6 +1717,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_4;
     MY_ADD(tmp, temp_12, temp_4);
     MY_SUB(tmp, temp_12, temp_12);
+    
     tmp_id = __id[4];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[4] = tmp_id;
@@ -2155,6 +1726,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_20;
     MY_ADD(tmp, temp_28, temp_20);
     MY_SUB(tmp, temp_28, temp_28);
+    
     tmp_id = __id[20];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[20] = tmp_id;
@@ -2163,6 +1735,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_5;
     MY_ADD(tmp, temp_13, temp_5);
     MY_SUB(tmp, temp_13, temp_13);
+    
     tmp_id = __id[5];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[5] = tmp_id;
@@ -2171,6 +1744,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_21;
     MY_ADD(tmp, temp_29, temp_21);
     MY_SUB(tmp, temp_29, temp_29);
+    
     tmp_id = __id[21];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[21] = tmp_id;
@@ -2179,6 +1753,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_6;
     MY_ADD(tmp, temp_14, temp_6);
     MY_SUB(tmp, temp_14, temp_14);
+    
     tmp_id = __id[6];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[6] = tmp_id;
@@ -2187,6 +1762,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_22;
     MY_ADD(tmp, temp_30, temp_22);
     MY_SUB(tmp, temp_30, temp_30);
+    
     tmp_id = __id[22];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[22] = tmp_id;
@@ -2195,6 +1771,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_7;
     MY_ADD(tmp, temp_15, temp_7);
     MY_SUB(tmp, temp_15, temp_15);
+    
     tmp_id = __id[7];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[7] = tmp_id;
@@ -2203,23 +1780,17 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_23;
     MY_ADD(tmp, temp_31, temp_23);
     MY_SUB(tmp, temp_31, temp_31);
+    
     tmp_id = __id[23];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[23] = tmp_id;
     __id[31] = tmp_id + 64;
     
     n_global *= 2;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("############ n_global %d ###########\n", n_global);
-    #endif
     
     j = 1;
     k = __id[4] % 128;
     MY_ANGLE2COMPLEX((float)(j * k) * -0.02454369260617026f, tmp_angle);
-    
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
-    #endif
     
     tmp_angle_rot.x = 1.0f;
     tmp_angle_rot.y = 0.0f;
@@ -2230,63 +1801,27 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_4, tmp_angle, tmp);
     temp_4 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 16,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[4], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_12, tmp_angle_rot, tmp);
     temp_12 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 18,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[12], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_5, tmp_angle, tmp);
     temp_5 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 20,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[5], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_13, tmp_angle_rot, tmp);
     temp_13 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 22,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[13], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_6, tmp_angle, tmp);
     temp_6 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 24,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[6], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_14, tmp_angle_rot, tmp);
     temp_14 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 26,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[14], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_7, tmp_angle, tmp);
     temp_7 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 28,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[7], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_15, tmp_angle_rot, tmp);
     temp_15 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 30,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[15], j, k, j*k, n_global);
-    #endif
-    
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
-    #endif
     
     tmp_angle_rot.x = 0.7071067811865476f;
     tmp_angle_rot.y = -0.7071067811865475f;
@@ -2297,63 +1832,32 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_20, tmp_angle, tmp);
     temp_20 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 17,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[20], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_28, tmp_angle_rot, tmp);
     temp_28 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 19,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[28], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_21, tmp_angle, tmp);
     temp_21 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 21,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[21], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_29, tmp_angle_rot, tmp);
     temp_29 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 23,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[29], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_22, tmp_angle, tmp);
     temp_22 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 25,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[22], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_30, tmp_angle_rot, tmp);
     temp_30 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 27,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[30], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_23, tmp_angle, tmp);
     temp_23 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 29,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[23], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_31, tmp_angle_rot, tmp);
     temp_31 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 31,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[31], j, k, j*k, n_global);
-    #endif
     
     tmp = temp_0;
     MY_ADD(tmp, temp_4, temp_0);
     MY_SUB(tmp, temp_4, temp_4);
+    
     tmp_id = __id[0];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[0] = tmp_id;
@@ -2362,6 +1866,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_16;
     MY_ADD(tmp, temp_20, temp_16);
     MY_SUB(tmp, temp_20, temp_20);
+    
     tmp_id = __id[16];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[16] = tmp_id;
@@ -2370,6 +1875,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_8;
     MY_ADD(tmp, temp_12, temp_8);
     MY_SUB(tmp, temp_12, temp_12);
+    
     tmp_id = __id[8];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[8] = tmp_id;
@@ -2378,6 +1884,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_24;
     MY_ADD(tmp, temp_28, temp_24);
     MY_SUB(tmp, temp_28, temp_28);
+    
     tmp_id = __id[24];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[24] = tmp_id;
@@ -2386,6 +1893,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_1;
     MY_ADD(tmp, temp_5, temp_1);
     MY_SUB(tmp, temp_5, temp_5);
+    
     tmp_id = __id[1];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[1] = tmp_id;
@@ -2394,6 +1902,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_17;
     MY_ADD(tmp, temp_21, temp_17);
     MY_SUB(tmp, temp_21, temp_21);
+    
     tmp_id = __id[17];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[17] = tmp_id;
@@ -2402,6 +1911,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_9;
     MY_ADD(tmp, temp_13, temp_9);
     MY_SUB(tmp, temp_13, temp_13);
+    
     tmp_id = __id[9];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[9] = tmp_id;
@@ -2410,6 +1920,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_25;
     MY_ADD(tmp, temp_29, temp_25);
     MY_SUB(tmp, temp_29, temp_29);
+    
     tmp_id = __id[25];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[25] = tmp_id;
@@ -2418,6 +1929,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_2;
     MY_ADD(tmp, temp_6, temp_2);
     MY_SUB(tmp, temp_6, temp_6);
+    
     tmp_id = __id[2];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[2] = tmp_id;
@@ -2426,6 +1938,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_18;
     MY_ADD(tmp, temp_22, temp_18);
     MY_SUB(tmp, temp_22, temp_22);
+    
     tmp_id = __id[18];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[18] = tmp_id;
@@ -2434,6 +1947,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_10;
     MY_ADD(tmp, temp_14, temp_10);
     MY_SUB(tmp, temp_14, temp_14);
+    
     tmp_id = __id[10];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[10] = tmp_id;
@@ -2442,6 +1956,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_26;
     MY_ADD(tmp, temp_30, temp_26);
     MY_SUB(tmp, temp_30, temp_30);
+    
     tmp_id = __id[26];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[26] = tmp_id;
@@ -2450,6 +1965,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_3;
     MY_ADD(tmp, temp_7, temp_3);
     MY_SUB(tmp, temp_7, temp_7);
+    
     tmp_id = __id[3];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[3] = tmp_id;
@@ -2458,6 +1974,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_19;
     MY_ADD(tmp, temp_23, temp_19);
     MY_SUB(tmp, temp_23, temp_23);
+    
     tmp_id = __id[19];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[19] = tmp_id;
@@ -2466,6 +1983,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_11;
     MY_ADD(tmp, temp_15, temp_11);
     MY_SUB(tmp, temp_15, temp_15);
+    
     tmp_id = __id[11];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[11] = tmp_id;
@@ -2474,23 +1992,17 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_27;
     MY_ADD(tmp, temp_31, temp_27);
     MY_SUB(tmp, temp_31, temp_31);
+    
     tmp_id = __id[27];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[27] = tmp_id;
     __id[31] = tmp_id + 128;
     
     n_global *= 2;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("############ n_global %d ###########\n", n_global);
-    #endif
     
     j = 1;
     k = __id[2] % 256;
     MY_ANGLE2COMPLEX((float)(j * k) * -0.01227184630308513f, tmp_angle);
-    
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
-    #endif
     
     tmp_angle_rot.x = 1.0f;
     tmp_angle_rot.y = 0.0f;
@@ -2501,35 +2013,15 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_2, tmp_angle, tmp);
     temp_2 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 16,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[2], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_6, tmp_angle_rot, tmp);
     temp_6 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 20,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[6], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_3, tmp_angle, tmp);
     temp_3 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 24,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[3], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_7, tmp_angle_rot, tmp);
     temp_7 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 28,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[7], j, k, j*k, n_global);
-    #endif
-    
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
-    #endif
     
     tmp_angle_rot.x = 0.9238795325112867f;
     tmp_angle_rot.y = -0.3826834323650898f;
@@ -2540,35 +2032,15 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_18, tmp_angle, tmp);
     temp_18 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 17,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[18], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_22, tmp_angle_rot, tmp);
     temp_22 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 21,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[22], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_19, tmp_angle, tmp);
     temp_19 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 25,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[19], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_23, tmp_angle_rot, tmp);
     temp_23 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 29,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[23], j, k, j*k, n_global);
-    #endif
-    
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
-    #endif
     
     tmp_angle_rot.x = 0.9238795325112867f;
     tmp_angle_rot.y = -0.3826834323650898f;
@@ -2579,35 +2051,15 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_10, tmp_angle, tmp);
     temp_10 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 18,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[10], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_14, tmp_angle_rot, tmp);
     temp_14 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 22,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[14], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_11, tmp_angle, tmp);
     temp_11 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 26,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[11], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_15, tmp_angle_rot, tmp);
     temp_15 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 30,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[15], j, k, j*k, n_global);
-    #endif
-    
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
-    #endif
     
     tmp_angle_rot.x = 0.9238795325112867f;
     tmp_angle_rot.y = -0.3826834323650898f;
@@ -2618,35 +2070,20 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_26, tmp_angle, tmp);
     temp_26 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 19,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[26], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_30, tmp_angle_rot, tmp);
     temp_30 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 23,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[30], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_27, tmp_angle, tmp);
     temp_27 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f, local_id 27,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[27], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_31, tmp_angle_rot, tmp);
     temp_31 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d, rot_a.real %f,  rot_a.imag %f, local_id 31,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[31], j, k, j*k, n_global);
-    #endif
     
     tmp = temp_0;
     MY_ADD(tmp, temp_2, temp_0);
     MY_SUB(tmp, temp_2, temp_2);
+    
     tmp_id = __id[0];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[0] = tmp_id;
@@ -2655,6 +2092,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_16;
     MY_ADD(tmp, temp_18, temp_16);
     MY_SUB(tmp, temp_18, temp_18);
+    
     tmp_id = __id[16];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[16] = tmp_id;
@@ -2663,6 +2101,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_8;
     MY_ADD(tmp, temp_10, temp_8);
     MY_SUB(tmp, temp_10, temp_10);
+    
     tmp_id = __id[8];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[8] = tmp_id;
@@ -2671,6 +2110,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_24;
     MY_ADD(tmp, temp_26, temp_24);
     MY_SUB(tmp, temp_26, temp_26);
+    
     tmp_id = __id[24];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[24] = tmp_id;
@@ -2679,6 +2119,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_4;
     MY_ADD(tmp, temp_6, temp_4);
     MY_SUB(tmp, temp_6, temp_6);
+    
     tmp_id = __id[4];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[4] = tmp_id;
@@ -2687,6 +2128,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_20;
     MY_ADD(tmp, temp_22, temp_20);
     MY_SUB(tmp, temp_22, temp_22);
+    
     tmp_id = __id[20];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[20] = tmp_id;
@@ -2695,6 +2137,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_12;
     MY_ADD(tmp, temp_14, temp_12);
     MY_SUB(tmp, temp_14, temp_14);
+    
     tmp_id = __id[12];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[12] = tmp_id;
@@ -2703,6 +2146,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_28;
     MY_ADD(tmp, temp_30, temp_28);
     MY_SUB(tmp, temp_30, temp_30);
+    
     tmp_id = __id[28];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[28] = tmp_id;
@@ -2711,6 +2155,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_1;
     MY_ADD(tmp, temp_3, temp_1);
     MY_SUB(tmp, temp_3, temp_3);
+    
     tmp_id = __id[1];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[1] = tmp_id;
@@ -2719,6 +2164,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_17;
     MY_ADD(tmp, temp_19, temp_17);
     MY_SUB(tmp, temp_19, temp_19);
+    
     tmp_id = __id[17];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[17] = tmp_id;
@@ -2727,6 +2173,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_9;
     MY_ADD(tmp, temp_11, temp_9);
     MY_SUB(tmp, temp_11, temp_11);
+    
     tmp_id = __id[9];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[9] = tmp_id;
@@ -2735,6 +2182,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_25;
     MY_ADD(tmp, temp_27, temp_25);
     MY_SUB(tmp, temp_27, temp_27);
+    
     tmp_id = __id[25];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[25] = tmp_id;
@@ -2743,6 +2191,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_5;
     MY_ADD(tmp, temp_7, temp_5);
     MY_SUB(tmp, temp_7, temp_7);
+    
     tmp_id = __id[5];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[5] = tmp_id;
@@ -2751,6 +2200,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_21;
     MY_ADD(tmp, temp_23, temp_21);
     MY_SUB(tmp, temp_23, temp_23);
+    
     tmp_id = __id[21];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[21] = tmp_id;
@@ -2759,6 +2209,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_13;
     MY_ADD(tmp, temp_15, temp_13);
     MY_SUB(tmp, temp_15, temp_15);
+    
     tmp_id = __id[13];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[13] = tmp_id;
@@ -2767,6 +2218,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     tmp = temp_29;
     MY_ADD(tmp, temp_31, temp_29);
     MY_SUB(tmp, temp_31, temp_31);
+    
     tmp_id = __id[29];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
     __id[29] = tmp_id;
@@ -2793,17 +2245,9 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_1, tmp_angle, tmp);
     temp_1 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f,  local_id 16,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[1], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_3, tmp_angle_rot, tmp);
     temp_3 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d,  a_rot.real %f,  a_rot.imag %f, local_id 24,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[3], j, k, j*k, n_global);
-    #endif
     
     #if defined(LOG_ON)
     if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
@@ -2817,17 +2261,9 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_17, tmp_angle, tmp);
     temp_17 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f,  local_id 17,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[17], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_19, tmp_angle_rot, tmp);
     temp_19 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d,  a_rot.real %f,  a_rot.imag %f, local_id 25,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[19], j, k, j*k, n_global);
-    #endif
     
     #if defined(LOG_ON)
     if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
@@ -2841,17 +2277,9 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_9, tmp_angle, tmp);
     temp_9 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f,  local_id 18,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[9], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_11, tmp_angle_rot, tmp);
     temp_11 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d,  a_rot.real %f,  a_rot.imag %f, local_id 26,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[11], j, k, j*k, n_global);
-    #endif
     
     #if defined(LOG_ON)
     if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
@@ -2865,17 +2293,9 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_25, tmp_angle, tmp);
     temp_25 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f,  local_id 19,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[25], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_27, tmp_angle_rot, tmp);
     temp_27 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d,  a_rot.real %f,  a_rot.imag %f, local_id 27,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[27], j, k, j*k, n_global);
-    #endif
     
     #if defined(LOG_ON)
     if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
@@ -2889,17 +2309,9 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_5, tmp_angle, tmp);
     temp_5 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f,  local_id 20,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[5], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_7, tmp_angle_rot, tmp);
     temp_7 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d,  a_rot.real %f,  a_rot.imag %f, local_id 28,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[7], j, k, j*k, n_global);
-    #endif
     
     #if defined(LOG_ON)
     if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
@@ -2913,17 +2325,9 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_21, tmp_angle, tmp);
     temp_21 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f,  local_id 21,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[21], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_23, tmp_angle_rot, tmp);
     temp_23 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d,  a_rot.real %f,  a_rot.imag %f, local_id 29,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[23], j, k, j*k, n_global);
-    #endif
     
     #if defined(LOG_ON)
     if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
@@ -2937,17 +2341,9 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_13, tmp_angle, tmp);
     temp_13 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f,  local_id 22,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[13], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_15, tmp_angle_rot, tmp);
     temp_15 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d,  a_rot.real %f,  a_rot.imag %f, local_id 30,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[15], j, k, j*k, n_global);
-    #endif
     
     #if defined(LOG_ON)
     if(tx==0 && bx==0 && ty==0)printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\ntx %d, j %d, k %d, j * k %d, n_global %d, \n", tx,  j, k, j*k, n_global);
@@ -2961,17 +2357,9 @@ __global__ void __launch_bounds__(256) fft_radix2_logN20_1(float2* inputs, float
     
     MY_MUL(temp_29, tmp_angle, tmp);
     temp_29 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\ntx %d, a.real %f,  a.imag %f,  local_id 23,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle.x, tmp_angle.y, __id[29], j, k, j*k, n_global);
-    #endif
     
     MY_MUL(temp_31, tmp_angle_rot, tmp);
     temp_31 = tmp;
-    #if defined(LOG_ON)
-    if(tx==0 && bx==0 && ty==0)printf("tx %d,  a_rot.real %f,  a_rot.imag %f, local_id 31,  global_id %d, j %d, k %d, j * k %d, n_global %d, \n",
-                        tx, tmp_angle_rot.x, tmp_angle_rot.y, __id[31], j, k, j*k, n_global);
-    #endif
     
     tmp = temp_0;
     MY_ADD(tmp, temp_1, temp_0);
