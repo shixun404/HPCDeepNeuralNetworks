@@ -1,4 +1,4 @@
-BINARY_NAME = ft_fft #ft_sgemm #sdot saxpy
+BINARY_NAME = test #ft_sgemm #sdot saxpy
 CUDA_PATH   = /usr/local/cuda
 CC          = $(CUDA_PATH)/bin/nvcc -arch=sm_75 #--ptxas-options=-v 
 CFLAGS      = -O3 -std=c++11 
@@ -21,7 +21,8 @@ CFLAGS += -DK_FFT=$(K_FFT)
 SRC         = $(wildcard *.cu)
 build : $(BINARY_NAME)
 
-$(BINARY_NAME): %: kernel/%/ft_fft.cu  utils/utils.cu 
+# $(BINARY_NAME): %: kernel/%/ft_fft.cu  utils/utils.cu 
+$(BINARY_NAME): %: test.cu  utils/utils.cu 
 	$(CC) $(CFLAGS) $(LDFLAGS) $(INCFLAGS)  $^   -o $@ 
 
 clean:

@@ -175,6 +175,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_0;
     MY_ADD(tmp, temp_16, temp_0);
     MY_SUB(tmp, temp_16, temp_16);
+    MY_ADD_ft(tmp, temp_16, temp_0);
+    MY_SUB_ft(tmp, temp_16, temp_16);
     
     tmp_id = __id[0];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -184,6 +186,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_1;
     MY_ADD(tmp, temp_17, temp_1);
     MY_SUB(tmp, temp_17, temp_17);
+    MY_ADD_ft(tmp, temp_17, temp_1);
+    MY_SUB_ft(tmp, temp_17, temp_17);
     
     tmp_id = __id[1];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -193,6 +197,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_2;
     MY_ADD(tmp, temp_18, temp_2);
     MY_SUB(tmp, temp_18, temp_18);
+    MY_ADD_ft(tmp, temp_18, temp_2);
+    MY_SUB_ft(tmp, temp_18, temp_18);
     
     tmp_id = __id[2];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -202,6 +208,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_3;
     MY_ADD(tmp, temp_19, temp_3);
     MY_SUB(tmp, temp_19, temp_19);
+    MY_ADD_ft(tmp, temp_19, temp_3);
+    MY_SUB_ft(tmp, temp_19, temp_19);
     
     tmp_id = __id[3];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -211,6 +219,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_4;
     MY_ADD(tmp, temp_20, temp_4);
     MY_SUB(tmp, temp_20, temp_20);
+    MY_ADD_ft(tmp, temp_20, temp_4);
+    MY_SUB_ft(tmp, temp_20, temp_20);
     
     tmp_id = __id[4];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -220,6 +230,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_5;
     MY_ADD(tmp, temp_21, temp_5);
     MY_SUB(tmp, temp_21, temp_21);
+    MY_ADD_ft(tmp, temp_21, temp_5);
+    MY_SUB_ft(tmp, temp_21, temp_21);
     
     tmp_id = __id[5];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -229,6 +241,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_6;
     MY_ADD(tmp, temp_22, temp_6);
     MY_SUB(tmp, temp_22, temp_22);
+    MY_ADD_ft(tmp, temp_22, temp_6);
+    MY_SUB_ft(tmp, temp_22, temp_22);
     
     tmp_id = __id[6];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -238,6 +252,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_7;
     MY_ADD(tmp, temp_23, temp_7);
     MY_SUB(tmp, temp_23, temp_23);
+    MY_ADD_ft(tmp, temp_23, temp_7);
+    MY_SUB_ft(tmp, temp_23, temp_23);
     
     tmp_id = __id[7];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -247,6 +263,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_8;
     MY_ADD(tmp, temp_24, temp_8);
     MY_SUB(tmp, temp_24, temp_24);
+    MY_ADD_ft(tmp, temp_24, temp_8);
+    MY_SUB_ft(tmp, temp_24, temp_24);
     
     tmp_id = __id[8];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -256,6 +274,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_9;
     MY_ADD(tmp, temp_25, temp_9);
     MY_SUB(tmp, temp_25, temp_25);
+    MY_ADD_ft(tmp, temp_25, temp_9);
+    MY_SUB_ft(tmp, temp_25, temp_25);
     
     tmp_id = __id[9];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -265,6 +285,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_10;
     MY_ADD(tmp, temp_26, temp_10);
     MY_SUB(tmp, temp_26, temp_26);
+    MY_ADD_ft(tmp, temp_26, temp_10);
+    MY_SUB_ft(tmp, temp_26, temp_26);
     
     tmp_id = __id[10];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -274,6 +296,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_11;
     MY_ADD(tmp, temp_27, temp_11);
     MY_SUB(tmp, temp_27, temp_27);
+    MY_ADD_ft(tmp, temp_27, temp_11);
+    MY_SUB_ft(tmp, temp_27, temp_27);
     
     tmp_id = __id[11];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -283,6 +307,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_12;
     MY_ADD(tmp, temp_28, temp_12);
     MY_SUB(tmp, temp_28, temp_28);
+    MY_ADD_ft(tmp, temp_28, temp_12);
+    MY_SUB_ft(tmp, temp_28, temp_28);
     
     tmp_id = __id[12];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -292,6 +318,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_13;
     MY_ADD(tmp, temp_29, temp_13);
     MY_SUB(tmp, temp_29, temp_29);
+    MY_ADD_ft(tmp, temp_29, temp_13);
+    MY_SUB_ft(tmp, temp_29, temp_29);
     
     tmp_id = __id[13];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -301,6 +329,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_14;
     MY_ADD(tmp, temp_30, temp_14);
     MY_SUB(tmp, temp_30, temp_30);
+    MY_ADD_ft(tmp, temp_30, temp_14);
+    MY_SUB_ft(tmp, temp_30, temp_30);
     
     tmp_id = __id[14];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -310,6 +340,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_15;
     MY_ADD(tmp, temp_31, temp_15);
     MY_SUB(tmp, temp_31, temp_31);
+    MY_ADD_ft(tmp, temp_31, temp_15);
+    MY_SUB_ft(tmp, temp_31, temp_31);
     
     tmp_id = __id[15];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -380,6 +412,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_0;
     MY_ADD(tmp, temp_8, temp_0);
     MY_SUB(tmp, temp_8, temp_8);
+    MY_ADD_ft(tmp, temp_8, temp_0);
+    MY_SUB_ft(tmp, temp_8, temp_8);
     
     tmp_id = __id[0];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -389,6 +423,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_16;
     MY_ADD(tmp, temp_24, temp_16);
     MY_SUB(tmp, temp_24, temp_24);
+    MY_ADD_ft(tmp, temp_24, temp_16);
+    MY_SUB_ft(tmp, temp_24, temp_24);
     
     tmp_id = __id[16];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -398,6 +434,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_1;
     MY_ADD(tmp, temp_9, temp_1);
     MY_SUB(tmp, temp_9, temp_9);
+    MY_ADD_ft(tmp, temp_9, temp_1);
+    MY_SUB_ft(tmp, temp_9, temp_9);
     
     tmp_id = __id[1];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -407,6 +445,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_17;
     MY_ADD(tmp, temp_25, temp_17);
     MY_SUB(tmp, temp_25, temp_25);
+    MY_ADD_ft(tmp, temp_25, temp_17);
+    MY_SUB_ft(tmp, temp_25, temp_25);
     
     tmp_id = __id[17];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -416,6 +456,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_2;
     MY_ADD(tmp, temp_10, temp_2);
     MY_SUB(tmp, temp_10, temp_10);
+    MY_ADD_ft(tmp, temp_10, temp_2);
+    MY_SUB_ft(tmp, temp_10, temp_10);
     
     tmp_id = __id[2];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -425,6 +467,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_18;
     MY_ADD(tmp, temp_26, temp_18);
     MY_SUB(tmp, temp_26, temp_26);
+    MY_ADD_ft(tmp, temp_26, temp_18);
+    MY_SUB_ft(tmp, temp_26, temp_26);
     
     tmp_id = __id[18];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -434,6 +478,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_3;
     MY_ADD(tmp, temp_11, temp_3);
     MY_SUB(tmp, temp_11, temp_11);
+    MY_ADD_ft(tmp, temp_11, temp_3);
+    MY_SUB_ft(tmp, temp_11, temp_11);
     
     tmp_id = __id[3];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -443,6 +489,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_19;
     MY_ADD(tmp, temp_27, temp_19);
     MY_SUB(tmp, temp_27, temp_27);
+    MY_ADD_ft(tmp, temp_27, temp_19);
+    MY_SUB_ft(tmp, temp_27, temp_27);
     
     tmp_id = __id[19];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -452,6 +500,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_4;
     MY_ADD(tmp, temp_12, temp_4);
     MY_SUB(tmp, temp_12, temp_12);
+    MY_ADD_ft(tmp, temp_12, temp_4);
+    MY_SUB_ft(tmp, temp_12, temp_12);
     
     tmp_id = __id[4];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -461,6 +511,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_20;
     MY_ADD(tmp, temp_28, temp_20);
     MY_SUB(tmp, temp_28, temp_28);
+    MY_ADD_ft(tmp, temp_28, temp_20);
+    MY_SUB_ft(tmp, temp_28, temp_28);
     
     tmp_id = __id[20];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -470,6 +522,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_5;
     MY_ADD(tmp, temp_13, temp_5);
     MY_SUB(tmp, temp_13, temp_13);
+    MY_ADD_ft(tmp, temp_13, temp_5);
+    MY_SUB_ft(tmp, temp_13, temp_13);
     
     tmp_id = __id[5];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -479,6 +533,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_21;
     MY_ADD(tmp, temp_29, temp_21);
     MY_SUB(tmp, temp_29, temp_29);
+    MY_ADD_ft(tmp, temp_29, temp_21);
+    MY_SUB_ft(tmp, temp_29, temp_29);
     
     tmp_id = __id[21];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -488,6 +544,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_6;
     MY_ADD(tmp, temp_14, temp_6);
     MY_SUB(tmp, temp_14, temp_14);
+    MY_ADD_ft(tmp, temp_14, temp_6);
+    MY_SUB_ft(tmp, temp_14, temp_14);
     
     tmp_id = __id[6];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -497,6 +555,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_22;
     MY_ADD(tmp, temp_30, temp_22);
     MY_SUB(tmp, temp_30, temp_30);
+    MY_ADD_ft(tmp, temp_30, temp_22);
+    MY_SUB_ft(tmp, temp_30, temp_30);
     
     tmp_id = __id[22];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -506,6 +566,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_7;
     MY_ADD(tmp, temp_15, temp_7);
     MY_SUB(tmp, temp_15, temp_15);
+    MY_ADD_ft(tmp, temp_15, temp_7);
+    MY_SUB_ft(tmp, temp_15, temp_15);
     
     tmp_id = __id[7];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -515,6 +577,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_23;
     MY_ADD(tmp, temp_31, temp_23);
     MY_SUB(tmp, temp_31, temp_31);
+    MY_ADD_ft(tmp, temp_31, temp_23);
+    MY_SUB_ft(tmp, temp_31, temp_31);
     
     tmp_id = __id[23];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -592,6 +656,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_0;
     MY_ADD(tmp, temp_4, temp_0);
     MY_SUB(tmp, temp_4, temp_4);
+    MY_ADD_ft(tmp, temp_4, temp_0);
+    MY_SUB_ft(tmp, temp_4, temp_4);
     
     tmp_id = __id[0];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -601,6 +667,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_16;
     MY_ADD(tmp, temp_20, temp_16);
     MY_SUB(tmp, temp_20, temp_20);
+    MY_ADD_ft(tmp, temp_20, temp_16);
+    MY_SUB_ft(tmp, temp_20, temp_20);
     
     tmp_id = __id[16];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -610,6 +678,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_8;
     MY_ADD(tmp, temp_12, temp_8);
     MY_SUB(tmp, temp_12, temp_12);
+    MY_ADD_ft(tmp, temp_12, temp_8);
+    MY_SUB_ft(tmp, temp_12, temp_12);
     
     tmp_id = __id[8];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -619,6 +689,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_24;
     MY_ADD(tmp, temp_28, temp_24);
     MY_SUB(tmp, temp_28, temp_28);
+    MY_ADD_ft(tmp, temp_28, temp_24);
+    MY_SUB_ft(tmp, temp_28, temp_28);
     
     tmp_id = __id[24];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -628,6 +700,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_1;
     MY_ADD(tmp, temp_5, temp_1);
     MY_SUB(tmp, temp_5, temp_5);
+    MY_ADD_ft(tmp, temp_5, temp_1);
+    MY_SUB_ft(tmp, temp_5, temp_5);
     
     tmp_id = __id[1];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -637,6 +711,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_17;
     MY_ADD(tmp, temp_21, temp_17);
     MY_SUB(tmp, temp_21, temp_21);
+    MY_ADD_ft(tmp, temp_21, temp_17);
+    MY_SUB_ft(tmp, temp_21, temp_21);
     
     tmp_id = __id[17];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -646,6 +722,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_9;
     MY_ADD(tmp, temp_13, temp_9);
     MY_SUB(tmp, temp_13, temp_13);
+    MY_ADD_ft(tmp, temp_13, temp_9);
+    MY_SUB_ft(tmp, temp_13, temp_13);
     
     tmp_id = __id[9];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -655,6 +733,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_25;
     MY_ADD(tmp, temp_29, temp_25);
     MY_SUB(tmp, temp_29, temp_29);
+    MY_ADD_ft(tmp, temp_29, temp_25);
+    MY_SUB_ft(tmp, temp_29, temp_29);
     
     tmp_id = __id[25];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -664,6 +744,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_2;
     MY_ADD(tmp, temp_6, temp_2);
     MY_SUB(tmp, temp_6, temp_6);
+    MY_ADD_ft(tmp, temp_6, temp_2);
+    MY_SUB_ft(tmp, temp_6, temp_6);
     
     tmp_id = __id[2];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -673,6 +755,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_18;
     MY_ADD(tmp, temp_22, temp_18);
     MY_SUB(tmp, temp_22, temp_22);
+    MY_ADD_ft(tmp, temp_22, temp_18);
+    MY_SUB_ft(tmp, temp_22, temp_22);
     
     tmp_id = __id[18];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -682,6 +766,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_10;
     MY_ADD(tmp, temp_14, temp_10);
     MY_SUB(tmp, temp_14, temp_14);
+    MY_ADD_ft(tmp, temp_14, temp_10);
+    MY_SUB_ft(tmp, temp_14, temp_14);
     
     tmp_id = __id[10];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -691,6 +777,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_26;
     MY_ADD(tmp, temp_30, temp_26);
     MY_SUB(tmp, temp_30, temp_30);
+    MY_ADD_ft(tmp, temp_30, temp_26);
+    MY_SUB_ft(tmp, temp_30, temp_30);
     
     tmp_id = __id[26];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -700,6 +788,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_3;
     MY_ADD(tmp, temp_7, temp_3);
     MY_SUB(tmp, temp_7, temp_7);
+    MY_ADD_ft(tmp, temp_7, temp_3);
+    MY_SUB_ft(tmp, temp_7, temp_7);
     
     tmp_id = __id[3];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -709,6 +799,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_19;
     MY_ADD(tmp, temp_23, temp_19);
     MY_SUB(tmp, temp_23, temp_23);
+    MY_ADD_ft(tmp, temp_23, temp_19);
+    MY_SUB_ft(tmp, temp_23, temp_23);
     
     tmp_id = __id[19];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -718,6 +810,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_11;
     MY_ADD(tmp, temp_15, temp_11);
     MY_SUB(tmp, temp_15, temp_15);
+    MY_ADD_ft(tmp, temp_15, temp_11);
+    MY_SUB_ft(tmp, temp_15, temp_15);
     
     tmp_id = __id[11];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -727,6 +821,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_27;
     MY_ADD(tmp, temp_31, temp_27);
     MY_SUB(tmp, temp_31, temp_31);
+    MY_ADD_ft(tmp, temp_31, temp_27);
+    MY_SUB_ft(tmp, temp_31, temp_31);
     
     tmp_id = __id[27];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -818,6 +914,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_0;
     MY_ADD(tmp, temp_2, temp_0);
     MY_SUB(tmp, temp_2, temp_2);
+    MY_ADD_ft(tmp, temp_2, temp_0);
+    MY_SUB_ft(tmp, temp_2, temp_2);
     
     tmp_id = __id[0];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -827,6 +925,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_16;
     MY_ADD(tmp, temp_18, temp_16);
     MY_SUB(tmp, temp_18, temp_18);
+    MY_ADD_ft(tmp, temp_18, temp_16);
+    MY_SUB_ft(tmp, temp_18, temp_18);
     
     tmp_id = __id[16];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -836,6 +936,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_8;
     MY_ADD(tmp, temp_10, temp_8);
     MY_SUB(tmp, temp_10, temp_10);
+    MY_ADD_ft(tmp, temp_10, temp_8);
+    MY_SUB_ft(tmp, temp_10, temp_10);
     
     tmp_id = __id[8];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -845,6 +947,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_24;
     MY_ADD(tmp, temp_26, temp_24);
     MY_SUB(tmp, temp_26, temp_26);
+    MY_ADD_ft(tmp, temp_26, temp_24);
+    MY_SUB_ft(tmp, temp_26, temp_26);
     
     tmp_id = __id[24];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -854,6 +958,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_4;
     MY_ADD(tmp, temp_6, temp_4);
     MY_SUB(tmp, temp_6, temp_6);
+    MY_ADD_ft(tmp, temp_6, temp_4);
+    MY_SUB_ft(tmp, temp_6, temp_6);
     
     tmp_id = __id[4];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -863,6 +969,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_20;
     MY_ADD(tmp, temp_22, temp_20);
     MY_SUB(tmp, temp_22, temp_22);
+    MY_ADD_ft(tmp, temp_22, temp_20);
+    MY_SUB_ft(tmp, temp_22, temp_22);
     
     tmp_id = __id[20];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -872,6 +980,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_12;
     MY_ADD(tmp, temp_14, temp_12);
     MY_SUB(tmp, temp_14, temp_14);
+    MY_ADD_ft(tmp, temp_14, temp_12);
+    MY_SUB_ft(tmp, temp_14, temp_14);
     
     tmp_id = __id[12];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -881,6 +991,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_28;
     MY_ADD(tmp, temp_30, temp_28);
     MY_SUB(tmp, temp_30, temp_30);
+    MY_ADD_ft(tmp, temp_30, temp_28);
+    MY_SUB_ft(tmp, temp_30, temp_30);
     
     tmp_id = __id[28];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -890,6 +1002,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_1;
     MY_ADD(tmp, temp_3, temp_1);
     MY_SUB(tmp, temp_3, temp_3);
+    MY_ADD_ft(tmp, temp_3, temp_1);
+    MY_SUB_ft(tmp, temp_3, temp_3);
     
     tmp_id = __id[1];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -899,6 +1013,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_17;
     MY_ADD(tmp, temp_19, temp_17);
     MY_SUB(tmp, temp_19, temp_19);
+    MY_ADD_ft(tmp, temp_19, temp_17);
+    MY_SUB_ft(tmp, temp_19, temp_19);
     
     tmp_id = __id[17];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -908,6 +1024,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_9;
     MY_ADD(tmp, temp_11, temp_9);
     MY_SUB(tmp, temp_11, temp_11);
+    MY_ADD_ft(tmp, temp_11, temp_9);
+    MY_SUB_ft(tmp, temp_11, temp_11);
     
     tmp_id = __id[9];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -917,6 +1035,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_25;
     MY_ADD(tmp, temp_27, temp_25);
     MY_SUB(tmp, temp_27, temp_27);
+    MY_ADD_ft(tmp, temp_27, temp_25);
+    MY_SUB_ft(tmp, temp_27, temp_27);
     
     tmp_id = __id[25];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -926,6 +1046,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_5;
     MY_ADD(tmp, temp_7, temp_5);
     MY_SUB(tmp, temp_7, temp_7);
+    MY_ADD_ft(tmp, temp_7, temp_5);
+    MY_SUB_ft(tmp, temp_7, temp_7);
     
     tmp_id = __id[5];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -935,6 +1057,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_21;
     MY_ADD(tmp, temp_23, temp_21);
     MY_SUB(tmp, temp_23, temp_23);
+    MY_ADD_ft(tmp, temp_23, temp_21);
+    MY_SUB_ft(tmp, temp_23, temp_23);
     
     tmp_id = __id[21];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -944,6 +1068,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_13;
     MY_ADD(tmp, temp_15, temp_13);
     MY_SUB(tmp, temp_15, temp_15);
+    MY_ADD_ft(tmp, temp_15, temp_13);
+    MY_SUB_ft(tmp, temp_15, temp_15);
     
     tmp_id = __id[13];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -953,6 +1079,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_29;
     MY_ADD(tmp, temp_31, temp_29);
     MY_SUB(tmp, temp_31, temp_31);
+    MY_ADD_ft(tmp, temp_31, temp_29);
+    MY_SUB_ft(tmp, temp_31, temp_31);
     
     tmp_id = __id[29];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1072,6 +1200,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_0;
     MY_ADD(tmp, temp_1, temp_0);
     MY_SUB(tmp, temp_1, temp_1);
+    MY_ADD_ft(tmp, temp_1, temp_0);
+    MY_SUB_ft(tmp, temp_1, temp_1);
     
     tmp_id = __id[0];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1081,6 +1211,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_16;
     MY_ADD(tmp, temp_17, temp_16);
     MY_SUB(tmp, temp_17, temp_17);
+    MY_ADD_ft(tmp, temp_17, temp_16);
+    MY_SUB_ft(tmp, temp_17, temp_17);
     
     tmp_id = __id[16];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1090,6 +1222,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_8;
     MY_ADD(tmp, temp_9, temp_8);
     MY_SUB(tmp, temp_9, temp_9);
+    MY_ADD_ft(tmp, temp_9, temp_8);
+    MY_SUB_ft(tmp, temp_9, temp_9);
     
     tmp_id = __id[8];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1099,6 +1233,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_24;
     MY_ADD(tmp, temp_25, temp_24);
     MY_SUB(tmp, temp_25, temp_25);
+    MY_ADD_ft(tmp, temp_25, temp_24);
+    MY_SUB_ft(tmp, temp_25, temp_25);
     
     tmp_id = __id[24];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1108,6 +1244,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_4;
     MY_ADD(tmp, temp_5, temp_4);
     MY_SUB(tmp, temp_5, temp_5);
+    MY_ADD_ft(tmp, temp_5, temp_4);
+    MY_SUB_ft(tmp, temp_5, temp_5);
     
     tmp_id = __id[4];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1117,6 +1255,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_20;
     MY_ADD(tmp, temp_21, temp_20);
     MY_SUB(tmp, temp_21, temp_21);
+    MY_ADD_ft(tmp, temp_21, temp_20);
+    MY_SUB_ft(tmp, temp_21, temp_21);
     
     tmp_id = __id[20];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1126,6 +1266,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_12;
     MY_ADD(tmp, temp_13, temp_12);
     MY_SUB(tmp, temp_13, temp_13);
+    MY_ADD_ft(tmp, temp_13, temp_12);
+    MY_SUB_ft(tmp, temp_13, temp_13);
     
     tmp_id = __id[12];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1135,6 +1277,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_28;
     MY_ADD(tmp, temp_29, temp_28);
     MY_SUB(tmp, temp_29, temp_29);
+    MY_ADD_ft(tmp, temp_29, temp_28);
+    MY_SUB_ft(tmp, temp_29, temp_29);
     
     tmp_id = __id[28];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1144,6 +1288,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_2;
     MY_ADD(tmp, temp_3, temp_2);
     MY_SUB(tmp, temp_3, temp_3);
+    MY_ADD_ft(tmp, temp_3, temp_2);
+    MY_SUB_ft(tmp, temp_3, temp_3);
     
     tmp_id = __id[2];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1153,6 +1299,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_18;
     MY_ADD(tmp, temp_19, temp_18);
     MY_SUB(tmp, temp_19, temp_19);
+    MY_ADD_ft(tmp, temp_19, temp_18);
+    MY_SUB_ft(tmp, temp_19, temp_19);
     
     tmp_id = __id[18];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1162,6 +1310,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_10;
     MY_ADD(tmp, temp_11, temp_10);
     MY_SUB(tmp, temp_11, temp_11);
+    MY_ADD_ft(tmp, temp_11, temp_10);
+    MY_SUB_ft(tmp, temp_11, temp_11);
     
     tmp_id = __id[10];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1171,6 +1321,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_26;
     MY_ADD(tmp, temp_27, temp_26);
     MY_SUB(tmp, temp_27, temp_27);
+    MY_ADD_ft(tmp, temp_27, temp_26);
+    MY_SUB_ft(tmp, temp_27, temp_27);
     
     tmp_id = __id[26];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1180,6 +1332,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_6;
     MY_ADD(tmp, temp_7, temp_6);
     MY_SUB(tmp, temp_7, temp_7);
+    MY_ADD_ft(tmp, temp_7, temp_6);
+    MY_SUB_ft(tmp, temp_7, temp_7);
     
     tmp_id = __id[6];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1189,6 +1343,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_22;
     MY_ADD(tmp, temp_23, temp_22);
     MY_SUB(tmp, temp_23, temp_23);
+    MY_ADD_ft(tmp, temp_23, temp_22);
+    MY_SUB_ft(tmp, temp_23, temp_23);
     
     tmp_id = __id[22];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1198,6 +1354,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_14;
     MY_ADD(tmp, temp_15, temp_14);
     MY_SUB(tmp, temp_15, temp_15);
+    MY_ADD_ft(tmp, temp_15, temp_14);
+    MY_SUB_ft(tmp, temp_15, temp_15);
     
     tmp_id = __id[14];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1207,6 +1365,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_30;
     MY_ADD(tmp, temp_31, temp_30);
     MY_SUB(tmp, temp_31, temp_31);
+    MY_ADD_ft(tmp, temp_31, temp_30);
+    MY_SUB_ft(tmp, temp_31, temp_31);
     
     tmp_id = __id[30];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1440,6 +1600,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_0;
     MY_ADD(tmp, temp_16, temp_0);
     MY_SUB(tmp, temp_16, temp_16);
+    MY_ADD_ft(tmp, temp_16, temp_0);
+    MY_SUB_ft(tmp, temp_16, temp_16);
     
     tmp_id = __id[0];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1449,6 +1611,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_1;
     MY_ADD(tmp, temp_17, temp_1);
     MY_SUB(tmp, temp_17, temp_17);
+    MY_ADD_ft(tmp, temp_17, temp_1);
+    MY_SUB_ft(tmp, temp_17, temp_17);
     
     tmp_id = __id[1];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1458,6 +1622,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_2;
     MY_ADD(tmp, temp_18, temp_2);
     MY_SUB(tmp, temp_18, temp_18);
+    MY_ADD_ft(tmp, temp_18, temp_2);
+    MY_SUB_ft(tmp, temp_18, temp_18);
     
     tmp_id = __id[2];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1467,6 +1633,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_3;
     MY_ADD(tmp, temp_19, temp_3);
     MY_SUB(tmp, temp_19, temp_19);
+    MY_ADD_ft(tmp, temp_19, temp_3);
+    MY_SUB_ft(tmp, temp_19, temp_19);
     
     tmp_id = __id[3];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1476,6 +1644,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_4;
     MY_ADD(tmp, temp_20, temp_4);
     MY_SUB(tmp, temp_20, temp_20);
+    MY_ADD_ft(tmp, temp_20, temp_4);
+    MY_SUB_ft(tmp, temp_20, temp_20);
     
     tmp_id = __id[4];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1485,6 +1655,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_5;
     MY_ADD(tmp, temp_21, temp_5);
     MY_SUB(tmp, temp_21, temp_21);
+    MY_ADD_ft(tmp, temp_21, temp_5);
+    MY_SUB_ft(tmp, temp_21, temp_21);
     
     tmp_id = __id[5];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1494,6 +1666,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_6;
     MY_ADD(tmp, temp_22, temp_6);
     MY_SUB(tmp, temp_22, temp_22);
+    MY_ADD_ft(tmp, temp_22, temp_6);
+    MY_SUB_ft(tmp, temp_22, temp_22);
     
     tmp_id = __id[6];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1503,6 +1677,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_7;
     MY_ADD(tmp, temp_23, temp_7);
     MY_SUB(tmp, temp_23, temp_23);
+    MY_ADD_ft(tmp, temp_23, temp_7);
+    MY_SUB_ft(tmp, temp_23, temp_23);
     
     tmp_id = __id[7];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1512,6 +1688,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_8;
     MY_ADD(tmp, temp_24, temp_8);
     MY_SUB(tmp, temp_24, temp_24);
+    MY_ADD_ft(tmp, temp_24, temp_8);
+    MY_SUB_ft(tmp, temp_24, temp_24);
     
     tmp_id = __id[8];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1521,6 +1699,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_9;
     MY_ADD(tmp, temp_25, temp_9);
     MY_SUB(tmp, temp_25, temp_25);
+    MY_ADD_ft(tmp, temp_25, temp_9);
+    MY_SUB_ft(tmp, temp_25, temp_25);
     
     tmp_id = __id[9];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1530,6 +1710,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_10;
     MY_ADD(tmp, temp_26, temp_10);
     MY_SUB(tmp, temp_26, temp_26);
+    MY_ADD_ft(tmp, temp_26, temp_10);
+    MY_SUB_ft(tmp, temp_26, temp_26);
     
     tmp_id = __id[10];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1539,6 +1721,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_11;
     MY_ADD(tmp, temp_27, temp_11);
     MY_SUB(tmp, temp_27, temp_27);
+    MY_ADD_ft(tmp, temp_27, temp_11);
+    MY_SUB_ft(tmp, temp_27, temp_27);
     
     tmp_id = __id[11];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1548,6 +1732,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_12;
     MY_ADD(tmp, temp_28, temp_12);
     MY_SUB(tmp, temp_28, temp_28);
+    MY_ADD_ft(tmp, temp_28, temp_12);
+    MY_SUB_ft(tmp, temp_28, temp_28);
     
     tmp_id = __id[12];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1557,6 +1743,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_13;
     MY_ADD(tmp, temp_29, temp_13);
     MY_SUB(tmp, temp_29, temp_29);
+    MY_ADD_ft(tmp, temp_29, temp_13);
+    MY_SUB_ft(tmp, temp_29, temp_29);
     
     tmp_id = __id[13];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1566,6 +1754,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_14;
     MY_ADD(tmp, temp_30, temp_14);
     MY_SUB(tmp, temp_30, temp_30);
+    MY_ADD_ft(tmp, temp_30, temp_14);
+    MY_SUB_ft(tmp, temp_30, temp_30);
     
     tmp_id = __id[14];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1575,6 +1765,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_15;
     MY_ADD(tmp, temp_31, temp_15);
     MY_SUB(tmp, temp_31, temp_31);
+    MY_ADD_ft(tmp, temp_31, temp_15);
+    MY_SUB_ft(tmp, temp_31, temp_31);
     
     tmp_id = __id[15];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1645,6 +1837,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_0;
     MY_ADD(tmp, temp_8, temp_0);
     MY_SUB(tmp, temp_8, temp_8);
+    MY_ADD_ft(tmp, temp_8, temp_0);
+    MY_SUB_ft(tmp, temp_8, temp_8);
     
     tmp_id = __id[0];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1654,6 +1848,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_16;
     MY_ADD(tmp, temp_24, temp_16);
     MY_SUB(tmp, temp_24, temp_24);
+    MY_ADD_ft(tmp, temp_24, temp_16);
+    MY_SUB_ft(tmp, temp_24, temp_24);
     
     tmp_id = __id[16];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1663,6 +1859,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_1;
     MY_ADD(tmp, temp_9, temp_1);
     MY_SUB(tmp, temp_9, temp_9);
+    MY_ADD_ft(tmp, temp_9, temp_1);
+    MY_SUB_ft(tmp, temp_9, temp_9);
     
     tmp_id = __id[1];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1672,6 +1870,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_17;
     MY_ADD(tmp, temp_25, temp_17);
     MY_SUB(tmp, temp_25, temp_25);
+    MY_ADD_ft(tmp, temp_25, temp_17);
+    MY_SUB_ft(tmp, temp_25, temp_25);
     
     tmp_id = __id[17];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1681,6 +1881,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_2;
     MY_ADD(tmp, temp_10, temp_2);
     MY_SUB(tmp, temp_10, temp_10);
+    MY_ADD_ft(tmp, temp_10, temp_2);
+    MY_SUB_ft(tmp, temp_10, temp_10);
     
     tmp_id = __id[2];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1690,6 +1892,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_18;
     MY_ADD(tmp, temp_26, temp_18);
     MY_SUB(tmp, temp_26, temp_26);
+    MY_ADD_ft(tmp, temp_26, temp_18);
+    MY_SUB_ft(tmp, temp_26, temp_26);
     
     tmp_id = __id[18];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1699,6 +1903,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_3;
     MY_ADD(tmp, temp_11, temp_3);
     MY_SUB(tmp, temp_11, temp_11);
+    MY_ADD_ft(tmp, temp_11, temp_3);
+    MY_SUB_ft(tmp, temp_11, temp_11);
     
     tmp_id = __id[3];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1708,6 +1914,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_19;
     MY_ADD(tmp, temp_27, temp_19);
     MY_SUB(tmp, temp_27, temp_27);
+    MY_ADD_ft(tmp, temp_27, temp_19);
+    MY_SUB_ft(tmp, temp_27, temp_27);
     
     tmp_id = __id[19];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1717,6 +1925,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_4;
     MY_ADD(tmp, temp_12, temp_4);
     MY_SUB(tmp, temp_12, temp_12);
+    MY_ADD_ft(tmp, temp_12, temp_4);
+    MY_SUB_ft(tmp, temp_12, temp_12);
     
     tmp_id = __id[4];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1726,6 +1936,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_20;
     MY_ADD(tmp, temp_28, temp_20);
     MY_SUB(tmp, temp_28, temp_28);
+    MY_ADD_ft(tmp, temp_28, temp_20);
+    MY_SUB_ft(tmp, temp_28, temp_28);
     
     tmp_id = __id[20];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1735,6 +1947,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_5;
     MY_ADD(tmp, temp_13, temp_5);
     MY_SUB(tmp, temp_13, temp_13);
+    MY_ADD_ft(tmp, temp_13, temp_5);
+    MY_SUB_ft(tmp, temp_13, temp_13);
     
     tmp_id = __id[5];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1744,6 +1958,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_21;
     MY_ADD(tmp, temp_29, temp_21);
     MY_SUB(tmp, temp_29, temp_29);
+    MY_ADD_ft(tmp, temp_29, temp_21);
+    MY_SUB_ft(tmp, temp_29, temp_29);
     
     tmp_id = __id[21];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1753,6 +1969,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_6;
     MY_ADD(tmp, temp_14, temp_6);
     MY_SUB(tmp, temp_14, temp_14);
+    MY_ADD_ft(tmp, temp_14, temp_6);
+    MY_SUB_ft(tmp, temp_14, temp_14);
     
     tmp_id = __id[6];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1762,6 +1980,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_22;
     MY_ADD(tmp, temp_30, temp_22);
     MY_SUB(tmp, temp_30, temp_30);
+    MY_ADD_ft(tmp, temp_30, temp_22);
+    MY_SUB_ft(tmp, temp_30, temp_30);
     
     tmp_id = __id[22];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1771,6 +1991,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_7;
     MY_ADD(tmp, temp_15, temp_7);
     MY_SUB(tmp, temp_15, temp_15);
+    MY_ADD_ft(tmp, temp_15, temp_7);
+    MY_SUB_ft(tmp, temp_15, temp_15);
     
     tmp_id = __id[7];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1780,6 +2002,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_23;
     MY_ADD(tmp, temp_31, temp_23);
     MY_SUB(tmp, temp_31, temp_31);
+    MY_ADD_ft(tmp, temp_31, temp_23);
+    MY_SUB_ft(tmp, temp_31, temp_31);
     
     tmp_id = __id[23];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1857,6 +2081,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_0;
     MY_ADD(tmp, temp_4, temp_0);
     MY_SUB(tmp, temp_4, temp_4);
+    MY_ADD_ft(tmp, temp_4, temp_0);
+    MY_SUB_ft(tmp, temp_4, temp_4);
     
     tmp_id = __id[0];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1866,6 +2092,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_16;
     MY_ADD(tmp, temp_20, temp_16);
     MY_SUB(tmp, temp_20, temp_20);
+    MY_ADD_ft(tmp, temp_20, temp_16);
+    MY_SUB_ft(tmp, temp_20, temp_20);
     
     tmp_id = __id[16];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1875,6 +2103,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_8;
     MY_ADD(tmp, temp_12, temp_8);
     MY_SUB(tmp, temp_12, temp_12);
+    MY_ADD_ft(tmp, temp_12, temp_8);
+    MY_SUB_ft(tmp, temp_12, temp_12);
     
     tmp_id = __id[8];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1884,6 +2114,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_24;
     MY_ADD(tmp, temp_28, temp_24);
     MY_SUB(tmp, temp_28, temp_28);
+    MY_ADD_ft(tmp, temp_28, temp_24);
+    MY_SUB_ft(tmp, temp_28, temp_28);
     
     tmp_id = __id[24];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1893,6 +2125,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_1;
     MY_ADD(tmp, temp_5, temp_1);
     MY_SUB(tmp, temp_5, temp_5);
+    MY_ADD_ft(tmp, temp_5, temp_1);
+    MY_SUB_ft(tmp, temp_5, temp_5);
     
     tmp_id = __id[1];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1902,6 +2136,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_17;
     MY_ADD(tmp, temp_21, temp_17);
     MY_SUB(tmp, temp_21, temp_21);
+    MY_ADD_ft(tmp, temp_21, temp_17);
+    MY_SUB_ft(tmp, temp_21, temp_21);
     
     tmp_id = __id[17];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1911,6 +2147,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_9;
     MY_ADD(tmp, temp_13, temp_9);
     MY_SUB(tmp, temp_13, temp_13);
+    MY_ADD_ft(tmp, temp_13, temp_9);
+    MY_SUB_ft(tmp, temp_13, temp_13);
     
     tmp_id = __id[9];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1920,6 +2158,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_25;
     MY_ADD(tmp, temp_29, temp_25);
     MY_SUB(tmp, temp_29, temp_29);
+    MY_ADD_ft(tmp, temp_29, temp_25);
+    MY_SUB_ft(tmp, temp_29, temp_29);
     
     tmp_id = __id[25];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1929,6 +2169,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_2;
     MY_ADD(tmp, temp_6, temp_2);
     MY_SUB(tmp, temp_6, temp_6);
+    MY_ADD_ft(tmp, temp_6, temp_2);
+    MY_SUB_ft(tmp, temp_6, temp_6);
     
     tmp_id = __id[2];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1938,6 +2180,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_18;
     MY_ADD(tmp, temp_22, temp_18);
     MY_SUB(tmp, temp_22, temp_22);
+    MY_ADD_ft(tmp, temp_22, temp_18);
+    MY_SUB_ft(tmp, temp_22, temp_22);
     
     tmp_id = __id[18];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1947,6 +2191,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_10;
     MY_ADD(tmp, temp_14, temp_10);
     MY_SUB(tmp, temp_14, temp_14);
+    MY_ADD_ft(tmp, temp_14, temp_10);
+    MY_SUB_ft(tmp, temp_14, temp_14);
     
     tmp_id = __id[10];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1956,6 +2202,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_26;
     MY_ADD(tmp, temp_30, temp_26);
     MY_SUB(tmp, temp_30, temp_30);
+    MY_ADD_ft(tmp, temp_30, temp_26);
+    MY_SUB_ft(tmp, temp_30, temp_30);
     
     tmp_id = __id[26];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1965,6 +2213,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_3;
     MY_ADD(tmp, temp_7, temp_3);
     MY_SUB(tmp, temp_7, temp_7);
+    MY_ADD_ft(tmp, temp_7, temp_3);
+    MY_SUB_ft(tmp, temp_7, temp_7);
     
     tmp_id = __id[3];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1974,6 +2224,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_19;
     MY_ADD(tmp, temp_23, temp_19);
     MY_SUB(tmp, temp_23, temp_23);
+    MY_ADD_ft(tmp, temp_23, temp_19);
+    MY_SUB_ft(tmp, temp_23, temp_23);
     
     tmp_id = __id[19];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1983,6 +2235,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_11;
     MY_ADD(tmp, temp_15, temp_11);
     MY_SUB(tmp, temp_15, temp_15);
+    MY_ADD_ft(tmp, temp_15, temp_11);
+    MY_SUB_ft(tmp, temp_15, temp_15);
     
     tmp_id = __id[11];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -1992,6 +2246,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_27;
     MY_ADD(tmp, temp_31, temp_27);
     MY_SUB(tmp, temp_31, temp_31);
+    MY_ADD_ft(tmp, temp_31, temp_27);
+    MY_SUB_ft(tmp, temp_31, temp_31);
     
     tmp_id = __id[27];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -2083,6 +2339,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_0;
     MY_ADD(tmp, temp_2, temp_0);
     MY_SUB(tmp, temp_2, temp_2);
+    MY_ADD_ft(tmp, temp_2, temp_0);
+    MY_SUB_ft(tmp, temp_2, temp_2);
     
     tmp_id = __id[0];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -2092,6 +2350,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_16;
     MY_ADD(tmp, temp_18, temp_16);
     MY_SUB(tmp, temp_18, temp_18);
+    MY_ADD_ft(tmp, temp_18, temp_16);
+    MY_SUB_ft(tmp, temp_18, temp_18);
     
     tmp_id = __id[16];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -2101,6 +2361,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_8;
     MY_ADD(tmp, temp_10, temp_8);
     MY_SUB(tmp, temp_10, temp_10);
+    MY_ADD_ft(tmp, temp_10, temp_8);
+    MY_SUB_ft(tmp, temp_10, temp_10);
     
     tmp_id = __id[8];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -2110,6 +2372,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_24;
     MY_ADD(tmp, temp_26, temp_24);
     MY_SUB(tmp, temp_26, temp_26);
+    MY_ADD_ft(tmp, temp_26, temp_24);
+    MY_SUB_ft(tmp, temp_26, temp_26);
     
     tmp_id = __id[24];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -2119,6 +2383,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_4;
     MY_ADD(tmp, temp_6, temp_4);
     MY_SUB(tmp, temp_6, temp_6);
+    MY_ADD_ft(tmp, temp_6, temp_4);
+    MY_SUB_ft(tmp, temp_6, temp_6);
     
     tmp_id = __id[4];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -2128,6 +2394,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_20;
     MY_ADD(tmp, temp_22, temp_20);
     MY_SUB(tmp, temp_22, temp_22);
+    MY_ADD_ft(tmp, temp_22, temp_20);
+    MY_SUB_ft(tmp, temp_22, temp_22);
     
     tmp_id = __id[20];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -2137,6 +2405,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_12;
     MY_ADD(tmp, temp_14, temp_12);
     MY_SUB(tmp, temp_14, temp_14);
+    MY_ADD_ft(tmp, temp_14, temp_12);
+    MY_SUB_ft(tmp, temp_14, temp_14);
     
     tmp_id = __id[12];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -2146,6 +2416,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_28;
     MY_ADD(tmp, temp_30, temp_28);
     MY_SUB(tmp, temp_30, temp_30);
+    MY_ADD_ft(tmp, temp_30, temp_28);
+    MY_SUB_ft(tmp, temp_30, temp_30);
     
     tmp_id = __id[28];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -2155,6 +2427,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_1;
     MY_ADD(tmp, temp_3, temp_1);
     MY_SUB(tmp, temp_3, temp_3);
+    MY_ADD_ft(tmp, temp_3, temp_1);
+    MY_SUB_ft(tmp, temp_3, temp_3);
     
     tmp_id = __id[1];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -2164,6 +2438,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_17;
     MY_ADD(tmp, temp_19, temp_17);
     MY_SUB(tmp, temp_19, temp_19);
+    MY_ADD_ft(tmp, temp_19, temp_17);
+    MY_SUB_ft(tmp, temp_19, temp_19);
     
     tmp_id = __id[17];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -2173,6 +2449,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_9;
     MY_ADD(tmp, temp_11, temp_9);
     MY_SUB(tmp, temp_11, temp_11);
+    MY_ADD_ft(tmp, temp_11, temp_9);
+    MY_SUB_ft(tmp, temp_11, temp_11);
     
     tmp_id = __id[9];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -2182,6 +2460,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_25;
     MY_ADD(tmp, temp_27, temp_25);
     MY_SUB(tmp, temp_27, temp_27);
+    MY_ADD_ft(tmp, temp_27, temp_25);
+    MY_SUB_ft(tmp, temp_27, temp_27);
     
     tmp_id = __id[25];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -2191,6 +2471,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_5;
     MY_ADD(tmp, temp_7, temp_5);
     MY_SUB(tmp, temp_7, temp_7);
+    MY_ADD_ft(tmp, temp_7, temp_5);
+    MY_SUB_ft(tmp, temp_7, temp_7);
     
     tmp_id = __id[5];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -2200,6 +2482,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_21;
     MY_ADD(tmp, temp_23, temp_21);
     MY_SUB(tmp, temp_23, temp_23);
+    MY_ADD_ft(tmp, temp_23, temp_21);
+    MY_SUB_ft(tmp, temp_23, temp_23);
     
     tmp_id = __id[21];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -2209,6 +2493,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_13;
     MY_ADD(tmp, temp_15, temp_13);
     MY_SUB(tmp, temp_15, temp_15);
+    MY_ADD_ft(tmp, temp_15, temp_13);
+    MY_SUB_ft(tmp, temp_15, temp_15);
     
     tmp_id = __id[13];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -2218,6 +2504,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_29;
     MY_ADD(tmp, temp_31, temp_29);
     MY_SUB(tmp, temp_31, temp_31);
+    MY_ADD_ft(tmp, temp_31, temp_29);
+    MY_SUB_ft(tmp, temp_31, temp_31);
     
     tmp_id = __id[29];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -2364,66 +2652,98 @@ __global__ void __launch_bounds__(256) fft_radix2_logN21_1(float2* inputs, float
     tmp = temp_0;
     MY_ADD(tmp, temp_1, temp_0);
     MY_SUB(tmp, temp_1, temp_1);
+    MY_ADD_ft(tmp, temp_1, temp_0);
+    MY_SUB_ft(tmp, temp_1, temp_1);
     
     tmp = temp_16;
     MY_ADD(tmp, temp_17, temp_16);
     MY_SUB(tmp, temp_17, temp_17);
+    MY_ADD_ft(tmp, temp_17, temp_16);
+    MY_SUB_ft(tmp, temp_17, temp_17);
     
     tmp = temp_8;
     MY_ADD(tmp, temp_9, temp_8);
     MY_SUB(tmp, temp_9, temp_9);
+    MY_ADD_ft(tmp, temp_9, temp_8);
+    MY_SUB_ft(tmp, temp_9, temp_9);
     
     tmp = temp_24;
     MY_ADD(tmp, temp_25, temp_24);
     MY_SUB(tmp, temp_25, temp_25);
+    MY_ADD_ft(tmp, temp_25, temp_24);
+    MY_SUB_ft(tmp, temp_25, temp_25);
     
     tmp = temp_4;
     MY_ADD(tmp, temp_5, temp_4);
     MY_SUB(tmp, temp_5, temp_5);
+    MY_ADD_ft(tmp, temp_5, temp_4);
+    MY_SUB_ft(tmp, temp_5, temp_5);
     
     tmp = temp_20;
     MY_ADD(tmp, temp_21, temp_20);
     MY_SUB(tmp, temp_21, temp_21);
+    MY_ADD_ft(tmp, temp_21, temp_20);
+    MY_SUB_ft(tmp, temp_21, temp_21);
     
     tmp = temp_12;
     MY_ADD(tmp, temp_13, temp_12);
     MY_SUB(tmp, temp_13, temp_13);
+    MY_ADD_ft(tmp, temp_13, temp_12);
+    MY_SUB_ft(tmp, temp_13, temp_13);
     
     tmp = temp_28;
     MY_ADD(tmp, temp_29, temp_28);
     MY_SUB(tmp, temp_29, temp_29);
+    MY_ADD_ft(tmp, temp_29, temp_28);
+    MY_SUB_ft(tmp, temp_29, temp_29);
     
     tmp = temp_2;
     MY_ADD(tmp, temp_3, temp_2);
     MY_SUB(tmp, temp_3, temp_3);
+    MY_ADD_ft(tmp, temp_3, temp_2);
+    MY_SUB_ft(tmp, temp_3, temp_3);
     
     tmp = temp_18;
     MY_ADD(tmp, temp_19, temp_18);
     MY_SUB(tmp, temp_19, temp_19);
+    MY_ADD_ft(tmp, temp_19, temp_18);
+    MY_SUB_ft(tmp, temp_19, temp_19);
     
     tmp = temp_10;
     MY_ADD(tmp, temp_11, temp_10);
     MY_SUB(tmp, temp_11, temp_11);
+    MY_ADD_ft(tmp, temp_11, temp_10);
+    MY_SUB_ft(tmp, temp_11, temp_11);
     
     tmp = temp_26;
     MY_ADD(tmp, temp_27, temp_26);
     MY_SUB(tmp, temp_27, temp_27);
+    MY_ADD_ft(tmp, temp_27, temp_26);
+    MY_SUB_ft(tmp, temp_27, temp_27);
     
     tmp = temp_6;
     MY_ADD(tmp, temp_7, temp_6);
     MY_SUB(tmp, temp_7, temp_7);
+    MY_ADD_ft(tmp, temp_7, temp_6);
+    MY_SUB_ft(tmp, temp_7, temp_7);
     
     tmp = temp_22;
     MY_ADD(tmp, temp_23, temp_22);
     MY_SUB(tmp, temp_23, temp_23);
+    MY_ADD_ft(tmp, temp_23, temp_22);
+    MY_SUB_ft(tmp, temp_23, temp_23);
     
     tmp = temp_14;
     MY_ADD(tmp, temp_15, temp_14);
     MY_SUB(tmp, temp_15, temp_15);
+    MY_ADD_ft(tmp, temp_15, temp_14);
+    MY_SUB_ft(tmp, temp_15, temp_15);
     
     tmp = temp_30;
     MY_ADD(tmp, temp_31, temp_30);
     MY_SUB(tmp, temp_31, temp_31);
+    MY_ADD_ft(tmp, temp_31, temp_30);
+    MY_SUB_ft(tmp, temp_31, temp_31);
     
     n_global *= 2;
     

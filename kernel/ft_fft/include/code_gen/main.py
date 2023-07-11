@@ -13,8 +13,7 @@ if __name__ =="__main__":
     signal_per_thread = 8
     if_abft = False
     i = 3
-
-    df = pd.read_csv(f'parameter_radix{radix}.csv')
+    df = pd.read_csv(f'parameter_radix{radix}_vkfft.csv')
     radix = 2
     while N <= 2 ** 13:
         signal_per_thread = int(df['signal_per_thread_1'][i-1])
@@ -25,7 +24,6 @@ if __name__ =="__main__":
             f.write(fft_kernel)
         i += 1
         N *= radix
-    # assert 0
     while N <= 2 ** 22:
         
         N = int(radix ** df['logN'][i-1])
@@ -54,7 +52,7 @@ if __name__ =="__main__":
         i += 1
         N *= radix
     include_list = ''
-    if_abft = True
+    if_abft = False
     while N <= 2 ** 29:
         N = int(radix ** df['logN'][i-1])
         N1 = int(radix ** df['logN1'][i-1])
@@ -66,7 +64,8 @@ if __name__ =="__main__":
         signal_per_thread = int(df['signal_per_thread_1'][i-1])
         fft_kernel = ft_3D_fft_code_gen_upload1(N=N, N1=N1, N2=N2, N3=N3, num_block=num_block, num_thread=num_thread,
                                 radix=2, signal_per_thread=signal_per_thread, if_abft=if_abft)
-        function_name = f'ft_fft_radix{radix}_logN{i}_reg{signal_per_thread}_upload=1'
+        function_name = f'ft_fft_radix{radix}_logN{i}_upload=1'
+        # function_name = f'ft_fft_radix{radix}_logN{i}_upload=1'
         with open(f"../radix_2_codegen/{function_name}.cuh", 'w') as f:
             f.write(fft_kernel)
         include_list += f'#include "./include/radix_2_codegen/{function_name}.cuh"\n'
@@ -78,7 +77,8 @@ if __name__ =="__main__":
         blockdim_y = int(df['blockdim_y_2'][i-1])
         fft_kernel = ft_3D_fft_code_gen_upload2(N=N, N1=N1, N2=N2, N3=N3, num_block=num_block, num_thread=num_thread,
                                 radix=2, signal_per_thread=signal_per_thread, if_abft=if_abft)
-        function_name = f'ft_fft_radix{radix}_logN{i}_reg{signal_per_thread}_upload=2'
+        function_name = f'ft_fft_radix{radix}_logN{i}_upload=2'
+        # function_name = f'ft_fft_radix{radix}_logN{i}_upload=2'
         with open(f"../radix_2_codegen/{function_name}.cuh", 'w') as f:
             f.write(fft_kernel)
         include_list += f'#include "./include/radix_2_codegen/{function_name}.cuh"\n'
@@ -90,7 +90,8 @@ if __name__ =="__main__":
         blockdim_y = int(df['blockdim_y_3'][i-1])
         fft_kernel = ft_3D_fft_code_gen_upload3(N=N, N1=N1, N2=N2, N3=N3, num_block=num_block, num_thread=num_thread,
                                 radix=2, signal_per_thread=signal_per_thread, if_abft=if_abft)
-        function_name = f'ft_fft_radix{radix}_logN{i}_reg{signal_per_thread}_upload=3'
+        # function_name = f'ft_fft_radix{radix}_logN{i}_reg{signal_per_thread}_upload=3'
+        function_name = f'ft_fft_radix{radix}_logN{i}_upload=3'
         with open(f"../radix_2_codegen/{function_name}.cuh", 'w') as f:
             f.write(fft_kernel)
         include_list += f'#include "./include/radix_2_codegen/{function_name}.cuh"\n'

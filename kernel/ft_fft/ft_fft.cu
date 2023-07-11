@@ -1133,13 +1133,13 @@ int main(int argc, char** argv){
             for(int i = 0; i < num_tests; ++i){
         {
                 dim3 gridDim(32, 1, 1);
-                dim3 blockDim(16, 32, 1);
+                dim3 blockDim(16, 64, 1);
                 fft_radix2_logN18_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d_1);
                 cudaDeviceSynchronize();
             }
         {
                 dim3 gridDim(32, 1, 1);
-                dim3 blockDim(32, 16, 1);
+                dim3 blockDim(64, 16, 1);
                 fft_radix2_logN18_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d);
                 cudaDeviceSynchronize();
             }
@@ -1154,33 +1154,33 @@ int main(int argc, char** argv){
             cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
         }
         
-        // {
+        {
         
-        //     cudaEventRecord(fft_begin);
-        //     timeSt = std::chrono::steady_clock::now();
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
         
-        //     for(int i = 0; i < num_tests; ++i){
-        // {
-        //         dim3 gridDim(32, 1, 1);
-        //         dim3 blockDim(16, 32, 1);
-        //         VkFFT_main_logN18_1 <<<gridDim, blockDim, 65536>>>((float2*)input_d, (float2*)output_d_1);
-        //         cudaDeviceSynchronize();  
-        // }
-        // {
-        //         dim3 gridDim(32, 1, 1);
-        //         dim3 blockDim(32, 16, 1);
-        //         VkFFT_main_logN18_2 <<<gridDim, blockDim, 65536>>>((float2*)output_d_1, (float2*)output_d);
-        //         cudaDeviceSynchronize();  
-        // }
+            for(int i = 0; i < num_tests; ++i){
+        {
+                dim3 gridDim(32, 1, 1);
+                dim3 blockDim(16, 64, 1);
+                VkFFT_main_logN18_1 <<<gridDim, blockDim, 65536>>>((float2*)input_d, (float2*)output_d_1);
+                cudaDeviceSynchronize();  
+        }
+        {
+                dim3 gridDim(32, 1, 1);
+                dim3 blockDim(64, 16, 1);
+                VkFFT_main_logN18_2 <<<gridDim, blockDim, 65536>>>((float2*)output_d_1, (float2*)output_d);
+                cudaDeviceSynchronize();  
+        }
         
-        //     }
-        //     timeEnd = std::chrono::steady_clock::now();
-        //     totTime_vkfft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
-        //     cudaEventRecord(fft_end);
-        //     cudaEventSynchronize(fft_begin);  
-        //     cudaEventSynchronize(fft_end);
-        //     cudaEventElapsedTime(&elapsed_time_vkfft, fft_begin, fft_end);
-        // }
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_vkfft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);
+            cudaEventSynchronize(fft_begin);  
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_vkfft, fft_begin, fft_end);
+        }
         
         {
             cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
@@ -1215,7 +1215,7 @@ int main(int argc, char** argv){
             for(int i = 0; i < num_tests; ++i){
         {
                 dim3 gridDim(64, 1, 1);
-                dim3 blockDim(16, 32, 1);
+                dim3 blockDim(16, 64, 1);
                 fft_radix2_logN19_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d_1);
                 cudaDeviceSynchronize();
             }
@@ -1244,7 +1244,7 @@ int main(int argc, char** argv){
             for(int i = 0; i < num_tests; ++i){
         {
                 dim3 gridDim(64, 1, 1);
-                dim3 blockDim(16, 32, 1);
+                dim3 blockDim(16, 64, 1);
                 VkFFT_main_logN19_1 <<<gridDim, blockDim, 65536>>>((float2*)input_d, (float2*)output_d_1);
                 cudaDeviceSynchronize();  
         }

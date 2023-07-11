@@ -1,6 +1,6 @@
 import pandas as pd
 def code_gen_script():
-    df = pd.read_csv('parameter_radix2.csv')
+    df = pd.read_csv('parameter_radix2_vkfft.csv')
     ft_fft_script = '''
 #include <stdlib.h>
 #include <complex>

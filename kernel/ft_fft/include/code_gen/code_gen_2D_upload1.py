@@ -122,6 +122,8 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     tmp = temp_{order[i + signal_per_thread - offset]};
     MY_ADD(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread - offset]});
     MY_SUB(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]});
+    MY_ADD_ft(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread - offset]});
+    MY_SUB_ft(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]});
     ''' * (2 if if_abft else 1)
                 order[i + offset] = order[i + signal_per_thread - offset]
                 order[i + int(signal_per_thread / 2) + offset] = order[i + signal_per_thread + int(signal_per_thread / 2) - offset]
@@ -183,6 +185,8 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     tmp = temp_{order[i + signal_per_thread - offset]};
     MY_ADD(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread - offset]});
     MY_SUB(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]});
+    MY_ADD_ft(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread - offset]});
+    MY_SUB_ft(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]});
     ''' * (2 if if_abft else 1)
                     ft_fft += f'''
     tmp_id = __id[{order[i + signal_per_thread - offset]}];
