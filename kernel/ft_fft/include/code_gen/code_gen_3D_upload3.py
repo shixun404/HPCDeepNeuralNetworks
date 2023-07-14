@@ -78,102 +78,14 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
 
     for i in range(signal_per_thread):
         ft_fft += f'''temp_{i} = inputs[(tx + {blockdim_x} * ty + {i} * {num_thread}) % {N3_} + (((bx % {N1_ // blockdim_y}) * {blockdim_y}) + ((tx + {blockdim_x} * ty + {i} * {num_thread}) / {N3_})) * {N3_ * N2_} + (bx / {(N1_ // blockdim_y)}) * {N3_}];
-    '''
-    ft_fft += '''
-        float2 mem_checksum;
-    mem_checksum.x = 0;
-    mem_checksum.y = 0;
-    '''
-    
-    for i in range(signal_per_thread):
-        ft_fft += f'''mem_checksum.x += temp_{i}.x;
-        mem_checksum.y += temp_{i}.y;
-    '''
-    
-    
-    ft_fft += f'''
-    
-    int tid = tx + ty * blockDim.x;
-    int mem_check_i = N / {signal_per_thread};
-    '''
-    ft_fft += '''
-    float2 mem_checksum_t1,mem_checksum_t2; 
-       mem_checksum_t1.x = 0;mem_checksum_t1.y = 0; 
-    mem_checksum_t2.x = 0;mem_checksum_t2.y = 0; 
-    sdata[tid] = mem_checksum;
-    __syncthreads();
-    // if(tid < 32){
-        mem_checksum_t1 = sdata[tid];
-        mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.x, 16, 32);
-        mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 8, 32);
-        mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 4, 32);
-        mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 2, 32);
-        mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 1, 32);
-    //if(tid < 32){ 
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-        
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16,32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-        
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16,32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-        
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16,32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-        
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16,32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-        
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16,32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-    //}
-    temp_0.x += 0.001 * (mem_checksum_t1.x);
-    temp_0.y += 0.001 * (mem_checksum_t1.y);
-    mem_check_i /= 2;
-    '''
-    # ft_fft += '''
-    # while(mem_check_i > 0){
-    
-    # if(tid < bb ){
-    #     mem_checksum_t1 = sdata[tid];
-    #     mem_checksum_t2 = sdata[tid + mem_check_i]; 
-    #     mem_checksum_t1.x += mem_checksum_t2.x;
-    #     mem_checksum_t1.y += mem_checksum_t2.y;
-    #     sdata[tid] = mem_checksum_t1;
-    # }
-    # temp_0.x += 0.001 * (mem_checksum_t1.x);
-    # temp_0.y += 0.001 * (mem_checksum_t1.y );
-    # mem_check_i /= 2;
-    # // __syncthreads();
-    # }
-    # '''
-    for i in range(signal_per_thread):
-        ft_fft += f'''
         sdata[(tx + {blockdim_x} * ty + {i} * {num_thread}) % {N3_} + ((tx + {blockdim_x} * ty + {i} * {num_thread}) / {N3_}) * {N3_}] = temp_{i};
     '''
     
     ft_fft += '''
     __syncthreads();
     '''
+
+    
     for i in range(signal_per_thread):
         ft_fft += f'''temp_{i} = sdata[(tx + {i * blockdim_x}) + ty * {N3_}];
     '''
@@ -230,26 +142,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     __syncthreads();
     '''
             offset = 0 if  offset > 0 else signal_per_thread
-            ft_fft += '''
-            mem_checksum.x = 0;
-            mem_checksum.y = 0;
-            '''
-            for i in range(signal_per_thread):
-                ft_fft += f'''mem_checksum.x += temp_{i}.x;
-            mem_checksum.y += temp_{i}.y;
-    '''
-            ft_fft += '''
-            mem_checksum_t1.y = 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16, 32);
-            mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-            mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-            mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-            mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-    
-    temp_0.x += 0.001 * (mem_checksum_t1.x);
-    temp_0.y += 0.001 * (mem_checksum_t1.y);
-    // if(tid == 0 && blockIdx.x == 0)printf("kernel 3, %f\\n", temp_0.x, temp_0.y);
-            '''
-            
+ 
             
             for i in range(signal_per_thread):
                 ft_fft += f'''

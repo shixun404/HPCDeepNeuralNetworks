@@ -162,7 +162,8 @@ int main(int argc, char** argv){
     }    
     '''
         N += 1
-        
+    
+    N += 23
     while N <= 22:
         ft_fft_script += f'''
     if(log_N == {N})''' + '''{
@@ -401,7 +402,7 @@ int main(int argc, char** argv){
         FLOAT2_NORM(res_ref, norm_ref);
         
         float err = fabs(norm - norm_ref);
-        if(i % 100000 ==0){
+        if(i % 10 ==0){
         printf("error %f detected at %d\\n", err / fabs(norm), i / 2);
         printf("ref[%d]: %.3f + %.3f i\\n",  i / 2, res_ref.x, res_ref.y);
         printf("res[%d]: %.3f + %.3f i\\n\\n",  i / 2, res.x, res.y);
@@ -434,40 +435,40 @@ int main(int argc, char** argv){
     }
     printf("Execution Time\\n");
     printf("t_fft = th.as_tensor([");
-    for(int i = 3; i <= __log_N__; ++i ){
+    for(int i = __log_N_st__; i <= __log_N__; ++i ){
         printf("%8f,", t_fft[i]);
     }
     printf("])\\n");
 
     printf("t_cufft = th.as_tensor([");
-    for(int i = 3; i <= __log_N__; ++i ){
+    for(int i = __log_N_st__; i <= __log_N__; ++i ){
         printf("%8f,", t_cufft[i]);
     }
     printf("])\\n");
     
     printf("t_vkfft = th.as_tensor([");
-    for(int i = 3; i <= __log_N__; ++i ){
+    for(int i = __log_N_st__; i <= __log_N__; ++i ){
         printf("%8f,", t_vkfft[i]);
     }
     printf("])\\n");
 
     printf("\\n Flops\\n");
     printf("gflops_fft = th.as_tensor([");
-    for(int i = 3; i <= __log_N__; ++i ){
+    for(int i = __log_N_st__; i <= __log_N__; ++i ){
         long long N = pow((double)RADIX, (double)i);
         printf("%8f,", 5 * N * i / t_fft[i] * 1000.f / 1000000000.f);
     }
     printf("])\\n");
 
     printf("gflops_cufft = th.as_tensor([");
-    for(int i = 3; i <= __log_N__; ++i ){
+    for(int i = __log_N_st__; i <= __log_N__; ++i ){
         long long N = pow((double)RADIX, (double)i);
         printf("%8f,", 5 * N * i / t_cufft[i] * 1000.f / 1000000000.f);
     }
     printf("])\\n");
     
     printf("gflops_vkfft = th.as_tensor([");
-    for(int i = 3; i <= __log_N__; ++i ){
+    for(int i = __log_N_st__; i <= __log_N__; ++i ){
         long long N = pow((double)RADIX, (double)i);
         printf("%8f,", 5 * N * i / t_vkfft[i] * 1000.f / 1000000000.f);
     }

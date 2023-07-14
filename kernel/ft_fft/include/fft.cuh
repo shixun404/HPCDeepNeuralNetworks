@@ -43,6 +43,134 @@
 #define radix3_a22_x -0.4999999999999992f;
 #define radix3_a22_y -0.8660254037844392f;
 
+#define A_radix2_0_x 0.5f
+#define A_radix2_0_y -0.8660253882408142f
+#define A_radix2_1_x 1.5f
+#define A_radix2_1_y 0.8660253882408142f
+
+#define A_radix4_0_x 1.0f
+#define A_radix4_0_y 0.0f
+#define A_radix4_1_x 0.6339746117591858f
+#define A_radix4_1_y 0.6339746117591858f
+#define A_radix4_2_x 0.0f
+#define A_radix4_2_y 1.7320507764816284f
+#define A_radix4_3_x 2.366025447845459f
+#define A_radix4_3_y -2.366025447845459f
+
+#define A_radix8_0_x 0.5f
+#define A_radix8_0_y -0.8660253882408142f
+#define A_radix8_1_x 0.6929928064346313f
+#define A_radix8_1_y -0.5317519903182983f
+#define A_radix8_2_x 0.8660253882408142f
+#define A_radix8_2_y -0.23205077648162842f
+#define A_radix8_3_x 1.082262396812439f
+#define A_radix8_3_y 0.1424824297428131f
+#define A_radix8_4_x 1.5f
+#define A_radix8_4_y 0.8660253882408142f
+#define A_radix8_5_x 4.039057731628418f
+#define A_radix8_5_y 5.263802528381348f
+#define A_radix8_6_x -0.8660253882408142f
+#define A_radix8_6_y -3.232050895690918f
+#define A_radix8_7_x 0.18568682670593262f
+#define A_radix8_7_y -1.4104316234588623f
+
+#define A_radix16_0_x 1.0f
+#define A_radix16_0_y 0.0f
+#define A_radix16_1_x 0.8969879746437073f
+#define A_radix16_1_y 0.1784219741821289f
+#define A_radix16_2_x 0.8070071935653687f
+#define A_radix16_2_y 0.33427339792251587f
+#define A_radix16_3_x 0.7216188907623291f
+#define A_radix16_3_y 0.4821702241897583f
+#define A_radix16_4_x 0.6339746117591858f
+#define A_radix16_4_y 0.6339746117591858f
+#define A_radix16_5_x 0.5364618301391602f
+#define A_radix16_5_y 0.802871823310852f
+#define A_radix16_6_x 0.4177376627922058f
+#define A_radix16_6_y 1.0085078477859497f
+#define A_radix16_7_x 0.25624358654022217f
+#define A_radix16_7_y 1.2882237434387207f
+#define A_radix16_8_x 0.0f
+#define A_radix16_8_y 1.7320507764816284f
+#define A_radix16_9_x -0.5256141424179077f
+#define A_radix16_9_y 2.6424412727355957f
+#define A_radix16_10_x -2.5390584468841553f
+#define A_radix16_10_y 6.129827976226807f
+#define A_radix16_11_x 7.356497287750244f
+#define A_radix16_11_y -11.00977611541748f
+#define A_radix16_12_x 2.366025447845459f
+#define A_radix16_12_y -2.366025447845459f
+#define A_radix16_13_x 1.6280629634857178f
+#define A_radix16_13_y -1.087836742401123f
+#define A_radix16_14_x 1.3143131732940674f
+#define A_radix16_14_y -0.5444062352180481f
+#define A_radix16_15_x 1.129741907119751f
+#define A_radix16_15_y -0.22471967339515686f
+
+#define A_radix32_0_x 0.5f
+#define A_radix32_0_y -0.8660253882408142f
+#define A_radix32_1_x 0.553804337978363f
+#define A_radix32_1_y -0.7728331089019775f
+#define A_radix32_2_x 0.6030120253562927f
+#define A_radix32_2_y -0.6876034140586853f
+#define A_radix32_3_x 0.6490356922149658f
+#define A_radix32_3_y -0.6078881621360779f
+#define A_radix32_4_x 0.6929928064346313f
+#define A_radix32_4_y -0.5317519903182983f
+#define A_radix32_5_x 0.735824704170227f
+#define A_radix32_5_y -0.4575650095939636f
+#define A_radix32_6_x 0.7783811092376709f
+#define A_radix32_6_y -0.3838551640510559f
+#define A_radix32_7_x 0.8214906454086304f
+#define A_radix32_7_y -0.30918726325035095f
+#define A_radix32_8_x 0.8660253882408142f
+#define A_radix32_8_y -0.23205077648162842f
+#define A_radix32_9_x 0.9129745960235596f
+#define A_radix32_9_y -0.15073224902153015f
+#define A_radix32_10_x 0.9635381698608398f
+#define A_radix32_10_y -0.06315356492996216f
+#define A_radix32_11_x 1.019264817237854f
+#define A_radix32_11_y 0.03336694836616516f
+#define A_radix32_12_x 1.082262396812439f
+#define A_radix32_12_y 0.1424824297428131f
+#define A_radix32_13_x 1.1555607318878174f
+#define A_radix32_13_y 0.2694389224052429f
+#define A_radix32_14_x 1.2437561750411987f
+#define A_radix32_14_y 0.4221983551979065f
+#define A_radix32_15_x 1.3542685508728027f
+#define A_radix32_15_y 0.6136113405227661f
+#define A_radix32_16_x 1.5f
+#define A_radix32_16_y 0.8660253882408142f
+#define A_radix32_17_x 1.7056796550750732f
+#define A_radix32_17_y 1.222272276878357f
+#define A_radix32_18_x 2.0256142616271973f
+#define A_radix32_18_y 1.7764158248901367f
+#define A_radix32_19_x 2.6070899963378906f
+#define A_radix32_19_y 2.7835617065429688f
+#define A_radix32_20_x 4.039057731628418f
+#define A_radix32_20_y 5.263802528381348f
+#define A_radix32_21_x 13.977169036865234f
+#define A_radix32_21_y 22.477115631103516f
+#define A_radix32_22_x -5.856496334075928f
+#define A_radix32_22_y -11.875801086425781f
+#define A_radix32_23_x -1.8727192878723145f
+#define A_radix32_23_y -4.975696086883545f
+#define A_radix32_24_x -0.8660253882408142f
+#define A_radix32_24_y -3.232050895690918f
+#define A_radix32_25_x -0.4004870653152466f
+#define A_radix32_25_y -2.4257149696350098f
+#define A_radix32_26_x -0.12806302309036255f
+#define A_radix32_26_y -1.9538620710372925f
+#define A_radix32_27_x 0.05365872383117676f
+#define A_radix32_27_y -1.6391106843948364f
+#define A_radix32_28_x 0.18568682670593262f
+#define A_radix32_28_y -1.4104315042495728f
+#define A_radix32_29_x 0.2876772880554199f
+#define A_radix32_29_y -1.2337794303894043f
+#define A_radix32_30_x 0.3702579736709595f
+#define A_radix32_30_y -1.090744972229004f
+#define A_radix32_31_x 0.4397074580192566f
+#define A_radix32_31_y -0.9704551696777344f
 
 #define GEMM_radix3 (b0, b1, b2, c0, c1, c2) \
 c0.x += radix3_a00_x * b0.x - radix3_a00_y * b0.y; c0.y = radix3_a00_y * b0.x + radix3_a00_x * b0.y;\    
@@ -54,6 +182,9 @@ c1.x += radix3_a12_x * b2.x - radix3_a12_y * b2.y; c1.y = radix3_a12_y * b2.x + 
 c2.x += radix3_a20_x * b0.x - radix3_a20_y * b0.y; c2.y = radix3_a20_y * b0.x + radix3_a20_x * b0.y;\    
 c2.x += radix3_a21_x * b1.x - radix3_a21_y * b1.y; c2.y = radix3_a21_y * b1.x + radix3_a21_x * b1.y;\    
 c2.x += radix3_a22_x * b2.x - radix3_a22_y * b2.y; c2.y = radix3_a22_y * b2.x + radix3_a22_x * b2.y;\
+
+
+
 
 
 __global__ void ft_fft(int N, float2 * data, int ns, int k ){

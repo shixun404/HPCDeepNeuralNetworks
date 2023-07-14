@@ -33,22 +33,24 @@ def ft_3D_fft_code_gen_upload1(N, N1, N2, N3, num_block, num_thread,
             n += 1
         print(output)
         plan.append(n)
-    
     print("plan: ", plan)
     print("twid: ",twiddle_type)
-    
     plan_id = 0
-    
-    
     order = []
     for i in range(signal_per_thread * 2):
         order.append(i)
     offset = signal_per_thread
-    
     ft_fft = f'''extern __shared__ float shared[];
 __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_1''' + '''(float2* inputs, float2* outputs) {
 '''
     ft_fft += '''
+    float2 r[3];
+    r[0].x = 1.0f;
+    r[0].y = 0.0f;
+    r[1].x = -0.5f;
+    r[1].y = -0.866f;
+    r[2].x = -0.5f;
+    r[2].y = 0.866f;
     '''
     for i in range(signal_per_thread):
         ft_fft += f'''float2 temp_{i};
@@ -66,9 +68,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     int k;
     int tmp_id;
     int n = 1, n_global = 1;
-    float2 mem_checksum;
-    mem_checksum.x = 0;
-    mem_checksum.y = 0;
+    float2 warp_checksum;
     '''
     n = 1
     n_global = 1
@@ -77,86 +77,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     for i in range(signal_per_thread):
         ft_fft += f'''temp_{i} = inputs[(ty + {i} * {(N1 // signal_per_thread)}) * {N2} + tx + bx * {num_thread // (N1 // signal_per_thread)}];
     '''
-    for i in range(signal_per_thread):
-        ft_fft += f'''mem_checksum.x += temp_{i}.x;
-        mem_checksum.y += temp_{i}.y;
-    '''
-    ft_fft += f'''
-    int tid = tx + ty * blockDim.x;
-    int mem_check_i = N / {signal_per_thread};
-    '''
-    ft_fft += '''
-    sdata[tid] = mem_checksum;
-    __syncthreads();
-    mem_check_i /= 2;
-    float2 mem_checksum_t1,mem_checksum_t2; 
-    mem_checksum_t1.x = 0;mem_checksum_t1.y = 0; 
-    mem_checksum_t2.x = 0;mem_checksum_t2.y = 0; 
-        // __syncthreads();
-    // if(tid < 32){
-        mem_checksum_t1 = sdata[tid];
-        mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.x, 16,32);
-        mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 8, 32);
-        mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 4, 32);
-        mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 2, 32);
-        mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 1, 32);
-    //if(tid < 32){
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16,32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-        
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16,32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-        
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16,32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-        
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16,32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-        
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16,32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-        
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16,32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-    //}
-    temp_0.x += 0.001 * (mem_checksum_t1.x);
-    temp_0.y += 0.001 * (mem_checksum_t1.y);
-    mem_check_i /= 2;
-    '''
-    # ft_fft += '''
-    # while(mem_check_i > 0){
-    
-    # if(tid < mem_check_i){
-    #     mem_checksum_t1 = sdata[tid];
-    #     mem_checksum_t2 = sdata[tid + mem_check_i]; 
-    #     mem_checksum_t1.x += mem_checksum_t2.x;
-    #     mem_checksum_t1.y += mem_checksum_t2.y;
-    #     sdata[tid] = mem_checksum_t1;
-    # }
-    # temp_0.x += 0.001 * (mem_checksum_t1.x);
-    # temp_0.y += 0.001 * (mem_checksum_t1.y );
-    # mem_check_i /= 2;
-    # // __syncthreads();
-    # }
-    # '''
+
     for i in range(signal_per_thread):
         ft_fft += f'''__id[{i}] = {i * blockdim_y} + ty;
     '''
@@ -192,77 +113,18 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     temp_{order[signal_per_thread - offset + i]} = tmp;
     '''
     
-            if if_abft:
-                ft_fft += f'''
-                j = {int(i / (signal_per_thread // radix))};
-                k = __id[{order[signal_per_thread - offset + i]}] % {n_global};
-                MY_ANGLE2COMPLEX((float)(j * k) * {(-2.0 * M_PI / (radix * n_global))}f, tmp_angle);
-                '''
-                for k in range(max(1, n // 2)):
-                    i = k + signal_per_thread // radix
-                    ft_fft += f'''
-        tmp_angle_rot.x = {cos(- M_PI / float(n)) if k != 0 else 1.}f;
-        tmp_angle_rot.y = {sin(- M_PI / float(n)) if k != 0 else 0.}f;
-        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp_angle = tmp;
-        tmp_angle_rot.x = tmp_angle.y;
-        tmp_angle_rot.y = -tmp_angle.x;
-        '''
-                    for kk in range(signal_per_thread // radix // n):
-                        i = kk * n + k + signal_per_thread // radix
-                        ft_fft += f'''
-        MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle, tmp);
-        temp_{order[signal_per_thread - offset + i]} = tmp;
-        '''
-                        if True:
-                            i += n // 2
-                            ft_fft += f'''
-        MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle_rot, tmp);
-        temp_{order[signal_per_thread - offset + i]} = tmp;
-        ''' 
             for i in range(signal_per_thread // radix):
                 ft_fft += f'''
     tmp = temp_{order[i + signal_per_thread - offset]};
     MY_ADD(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread - offset]});
     MY_SUB(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]});
-    // MY_ADD_ft(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread - offset]});
-    // MY_SUB_ft(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]});
-    '''
-                if if_abft:
-                    ft_fft += f'''
-    tmp = temp_{order[i + signal_per_thread - offset]};
-    MY_ADD(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread - offset]});
-    MY_SUB(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]});
-    // MY_ADD_ft(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread - offset]});
-    // MY_SUB_ft(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]});
     '''
                 order[i + offset] = order[i + signal_per_thread - offset]
                 order[i + int(signal_per_thread / 2) + offset] = order[i + signal_per_thread + int(signal_per_thread / 2) - offset]
             ft_fft += f'''
     n_global *= 2;
     '''
-            # print(order, offset)
             offset = 0 if  offset > 0 else signal_per_thread
-            ft_fft += '''
-            mem_checksum.x = 0;
-            mem_checksum.y = 0;
-            '''
-            for i in range(signal_per_thread):
-                ft_fft += f'''mem_checksum.x += temp_{i}.x;
-            mem_checksum.y += temp_{i}.y;
-    '''
-            ft_fft += '''
-            mem_checksum_t1.y = 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16, 32);
-            mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-            mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-            mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-            mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-    
-    temp_0.x += 0.001 * (mem_checksum_t1.x);
-    temp_0.y += 0.001 * (mem_checksum_t1.y);
-    // if(tid == 0 && blockIdx.x == 0)printf("kernel 3, %f\\n", temp_0.x, temp_0.y);
-            '''
-            
             for i in range(signal_per_thread):
                 ft_fft += f'''
     
@@ -275,11 +137,18 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     }
 '''
             break
-        
         else:
             n = 1 if twiddle_type[stage_id] == 0 else n_global // (N1 // signal_per_thread)
+            ft_fft += '''
+            warp_checksum.x = 0;
+            warp_checksum.y = 0;
+            '''
+            for i in range(signal_per_thread):
+                ft_fft += f'''
+                warp_checksum.x += A_radix{signal_per_thread}_{i}_x * temp_{i}.x - A_radix{signal_per_thread}_{i}_y * temp_{i}.y;
+                warp_checksum.y += A_radix{signal_per_thread}_{i}_x * temp_{i}.y + A_radix{signal_per_thread}_{i}_y * temp_{i}.x;
+    '''
             for j in range(plan[stage_id]):
-            
                 i = 0 + signal_per_thread // radix
                 ft_fft += f'''
     j = {int(i / (signal_per_thread // radix))};
@@ -311,35 +180,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle_rot, tmp);
     temp_{order[signal_per_thread - offset + i]} = tmp;
     '''
-                if if_abft:
-                    ft_fft += f'''
-        j = {int(i / (signal_per_thread // radix))};
-        k = __id[{order[signal_per_thread - offset + i]}] % {n_global};
-        MY_ANGLE2COMPLEX((float)(j * k) * {(-2.0 * M_PI / (radix * n_global))}f, tmp_angle);
-        '''
-                    for k in range(max(1, n // 2)):
-                        i = k + signal_per_thread // radix
-                        ft_fft += f'''
-        tmp_angle_rot.x = {cos(- M_PI / float(n)) if k != 0 else 1.}f;
-        tmp_angle_rot.y = {sin(- M_PI / float(n)) if k != 0 else 0.}f;
-        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp_angle = tmp;
-        tmp_angle_rot.x = tmp_angle.y;
-        tmp_angle_rot.y = -tmp_angle.x;
-        '''
-                        for kk in range(signal_per_thread // radix // n):
-                            i = kk * n + k + signal_per_thread // radix
-                            ft_fft += f'''
-        MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle, tmp);
-        temp_{order[signal_per_thread - offset + i]} = tmp;
-        '''
-                            if n // 2 != 0:
-                                i += n // 2
-                                ft_fft += f'''
-        MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle_rot, tmp);
-        temp_{order[signal_per_thread - offset + i]} = tmp;
-        '''
-    
+                
                 for i in range(signal_per_thread // radix):
                     tmp_id_left = (i // n) * 2 * n + (i % n)
                     tmp_id_right = (i // n) * 2 * n + (i % n) + n
@@ -347,9 +188,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     tmp = temp_{order[i + signal_per_thread - offset]};
     MY_ADD(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread - offset]});
     MY_SUB(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]});
-    //MY_ADD_ft(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread - offset]});
-    // MY_SUB_ft(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]});
-    '''  * (2 if if_abft else 1)
+    '''
                     ft_fft += f'''
     tmp_id = __id[{order[i + signal_per_thread - offset]}];
     tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
@@ -361,11 +200,17 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
                 ft_fft += f'''
     n_global *= 2;
     '''
-                # print(order, offset)
                 offset = 0 if  offset > 0 else signal_per_thread
                 n *= radix
                 n_global *= radix
-
+        for i in range(signal_per_thread):
+            ft_fft += f'''
+            warp_checksum.x -= temp_{order[i + signal_per_thread - offset]}.x * r[{order[i + signal_per_thread - offset]} % 3].x - temp_{order[i + signal_per_thread - offset]}.y * r[{order[i + signal_per_thread - offset]} % 3].y ;
+            warp_checksum.y -= temp_{order[i + signal_per_thread - offset]}.x * r[{order[i + signal_per_thread - offset]} % 3].y + temp_{order[i + signal_per_thread - offset]}.y * r[{order[i + signal_per_thread - offset]} % 3].x ;
+    '''
+        ft_fft += f'''
+    if(tx=={log_threadx} && bx=={log_block} && ty=={log_thready})printf("################### checksum = %f, %f.j ####################\\n", warp_checksum.x, warp_checksum.y);
+        '''
         if twiddle_type[stage_id] == 0:
             ft_fft += f'''
     __syncthreads();

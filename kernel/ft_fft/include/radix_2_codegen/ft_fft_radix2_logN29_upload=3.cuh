@@ -48,225 +48,68 @@ __global__ void __launch_bounds__(256) fft_radix2_logN29_3(float2* inputs, float
     int n = 1, n_global = 1;
     
     temp_0 = inputs[(tx + 32 * ty + 0 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 0 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_1 = inputs[(tx + 32 * ty + 1 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 1 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_2 = inputs[(tx + 32 * ty + 2 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 2 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_3 = inputs[(tx + 32 * ty + 3 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 3 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_4 = inputs[(tx + 32 * ty + 4 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 4 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_5 = inputs[(tx + 32 * ty + 5 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 5 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_6 = inputs[(tx + 32 * ty + 6 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 6 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_7 = inputs[(tx + 32 * ty + 7 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 7 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_8 = inputs[(tx + 32 * ty + 8 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 8 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_9 = inputs[(tx + 32 * ty + 9 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 9 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_10 = inputs[(tx + 32 * ty + 10 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 10 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_11 = inputs[(tx + 32 * ty + 11 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 11 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_12 = inputs[(tx + 32 * ty + 12 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 12 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_13 = inputs[(tx + 32 * ty + 13 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 13 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_14 = inputs[(tx + 32 * ty + 14 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 14 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_15 = inputs[(tx + 32 * ty + 15 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 15 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_16 = inputs[(tx + 32 * ty + 16 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 16 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_17 = inputs[(tx + 32 * ty + 17 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 17 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_18 = inputs[(tx + 32 * ty + 18 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 18 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_19 = inputs[(tx + 32 * ty + 19 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 19 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_20 = inputs[(tx + 32 * ty + 20 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 20 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_21 = inputs[(tx + 32 * ty + 21 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 21 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_22 = inputs[(tx + 32 * ty + 22 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 22 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_23 = inputs[(tx + 32 * ty + 23 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 23 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_24 = inputs[(tx + 32 * ty + 24 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 24 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_25 = inputs[(tx + 32 * ty + 25 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 25 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_26 = inputs[(tx + 32 * ty + 26 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 26 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_27 = inputs[(tx + 32 * ty + 27 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 27 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_28 = inputs[(tx + 32 * ty + 28 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 28 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_29 = inputs[(tx + 32 * ty + 29 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 29 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_30 = inputs[(tx + 32 * ty + 30 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 30 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    temp_31 = inputs[(tx + 32 * ty + 31 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 31 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
-    
-        float2 mem_checksum;
-    mem_checksum.x = 0;
-    mem_checksum.y = 0;
-    mem_checksum.x += temp_0.x;
-        mem_checksum.y += temp_0.y;
-    mem_checksum.x += temp_1.x;
-        mem_checksum.y += temp_1.y;
-    mem_checksum.x += temp_2.x;
-        mem_checksum.y += temp_2.y;
-    mem_checksum.x += temp_3.x;
-        mem_checksum.y += temp_3.y;
-    mem_checksum.x += temp_4.x;
-        mem_checksum.y += temp_4.y;
-    mem_checksum.x += temp_5.x;
-        mem_checksum.y += temp_5.y;
-    mem_checksum.x += temp_6.x;
-        mem_checksum.y += temp_6.y;
-    mem_checksum.x += temp_7.x;
-        mem_checksum.y += temp_7.y;
-    mem_checksum.x += temp_8.x;
-        mem_checksum.y += temp_8.y;
-    mem_checksum.x += temp_9.x;
-        mem_checksum.y += temp_9.y;
-    mem_checksum.x += temp_10.x;
-        mem_checksum.y += temp_10.y;
-    mem_checksum.x += temp_11.x;
-        mem_checksum.y += temp_11.y;
-    mem_checksum.x += temp_12.x;
-        mem_checksum.y += temp_12.y;
-    mem_checksum.x += temp_13.x;
-        mem_checksum.y += temp_13.y;
-    mem_checksum.x += temp_14.x;
-        mem_checksum.y += temp_14.y;
-    mem_checksum.x += temp_15.x;
-        mem_checksum.y += temp_15.y;
-    mem_checksum.x += temp_16.x;
-        mem_checksum.y += temp_16.y;
-    mem_checksum.x += temp_17.x;
-        mem_checksum.y += temp_17.y;
-    mem_checksum.x += temp_18.x;
-        mem_checksum.y += temp_18.y;
-    mem_checksum.x += temp_19.x;
-        mem_checksum.y += temp_19.y;
-    mem_checksum.x += temp_20.x;
-        mem_checksum.y += temp_20.y;
-    mem_checksum.x += temp_21.x;
-        mem_checksum.y += temp_21.y;
-    mem_checksum.x += temp_22.x;
-        mem_checksum.y += temp_22.y;
-    mem_checksum.x += temp_23.x;
-        mem_checksum.y += temp_23.y;
-    mem_checksum.x += temp_24.x;
-        mem_checksum.y += temp_24.y;
-    mem_checksum.x += temp_25.x;
-        mem_checksum.y += temp_25.y;
-    mem_checksum.x += temp_26.x;
-        mem_checksum.y += temp_26.y;
-    mem_checksum.x += temp_27.x;
-        mem_checksum.y += temp_27.y;
-    mem_checksum.x += temp_28.x;
-        mem_checksum.y += temp_28.y;
-    mem_checksum.x += temp_29.x;
-        mem_checksum.y += temp_29.y;
-    mem_checksum.x += temp_30.x;
-        mem_checksum.y += temp_30.y;
-    mem_checksum.x += temp_31.x;
-        mem_checksum.y += temp_31.y;
-    
-    
-    int tid = tx + ty * blockDim.x;
-    int mem_check_i = N / 32;
-    
-    float2 mem_checksum_t1,mem_checksum_t2; 
-       mem_checksum_t1.x = 0;mem_checksum_t1.y = 0; 
-    mem_checksum_t2.x = 0;mem_checksum_t2.y = 0; 
-    sdata[tid] = mem_checksum;
-    __syncthreads();
-    // if(tid < 32){
-        mem_checksum_t1 = sdata[tid];
-        mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.x, 16, 32);
-        mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 8, 32);
-        mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 4, 32);
-        mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 2, 32);
-        mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 1, 32);
-    //if(tid < 32){ 
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-        
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16,32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-        
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16,32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-        
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16,32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-        
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16,32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-        
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16,32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-    //}
-    temp_0.x += 0.001 * (mem_checksum_t1.x);
-    temp_0.y += 0.001 * (mem_checksum_t1.y);
-    mem_check_i /= 2;
-    
         sdata[(tx + 32 * ty + 0 * 256) % 1024 + ((tx + 32 * ty + 0 * 256) / 1024) * 1024] = temp_0;
-    
+    temp_1 = inputs[(tx + 32 * ty + 1 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 1 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 1 * 256) % 1024 + ((tx + 32 * ty + 1 * 256) / 1024) * 1024] = temp_1;
-    
+    temp_2 = inputs[(tx + 32 * ty + 2 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 2 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 2 * 256) % 1024 + ((tx + 32 * ty + 2 * 256) / 1024) * 1024] = temp_2;
-    
+    temp_3 = inputs[(tx + 32 * ty + 3 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 3 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 3 * 256) % 1024 + ((tx + 32 * ty + 3 * 256) / 1024) * 1024] = temp_3;
-    
+    temp_4 = inputs[(tx + 32 * ty + 4 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 4 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 4 * 256) % 1024 + ((tx + 32 * ty + 4 * 256) / 1024) * 1024] = temp_4;
-    
+    temp_5 = inputs[(tx + 32 * ty + 5 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 5 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 5 * 256) % 1024 + ((tx + 32 * ty + 5 * 256) / 1024) * 1024] = temp_5;
-    
+    temp_6 = inputs[(tx + 32 * ty + 6 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 6 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 6 * 256) % 1024 + ((tx + 32 * ty + 6 * 256) / 1024) * 1024] = temp_6;
-    
+    temp_7 = inputs[(tx + 32 * ty + 7 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 7 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 7 * 256) % 1024 + ((tx + 32 * ty + 7 * 256) / 1024) * 1024] = temp_7;
-    
+    temp_8 = inputs[(tx + 32 * ty + 8 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 8 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 8 * 256) % 1024 + ((tx + 32 * ty + 8 * 256) / 1024) * 1024] = temp_8;
-    
+    temp_9 = inputs[(tx + 32 * ty + 9 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 9 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 9 * 256) % 1024 + ((tx + 32 * ty + 9 * 256) / 1024) * 1024] = temp_9;
-    
+    temp_10 = inputs[(tx + 32 * ty + 10 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 10 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 10 * 256) % 1024 + ((tx + 32 * ty + 10 * 256) / 1024) * 1024] = temp_10;
-    
+    temp_11 = inputs[(tx + 32 * ty + 11 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 11 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 11 * 256) % 1024 + ((tx + 32 * ty + 11 * 256) / 1024) * 1024] = temp_11;
-    
+    temp_12 = inputs[(tx + 32 * ty + 12 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 12 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 12 * 256) % 1024 + ((tx + 32 * ty + 12 * 256) / 1024) * 1024] = temp_12;
-    
+    temp_13 = inputs[(tx + 32 * ty + 13 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 13 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 13 * 256) % 1024 + ((tx + 32 * ty + 13 * 256) / 1024) * 1024] = temp_13;
-    
+    temp_14 = inputs[(tx + 32 * ty + 14 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 14 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 14 * 256) % 1024 + ((tx + 32 * ty + 14 * 256) / 1024) * 1024] = temp_14;
-    
+    temp_15 = inputs[(tx + 32 * ty + 15 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 15 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 15 * 256) % 1024 + ((tx + 32 * ty + 15 * 256) / 1024) * 1024] = temp_15;
-    
+    temp_16 = inputs[(tx + 32 * ty + 16 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 16 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 16 * 256) % 1024 + ((tx + 32 * ty + 16 * 256) / 1024) * 1024] = temp_16;
-    
+    temp_17 = inputs[(tx + 32 * ty + 17 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 17 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 17 * 256) % 1024 + ((tx + 32 * ty + 17 * 256) / 1024) * 1024] = temp_17;
-    
+    temp_18 = inputs[(tx + 32 * ty + 18 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 18 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 18 * 256) % 1024 + ((tx + 32 * ty + 18 * 256) / 1024) * 1024] = temp_18;
-    
+    temp_19 = inputs[(tx + 32 * ty + 19 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 19 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 19 * 256) % 1024 + ((tx + 32 * ty + 19 * 256) / 1024) * 1024] = temp_19;
-    
+    temp_20 = inputs[(tx + 32 * ty + 20 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 20 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 20 * 256) % 1024 + ((tx + 32 * ty + 20 * 256) / 1024) * 1024] = temp_20;
-    
+    temp_21 = inputs[(tx + 32 * ty + 21 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 21 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 21 * 256) % 1024 + ((tx + 32 * ty + 21 * 256) / 1024) * 1024] = temp_21;
-    
+    temp_22 = inputs[(tx + 32 * ty + 22 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 22 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 22 * 256) % 1024 + ((tx + 32 * ty + 22 * 256) / 1024) * 1024] = temp_22;
-    
+    temp_23 = inputs[(tx + 32 * ty + 23 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 23 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 23 * 256) % 1024 + ((tx + 32 * ty + 23 * 256) / 1024) * 1024] = temp_23;
-    
+    temp_24 = inputs[(tx + 32 * ty + 24 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 24 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 24 * 256) % 1024 + ((tx + 32 * ty + 24 * 256) / 1024) * 1024] = temp_24;
-    
+    temp_25 = inputs[(tx + 32 * ty + 25 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 25 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 25 * 256) % 1024 + ((tx + 32 * ty + 25 * 256) / 1024) * 1024] = temp_25;
-    
+    temp_26 = inputs[(tx + 32 * ty + 26 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 26 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 26 * 256) % 1024 + ((tx + 32 * ty + 26 * 256) / 1024) * 1024] = temp_26;
-    
+    temp_27 = inputs[(tx + 32 * ty + 27 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 27 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 27 * 256) % 1024 + ((tx + 32 * ty + 27 * 256) / 1024) * 1024] = temp_27;
-    
+    temp_28 = inputs[(tx + 32 * ty + 28 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 28 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 28 * 256) % 1024 + ((tx + 32 * ty + 28 * 256) / 1024) * 1024] = temp_28;
-    
+    temp_29 = inputs[(tx + 32 * ty + 29 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 29 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 29 * 256) % 1024 + ((tx + 32 * ty + 29 * 256) / 1024) * 1024] = temp_29;
-    
+    temp_30 = inputs[(tx + 32 * ty + 30 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 30 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 30 * 256) % 1024 + ((tx + 32 * ty + 30 * 256) / 1024) * 1024] = temp_30;
-    
+    temp_31 = inputs[(tx + 32 * ty + 31 * 256) % 1024 + (((bx % 128) * 8) + ((tx + 32 * ty + 31 * 256) / 1024)) * 524288 + (bx / 128) * 1024];
         sdata[(tx + 32 * ty + 31 * 256) % 1024 + ((tx + 32 * ty + 31 * 256) / 1024) * 1024] = temp_31;
     
     __syncthreads();
@@ -2948,83 +2791,6 @@ __global__ void __launch_bounds__(256) fft_radix2_logN29_3(float2* inputs, float
     n_global *= 2;
     __syncthreads();
     
-            mem_checksum.x = 0;
-            mem_checksum.y = 0;
-            mem_checksum.x += temp_0.x;
-            mem_checksum.y += temp_0.y;
-    mem_checksum.x += temp_1.x;
-            mem_checksum.y += temp_1.y;
-    mem_checksum.x += temp_2.x;
-            mem_checksum.y += temp_2.y;
-    mem_checksum.x += temp_3.x;
-            mem_checksum.y += temp_3.y;
-    mem_checksum.x += temp_4.x;
-            mem_checksum.y += temp_4.y;
-    mem_checksum.x += temp_5.x;
-            mem_checksum.y += temp_5.y;
-    mem_checksum.x += temp_6.x;
-            mem_checksum.y += temp_6.y;
-    mem_checksum.x += temp_7.x;
-            mem_checksum.y += temp_7.y;
-    mem_checksum.x += temp_8.x;
-            mem_checksum.y += temp_8.y;
-    mem_checksum.x += temp_9.x;
-            mem_checksum.y += temp_9.y;
-    mem_checksum.x += temp_10.x;
-            mem_checksum.y += temp_10.y;
-    mem_checksum.x += temp_11.x;
-            mem_checksum.y += temp_11.y;
-    mem_checksum.x += temp_12.x;
-            mem_checksum.y += temp_12.y;
-    mem_checksum.x += temp_13.x;
-            mem_checksum.y += temp_13.y;
-    mem_checksum.x += temp_14.x;
-            mem_checksum.y += temp_14.y;
-    mem_checksum.x += temp_15.x;
-            mem_checksum.y += temp_15.y;
-    mem_checksum.x += temp_16.x;
-            mem_checksum.y += temp_16.y;
-    mem_checksum.x += temp_17.x;
-            mem_checksum.y += temp_17.y;
-    mem_checksum.x += temp_18.x;
-            mem_checksum.y += temp_18.y;
-    mem_checksum.x += temp_19.x;
-            mem_checksum.y += temp_19.y;
-    mem_checksum.x += temp_20.x;
-            mem_checksum.y += temp_20.y;
-    mem_checksum.x += temp_21.x;
-            mem_checksum.y += temp_21.y;
-    mem_checksum.x += temp_22.x;
-            mem_checksum.y += temp_22.y;
-    mem_checksum.x += temp_23.x;
-            mem_checksum.y += temp_23.y;
-    mem_checksum.x += temp_24.x;
-            mem_checksum.y += temp_24.y;
-    mem_checksum.x += temp_25.x;
-            mem_checksum.y += temp_25.y;
-    mem_checksum.x += temp_26.x;
-            mem_checksum.y += temp_26.y;
-    mem_checksum.x += temp_27.x;
-            mem_checksum.y += temp_27.y;
-    mem_checksum.x += temp_28.x;
-            mem_checksum.y += temp_28.y;
-    mem_checksum.x += temp_29.x;
-            mem_checksum.y += temp_29.y;
-    mem_checksum.x += temp_30.x;
-            mem_checksum.y += temp_30.y;
-    mem_checksum.x += temp_31.x;
-            mem_checksum.y += temp_31.y;
-    
-            mem_checksum_t1.y = 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16, 32);
-            mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-            mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-            mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-            mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-    
-    temp_0.x += 0.001 * (mem_checksum_t1.x);
-    temp_0.y += 0.001 * (mem_checksum_t1.y);
-    // if(tid == 0 && blockIdx.x == 0)printf("kernel 3, %f\n", temp_0.x, temp_0.y);
-            
     sdata[__id[0] + ty * 1024] = temp_0;
     
     sdata[__id[16] + ty * 1024] = temp_16;

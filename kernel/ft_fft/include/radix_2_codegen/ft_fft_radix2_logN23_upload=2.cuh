@@ -22,9 +22,6 @@ __global__ void __launch_bounds__(256) fft_radix2_logN23_2(float2* inputs, float
     int k;
     int tmp_id;
     int n = 1, n_global = 1;
-    float2 mem_checksum;
-    mem_checksum.x = 0;
-    mem_checksum.y = 0;
     
     temp_0 = inputs[tx + (bx % 16) * 16 + (ty * 256 + 0) + (bx / 16) * 32768];
     temp_1 = inputs[tx + (bx % 16) * 16 + (ty * 256 + 4096) + (bx / 16) * 32768];
@@ -34,79 +31,6 @@ __global__ void __launch_bounds__(256) fft_radix2_logN23_2(float2* inputs, float
     temp_5 = inputs[tx + (bx % 16) * 16 + (ty * 256 + 20480) + (bx / 16) * 32768];
     temp_6 = inputs[tx + (bx % 16) * 16 + (ty * 256 + 24576) + (bx / 16) * 32768];
     temp_7 = inputs[tx + (bx % 16) * 16 + (ty * 256 + 28672) + (bx / 16) * 32768];
-    mem_checksum.x += temp_0.x;
-    mem_checksum.y += temp_0.y;
-    mem_checksum.x += temp_1.x;
-    mem_checksum.y += temp_1.y;
-    mem_checksum.x += temp_2.x;
-    mem_checksum.y += temp_2.y;
-    mem_checksum.x += temp_3.x;
-    mem_checksum.y += temp_3.y;
-    mem_checksum.x += temp_4.x;
-    mem_checksum.y += temp_4.y;
-    mem_checksum.x += temp_5.x;
-    mem_checksum.y += temp_5.y;
-    mem_checksum.x += temp_6.x;
-    mem_checksum.y += temp_6.y;
-    mem_checksum.x += temp_7.x;
-    mem_checksum.y += temp_7.y;
-    
-    int tid = tx + ty * blockDim.x;
-    int mem_check_i = N / 8;
-    
-    
-    float2 mem_checksum_t1,mem_checksum_t2;
-    mem_checksum_t1.x = 0;mem_checksum_t1.y = 0; 
-    mem_checksum_t2.x = 0;mem_checksum_t2.y = 0; 
-    sdata[tid] = mem_checksum;
-    __syncthreads();
-    // if(tid < 32){
-        mem_checksum_t1 = sdata[tid];
-        mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.x, 16, 32);
-        mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 8, 32);
-        mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 4, 32);
-        mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 2, 32);
-        mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 1, 32);
-    //if(tid < 32){
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-        
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16,32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-        
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16,32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-        
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16,32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-        
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16,32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-        
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16,32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-        mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-    //}
-    temp_0.x += 0.001 * (mem_checksum_t1.x);
-    temp_0.y += 0.001 * (mem_checksum_t1.y);
-    mem_check_i /= 2;
     __id[0] = 0 + ty;
     __id[1] = 16 + ty;
     __id[2] = 32 + ty;
@@ -693,35 +617,6 @@ __global__ void __launch_bounds__(256) fft_radix2_logN23_2(float2* inputs, float
     
     n_global *= 2;
     
-            mem_checksum.x = 0;
-            mem_checksum.y = 0;
-            mem_checksum.x += temp_0.x;
-            mem_checksum.y += temp_0.y;
-    mem_checksum.x += temp_1.x;
-            mem_checksum.y += temp_1.y;
-    mem_checksum.x += temp_2.x;
-            mem_checksum.y += temp_2.y;
-    mem_checksum.x += temp_3.x;
-            mem_checksum.y += temp_3.y;
-    mem_checksum.x += temp_4.x;
-            mem_checksum.y += temp_4.y;
-    mem_checksum.x += temp_5.x;
-            mem_checksum.y += temp_5.y;
-    mem_checksum.x += temp_6.x;
-            mem_checksum.y += temp_6.y;
-    mem_checksum.x += temp_7.x;
-            mem_checksum.y += temp_7.y;
-    
-            mem_checksum_t1.y = 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16, 32);
-            mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-            mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-            mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-            mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-    
-    temp_0.x += 0.001 * (mem_checksum_t1.x);
-    temp_0.y += 0.001 * (mem_checksum_t1.y);
-    // if(tid == 0 && blockIdx.x == 0)printf("kernel 3, %f\n", temp_0.x, temp_0.y);
-            
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + bx * 16) % 256) * (__id[0])) / (float)(32768), tmp_angle);
     MY_MUL(temp_0, tmp_angle, tmp);
     temp_0 = tmp;
