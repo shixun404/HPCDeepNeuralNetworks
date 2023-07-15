@@ -30,6 +30,7 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     r[2].x = -0.5f;
     r[2].y = 0.866f;
     float2 warp_checksum;
+    float2 tmp_angle_bk;
     
     temp_0 = inputs[0 * blockDim.x + tx];
     temp_1 = inputs[1 * blockDim.x + tx];
@@ -49,29 +50,35 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     __id[6] = 6 * blockDim.x + tx;
     __id[7] = 7 * blockDim.x + tx;
     
+    // j = 1;
     j = 1;
-    k = __id[4] % 1;
+    // k = __id[4] % 1;
+    k = 4 % 1;
+    
     MY_ANGLE2COMPLEX((float)(j * k) * -3.141592653589793f, tmp_angle);
+    tmp_angle_bk = tmp_angle;
     
-    tmp_angle_rot.x = 1.0f;
-    tmp_angle_rot.y = 0.0f;
-    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-    tmp_angle = tmp;
-    tmp_angle_rot.x = tmp_angle.y;
-    tmp_angle_rot.y = -tmp_angle.x;
+                    tmp_angle = tmp_angle_bk;
     
-    MY_MUL(temp_4, tmp_angle, tmp);
-    temp_4 = tmp;
-    
-    MY_MUL(temp_5, tmp_angle, tmp);
-    temp_5 = tmp;
-    
-    MY_MUL(temp_6, tmp_angle, tmp);
-    temp_6 = tmp;
-    
-    MY_MUL(temp_7, tmp_angle, tmp);
-    temp_7 = tmp;
-    
+        tmp_angle_rot.x = 1.0f;
+        tmp_angle_rot.y = 0.0f;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        tmp_angle = tmp;
+        tmp_angle_rot.x = tmp_angle.y;
+        tmp_angle_rot.y = -tmp_angle.x;
+        
+        MY_MUL(temp_4, tmp_angle, tmp);
+        temp_4 = tmp;
+        
+        MY_MUL(temp_5, tmp_angle, tmp);
+        temp_5 = tmp;
+        
+        MY_MUL(temp_6, tmp_angle, tmp);
+        temp_6 = tmp;
+        
+        MY_MUL(temp_7, tmp_angle, tmp);
+        temp_7 = tmp;
+        
     tmp = temp_0;
     MY_ADD(tmp, temp_4, temp_0);
     MY_SUB(tmp, temp_4, temp_4);
@@ -106,29 +113,35 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     n_global *= 2;
     
+    // j = 1;
     j = 1;
-    k = __id[2] % 2;
+    // k = __id[2] % 2;
+    k = 4 % 2;
+    
     MY_ANGLE2COMPLEX((float)(j * k) * -1.5707963267948966f, tmp_angle);
+    tmp_angle_bk = tmp_angle;
     
-    tmp_angle_rot.x = 1.0f;
-    tmp_angle_rot.y = 0.0f;
-    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-    tmp_angle = tmp;
-    tmp_angle_rot.x = tmp_angle.y;
-    tmp_angle_rot.y = -tmp_angle.x;
+                    tmp_angle = tmp_angle_bk;
     
-    MY_MUL(temp_2, tmp_angle, tmp);
-    temp_2 = tmp;
-    
-    MY_MUL(temp_6, tmp_angle_rot, tmp);
-    temp_6 = tmp;
-    
-    MY_MUL(temp_3, tmp_angle, tmp);
-    temp_3 = tmp;
-    
-    MY_MUL(temp_7, tmp_angle_rot, tmp);
-    temp_7 = tmp;
-    
+        tmp_angle_rot.x = 1.0f;
+        tmp_angle_rot.y = 0.0f;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        tmp_angle = tmp;
+        tmp_angle_rot.x = tmp_angle.y;
+        tmp_angle_rot.y = -tmp_angle.x;
+        
+        MY_MUL(temp_2, tmp_angle, tmp);
+        temp_2 = tmp;
+        
+        MY_MUL(temp_6, tmp_angle_rot, tmp);
+        temp_6 = tmp;
+        
+        MY_MUL(temp_3, tmp_angle, tmp);
+        temp_3 = tmp;
+        
+        MY_MUL(temp_7, tmp_angle_rot, tmp);
+        temp_7 = tmp;
+        
     tmp = temp_0;
     MY_ADD(tmp, temp_2, temp_0);
     MY_SUB(tmp, temp_2, temp_2);
@@ -163,36 +176,42 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     n_global *= 2;
     
+    // j = 1;
     j = 1;
-    k = __id[1] % 4;
+    // k = __id[1] % 4;
+    k = 4 % 4;
+    
     MY_ANGLE2COMPLEX((float)(j * k) * -0.7853981633974483f, tmp_angle);
+    tmp_angle_bk = tmp_angle;
     
-    tmp_angle_rot.x = 1.0f;
-    tmp_angle_rot.y = 0.0f;
-    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-    tmp_angle = tmp;
-    tmp_angle_rot.x = tmp_angle.y;
-    tmp_angle_rot.y = -tmp_angle.x;
+                    tmp_angle = tmp_angle_bk;
     
-    MY_MUL(temp_1, tmp_angle, tmp);
-    temp_1 = tmp;
-    
-    MY_MUL(temp_3, tmp_angle_rot, tmp);
-    temp_3 = tmp;
-    
-    tmp_angle_rot.x = 0.7071067811865476f;
-    tmp_angle_rot.y = -0.7071067811865475f;
-    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-    tmp_angle = tmp;
-    tmp_angle_rot.x = tmp_angle.y;
-    tmp_angle_rot.y = -tmp_angle.x;
-    
-    MY_MUL(temp_5, tmp_angle, tmp);
-    temp_5 = tmp;
-    
-    MY_MUL(temp_7, tmp_angle_rot, tmp);
-    temp_7 = tmp;
-    
+        tmp_angle_rot.x = 1.0f;
+        tmp_angle_rot.y = 0.0f;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        tmp_angle = tmp;
+        tmp_angle_rot.x = tmp_angle.y;
+        tmp_angle_rot.y = -tmp_angle.x;
+        
+        MY_MUL(temp_1, tmp_angle, tmp);
+        temp_1 = tmp;
+        
+        MY_MUL(temp_3, tmp_angle_rot, tmp);
+        temp_3 = tmp;
+        
+        tmp_angle_rot.x = 0.7071067811865476f;
+        tmp_angle_rot.y = -0.7071067811865475f;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        tmp_angle = tmp;
+        tmp_angle_rot.x = tmp_angle.y;
+        tmp_angle_rot.y = -tmp_angle.x;
+        
+        MY_MUL(temp_5, tmp_angle, tmp);
+        temp_5 = tmp;
+        
+        MY_MUL(temp_7, tmp_angle_rot, tmp);
+        temp_7 = tmp;
+        
     tmp = temp_0;
     MY_ADD(tmp, temp_1, temp_0);
     MY_SUB(tmp, temp_1, temp_1);
@@ -228,6 +247,38 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     n_global *= 2;
     
     
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 1024) * 0) / (float)(8192), tmp_angle);
+        MY_MUL(temp_0, tmp_angle, tmp);
+        temp_0 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 1024) * 1) / (float)(8192), tmp_angle);
+        MY_MUL(temp_4, tmp_angle, tmp);
+        temp_4 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 1024) * 2) / (float)(8192), tmp_angle);
+        MY_MUL(temp_2, tmp_angle, tmp);
+        temp_2 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 1024) * 3) / (float)(8192), tmp_angle);
+        MY_MUL(temp_6, tmp_angle, tmp);
+        temp_6 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 1024) * 4) / (float)(8192), tmp_angle);
+        MY_MUL(temp_1, tmp_angle, tmp);
+        temp_1 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 1024) * 5) / (float)(8192), tmp_angle);
+        MY_MUL(temp_5, tmp_angle, tmp);
+        temp_5 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 1024) * 6) / (float)(8192), tmp_angle);
+        MY_MUL(temp_3, tmp_angle, tmp);
+        temp_3 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 1024) * 7) / (float)(8192), tmp_angle);
+        MY_MUL(temp_7, tmp_angle, tmp);
+        temp_7 = tmp;
+        
     sdata[__id[0]] = temp_0;
     
     sdata[__id[4]] = temp_4;
@@ -244,7 +295,7 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     sdata[__id[7]] = temp_7;
     
-    __syncthreads();			
+    __syncthreads();
     
     temp_0 = sdata[0 * blockDim.x + tx];
     __id[0] = tx + 0 * 1024;
@@ -270,29 +321,35 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     temp_7 = sdata[7 * blockDim.x + tx];
     __id[7] = tx + 7 * 1024;
     
+    // j = 1;
     j = 1;
-    k = __id[4] % 8;
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.39269908169872414f, tmp_angle);
+    // k = __id[4] % 1;
+    k = 4 % 1;
     
-    tmp_angle_rot.x = 1.0f;
-    tmp_angle_rot.y = 0.0f;
-    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-    tmp_angle = tmp;
-    tmp_angle_rot.x = tmp_angle.y;
-    tmp_angle_rot.y = -tmp_angle.x;
+    MY_ANGLE2COMPLEX((float)(j * k) * -3.141592653589793f, tmp_angle);
+    tmp_angle_bk = tmp_angle;
     
-    MY_MUL(temp_4, tmp_angle, tmp);
-    temp_4 = tmp;
+                    tmp_angle = tmp_angle_bk;
     
-    MY_MUL(temp_5, tmp_angle, tmp);
-    temp_5 = tmp;
-    
-    MY_MUL(temp_6, tmp_angle, tmp);
-    temp_6 = tmp;
-    
-    MY_MUL(temp_7, tmp_angle, tmp);
-    temp_7 = tmp;
-    
+        tmp_angle_rot.x = 1.0f;
+        tmp_angle_rot.y = 0.0f;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        tmp_angle = tmp;
+        tmp_angle_rot.x = tmp_angle.y;
+        tmp_angle_rot.y = -tmp_angle.x;
+        
+        MY_MUL(temp_4, tmp_angle, tmp);
+        temp_4 = tmp;
+        
+        MY_MUL(temp_5, tmp_angle, tmp);
+        temp_5 = tmp;
+        
+        MY_MUL(temp_6, tmp_angle, tmp);
+        temp_6 = tmp;
+        
+        MY_MUL(temp_7, tmp_angle, tmp);
+        temp_7 = tmp;
+        
     tmp = temp_0;
     MY_ADD(tmp, temp_4, temp_0);
     MY_SUB(tmp, temp_4, temp_4);
@@ -327,29 +384,35 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     n_global *= 2;
     
+    // j = 1;
     j = 1;
-    k = __id[2] % 16;
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.19634954084936207f, tmp_angle);
+    // k = __id[2] % 2;
+    k = 4 % 2;
     
-    tmp_angle_rot.x = 1.0f;
-    tmp_angle_rot.y = 0.0f;
-    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-    tmp_angle = tmp;
-    tmp_angle_rot.x = tmp_angle.y;
-    tmp_angle_rot.y = -tmp_angle.x;
+    MY_ANGLE2COMPLEX((float)(j * k) * -1.5707963267948966f, tmp_angle);
+    tmp_angle_bk = tmp_angle;
     
-    MY_MUL(temp_2, tmp_angle, tmp);
-    temp_2 = tmp;
+                    tmp_angle = tmp_angle_bk;
     
-    MY_MUL(temp_6, tmp_angle_rot, tmp);
-    temp_6 = tmp;
-    
-    MY_MUL(temp_3, tmp_angle, tmp);
-    temp_3 = tmp;
-    
-    MY_MUL(temp_7, tmp_angle_rot, tmp);
-    temp_7 = tmp;
-    
+        tmp_angle_rot.x = 1.0f;
+        tmp_angle_rot.y = 0.0f;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        tmp_angle = tmp;
+        tmp_angle_rot.x = tmp_angle.y;
+        tmp_angle_rot.y = -tmp_angle.x;
+        
+        MY_MUL(temp_2, tmp_angle, tmp);
+        temp_2 = tmp;
+        
+        MY_MUL(temp_6, tmp_angle_rot, tmp);
+        temp_6 = tmp;
+        
+        MY_MUL(temp_3, tmp_angle, tmp);
+        temp_3 = tmp;
+        
+        MY_MUL(temp_7, tmp_angle_rot, tmp);
+        temp_7 = tmp;
+        
     tmp = temp_0;
     MY_ADD(tmp, temp_2, temp_0);
     MY_SUB(tmp, temp_2, temp_2);
@@ -384,36 +447,42 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     n_global *= 2;
     
+    // j = 1;
     j = 1;
-    k = __id[1] % 32;
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.09817477042468103f, tmp_angle);
+    // k = __id[1] % 4;
+    k = 4 % 4;
     
-    tmp_angle_rot.x = 1.0f;
-    tmp_angle_rot.y = 0.0f;
-    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-    tmp_angle = tmp;
-    tmp_angle_rot.x = tmp_angle.y;
-    tmp_angle_rot.y = -tmp_angle.x;
+    MY_ANGLE2COMPLEX((float)(j * k) * -0.7853981633974483f, tmp_angle);
+    tmp_angle_bk = tmp_angle;
     
-    MY_MUL(temp_1, tmp_angle, tmp);
-    temp_1 = tmp;
+                    tmp_angle = tmp_angle_bk;
     
-    MY_MUL(temp_3, tmp_angle_rot, tmp);
-    temp_3 = tmp;
-    
-    tmp_angle_rot.x = 0.7071067811865476f;
-    tmp_angle_rot.y = -0.7071067811865475f;
-    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-    tmp_angle = tmp;
-    tmp_angle_rot.x = tmp_angle.y;
-    tmp_angle_rot.y = -tmp_angle.x;
-    
-    MY_MUL(temp_5, tmp_angle, tmp);
-    temp_5 = tmp;
-    
-    MY_MUL(temp_7, tmp_angle_rot, tmp);
-    temp_7 = tmp;
-    
+        tmp_angle_rot.x = 1.0f;
+        tmp_angle_rot.y = 0.0f;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        tmp_angle = tmp;
+        tmp_angle_rot.x = tmp_angle.y;
+        tmp_angle_rot.y = -tmp_angle.x;
+        
+        MY_MUL(temp_1, tmp_angle, tmp);
+        temp_1 = tmp;
+        
+        MY_MUL(temp_3, tmp_angle_rot, tmp);
+        temp_3 = tmp;
+        
+        tmp_angle_rot.x = 0.7071067811865476f;
+        tmp_angle_rot.y = -0.7071067811865475f;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        tmp_angle = tmp;
+        tmp_angle_rot.x = tmp_angle.y;
+        tmp_angle_rot.y = -tmp_angle.x;
+        
+        MY_MUL(temp_5, tmp_angle, tmp);
+        temp_5 = tmp;
+        
+        MY_MUL(temp_7, tmp_angle_rot, tmp);
+        temp_7 = tmp;
+        
     tmp = temp_0;
     MY_ADD(tmp, temp_1, temp_0);
     MY_SUB(tmp, temp_1, temp_1);
@@ -450,6 +519,38 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     __syncthreads();
     
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 128) * 0) / (float)(1024.0), tmp_angle);
+        MY_MUL(temp_0, tmp_angle, tmp);
+        temp_0 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 128) * 1) / (float)(1024.0), tmp_angle);
+        MY_MUL(temp_4, tmp_angle, tmp);
+        temp_4 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 128) * 2) / (float)(1024.0), tmp_angle);
+        MY_MUL(temp_2, tmp_angle, tmp);
+        temp_2 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 128) * 3) / (float)(1024.0), tmp_angle);
+        MY_MUL(temp_6, tmp_angle, tmp);
+        temp_6 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 128) * 4) / (float)(1024.0), tmp_angle);
+        MY_MUL(temp_1, tmp_angle, tmp);
+        temp_1 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 128) * 5) / (float)(1024.0), tmp_angle);
+        MY_MUL(temp_5, tmp_angle, tmp);
+        temp_5 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 128) * 6) / (float)(1024.0), tmp_angle);
+        MY_MUL(temp_3, tmp_angle, tmp);
+        temp_3 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 128) * 7) / (float)(1024.0), tmp_angle);
+        MY_MUL(temp_7, tmp_angle, tmp);
+        temp_7 = tmp;
+        
     sdata[__id[0]] = temp_0;
     
     sdata[__id[4]] = temp_4;
@@ -466,7 +567,7 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     sdata[__id[7]] = temp_7;
     
-    __syncthreads();			
+    __syncthreads();
     
     temp_0 = sdata[0 * blockDim.x + tx];
     __id[0] = tx + 0 * 1024;
@@ -492,29 +593,35 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     temp_7 = sdata[7 * blockDim.x + tx];
     __id[7] = tx + 7 * 1024;
     
+    // j = 1;
     j = 1;
-    k = __id[4] % 64;
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.04908738521234052f, tmp_angle);
+    // k = __id[4] % 1;
+    k = 4 % 1;
     
-    tmp_angle_rot.x = 1.0f;
-    tmp_angle_rot.y = 0.0f;
-    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-    tmp_angle = tmp;
-    tmp_angle_rot.x = tmp_angle.y;
-    tmp_angle_rot.y = -tmp_angle.x;
+    MY_ANGLE2COMPLEX((float)(j * k) * -3.141592653589793f, tmp_angle);
+    tmp_angle_bk = tmp_angle;
     
-    MY_MUL(temp_4, tmp_angle, tmp);
-    temp_4 = tmp;
+                    tmp_angle = tmp_angle_bk;
     
-    MY_MUL(temp_5, tmp_angle, tmp);
-    temp_5 = tmp;
-    
-    MY_MUL(temp_6, tmp_angle, tmp);
-    temp_6 = tmp;
-    
-    MY_MUL(temp_7, tmp_angle, tmp);
-    temp_7 = tmp;
-    
+        tmp_angle_rot.x = 1.0f;
+        tmp_angle_rot.y = 0.0f;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        tmp_angle = tmp;
+        tmp_angle_rot.x = tmp_angle.y;
+        tmp_angle_rot.y = -tmp_angle.x;
+        
+        MY_MUL(temp_4, tmp_angle, tmp);
+        temp_4 = tmp;
+        
+        MY_MUL(temp_5, tmp_angle, tmp);
+        temp_5 = tmp;
+        
+        MY_MUL(temp_6, tmp_angle, tmp);
+        temp_6 = tmp;
+        
+        MY_MUL(temp_7, tmp_angle, tmp);
+        temp_7 = tmp;
+        
     tmp = temp_0;
     MY_ADD(tmp, temp_4, temp_0);
     MY_SUB(tmp, temp_4, temp_4);
@@ -549,29 +656,35 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     n_global *= 2;
     
+    // j = 1;
     j = 1;
-    k = __id[2] % 128;
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.02454369260617026f, tmp_angle);
+    // k = __id[2] % 2;
+    k = 4 % 2;
     
-    tmp_angle_rot.x = 1.0f;
-    tmp_angle_rot.y = 0.0f;
-    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-    tmp_angle = tmp;
-    tmp_angle_rot.x = tmp_angle.y;
-    tmp_angle_rot.y = -tmp_angle.x;
+    MY_ANGLE2COMPLEX((float)(j * k) * -1.5707963267948966f, tmp_angle);
+    tmp_angle_bk = tmp_angle;
     
-    MY_MUL(temp_2, tmp_angle, tmp);
-    temp_2 = tmp;
+                    tmp_angle = tmp_angle_bk;
     
-    MY_MUL(temp_6, tmp_angle_rot, tmp);
-    temp_6 = tmp;
-    
-    MY_MUL(temp_3, tmp_angle, tmp);
-    temp_3 = tmp;
-    
-    MY_MUL(temp_7, tmp_angle_rot, tmp);
-    temp_7 = tmp;
-    
+        tmp_angle_rot.x = 1.0f;
+        tmp_angle_rot.y = 0.0f;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        tmp_angle = tmp;
+        tmp_angle_rot.x = tmp_angle.y;
+        tmp_angle_rot.y = -tmp_angle.x;
+        
+        MY_MUL(temp_2, tmp_angle, tmp);
+        temp_2 = tmp;
+        
+        MY_MUL(temp_6, tmp_angle_rot, tmp);
+        temp_6 = tmp;
+        
+        MY_MUL(temp_3, tmp_angle, tmp);
+        temp_3 = tmp;
+        
+        MY_MUL(temp_7, tmp_angle_rot, tmp);
+        temp_7 = tmp;
+        
     tmp = temp_0;
     MY_ADD(tmp, temp_2, temp_0);
     MY_SUB(tmp, temp_2, temp_2);
@@ -606,36 +719,42 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     n_global *= 2;
     
+    // j = 1;
     j = 1;
-    k = __id[1] % 256;
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.01227184630308513f, tmp_angle);
+    // k = __id[1] % 4;
+    k = 4 % 4;
     
-    tmp_angle_rot.x = 1.0f;
-    tmp_angle_rot.y = 0.0f;
-    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-    tmp_angle = tmp;
-    tmp_angle_rot.x = tmp_angle.y;
-    tmp_angle_rot.y = -tmp_angle.x;
+    MY_ANGLE2COMPLEX((float)(j * k) * -0.7853981633974483f, tmp_angle);
+    tmp_angle_bk = tmp_angle;
     
-    MY_MUL(temp_1, tmp_angle, tmp);
-    temp_1 = tmp;
+                    tmp_angle = tmp_angle_bk;
     
-    MY_MUL(temp_3, tmp_angle_rot, tmp);
-    temp_3 = tmp;
-    
-    tmp_angle_rot.x = 0.7071067811865476f;
-    tmp_angle_rot.y = -0.7071067811865475f;
-    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-    tmp_angle = tmp;
-    tmp_angle_rot.x = tmp_angle.y;
-    tmp_angle_rot.y = -tmp_angle.x;
-    
-    MY_MUL(temp_5, tmp_angle, tmp);
-    temp_5 = tmp;
-    
-    MY_MUL(temp_7, tmp_angle_rot, tmp);
-    temp_7 = tmp;
-    
+        tmp_angle_rot.x = 1.0f;
+        tmp_angle_rot.y = 0.0f;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        tmp_angle = tmp;
+        tmp_angle_rot.x = tmp_angle.y;
+        tmp_angle_rot.y = -tmp_angle.x;
+        
+        MY_MUL(temp_1, tmp_angle, tmp);
+        temp_1 = tmp;
+        
+        MY_MUL(temp_3, tmp_angle_rot, tmp);
+        temp_3 = tmp;
+        
+        tmp_angle_rot.x = 0.7071067811865476f;
+        tmp_angle_rot.y = -0.7071067811865475f;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        tmp_angle = tmp;
+        tmp_angle_rot.x = tmp_angle.y;
+        tmp_angle_rot.y = -tmp_angle.x;
+        
+        MY_MUL(temp_5, tmp_angle, tmp);
+        temp_5 = tmp;
+        
+        MY_MUL(temp_7, tmp_angle_rot, tmp);
+        temp_7 = tmp;
+        
     tmp = temp_0;
     MY_ADD(tmp, temp_1, temp_0);
     MY_SUB(tmp, temp_1, temp_1);
@@ -672,6 +791,38 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     __syncthreads();
     
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 16) * 0) / (float)(128.0), tmp_angle);
+        MY_MUL(temp_0, tmp_angle, tmp);
+        temp_0 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 16) * 1) / (float)(128.0), tmp_angle);
+        MY_MUL(temp_4, tmp_angle, tmp);
+        temp_4 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 16) * 2) / (float)(128.0), tmp_angle);
+        MY_MUL(temp_2, tmp_angle, tmp);
+        temp_2 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 16) * 3) / (float)(128.0), tmp_angle);
+        MY_MUL(temp_6, tmp_angle, tmp);
+        temp_6 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 16) * 4) / (float)(128.0), tmp_angle);
+        MY_MUL(temp_1, tmp_angle, tmp);
+        temp_1 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 16) * 5) / (float)(128.0), tmp_angle);
+        MY_MUL(temp_5, tmp_angle, tmp);
+        temp_5 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 16) * 6) / (float)(128.0), tmp_angle);
+        MY_MUL(temp_3, tmp_angle, tmp);
+        temp_3 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 16) * 7) / (float)(128.0), tmp_angle);
+        MY_MUL(temp_7, tmp_angle, tmp);
+        temp_7 = tmp;
+        
     sdata[__id[0]] = temp_0;
     
     sdata[__id[4]] = temp_4;
@@ -688,7 +839,7 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     sdata[__id[7]] = temp_7;
     
-    __syncthreads();			
+    __syncthreads();
     
     temp_0 = sdata[0 * blockDim.x + tx];
     __id[0] = tx + 0 * 1024;
@@ -714,29 +865,35 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     temp_7 = sdata[7 * blockDim.x + tx];
     __id[7] = tx + 7 * 1024;
     
+    // j = 1;
     j = 1;
-    k = __id[4] % 512;
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.006135923151542565f, tmp_angle);
+    // k = __id[4] % 1;
+    k = 4 % 1;
     
-    tmp_angle_rot.x = 1.0f;
-    tmp_angle_rot.y = 0.0f;
-    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-    tmp_angle = tmp;
-    tmp_angle_rot.x = tmp_angle.y;
-    tmp_angle_rot.y = -tmp_angle.x;
+    MY_ANGLE2COMPLEX((float)(j * k) * -3.141592653589793f, tmp_angle);
+    tmp_angle_bk = tmp_angle;
     
-    MY_MUL(temp_4, tmp_angle, tmp);
-    temp_4 = tmp;
+                    tmp_angle = tmp_angle_bk;
     
-    MY_MUL(temp_5, tmp_angle, tmp);
-    temp_5 = tmp;
-    
-    MY_MUL(temp_6, tmp_angle, tmp);
-    temp_6 = tmp;
-    
-    MY_MUL(temp_7, tmp_angle, tmp);
-    temp_7 = tmp;
-    
+        tmp_angle_rot.x = 1.0f;
+        tmp_angle_rot.y = 0.0f;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        tmp_angle = tmp;
+        tmp_angle_rot.x = tmp_angle.y;
+        tmp_angle_rot.y = -tmp_angle.x;
+        
+        MY_MUL(temp_4, tmp_angle, tmp);
+        temp_4 = tmp;
+        
+        MY_MUL(temp_5, tmp_angle, tmp);
+        temp_5 = tmp;
+        
+        MY_MUL(temp_6, tmp_angle, tmp);
+        temp_6 = tmp;
+        
+        MY_MUL(temp_7, tmp_angle, tmp);
+        temp_7 = tmp;
+        
     tmp = temp_0;
     MY_ADD(tmp, temp_4, temp_0);
     MY_SUB(tmp, temp_4, temp_4);
@@ -771,29 +928,35 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     n_global *= 2;
     
+    // j = 1;
     j = 1;
-    k = __id[2] % 1024;
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.0030679615757712823f, tmp_angle);
+    // k = __id[2] % 2;
+    k = 4 % 2;
     
-    tmp_angle_rot.x = 1.0f;
-    tmp_angle_rot.y = 0.0f;
-    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-    tmp_angle = tmp;
-    tmp_angle_rot.x = tmp_angle.y;
-    tmp_angle_rot.y = -tmp_angle.x;
+    MY_ANGLE2COMPLEX((float)(j * k) * -1.5707963267948966f, tmp_angle);
+    tmp_angle_bk = tmp_angle;
     
-    MY_MUL(temp_2, tmp_angle, tmp);
-    temp_2 = tmp;
+                    tmp_angle = tmp_angle_bk;
     
-    MY_MUL(temp_6, tmp_angle_rot, tmp);
-    temp_6 = tmp;
-    
-    MY_MUL(temp_3, tmp_angle, tmp);
-    temp_3 = tmp;
-    
-    MY_MUL(temp_7, tmp_angle_rot, tmp);
-    temp_7 = tmp;
-    
+        tmp_angle_rot.x = 1.0f;
+        tmp_angle_rot.y = 0.0f;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        tmp_angle = tmp;
+        tmp_angle_rot.x = tmp_angle.y;
+        tmp_angle_rot.y = -tmp_angle.x;
+        
+        MY_MUL(temp_2, tmp_angle, tmp);
+        temp_2 = tmp;
+        
+        MY_MUL(temp_6, tmp_angle_rot, tmp);
+        temp_6 = tmp;
+        
+        MY_MUL(temp_3, tmp_angle, tmp);
+        temp_3 = tmp;
+        
+        MY_MUL(temp_7, tmp_angle_rot, tmp);
+        temp_7 = tmp;
+        
     tmp = temp_0;
     MY_ADD(tmp, temp_2, temp_0);
     MY_SUB(tmp, temp_2, temp_2);
@@ -828,36 +991,42 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     n_global *= 2;
     
+    // j = 1;
     j = 1;
-    k = __id[1] % 2048;
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.0015339807878856412f, tmp_angle);
+    // k = __id[1] % 4;
+    k = 4 % 4;
     
-    tmp_angle_rot.x = 1.0f;
-    tmp_angle_rot.y = 0.0f;
-    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-    tmp_angle = tmp;
-    tmp_angle_rot.x = tmp_angle.y;
-    tmp_angle_rot.y = -tmp_angle.x;
+    MY_ANGLE2COMPLEX((float)(j * k) * -0.7853981633974483f, tmp_angle);
+    tmp_angle_bk = tmp_angle;
     
-    MY_MUL(temp_1, tmp_angle, tmp);
-    temp_1 = tmp;
+                    tmp_angle = tmp_angle_bk;
     
-    MY_MUL(temp_3, tmp_angle_rot, tmp);
-    temp_3 = tmp;
-    
-    tmp_angle_rot.x = 0.7071067811865476f;
-    tmp_angle_rot.y = -0.7071067811865475f;
-    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-    tmp_angle = tmp;
-    tmp_angle_rot.x = tmp_angle.y;
-    tmp_angle_rot.y = -tmp_angle.x;
-    
-    MY_MUL(temp_5, tmp_angle, tmp);
-    temp_5 = tmp;
-    
-    MY_MUL(temp_7, tmp_angle_rot, tmp);
-    temp_7 = tmp;
-    
+        tmp_angle_rot.x = 1.0f;
+        tmp_angle_rot.y = 0.0f;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        tmp_angle = tmp;
+        tmp_angle_rot.x = tmp_angle.y;
+        tmp_angle_rot.y = -tmp_angle.x;
+        
+        MY_MUL(temp_1, tmp_angle, tmp);
+        temp_1 = tmp;
+        
+        MY_MUL(temp_3, tmp_angle_rot, tmp);
+        temp_3 = tmp;
+        
+        tmp_angle_rot.x = 0.7071067811865476f;
+        tmp_angle_rot.y = -0.7071067811865475f;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        tmp_angle = tmp;
+        tmp_angle_rot.x = tmp_angle.y;
+        tmp_angle_rot.y = -tmp_angle.x;
+        
+        MY_MUL(temp_5, tmp_angle, tmp);
+        temp_5 = tmp;
+        
+        MY_MUL(temp_7, tmp_angle_rot, tmp);
+        temp_7 = tmp;
+        
     tmp = temp_0;
     MY_ADD(tmp, temp_1, temp_0);
     MY_SUB(tmp, temp_1, temp_1);
@@ -894,6 +1063,38 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     __syncthreads();
     
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 2) * 0) / (float)(16.0), tmp_angle);
+        MY_MUL(temp_0, tmp_angle, tmp);
+        temp_0 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 2) * 1) / (float)(16.0), tmp_angle);
+        MY_MUL(temp_4, tmp_angle, tmp);
+        temp_4 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 2) * 2) / (float)(16.0), tmp_angle);
+        MY_MUL(temp_2, tmp_angle, tmp);
+        temp_2 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 2) * 3) / (float)(16.0), tmp_angle);
+        MY_MUL(temp_6, tmp_angle, tmp);
+        temp_6 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 2) * 4) / (float)(16.0), tmp_angle);
+        MY_MUL(temp_1, tmp_angle, tmp);
+        temp_1 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 2) * 5) / (float)(16.0), tmp_angle);
+        MY_MUL(temp_5, tmp_angle, tmp);
+        temp_5 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 2) * 6) / (float)(16.0), tmp_angle);
+        MY_MUL(temp_3, tmp_angle, tmp);
+        temp_3 = tmp;
+        
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 2) * 7) / (float)(16.0), tmp_angle);
+        MY_MUL(temp_7, tmp_angle, tmp);
+        temp_7 = tmp;
+        
     sdata[__id[0]] = temp_0;
     
     sdata[__id[4]] = temp_4;
@@ -910,7 +1111,7 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     
     sdata[__id[7]] = temp_7;
     
-    __syncthreads();			
+    __syncthreads();
     
     temp_0 = sdata[0 * blockDim.x + tx];
     __id[0] = tx + 0 * 1024;
@@ -936,36 +1137,62 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     temp_7 = sdata[7 * blockDim.x + tx];
     __id[7] = tx + 7 * 1024;
     
+    // j = 4;
     j = 1;
-    k = __id[4] % 4096;
-    MY_ANGLE2COMPLEX((float)(j * k) * -0.0007669903939428206f, tmp_angle);
+    // k = __id[4] % 1;
+    k = 1 % 1;
     
-    tmp_angle_rot.x = 1.0f;
-    tmp_angle_rot.y = 0.0f;
-    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-    tmp_angle = tmp;
-    tmp_angle_rot.x = tmp_angle.y;
-    tmp_angle_rot.y = -tmp_angle.x;
+    MY_ANGLE2COMPLEX((float)(j * k) * -3.141592653589793f, tmp_angle);
+    tmp_angle_bk = tmp_angle;
     
-    MY_MUL(temp_4, tmp_angle, tmp);
-    temp_4 = tmp;
+                    tmp_angle = tmp_angle_bk;
     
-    MY_MUL(temp_6, tmp_angle_rot, tmp);
-    temp_6 = tmp;
+        tmp_angle_rot.x = 1.0f;
+        tmp_angle_rot.y = 0.0f;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        tmp_angle = tmp;
+        tmp_angle_rot.x = tmp_angle.y;
+        tmp_angle_rot.y = -tmp_angle.x;
+        
+        MY_MUL(temp_4, tmp_angle, tmp);
+        temp_4 = tmp;
+        
+                    tmp_angle = tmp_angle_bk;
     
-    tmp_angle_rot.x = 0.7071067811865476f;
-    tmp_angle_rot.y = -0.7071067811865475f;
-    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-    tmp_angle = tmp;
-    tmp_angle_rot.x = tmp_angle.y;
-    tmp_angle_rot.y = -tmp_angle.x;
+        tmp_angle_rot.x = 1.0f;
+        tmp_angle_rot.y = 0.0f;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        tmp_angle = tmp;
+        tmp_angle_rot.x = tmp_angle.y;
+        tmp_angle_rot.y = -tmp_angle.x;
+        
+        MY_MUL(temp_5, tmp_angle, tmp);
+        temp_5 = tmp;
+        
+                    tmp_angle = tmp_angle_bk;
     
-    MY_MUL(temp_5, tmp_angle, tmp);
-    temp_5 = tmp;
+        tmp_angle_rot.x = 1.0f;
+        tmp_angle_rot.y = 0.0f;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        tmp_angle = tmp;
+        tmp_angle_rot.x = tmp_angle.y;
+        tmp_angle_rot.y = -tmp_angle.x;
+        
+        MY_MUL(temp_6, tmp_angle, tmp);
+        temp_6 = tmp;
+        
+                    tmp_angle = tmp_angle_bk;
     
-    MY_MUL(temp_7, tmp_angle_rot, tmp);
-    temp_7 = tmp;
-    
+        tmp_angle_rot.x = 1.0f;
+        tmp_angle_rot.y = 0.0f;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        tmp_angle = tmp;
+        tmp_angle_rot.x = tmp_angle.y;
+        tmp_angle_rot.y = -tmp_angle.x;
+        
+        MY_MUL(temp_7, tmp_angle, tmp);
+        temp_7 = tmp;
+        
     tmp = temp_0;
     MY_ADD(tmp, temp_4, temp_0);
     MY_SUB(tmp, temp_4, temp_4);
@@ -999,13 +1226,13 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN13(float2* inputs, float2
     __id[7] = tmp_id + 4096;
     
     n_global *= 2;
-    outputs[__id[0]] = temp_0;
-    outputs[__id[1]] = temp_1;
-    outputs[__id[2]] = temp_2;
     outputs[__id[3]] = temp_3;
     outputs[__id[4]] = temp_4;
-    outputs[__id[5]] = temp_5;
+    outputs[__id[2]] = temp_2;
     outputs[__id[6]] = temp_6;
+    outputs[__id[7]] = temp_7;
+    outputs[__id[5]] = temp_5;
+    outputs[__id[3]] = temp_3;
     outputs[__id[7]] = temp_7;
     
     }

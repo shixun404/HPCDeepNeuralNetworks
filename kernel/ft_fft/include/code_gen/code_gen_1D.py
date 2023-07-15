@@ -64,6 +64,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}'
     r[2].x = -0.5f;
     r[2].y = 0.866f;
     float2 warp_checksum;
+    float2 tmp_angle_bk;
     '''
     n = 1
     n_global = 1
@@ -77,41 +78,53 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}'
     for i in range(signal_per_thread):
         ft_fft += f'''__id[{i}] = {i} * blockDim.x + tx;
     '''
+    
     for stage_id in range(len(plan)):
         if True:
-            n = 1 if twiddle_type[stage_id] == 0 else n_global // (N // signal_per_thread)
+            batch_size = 1 if twiddle_type[stage_id] == 0 else n_global // (N // signal_per_thread)
+            n = 1
+            n_global_ = 1
             for j in range(plan[stage_id]):
                 i = 0 + signal_per_thread // radix
                 ft_fft += f'''
-    j = {int(i / (signal_per_thread // radix))};
-    k = __id[{order[signal_per_thread - offset + i]}] % {n_global};
-    MY_ANGLE2COMPLEX((float)(j * k) * {(-2.0 * M_PI / (radix * n_global))}f, tmp_angle);
+    // j = {int(i / ((2 ** plan[stage_id]) // radix))};
+    j = {int(i / ((signal_per_thread) // radix))};
+    // k = __id[{order[signal_per_thread - offset + i]}] % {n_global_};
+    k = {i // batch_size } % {n_global_};
+    
+    MY_ANGLE2COMPLEX((float)(j * k) * {(-2.0 * M_PI / (radix * n_global_))}f, tmp_angle);
+    tmp_angle_bk = tmp_angle;
     '''
-                for k in range(max(1, n // 2)):
-                    i = k + signal_per_thread // radix
-                    ft_fft += f'''
-    tmp_angle_rot.x = {cos(- M_PI / float(n)) if k != 0 else 1.}f;
-    tmp_angle_rot.y = {sin(- M_PI / float(n)) if k != 0 else 0.}f;
-    MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-    tmp_angle = tmp;
-    tmp_angle_rot.x = tmp_angle.y;
-    tmp_angle_rot.y = -tmp_angle.x;
+                
+                for batch in range(batch_size):
+                    ft_fft += '''
+                    tmp_angle = tmp_angle_bk;
     '''
-                    for kk in range(signal_per_thread // radix // n):
-                        i = kk * n + k + signal_per_thread // radix
+                    for k in range(max(1, n // 2)):
+                        i = (k + signal_per_thread // radix) * batch_size + batch
                         ft_fft += f'''
-    MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle, tmp);
-    temp_{order[signal_per_thread - offset + i]} = tmp;
-    '''
-                        if n // 2 != 0:
-                            i += n // 2
+        tmp_angle_rot.x = {cos(- M_PI / float(n)) if k != 0 else 1.}f;
+        tmp_angle_rot.y = {sin(- M_PI / float(n)) if k != 0 else 0.}f;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        tmp_angle = tmp;
+        tmp_angle_rot.x = tmp_angle.y;
+        tmp_angle_rot.y = -tmp_angle.x;
+        '''
+                        for kk in range(signal_per_thread // (radix * batch_size *  n)):
+                            i = (kk * n + k) * batch_size + batch + signal_per_thread // radix
                             ft_fft += f'''
-    MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle_rot, tmp);
-    temp_{order[signal_per_thread - offset + i]} = tmp;
-    '''
+        MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle, tmp);
+        temp_{order[signal_per_thread - offset + i]} = tmp;
+        '''
+                            if n // 2 != 0:
+                                i += (n // 2) * batch_size
+                                ft_fft += f'''
+        MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle_rot, tmp);
+        temp_{order[signal_per_thread - offset + i]} = tmp;
+        '''
                 for i in range(signal_per_thread // radix):
-                    tmp_id_left = (i // n) * 2 * n + (i % n)
-                    tmp_id_right = (i // n) * 2 * n + (i % n) + n
+                    tmp_id_left = ((i // batch_size) // n) * 2 * n * batch_size + ((i // batch_size) % n)
+                    tmp_id_right = ((i // batch_size) // n) * 2 * n * batch_size + ((i // batch_size) % n) + n * batch_size
                     ft_fft += f'''
     tmp = temp_{order[i + signal_per_thread - offset]};
     MY_ADD(tmp, temp_{order[i + signal_per_thread + int(signal_per_thread / 2) - offset]}, temp_{order[i + signal_per_thread - offset]});
@@ -130,17 +143,21 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}'
                 offset = 0 if  offset > 0 else signal_per_thread
                 n *= radix
                 n_global *= radix
+                n_global_ *= radix
 
         if twiddle_type[stage_id] == 0:
             ft_fft += f'''
     __syncthreads();
     ''' if stage_id != 0 else '''
     '''
-            for i in range(signal_per_thread):    
-    #             ft_fft += f'''
-    # MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx % {int(N__ // (2 ** plan[stage_id]))}) * {i}) / (float)({N__}), tmp_angle);
-    # MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle, tmp);
-    # '''
+            for batch in range(batch_size):
+                for i in range(signal_per_thread):    
+                    ft_fft += f'''
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + {i % (signal_per_thread // (2 ** plan[stage_id]))} * {(signal_per_thread // (2 ** plan[stage_id]))}) % {int(N__ // (2 ** plan[stage_id]))}) * {i // (signal_per_thread // (2 ** plan[stage_id]))}) / (float)({N__}), tmp_angle);
+        MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle, tmp);
+        temp_{order[signal_per_thread - offset + i]} = tmp;
+        '''
+            for i in range(signal_per_thread):
                 ft_fft += f'''
     sdata[__id[{order[signal_per_thread - offset + i]}]] = temp_{order[signal_per_thread - offset + i]};
     ''' if exponent == 13 else f'''
@@ -148,7 +165,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}'
     (__id[{order[signal_per_thread - offset + i]}] % 16)] = temp_{order[signal_per_thread - offset + i]};
     '''
             ft_fft += f'''
-    __syncthreads();			
+    __syncthreads();
     '''
             for i in range(signal_per_thread):
                 ft_fft += f'''

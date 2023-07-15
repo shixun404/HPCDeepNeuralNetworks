@@ -24,7 +24,7 @@ if __name__ =="__main__":
             f.write(fft_kernel)
         i += 1
         N *= radix
-    # assert 0
+    assert 0
     while N <= 2 ** 22:
         
         N = int(radix ** df['logN'][i-1])
