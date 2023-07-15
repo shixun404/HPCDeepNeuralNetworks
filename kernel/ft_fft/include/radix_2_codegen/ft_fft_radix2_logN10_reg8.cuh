@@ -79,40 +79,40 @@ __global__ void __launch_bounds__(128) fft_radix2_logN10(float2* inputs, float2*
         MY_MUL(temp_7, tmp_angle, tmp);
         temp_7 = tmp;
         
-    tmp = temp_0;
-    MY_ADD(tmp, temp_4, temp_0);
-    MY_SUB(tmp, temp_4, temp_4);
-    tmp_id = __id[0];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[0] = tmp_id;
-    __id[4] = tmp_id + 1;
-    
-    tmp = temp_1;
-    MY_ADD(tmp, temp_5, temp_1);
-    MY_SUB(tmp, temp_5, temp_5);
-    tmp_id = __id[1];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[1] = tmp_id;
-    __id[5] = tmp_id + 1;
-    
-    tmp = temp_2;
-    MY_ADD(tmp, temp_6, temp_2);
-    MY_SUB(tmp, temp_6, temp_6);
-    tmp_id = __id[2];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[2] = tmp_id;
-    __id[6] = tmp_id + 1;
-    
-    tmp = temp_3;
-    MY_ADD(tmp, temp_7, temp_3);
-    MY_SUB(tmp, temp_7, temp_7);
-    tmp_id = __id[3];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[3] = tmp_id;
-    __id[7] = tmp_id + 1;
-    
-    n_global *= 2;
-    
+        tmp = temp_0;
+        MY_ADD(tmp, temp_4, temp_0);
+        MY_SUB(tmp, temp_4, temp_4);
+        tmp_id = __id[0];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[0] = tmp_id;
+        __id[4] = tmp_id + 1;
+        
+        tmp = temp_1;
+        MY_ADD(tmp, temp_5, temp_1);
+        MY_SUB(tmp, temp_5, temp_5);
+        tmp_id = __id[1];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[1] = tmp_id;
+        __id[5] = tmp_id + 1;
+        
+        tmp = temp_2;
+        MY_ADD(tmp, temp_6, temp_2);
+        MY_SUB(tmp, temp_6, temp_6);
+        tmp_id = __id[2];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[2] = tmp_id;
+        __id[6] = tmp_id + 1;
+        
+        tmp = temp_3;
+        MY_ADD(tmp, temp_7, temp_3);
+        MY_SUB(tmp, temp_7, temp_7);
+        tmp_id = __id[3];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[3] = tmp_id;
+        __id[7] = tmp_id + 1;
+        
+        n_global *= 2;
+        
     // j = 1;
     j = 1;
     // k = __id[2] % 2;
@@ -142,40 +142,40 @@ __global__ void __launch_bounds__(128) fft_radix2_logN10(float2* inputs, float2*
         MY_MUL(temp_7, tmp_angle_rot, tmp);
         temp_7 = tmp;
         
-    tmp = temp_0;
-    MY_ADD(tmp, temp_2, temp_0);
-    MY_SUB(tmp, temp_2, temp_2);
-    tmp_id = __id[0];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[0] = tmp_id;
-    __id[2] = tmp_id + 2;
-    
-    tmp = temp_4;
-    MY_ADD(tmp, temp_6, temp_4);
-    MY_SUB(tmp, temp_6, temp_6);
-    tmp_id = __id[4];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[4] = tmp_id;
-    __id[6] = tmp_id + 2;
-    
-    tmp = temp_1;
-    MY_ADD(tmp, temp_3, temp_1);
-    MY_SUB(tmp, temp_3, temp_3);
-    tmp_id = __id[1];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[1] = tmp_id;
-    __id[3] = tmp_id + 2;
-    
-    tmp = temp_5;
-    MY_ADD(tmp, temp_7, temp_5);
-    MY_SUB(tmp, temp_7, temp_7);
-    tmp_id = __id[5];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[5] = tmp_id;
-    __id[7] = tmp_id + 2;
-    
-    n_global *= 2;
-    
+        tmp = temp_0;
+        MY_ADD(tmp, temp_2, temp_0);
+        MY_SUB(tmp, temp_2, temp_2);
+        tmp_id = __id[0];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[0] = tmp_id;
+        __id[2] = tmp_id + 2;
+        
+        tmp = temp_4;
+        MY_ADD(tmp, temp_6, temp_4);
+        MY_SUB(tmp, temp_6, temp_6);
+        tmp_id = __id[4];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[4] = tmp_id;
+        __id[6] = tmp_id + 2;
+        
+        tmp = temp_1;
+        MY_ADD(tmp, temp_3, temp_1);
+        MY_SUB(tmp, temp_3, temp_3);
+        tmp_id = __id[1];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[1] = tmp_id;
+        __id[3] = tmp_id + 2;
+        
+        tmp = temp_5;
+        MY_ADD(tmp, temp_7, temp_5);
+        MY_SUB(tmp, temp_7, temp_7);
+        tmp_id = __id[5];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[5] = tmp_id;
+        __id[7] = tmp_id + 2;
+        
+        n_global *= 2;
+        
     // j = 1;
     j = 1;
     // k = __id[1] % 4;
@@ -212,70 +212,70 @@ __global__ void __launch_bounds__(128) fft_radix2_logN10(float2* inputs, float2*
         MY_MUL(temp_7, tmp_angle_rot, tmp);
         temp_7 = tmp;
         
-    tmp = temp_0;
-    MY_ADD(tmp, temp_1, temp_0);
-    MY_SUB(tmp, temp_1, temp_1);
-    tmp_id = __id[0];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[0] = tmp_id;
-    __id[1] = tmp_id + 4;
+        tmp = temp_0;
+        MY_ADD(tmp, temp_1, temp_0);
+        MY_SUB(tmp, temp_1, temp_1);
+        tmp_id = __id[0];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[0] = tmp_id;
+        __id[1] = tmp_id + 4;
+        
+        tmp = temp_4;
+        MY_ADD(tmp, temp_5, temp_4);
+        MY_SUB(tmp, temp_5, temp_5);
+        tmp_id = __id[4];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[4] = tmp_id;
+        __id[5] = tmp_id + 4;
+        
+        tmp = temp_2;
+        MY_ADD(tmp, temp_3, temp_2);
+        MY_SUB(tmp, temp_3, temp_3);
+        tmp_id = __id[2];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[2] = tmp_id;
+        __id[3] = tmp_id + 4;
+        
+        tmp = temp_6;
+        MY_ADD(tmp, temp_7, temp_6);
+        MY_SUB(tmp, temp_7, temp_7);
+        tmp_id = __id[6];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[6] = tmp_id;
+        __id[7] = tmp_id + 4;
+        
+        n_global *= 2;
+        
     
-    tmp = temp_4;
-    MY_ADD(tmp, temp_5, temp_4);
-    MY_SUB(tmp, temp_5, temp_5);
-    tmp_id = __id[4];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[4] = tmp_id;
-    __id[5] = tmp_id + 4;
-    
-    tmp = temp_2;
-    MY_ADD(tmp, temp_3, temp_2);
-    MY_SUB(tmp, temp_3, temp_3);
-    tmp_id = __id[2];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[2] = tmp_id;
-    __id[3] = tmp_id + 4;
-    
-    tmp = temp_6;
-    MY_ADD(tmp, temp_7, temp_6);
-    MY_SUB(tmp, temp_7, temp_7);
-    tmp_id = __id[6];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[6] = tmp_id;
-    __id[7] = tmp_id + 4;
-    
-    n_global *= 2;
-    
-    
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 128) * 0) / (float)(1024), tmp_angle);
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 1) * 0) / (float)(1024), tmp_angle);
         MY_MUL(temp_0, tmp_angle, tmp);
         temp_0 = tmp;
         
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 128) * 1) / (float)(1024), tmp_angle);
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 1) * 1) / (float)(1024), tmp_angle);
         MY_MUL(temp_4, tmp_angle, tmp);
         temp_4 = tmp;
         
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 128) * 2) / (float)(1024), tmp_angle);
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 1) * 2) / (float)(1024), tmp_angle);
         MY_MUL(temp_2, tmp_angle, tmp);
         temp_2 = tmp;
         
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 128) * 3) / (float)(1024), tmp_angle);
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 1) * 3) / (float)(1024), tmp_angle);
         MY_MUL(temp_6, tmp_angle, tmp);
         temp_6 = tmp;
         
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 128) * 4) / (float)(1024), tmp_angle);
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 1) * 4) / (float)(1024), tmp_angle);
         MY_MUL(temp_1, tmp_angle, tmp);
         temp_1 = tmp;
         
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 128) * 5) / (float)(1024), tmp_angle);
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 1) * 5) / (float)(1024), tmp_angle);
         MY_MUL(temp_5, tmp_angle, tmp);
         temp_5 = tmp;
         
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 128) * 6) / (float)(1024), tmp_angle);
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 1) * 6) / (float)(1024), tmp_angle);
         MY_MUL(temp_3, tmp_angle, tmp);
         temp_3 = tmp;
         
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 128) * 7) / (float)(1024), tmp_angle);
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 1) * 7) / (float)(1024), tmp_angle);
         MY_MUL(temp_7, tmp_angle, tmp);
         temp_7 = tmp;
         
@@ -366,40 +366,40 @@ __global__ void __launch_bounds__(128) fft_radix2_logN10(float2* inputs, float2*
         MY_MUL(temp_7, tmp_angle, tmp);
         temp_7 = tmp;
         
-    tmp = temp_0;
-    MY_ADD(tmp, temp_4, temp_0);
-    MY_SUB(tmp, temp_4, temp_4);
-    tmp_id = __id[0];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[0] = tmp_id;
-    __id[4] = tmp_id + 8;
-    
-    tmp = temp_1;
-    MY_ADD(tmp, temp_5, temp_1);
-    MY_SUB(tmp, temp_5, temp_5);
-    tmp_id = __id[1];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[1] = tmp_id;
-    __id[5] = tmp_id + 8;
-    
-    tmp = temp_2;
-    MY_ADD(tmp, temp_6, temp_2);
-    MY_SUB(tmp, temp_6, temp_6);
-    tmp_id = __id[2];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[2] = tmp_id;
-    __id[6] = tmp_id + 8;
-    
-    tmp = temp_3;
-    MY_ADD(tmp, temp_7, temp_3);
-    MY_SUB(tmp, temp_7, temp_7);
-    tmp_id = __id[3];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[3] = tmp_id;
-    __id[7] = tmp_id + 8;
-    
-    n_global *= 2;
-    
+        tmp = temp_0;
+        MY_ADD(tmp, temp_4, temp_0);
+        MY_SUB(tmp, temp_4, temp_4);
+        tmp_id = __id[0];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[0] = tmp_id;
+        __id[4] = tmp_id + 8;
+        
+        tmp = temp_1;
+        MY_ADD(tmp, temp_5, temp_1);
+        MY_SUB(tmp, temp_5, temp_5);
+        tmp_id = __id[1];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[1] = tmp_id;
+        __id[5] = tmp_id + 8;
+        
+        tmp = temp_2;
+        MY_ADD(tmp, temp_6, temp_2);
+        MY_SUB(tmp, temp_6, temp_6);
+        tmp_id = __id[2];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[2] = tmp_id;
+        __id[6] = tmp_id + 8;
+        
+        tmp = temp_3;
+        MY_ADD(tmp, temp_7, temp_3);
+        MY_SUB(tmp, temp_7, temp_7);
+        tmp_id = __id[3];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[3] = tmp_id;
+        __id[7] = tmp_id + 8;
+        
+        n_global *= 2;
+        
     // j = 1;
     j = 1;
     // k = __id[2] % 2;
@@ -429,40 +429,40 @@ __global__ void __launch_bounds__(128) fft_radix2_logN10(float2* inputs, float2*
         MY_MUL(temp_7, tmp_angle_rot, tmp);
         temp_7 = tmp;
         
-    tmp = temp_0;
-    MY_ADD(tmp, temp_2, temp_0);
-    MY_SUB(tmp, temp_2, temp_2);
-    tmp_id = __id[0];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[0] = tmp_id;
-    __id[2] = tmp_id + 16;
-    
-    tmp = temp_4;
-    MY_ADD(tmp, temp_6, temp_4);
-    MY_SUB(tmp, temp_6, temp_6);
-    tmp_id = __id[4];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[4] = tmp_id;
-    __id[6] = tmp_id + 16;
-    
-    tmp = temp_1;
-    MY_ADD(tmp, temp_3, temp_1);
-    MY_SUB(tmp, temp_3, temp_3);
-    tmp_id = __id[1];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[1] = tmp_id;
-    __id[3] = tmp_id + 16;
-    
-    tmp = temp_5;
-    MY_ADD(tmp, temp_7, temp_5);
-    MY_SUB(tmp, temp_7, temp_7);
-    tmp_id = __id[5];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[5] = tmp_id;
-    __id[7] = tmp_id + 16;
-    
-    n_global *= 2;
-    
+        tmp = temp_0;
+        MY_ADD(tmp, temp_2, temp_0);
+        MY_SUB(tmp, temp_2, temp_2);
+        tmp_id = __id[0];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[0] = tmp_id;
+        __id[2] = tmp_id + 16;
+        
+        tmp = temp_4;
+        MY_ADD(tmp, temp_6, temp_4);
+        MY_SUB(tmp, temp_6, temp_6);
+        tmp_id = __id[4];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[4] = tmp_id;
+        __id[6] = tmp_id + 16;
+        
+        tmp = temp_1;
+        MY_ADD(tmp, temp_3, temp_1);
+        MY_SUB(tmp, temp_3, temp_3);
+        tmp_id = __id[1];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[1] = tmp_id;
+        __id[3] = tmp_id + 16;
+        
+        tmp = temp_5;
+        MY_ADD(tmp, temp_7, temp_5);
+        MY_SUB(tmp, temp_7, temp_7);
+        tmp_id = __id[5];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[5] = tmp_id;
+        __id[7] = tmp_id + 16;
+        
+        n_global *= 2;
+        
     // j = 1;
     j = 1;
     // k = __id[1] % 4;
@@ -499,71 +499,71 @@ __global__ void __launch_bounds__(128) fft_radix2_logN10(float2* inputs, float2*
         MY_MUL(temp_7, tmp_angle_rot, tmp);
         temp_7 = tmp;
         
-    tmp = temp_0;
-    MY_ADD(tmp, temp_1, temp_0);
-    MY_SUB(tmp, temp_1, temp_1);
-    tmp_id = __id[0];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[0] = tmp_id;
-    __id[1] = tmp_id + 32;
-    
-    tmp = temp_4;
-    MY_ADD(tmp, temp_5, temp_4);
-    MY_SUB(tmp, temp_5, temp_5);
-    tmp_id = __id[4];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[4] = tmp_id;
-    __id[5] = tmp_id + 32;
-    
-    tmp = temp_2;
-    MY_ADD(tmp, temp_3, temp_2);
-    MY_SUB(tmp, temp_3, temp_3);
-    tmp_id = __id[2];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[2] = tmp_id;
-    __id[3] = tmp_id + 32;
-    
-    tmp = temp_6;
-    MY_ADD(tmp, temp_7, temp_6);
-    MY_SUB(tmp, temp_7, temp_7);
-    tmp_id = __id[6];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[6] = tmp_id;
-    __id[7] = tmp_id + 32;
-    
-    n_global *= 2;
-    
+        tmp = temp_0;
+        MY_ADD(tmp, temp_1, temp_0);
+        MY_SUB(tmp, temp_1, temp_1);
+        tmp_id = __id[0];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[0] = tmp_id;
+        __id[1] = tmp_id + 32;
+        
+        tmp = temp_4;
+        MY_ADD(tmp, temp_5, temp_4);
+        MY_SUB(tmp, temp_5, temp_5);
+        tmp_id = __id[4];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[4] = tmp_id;
+        __id[5] = tmp_id + 32;
+        
+        tmp = temp_2;
+        MY_ADD(tmp, temp_3, temp_2);
+        MY_SUB(tmp, temp_3, temp_3);
+        tmp_id = __id[2];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[2] = tmp_id;
+        __id[3] = tmp_id + 32;
+        
+        tmp = temp_6;
+        MY_ADD(tmp, temp_7, temp_6);
+        MY_SUB(tmp, temp_7, temp_7);
+        tmp_id = __id[6];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[6] = tmp_id;
+        __id[7] = tmp_id + 32;
+        
+        n_global *= 2;
+        
     __syncthreads();
     
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 16) * 0) / (float)(128.0), tmp_angle);
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 8) * 0) / (float)(128.0), tmp_angle);
         MY_MUL(temp_0, tmp_angle, tmp);
         temp_0 = tmp;
         
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 16) * 1) / (float)(128.0), tmp_angle);
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 8) * 1) / (float)(128.0), tmp_angle);
         MY_MUL(temp_4, tmp_angle, tmp);
         temp_4 = tmp;
         
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 16) * 2) / (float)(128.0), tmp_angle);
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 8) * 2) / (float)(128.0), tmp_angle);
         MY_MUL(temp_2, tmp_angle, tmp);
         temp_2 = tmp;
         
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 16) * 3) / (float)(128.0), tmp_angle);
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 8) * 3) / (float)(128.0), tmp_angle);
         MY_MUL(temp_6, tmp_angle, tmp);
         temp_6 = tmp;
         
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 16) * 4) / (float)(128.0), tmp_angle);
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 8) * 4) / (float)(128.0), tmp_angle);
         MY_MUL(temp_1, tmp_angle, tmp);
         temp_1 = tmp;
         
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 16) * 5) / (float)(128.0), tmp_angle);
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 8) * 5) / (float)(128.0), tmp_angle);
         MY_MUL(temp_5, tmp_angle, tmp);
         temp_5 = tmp;
         
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 16) * 6) / (float)(128.0), tmp_angle);
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 8) * 6) / (float)(128.0), tmp_angle);
         MY_MUL(temp_3, tmp_angle, tmp);
         temp_3 = tmp;
         
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 16) * 7) / (float)(128.0), tmp_angle);
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 8) * 7) / (float)(128.0), tmp_angle);
         MY_MUL(temp_7, tmp_angle, tmp);
         temp_7 = tmp;
         
@@ -654,40 +654,40 @@ __global__ void __launch_bounds__(128) fft_radix2_logN10(float2* inputs, float2*
         MY_MUL(temp_7, tmp_angle, tmp);
         temp_7 = tmp;
         
-    tmp = temp_0;
-    MY_ADD(tmp, temp_4, temp_0);
-    MY_SUB(tmp, temp_4, temp_4);
-    tmp_id = __id[0];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[0] = tmp_id;
-    __id[4] = tmp_id + 64;
-    
-    tmp = temp_1;
-    MY_ADD(tmp, temp_5, temp_1);
-    MY_SUB(tmp, temp_5, temp_5);
-    tmp_id = __id[1];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[1] = tmp_id;
-    __id[5] = tmp_id + 64;
-    
-    tmp = temp_2;
-    MY_ADD(tmp, temp_6, temp_2);
-    MY_SUB(tmp, temp_6, temp_6);
-    tmp_id = __id[2];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[2] = tmp_id;
-    __id[6] = tmp_id + 64;
-    
-    tmp = temp_3;
-    MY_ADD(tmp, temp_7, temp_3);
-    MY_SUB(tmp, temp_7, temp_7);
-    tmp_id = __id[3];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[3] = tmp_id;
-    __id[7] = tmp_id + 64;
-    
-    n_global *= 2;
-    
+        tmp = temp_0;
+        MY_ADD(tmp, temp_4, temp_0);
+        MY_SUB(tmp, temp_4, temp_4);
+        tmp_id = __id[0];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[0] = tmp_id;
+        __id[4] = tmp_id + 64;
+        
+        tmp = temp_1;
+        MY_ADD(tmp, temp_5, temp_1);
+        MY_SUB(tmp, temp_5, temp_5);
+        tmp_id = __id[1];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[1] = tmp_id;
+        __id[5] = tmp_id + 64;
+        
+        tmp = temp_2;
+        MY_ADD(tmp, temp_6, temp_2);
+        MY_SUB(tmp, temp_6, temp_6);
+        tmp_id = __id[2];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[2] = tmp_id;
+        __id[6] = tmp_id + 64;
+        
+        tmp = temp_3;
+        MY_ADD(tmp, temp_7, temp_3);
+        MY_SUB(tmp, temp_7, temp_7);
+        tmp_id = __id[3];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[3] = tmp_id;
+        __id[7] = tmp_id + 64;
+        
+        n_global *= 2;
+        
     // j = 1;
     j = 1;
     // k = __id[2] % 2;
@@ -717,40 +717,40 @@ __global__ void __launch_bounds__(128) fft_radix2_logN10(float2* inputs, float2*
         MY_MUL(temp_7, tmp_angle_rot, tmp);
         temp_7 = tmp;
         
-    tmp = temp_0;
-    MY_ADD(tmp, temp_2, temp_0);
-    MY_SUB(tmp, temp_2, temp_2);
-    tmp_id = __id[0];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[0] = tmp_id;
-    __id[2] = tmp_id + 128;
-    
-    tmp = temp_4;
-    MY_ADD(tmp, temp_6, temp_4);
-    MY_SUB(tmp, temp_6, temp_6);
-    tmp_id = __id[4];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[4] = tmp_id;
-    __id[6] = tmp_id + 128;
-    
-    tmp = temp_1;
-    MY_ADD(tmp, temp_3, temp_1);
-    MY_SUB(tmp, temp_3, temp_3);
-    tmp_id = __id[1];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[1] = tmp_id;
-    __id[3] = tmp_id + 128;
-    
-    tmp = temp_5;
-    MY_ADD(tmp, temp_7, temp_5);
-    MY_SUB(tmp, temp_7, temp_7);
-    tmp_id = __id[5];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[5] = tmp_id;
-    __id[7] = tmp_id + 128;
-    
-    n_global *= 2;
-    
+        tmp = temp_0;
+        MY_ADD(tmp, temp_2, temp_0);
+        MY_SUB(tmp, temp_2, temp_2);
+        tmp_id = __id[0];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[0] = tmp_id;
+        __id[2] = tmp_id + 128;
+        
+        tmp = temp_4;
+        MY_ADD(tmp, temp_6, temp_4);
+        MY_SUB(tmp, temp_6, temp_6);
+        tmp_id = __id[4];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[4] = tmp_id;
+        __id[6] = tmp_id + 128;
+        
+        tmp = temp_1;
+        MY_ADD(tmp, temp_3, temp_1);
+        MY_SUB(tmp, temp_3, temp_3);
+        tmp_id = __id[1];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[1] = tmp_id;
+        __id[3] = tmp_id + 128;
+        
+        tmp = temp_5;
+        MY_ADD(tmp, temp_7, temp_5);
+        MY_SUB(tmp, temp_7, temp_7);
+        tmp_id = __id[5];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[5] = tmp_id;
+        __id[7] = tmp_id + 128;
+        
+        n_global *= 2;
+        
     // j = 1;
     j = 1;
     // k = __id[1] % 4;
@@ -787,71 +787,71 @@ __global__ void __launch_bounds__(128) fft_radix2_logN10(float2* inputs, float2*
         MY_MUL(temp_7, tmp_angle_rot, tmp);
         temp_7 = tmp;
         
-    tmp = temp_0;
-    MY_ADD(tmp, temp_1, temp_0);
-    MY_SUB(tmp, temp_1, temp_1);
-    tmp_id = __id[0];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[0] = tmp_id;
-    __id[1] = tmp_id + 256;
-    
-    tmp = temp_4;
-    MY_ADD(tmp, temp_5, temp_4);
-    MY_SUB(tmp, temp_5, temp_5);
-    tmp_id = __id[4];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[4] = tmp_id;
-    __id[5] = tmp_id + 256;
-    
-    tmp = temp_2;
-    MY_ADD(tmp, temp_3, temp_2);
-    MY_SUB(tmp, temp_3, temp_3);
-    tmp_id = __id[2];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[2] = tmp_id;
-    __id[3] = tmp_id + 256;
-    
-    tmp = temp_6;
-    MY_ADD(tmp, temp_7, temp_6);
-    MY_SUB(tmp, temp_7, temp_7);
-    tmp_id = __id[6];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[6] = tmp_id;
-    __id[7] = tmp_id + 256;
-    
-    n_global *= 2;
-    
+        tmp = temp_0;
+        MY_ADD(tmp, temp_1, temp_0);
+        MY_SUB(tmp, temp_1, temp_1);
+        tmp_id = __id[0];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[0] = tmp_id;
+        __id[1] = tmp_id + 256;
+        
+        tmp = temp_4;
+        MY_ADD(tmp, temp_5, temp_4);
+        MY_SUB(tmp, temp_5, temp_5);
+        tmp_id = __id[4];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[4] = tmp_id;
+        __id[5] = tmp_id + 256;
+        
+        tmp = temp_2;
+        MY_ADD(tmp, temp_3, temp_2);
+        MY_SUB(tmp, temp_3, temp_3);
+        tmp_id = __id[2];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[2] = tmp_id;
+        __id[3] = tmp_id + 256;
+        
+        tmp = temp_6;
+        MY_ADD(tmp, temp_7, temp_6);
+        MY_SUB(tmp, temp_7, temp_7);
+        tmp_id = __id[6];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[6] = tmp_id;
+        __id[7] = tmp_id + 256;
+        
+        n_global *= 2;
+        
     __syncthreads();
     
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 2) * 0) / (float)(16.0), tmp_angle);
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 64) * 0) / (float)(16.0), tmp_angle);
         MY_MUL(temp_0, tmp_angle, tmp);
         temp_0 = tmp;
         
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 2) * 1) / (float)(16.0), tmp_angle);
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 64) * 1) / (float)(16.0), tmp_angle);
         MY_MUL(temp_4, tmp_angle, tmp);
         temp_4 = tmp;
         
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 2) * 2) / (float)(16.0), tmp_angle);
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 64) * 2) / (float)(16.0), tmp_angle);
         MY_MUL(temp_2, tmp_angle, tmp);
         temp_2 = tmp;
         
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 2) * 3) / (float)(16.0), tmp_angle);
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 64) * 3) / (float)(16.0), tmp_angle);
         MY_MUL(temp_6, tmp_angle, tmp);
         temp_6 = tmp;
         
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 2) * 4) / (float)(16.0), tmp_angle);
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 64) * 4) / (float)(16.0), tmp_angle);
         MY_MUL(temp_1, tmp_angle, tmp);
         temp_1 = tmp;
         
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 2) * 5) / (float)(16.0), tmp_angle);
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 64) * 5) / (float)(16.0), tmp_angle);
         MY_MUL(temp_5, tmp_angle, tmp);
         temp_5 = tmp;
         
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 2) * 6) / (float)(16.0), tmp_angle);
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 64) * 6) / (float)(16.0), tmp_angle);
         MY_MUL(temp_3, tmp_angle, tmp);
         temp_3 = tmp;
         
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + 0 * 1) % 2) * 7) / (float)(16.0), tmp_angle);
+        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 64) * 7) / (float)(16.0), tmp_angle);
         MY_MUL(temp_7, tmp_angle, tmp);
         temp_7 = tmp;
         
@@ -969,46 +969,46 @@ __global__ void __launch_bounds__(128) fft_radix2_logN10(float2* inputs, float2*
         MY_MUL(temp_7, tmp_angle, tmp);
         temp_7 = tmp;
         
-    tmp = temp_0;
-    MY_ADD(tmp, temp_4, temp_0);
-    MY_SUB(tmp, temp_4, temp_4);
-    tmp_id = __id[0];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[0] = tmp_id;
-    __id[4] = tmp_id + 512;
-    
-    tmp = temp_1;
-    MY_ADD(tmp, temp_5, temp_1);
-    MY_SUB(tmp, temp_5, temp_5);
-    tmp_id = __id[1];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[1] = tmp_id;
-    __id[5] = tmp_id + 512;
-    
-    tmp = temp_2;
-    MY_ADD(tmp, temp_6, temp_2);
-    MY_SUB(tmp, temp_6, temp_6);
-    tmp_id = __id[2];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[2] = tmp_id;
-    __id[6] = tmp_id + 512;
-    
-    tmp = temp_3;
-    MY_ADD(tmp, temp_7, temp_3);
-    MY_SUB(tmp, temp_7, temp_7);
-    tmp_id = __id[3];
-    tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-    __id[3] = tmp_id;
-    __id[7] = tmp_id + 512;
-    
-    n_global *= 2;
+        tmp = temp_0;
+        MY_ADD(tmp, temp_4, temp_0);
+        MY_SUB(tmp, temp_4, temp_4);
+        tmp_id = __id[0];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[0] = tmp_id;
+        __id[4] = tmp_id + 512;
+        
+        tmp = temp_1;
+        MY_ADD(tmp, temp_5, temp_1);
+        MY_SUB(tmp, temp_5, temp_5);
+        tmp_id = __id[1];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[1] = tmp_id;
+        __id[5] = tmp_id + 512;
+        
+        tmp = temp_2;
+        MY_ADD(tmp, temp_6, temp_2);
+        MY_SUB(tmp, temp_6, temp_6);
+        tmp_id = __id[2];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[2] = tmp_id;
+        __id[6] = tmp_id + 512;
+        
+        tmp = temp_3;
+        MY_ADD(tmp, temp_7, temp_3);
+        MY_SUB(tmp, temp_7, temp_7);
+        tmp_id = __id[3];
+        tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+        __id[3] = tmp_id;
+        __id[7] = tmp_id + 512;
+        
+        n_global *= 2;
+        outputs[__id[0]] = temp_0;
+    outputs[__id[1]] = temp_1;
+    outputs[__id[2]] = temp_2;
     outputs[__id[3]] = temp_3;
     outputs[__id[4]] = temp_4;
-    outputs[__id[2]] = temp_2;
-    outputs[__id[6]] = temp_6;
-    outputs[__id[7]] = temp_7;
     outputs[__id[5]] = temp_5;
-    outputs[__id[3]] = temp_3;
+    outputs[__id[6]] = temp_6;
     outputs[__id[7]] = temp_7;
     
     }
