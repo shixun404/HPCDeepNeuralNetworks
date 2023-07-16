@@ -38,11 +38,8 @@ __global__ void __launch_bounds__(4) fft_radix2_logN4(float2* inputs, float2* ou
     __id[2] = 2 * blockDim.x + tx;
     __id[3] = 3 * blockDim.x + tx;
     
-    // j = 1;
     j = 1;
-    // k = __id[2] % 1;
     k = 2 % 1;
-    
     MY_ANGLE2COMPLEX((float)(j * k) * -3.141592653589793f, tmp_angle);
     tmp_angle_bk = tmp_angle;
     
@@ -79,11 +76,8 @@ __global__ void __launch_bounds__(4) fft_radix2_logN4(float2* inputs, float2* ou
         
         n_global *= 2;
         
-    // j = 1;
     j = 1;
-    // k = __id[1] % 2;
     k = 2 % 2;
-    
     MY_ANGLE2COMPLEX((float)(j * k) * -1.5707963267948966f, tmp_angle);
     tmp_angle_bk = tmp_angle;
     
@@ -121,22 +115,22 @@ __global__ void __launch_bounds__(4) fft_radix2_logN4(float2* inputs, float2* ou
         n_global *= 2;
         
     
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 1) * 0) / (float)(16), tmp_angle);
-        MY_MUL(temp_0, tmp_angle, tmp);
-        temp_0 = tmp;
-        
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 1) * 1) / (float)(16), tmp_angle);
-        MY_MUL(temp_2, tmp_angle, tmp);
-        temp_2 = tmp;
-        
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 1) * 2) / (float)(16), tmp_angle);
-        MY_MUL(temp_1, tmp_angle, tmp);
-        temp_1 = tmp;
-        
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 1) * 3) / (float)(16), tmp_angle);
-        MY_MUL(temp_3, tmp_angle, tmp);
-        temp_3 = tmp;
-        
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 1) * 0) / (float)(16), tmp_angle);
+    MY_MUL(temp_0, tmp_angle, tmp);
+    temp_0 = tmp;
+    
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 1) * 1) / (float)(16), tmp_angle);
+    MY_MUL(temp_2, tmp_angle, tmp);
+    temp_2 = tmp;
+    
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 1) * 2) / (float)(16), tmp_angle);
+    MY_MUL(temp_1, tmp_angle, tmp);
+    temp_1 = tmp;
+    
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 1) * 3) / (float)(16), tmp_angle);
+    MY_MUL(temp_3, tmp_angle, tmp);
+    temp_3 = tmp;
+    
     sdata[(__id[0] / 16) * 17 + 
     (__id[0] % 16)] = temp_0;
     
@@ -167,11 +161,8 @@ __global__ void __launch_bounds__(4) fft_radix2_logN4(float2* inputs, float2* ou
                         ((3 * blockDim.x + tx) % 16)];
     __id[3] = tx + 3 * 4;
     
-    // j = 1;
     j = 1;
-    // k = __id[2] % 1;
     k = 2 % 1;
-    
     MY_ANGLE2COMPLEX((float)(j * k) * -3.141592653589793f, tmp_angle);
     tmp_angle_bk = tmp_angle;
     
@@ -208,11 +199,8 @@ __global__ void __launch_bounds__(4) fft_radix2_logN4(float2* inputs, float2* ou
         
         n_global *= 2;
         
-    // j = 1;
     j = 1;
-    // k = __id[1] % 2;
     k = 2 % 2;
-    
     MY_ANGLE2COMPLEX((float)(j * k) * -1.5707963267948966f, tmp_angle);
     tmp_angle_bk = tmp_angle;
     

@@ -1,13 +1,8 @@
-
 from math import *
 import numpy as np
 M_PI = 3.141592653589793
 def ft_1D_fft_code_gen(radix=2, N=8, signal_per_thread=8, num_thread=4, if_abft=False):
     exponent = int(log(N, radix))
-    log_threadx = 0 # thread to log
-    log_thready = 0 # thread to log
-    log_block = 0 # thread to log
-    log_thread = 0# thread to log
     N__ = N
     print(f"########################### N = 2 ** {exponent} ###########################################################")
     print(f"N={N}, radix={radix}, N / radix = {N/radix}, signal_per_thread={signal_per_thread}")
@@ -78,7 +73,6 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}'
     for i in range(signal_per_thread):
         ft_fft += f'''__id[{i}] = {i} * blockDim.x + tx;
     '''
-    
     for stage_id in range(len(plan)):
         if True:
             batch_size = 1 if twiddle_type[stage_id] == 0 else n_global // (N // signal_per_thread)
@@ -87,15 +81,11 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}'
             for j in range(plan[stage_id]):
                 i = 0 + signal_per_thread // radix
                 ft_fft += f'''
-    // j = {int(i / ((2 ** plan[stage_id]) // radix))};
     j = {int(i / ((signal_per_thread) // radix))};
-    // k = __id[{order[signal_per_thread - offset + i]}] % {n_global_};
     k = {i // batch_size } % {n_global_};
-    
     MY_ANGLE2COMPLEX((float)(j * k) * {(-2.0 * M_PI / (radix * n_global_))}f, tmp_angle);
     tmp_angle_bk = tmp_angle;
-    '''
-                
+    '''                
                 for batch in range(batch_size):
                     ft_fft += '''
                     tmp_angle = tmp_angle_bk;
@@ -151,13 +141,12 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}'
     __syncthreads();
     ''' if stage_id != 0 else '''
     '''
-            for batch in range(batch_size):
-                for i in range(signal_per_thread):    
-                    ft_fft += f'''
-        MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / {int(N // N__)}) * {i}) / (float)({N__}), tmp_angle);
-        MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle, tmp);
-        temp_{order[signal_per_thread - offset + i]} = tmp;
-        '''
+            for i in range(signal_per_thread):    
+                ft_fft += f'''
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / {int(N // N__)}) * {i}) / (float)({N__}), tmp_angle);
+    MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle, tmp);
+    temp_{order[signal_per_thread - offset + i]} = tmp;
+    '''
             for i in range(signal_per_thread):
                 ft_fft += f'''
     sdata[__id[{order[signal_per_thread - offset + i]}]] = temp_{order[signal_per_thread - offset + i]};

@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <cublas_v2.h>
-#include "utils.cuh"
+#include "utils/utils.cuh" 
 #define PPP 1
 #include <cuda_runtime.h>
 

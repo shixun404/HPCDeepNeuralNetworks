@@ -91,31 +91,6 @@ int main(int argc, char** argv){
         ft_fft_script += '''
         cudaEventCreate(&fft_begin);
         cudaEventCreate(&fft_end);
-        {
-        '''
-        ft_fft_script += f'''
-            dim3 gridDim({int(df['num_block_1'][N-1])}, 1, 1);
-            dim3 blockDim({int(df['blockdim_x_1'][N-1])}, {int(df['blockdim_y_1'][N-1])}, 1);
-            cudaEventRecord(fft_begin);
-            timeSt = std::chrono::steady_clock::now();
-            '''
-        ft_fft_script += '''
-            for(int i = 0; i < num_tests; ++i){
-        '''
-        ft_fft_script += f'''
-                fft_radix2_logN{int(df['logN'][N-1])} <<<gridDim, blockDim, {int(df['sm_size_1'][N-1])}>>> ((float2*)input_d, (float2*)output_d);
-                cudaDeviceSynchronize();
-        '''
-        ft_fft_script += '''
-            }
-            timeEnd = std::chrono::steady_clock::now();
-            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
-            cudaEventRecord(fft_end);  
-            cudaEventSynchronize(fft_begin);
-            cudaEventSynchronize(fft_end);
-            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
-            cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
-        }
         '''
         ft_fft_script += '''
         {
@@ -159,11 +134,38 @@ int main(int argc, char** argv){
             cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);  
             cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost); 
         }
-    }    
     '''
+        ft_fft_script += '''
+        {
+        '''
+        ft_fft_script += f'''
+            dim3 gridDim({int(df['num_block_1'][N-1])}, 1, 1);
+            dim3 blockDim({int(df['blockdim_x_1'][N-1])}, {int(df['blockdim_y_1'][N-1])}, 1);
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            '''
+        ft_fft_script += '''
+            for(int i = 0; i < num_tests; ++i){
+        '''
+        ft_fft_script += f'''
+                fft_radix2_logN{int(df['logN'][N-1])} <<<gridDim, blockDim, {int(df['sm_size_1'][N-1])}>>> ((float2*)input_d, (float2*)output_d);
+                cudaDeviceSynchronize();
+        '''
+        ft_fft_script += '''
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+        }
+    }
+        '''
         N += 1
     
-    N += 23
+    # N += 23
     while N <= 22:
         ft_fft_script += f'''
     if(log_N == {N})''' + '''{
@@ -402,11 +404,11 @@ int main(int argc, char** argv){
         FLOAT2_NORM(res_ref, norm_ref);
         
         float err = fabs(norm - norm_ref);
-        // if(i % 10 ==0){
+        if(i % 10000 ==0){
         printf("error %f detected at %d\\n", err / fabs(norm), i / 2);
         printf("ref[%d]: %.3f + %.3f i\\n",  i / 2, res_ref.x, res_ref.y);
         printf("res[%d]: %.3f + %.3f i\\n\\n",  i / 2, res.x, res.y);
-        //}
+        }
         if(err / fabs(norm) > 0.05){
             //printf("error %f detected at %d\\n", err / fabs(norm), i / 2);
             //printf("ref[%d]: %.3f + %.3f i\\n",  i / 2, res_ref.x, res_ref.y);
