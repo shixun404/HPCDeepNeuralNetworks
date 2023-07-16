@@ -255,35 +255,35 @@ __global__ void __launch_bounds__(256) fft_radix2_logN23_2(float2* inputs, float
     n_global *= 2;
     
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 0) / (float)(128), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 0) / (float)(128), tmp_angle);
     MY_MUL(temp_0, tmp_angle, tmp);
     temp_0 = tmp;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 1) / (float)(128), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 1) / (float)(128), tmp_angle);
     MY_MUL(temp_4, tmp_angle, tmp);
     temp_4 = tmp;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 2) / (float)(128), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 2) / (float)(128), tmp_angle);
     MY_MUL(temp_2, tmp_angle, tmp);
     temp_2 = tmp;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 3) / (float)(128), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 3) / (float)(128), tmp_angle);
     MY_MUL(temp_6, tmp_angle, tmp);
     temp_6 = tmp;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 4) / (float)(128), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 4) / (float)(128), tmp_angle);
     MY_MUL(temp_1, tmp_angle, tmp);
     temp_1 = tmp;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 5) / (float)(128), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 5) / (float)(128), tmp_angle);
     MY_MUL(temp_5, tmp_angle, tmp);
     temp_5 = tmp;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 6) / (float)(128), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 6) / (float)(128), tmp_angle);
     MY_MUL(temp_3, tmp_angle, tmp);
     temp_3 = tmp;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 7) / (float)(128), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 7) / (float)(128), tmp_angle);
     MY_MUL(temp_7, tmp_angle, tmp);
     temp_7 = tmp;
     
@@ -544,35 +544,35 @@ __global__ void __launch_bounds__(256) fft_radix2_logN23_2(float2* inputs, float
     
     __syncthreads();
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 8) * 0) / (float)(16.0), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 8) * 0) / (float)(16.0), tmp_angle);
     MY_MUL(temp_0, tmp_angle, tmp);
     temp_0 = tmp;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 8) * 1) / (float)(16.0), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 8) * 1) / (float)(16.0), tmp_angle);
     MY_MUL(temp_4, tmp_angle, tmp);
     temp_4 = tmp;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 8) * 2) / (float)(16.0), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 8) * 2) / (float)(16.0), tmp_angle);
     MY_MUL(temp_2, tmp_angle, tmp);
     temp_2 = tmp;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 8) * 3) / (float)(16.0), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 8) * 3) / (float)(16.0), tmp_angle);
     MY_MUL(temp_6, tmp_angle, tmp);
     temp_6 = tmp;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 8) * 4) / (float)(16.0), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 8) * 4) / (float)(16.0), tmp_angle);
     MY_MUL(temp_1, tmp_angle, tmp);
     temp_1 = tmp;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 8) * 5) / (float)(16.0), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 8) * 5) / (float)(16.0), tmp_angle);
     MY_MUL(temp_5, tmp_angle, tmp);
     temp_5 = tmp;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 8) * 6) / (float)(16.0), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 8) * 6) / (float)(16.0), tmp_angle);
     MY_MUL(temp_3, tmp_angle, tmp);
     temp_3 = tmp;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 8) * 7) / (float)(16.0), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 8) * 7) / (float)(16.0), tmp_angle);
     MY_MUL(temp_7, tmp_angle, tmp);
     temp_7 = tmp;
     

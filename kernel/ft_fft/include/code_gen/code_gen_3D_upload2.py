@@ -155,7 +155,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     '''
             for i in range(signal_per_thread):    
                 ft_fft += f'''
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / {int(N1 // N__)}) * {i}) / (float)({N__}), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / {int(N1 // N__)}) * {i}) / (float)({N__}), tmp_angle);
     MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle, tmp);
     temp_{order[signal_per_thread - offset + i]} = tmp;
     '''
