@@ -86,38 +86,38 @@ int main(int argc, char** argv){
             if  int(df[f'sm_size_{i}'][N-1]) >= 65536:
                 ft_fft_script += f'''
         cudaFuncSetAttribute(fft_radix2_logN{int(df['logN'][N-1])}, cudaFuncAttributeMaxDynamicSharedMemorySize, {int(df[f'sm_size_{i}'][N-1])});
-        cudaFuncSetAttribute(VkFFT_main_logN{int(df['logN'][N-1])}, cudaFuncAttributeMaxDynamicSharedMemorySize, {int(df[f'sm_size_{i}'][N-1])});
+        // cudaFuncSetAttribute(VkFFT_main_logN{int(df['logN'][N-1])}, cudaFuncAttributeMaxDynamicSharedMemorySize, {int(df[f'sm_size_{i}'][N-1])});
         '''
         ft_fft_script += '''
         cudaEventCreate(&fft_begin);
         cudaEventCreate(&fft_end);
         '''
+        # ft_fft_script += '''
+        # {
+        # '''
+        # ft_fft_script += f'''
+        #     dim3 gridDim({int(df['num_block_1'][N-1])}, 1, 1);
+        #     dim3 blockDim({int(df['blockdim_x_1'][N-1])}, {int(df['blockdim_y_1'][N-1])}, 1);
+        #     cudaEventRecord(fft_begin);
+        #     timeSt = std::chrono::steady_clock::now();
+        # '''
+        # ft_fft_script += '''
+        #     for(int i = 0; i < num_tests; ++i){
+        # '''
+        # ft_fft_script += f'''
+        #         VkFFT_main_logN{int(df['logN'][N-1])} <<<gridDim, blockDim, {int(df['sm_size_1'][N-1])}>>>((float2*)input_d, (float2*)output_d);
+        #         cudaDeviceSynchronize();  
+        # '''
+        # ft_fft_script += '''
+        #     }
+        #     timeEnd = std::chrono::steady_clock::now();
+        #     totTime_vkfft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+        #     cudaEventRecord(fft_end);
+        #     cudaEventSynchronize(fft_begin);  
+        #     cudaEventSynchronize(fft_end);
+        #     cudaEventElapsedTime(&elapsed_time_vkfft, fft_begin, fft_end);
+        # }
         ft_fft_script += '''
-        {
-        '''
-        ft_fft_script += f'''
-            dim3 gridDim({int(df['num_block_1'][N-1])}, 1, 1);
-            dim3 blockDim({int(df['blockdim_x_1'][N-1])}, {int(df['blockdim_y_1'][N-1])}, 1);
-            cudaEventRecord(fft_begin);
-            timeSt = std::chrono::steady_clock::now();
-        '''
-        ft_fft_script += '''
-            for(int i = 0; i < num_tests; ++i){
-        '''
-        ft_fft_script += f'''
-                VkFFT_main_logN{int(df['logN'][N-1])} <<<gridDim, blockDim, {int(df['sm_size_1'][N-1])}>>>((float2*)input_d, (float2*)output_d);
-                cudaDeviceSynchronize();  
-        '''
-        ft_fft_script += '''
-            }
-            timeEnd = std::chrono::steady_clock::now();
-            totTime_vkfft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
-            cudaEventRecord(fft_end);
-            cudaEventSynchronize(fft_begin);  
-            cudaEventSynchronize(fft_end);
-            cudaEventElapsedTime(&elapsed_time_vkfft, fft_begin, fft_end);
-        }
-        
         {
             cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
             cudaEventRecord(fft_begin);
@@ -174,7 +174,7 @@ int main(int argc, char** argv){
             if  int(df[f'sm_size_{i}'][N-1]) >= 65536:
                 ft_fft_script += f'''
         cudaFuncSetAttribute(fft_radix2_logN{int(df['logN'][N-1])}_{i}, cudaFuncAttributeMaxDynamicSharedMemorySize, {int(df[f'sm_size_{i}'][N-1])});
-        cudaFuncSetAttribute(VkFFT_main_logN{int(df['logN'][N-1])}_{i}, cudaFuncAttributeMaxDynamicSharedMemorySize, {int(df[f'sm_size_{i}'][N-1])});
+        // cudaFuncSetAttribute(VkFFT_main_logN{int(df['logN'][N-1])}_{i}, cudaFuncAttributeMaxDynamicSharedMemorySize, {int(df[f'sm_size_{i}'][N-1])});
         '''
         ft_fft_script += '''
         cudaEventCreate(&fft_begin);
@@ -213,40 +213,40 @@ int main(int argc, char** argv){
             cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
         }
         '''
+        # ft_fft_script += '''
+        # {
+        # '''
+        # ft_fft_script += f'''
+        #     cudaEventRecord(fft_begin);
+        #     timeSt = std::chrono::steady_clock::now();
+        # '''
+        # ft_fft_script += '''
+        #     for(int i = 0; i < num_tests; ++i){
+        # '''
+        # ft_fft_script += f'''{{
+        #         dim3 gridDim({int(df['num_block_1'][N-1])}, 1, 1);
+        #         dim3 blockDim({int(df['blockdim_x_1'][N-1])}, {int(df['blockdim_y_1'][N-1])}, 1);
+        #         VkFFT_main_logN{int(df['logN'][N-1])}_1 <<<gridDim, blockDim, {int(df['sm_size_1'][N-1])}>>>((float2*)input_d, (float2*)output_d_1);
+        #         cudaDeviceSynchronize();  
+        # }}
+        # '''
+        # ft_fft_script += f'''{{
+        #         dim3 gridDim({int(df['num_block_2'][N-1])}, 1, 1);
+        #         dim3 blockDim({int(df['blockdim_x_2'][N-1])}, {int(df['blockdim_y_2'][N-1])}, 1);
+        #         VkFFT_main_logN{int(df['logN'][N-1])}_2 <<<gridDim, blockDim, {int(df['sm_size_2'][N-1])}>>>((float2*)output_d_1, (float2*)output_d);
+        #         cudaDeviceSynchronize();  
+        # }}
+        # '''
+        # ft_fft_script += '''
+        #     }
+        #     timeEnd = std::chrono::steady_clock::now();
+        #     totTime_vkfft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+        #     cudaEventRecord(fft_end);
+        #     cudaEventSynchronize(fft_begin);  
+        #     cudaEventSynchronize(fft_end);
+        #     cudaEventElapsedTime(&elapsed_time_vkfft, fft_begin, fft_end);
+        # }
         ft_fft_script += '''
-        {
-        '''
-        ft_fft_script += f'''
-            cudaEventRecord(fft_begin);
-            timeSt = std::chrono::steady_clock::now();
-        '''
-        ft_fft_script += '''
-            for(int i = 0; i < num_tests; ++i){
-        '''
-        ft_fft_script += f'''{{
-                dim3 gridDim({int(df['num_block_1'][N-1])}, 1, 1);
-                dim3 blockDim({int(df['blockdim_x_1'][N-1])}, {int(df['blockdim_y_1'][N-1])}, 1);
-                VkFFT_main_logN{int(df['logN'][N-1])}_1 <<<gridDim, blockDim, {int(df['sm_size_1'][N-1])}>>>((float2*)input_d, (float2*)output_d_1);
-                cudaDeviceSynchronize();  
-        }}
-        '''
-        ft_fft_script += f'''{{
-                dim3 gridDim({int(df['num_block_2'][N-1])}, 1, 1);
-                dim3 blockDim({int(df['blockdim_x_2'][N-1])}, {int(df['blockdim_y_2'][N-1])}, 1);
-                VkFFT_main_logN{int(df['logN'][N-1])}_2 <<<gridDim, blockDim, {int(df['sm_size_2'][N-1])}>>>((float2*)output_d_1, (float2*)output_d);
-                cudaDeviceSynchronize();  
-        }}
-        '''
-        ft_fft_script += '''
-            }
-            timeEnd = std::chrono::steady_clock::now();
-            totTime_vkfft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
-            cudaEventRecord(fft_end);
-            cudaEventSynchronize(fft_begin);  
-            cudaEventSynchronize(fft_end);
-            cudaEventElapsedTime(&elapsed_time_vkfft, fft_begin, fft_end);
-        }
-        
         {
             cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
             cudaEventRecord(fft_begin);
@@ -275,51 +275,51 @@ int main(int argc, char** argv){
             if  int(df[f'sm_size_{i}'][N-1]) >= 65536:
                 ft_fft_script += f'''
         cudaFuncSetAttribute(fft_radix2_logN{int(df['logN'][N-1])}_{i}, cudaFuncAttributeMaxDynamicSharedMemorySize, {int(df[f'sm_size_{i}'][N-1])});
-        cudaFuncSetAttribute(VkFFT_main_logN{int(df['logN'][N-1])}_{i}, cudaFuncAttributeMaxDynamicSharedMemorySize, {int(df[f'sm_size_{i}'][N-1])});
+        // cudaFuncSetAttribute(VkFFT_main_logN{int(df['logN'][N-1])}_{i}, cudaFuncAttributeMaxDynamicSharedMemorySize, {int(df[f'sm_size_{i}'][N-1])});
         '''
+        # ft_fft_script += '''
+        # {
+        # cudaEventCreate(&fft_begin);
+        # cudaEventCreate(&fft_end);
+        # '''
+        # ft_fft_script += f'''
+        #     cudaEventRecord(fft_begin);
+        #     timeSt = std::chrono::steady_clock::now();
+        # '''
+        # ft_fft_script += '''
+        #     for(int i = 0; i < num_tests; ++i){
+        # '''
+        # ft_fft_script += f'''{{
+        #         dim3 gridDim({int(df['num_block_1'][N-1])}, 1, 1);
+        #         dim3 blockDim({int(df['blockdim_x_1'][N-1])}, {int(df['blockdim_y_1'][N-1])}, 1);
+        #         VkFFT_main_logN{int(df['logN'][N-1])}_1 <<<gridDim, blockDim, {int(df['sm_size_1'][N-1])}>>>((float2*)input_d, (float2*)output_d);
+        #         cudaDeviceSynchronize();  
+        # }}
+        # '''
+        # ft_fft_script += f'''{{
+        #         dim3 gridDim({int(df['num_block_2'][N-1])}, 1, 1);
+        #         dim3 blockDim({int(df['blockdim_x_2'][N-1])}, {int(df['blockdim_y_2'][N-1])}, 1);
+        #         VkFFT_main_logN{int(df['logN'][N-1])}_2 <<<gridDim, blockDim, {int(df['sm_size_2'][N-1])}>>>((float2*)output_d, (float2*)output_d_1);
+        #         cudaDeviceSynchronize();  
+        # }}
+        # '''
+        # ft_fft_script += f'''{{
+        #         dim3 gridDim({int(df['num_block_3'][N-1])}, 1, 1);
+        #         dim3 blockDim({int(df['blockdim_x_3'][N-1])}, {int(df['blockdim_y_3'][N-1])}, 1);
+        #         VkFFT_main_logN{int(df['logN'][N-1])}_3 <<<gridDim, blockDim, {int(df['sm_size_3'][N-1])}>>>((float2*)output_d_1, (float2*)output_d);
+        #         cudaDeviceSynchronize();  
+        # }}
+        # '''
+        # ft_fft_script += '''
+        #     }
+        #     timeEnd = std::chrono::steady_clock::now();
+        #     totTime_vkfft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+        #     cudaEventRecord(fft_end);
+        #     cudaEventSynchronize(fft_begin);  
+        #     cudaEventSynchronize(fft_end);
+        #     cudaEventElapsedTime(&elapsed_time_vkfft, fft_begin, fft_end);
+        # }
         ft_fft_script += '''
-        {
-        cudaEventCreate(&fft_begin);
-        cudaEventCreate(&fft_end);
-        '''
-        ft_fft_script += f'''
-            cudaEventRecord(fft_begin);
-            timeSt = std::chrono::steady_clock::now();
-        '''
-        ft_fft_script += '''
-            for(int i = 0; i < num_tests; ++i){
-        '''
-        ft_fft_script += f'''{{
-                dim3 gridDim({int(df['num_block_1'][N-1])}, 1, 1);
-                dim3 blockDim({int(df['blockdim_x_1'][N-1])}, {int(df['blockdim_y_1'][N-1])}, 1);
-                VkFFT_main_logN{int(df['logN'][N-1])}_1 <<<gridDim, blockDim, {int(df['sm_size_1'][N-1])}>>>((float2*)input_d, (float2*)output_d);
-                cudaDeviceSynchronize();  
-        }}
-        '''
-        ft_fft_script += f'''{{
-                dim3 gridDim({int(df['num_block_2'][N-1])}, 1, 1);
-                dim3 blockDim({int(df['blockdim_x_2'][N-1])}, {int(df['blockdim_y_2'][N-1])}, 1);
-                VkFFT_main_logN{int(df['logN'][N-1])}_2 <<<gridDim, blockDim, {int(df['sm_size_2'][N-1])}>>>((float2*)output_d, (float2*)output_d_1);
-                cudaDeviceSynchronize();  
-        }}
-        '''
-        ft_fft_script += f'''{{
-                dim3 gridDim({int(df['num_block_3'][N-1])}, 1, 1);
-                dim3 blockDim({int(df['blockdim_x_3'][N-1])}, {int(df['blockdim_y_3'][N-1])}, 1);
-                VkFFT_main_logN{int(df['logN'][N-1])}_3 <<<gridDim, blockDim, {int(df['sm_size_3'][N-1])}>>>((float2*)output_d_1, (float2*)output_d);
-                cudaDeviceSynchronize();  
-        }}
-        '''
-        ft_fft_script += '''
-            }
-            timeEnd = std::chrono::steady_clock::now();
-            totTime_vkfft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
-            cudaEventRecord(fft_end);
-            cudaEventSynchronize(fft_begin);  
-            cudaEventSynchronize(fft_end);
-            cudaEventElapsedTime(&elapsed_time_vkfft, fft_begin, fft_end);
-        }
-        
         {
             cudaEventCreate(&fft_begin);
             cudaEventCreate(&fft_end);
@@ -429,8 +429,10 @@ int main(int argc, char** argv){
     totTime_vkfft /= num_tests;
     totTime_cufft /= num_tests;
     if(log_N == __log_N_st__)printf("| SIZE |  Execution Time (us)             |   Shared   | #threads |\\n");
-    if(log_N == __log_N_st__)printf("|log(N)|   Ours   |   VkFFT   |   cuFFT   | Memory (KB)|          |\\n");
-    printf("|%6d| %8.3f | %8.3f  |%8.3f   |%8.3f    |%10d|\\n", int(log2f((float)N)), elapsed_time * 1000, elapsed_time_vkfft * 1000, elapsed_time_cufft * 1000, (float)sizeof(float) * (float)N * 2.f / 1024.f, N / 8);
+    if(log_N == __log_N_st__)printf("|log(N)|   Ours   |   cuFFT   | Memory (KB)|          |\\n");
+    // if(log_N == __log_N_st__)printf("|log(N)|   Ours   |   VkFFT   |   cuFFT   | Memory (KB)|          |\\n");
+    // printf("|%6d| %8.3f | %8.3f  |%8.3f   |%8.3f    |%10d|\\n", int(log2f((float)N)), elapsed_time * 1000, elapsed_time_vkfft * 1000, elapsed_time_cufft * 1000, (float)sizeof(float) * (float)N * 2.f / 1024.f, N / 8);
+    printf("|%6d| %8.3f | %8.3f  |%8.3f   |%8.3f    |%10d|\\n", int(log2f((float)N)), elapsed_time * 1000, elapsed_time_cufft * 1000, (float)sizeof(float) * (float)N * 2.f / 1024.f, N / 8);
     t_fft[log_N] = elapsed_time;
     t_cufft[log_N] = elapsed_time_cufft;
     t_vkfft[log_N] = elapsed_time_vkfft;
@@ -448,33 +450,33 @@ int main(int argc, char** argv){
     }
     printf("])\\n");
     
-    printf("t_vkfft = th.as_tensor([");
-    for(int i = __log_N_st__; i <= __log_N__; ++i ){
-        printf("%8f,", t_vkfft[i]);
-    }
-    printf("])\\n");
+    // printf("t_vkfft = th.as_tensor([");
+    // for(int i = __log_N_st__; i <= __log_N__; ++i ){
+    //     printf("%8f,", t_vkfft[i]);
+    // }
+    // printf("])\\n");
 
     printf("\\n Flops\\n");
     printf("gflops_fft = th.as_tensor([");
     for(int i = __log_N_st__; i <= __log_N__; ++i ){
         long long N = pow((double)RADIX, (double)i);
-        printf("%8f,", 5 * N * i / t_fft[i] * 1000.f / 1000000000.f);
+        printf("%8.1f,", 5 * N * i / t_fft[i] * 1000.f / 1000000000.f);
     }
     printf("])\\n");
 
     printf("gflops_cufft = th.as_tensor([");
     for(int i = __log_N_st__; i <= __log_N__; ++i ){
         long long N = pow((double)RADIX, (double)i);
-        printf("%8f,", 5 * N * i / t_cufft[i] * 1000.f / 1000000000.f);
+        printf("%8.1f,", 5 * N * i / t_cufft[i] * 1000.f / 1000000000.f);
     }
     printf("])\\n");
     
-    printf("gflops_vkfft = th.as_tensor([");
-    for(int i = __log_N_st__; i <= __log_N__; ++i ){
-        long long N = pow((double)RADIX, (double)i);
-        printf("%8f,", 5 * N * i / t_vkfft[i] * 1000.f / 1000000000.f);
-    }
-    printf("])\\n");
+    // printf("gflops_vkfft = th.as_tensor([");
+    // for(int i = __log_N_st__; i <= __log_N__; ++i ){
+    //     long long N = pow((double)RADIX, (double)i);
+    //     printf("%8.1f,", 5 * N * i / t_vkfft[i] * 1000.f / 1000000000.f);
+    // }
+    // printf("])\\n");
     #endif
     return 0;
 }

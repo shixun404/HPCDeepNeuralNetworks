@@ -37,7 +37,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN25_1(float2* inputs, float
     int k;
     int tmp_id;
     int n = 1, n_global = 1;
-    float2 warp_checksum;
+    float2 warp_checksum ,warp_checksum_;
+    float2 mem_checksum ,mem_checksum_t1;
     float2 tmp_angle_bk;
     
     temp_0 = inputs[(ty + 0 * 16) * 131072 + tx + bx * 16];
@@ -56,6 +57,55 @@ __global__ void __launch_bounds__(256) fft_radix2_logN25_1(float2* inputs, float
     temp_13 = inputs[(ty + 13 * 16) * 131072 + tx + bx * 16];
     temp_14 = inputs[(ty + 14 * 16) * 131072 + tx + bx * 16];
     temp_15 = inputs[(ty + 15 * 16) * 131072 + tx + bx * 16];
+    
+    #if FT==2
+    mem_checksum.x += temp_0.x;
+        mem_checksum.y += temp_0.y;
+    mem_checksum.x += temp_1.x;
+        mem_checksum.y += temp_1.y;
+    mem_checksum.x += temp_2.x;
+        mem_checksum.y += temp_2.y;
+    mem_checksum.x += temp_3.x;
+        mem_checksum.y += temp_3.y;
+    mem_checksum.x += temp_4.x;
+        mem_checksum.y += temp_4.y;
+    mem_checksum.x += temp_5.x;
+        mem_checksum.y += temp_5.y;
+    mem_checksum.x += temp_6.x;
+        mem_checksum.y += temp_6.y;
+    mem_checksum.x += temp_7.x;
+        mem_checksum.y += temp_7.y;
+    mem_checksum.x += temp_8.x;
+        mem_checksum.y += temp_8.y;
+    mem_checksum.x += temp_9.x;
+        mem_checksum.y += temp_9.y;
+    mem_checksum.x += temp_10.x;
+        mem_checksum.y += temp_10.y;
+    mem_checksum.x += temp_11.x;
+        mem_checksum.y += temp_11.y;
+    mem_checksum.x += temp_12.x;
+        mem_checksum.y += temp_12.y;
+    mem_checksum.x += temp_13.x;
+        mem_checksum.y += temp_13.y;
+    mem_checksum.x += temp_14.x;
+        mem_checksum.y += temp_14.y;
+    mem_checksum.x += temp_15.x;
+        mem_checksum.y += temp_15.y;
+    
+    mem_checksum_t1.x = 0; 
+    mem_checksum_t1.y = 0; 
+    mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.x,  16,32);
+    mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 8, 32);
+    mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 4, 32);
+    mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 2, 32);
+    mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 1, 32);
+    
+    mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y,  16,32);
+    mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
+    mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
+    mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
+    mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
+    #endif
     __id[0] = 0 + ty;
     __id[1] = 16 + ty;
     __id[2] = 32 + ty;
@@ -73,20 +123,70 @@ __global__ void __launch_bounds__(256) fft_radix2_logN25_1(float2* inputs, float
     __id[14] = 224 + ty;
     __id[15] = 240 + ty;
     
+            #if FT==1
+            warp_checksum.x = 0;
+            warp_checksum.y = 0;
+        
+                        warp_checksum.x += temp_0.x * A_radix16_0_x - temp_0.y * A_radix16_0_y;
+                        warp_checksum.y += temp_0.x * A_radix16_0_y + temp_0.y * A_radix16_0_x;
+        
+                        warp_checksum.x += temp_1.x * A_radix16_1_x - temp_1.y * A_radix16_1_y;
+                        warp_checksum.y += temp_1.x * A_radix16_1_y + temp_1.y * A_radix16_1_x;
+        
+                        warp_checksum.x += temp_2.x * A_radix16_2_x - temp_2.y * A_radix16_2_y;
+                        warp_checksum.y += temp_2.x * A_radix16_2_y + temp_2.y * A_radix16_2_x;
+        
+                        warp_checksum.x += temp_3.x * A_radix16_3_x - temp_3.y * A_radix16_3_y;
+                        warp_checksum.y += temp_3.x * A_radix16_3_y + temp_3.y * A_radix16_3_x;
+        
+                        warp_checksum.x += temp_4.x * A_radix16_4_x - temp_4.y * A_radix16_4_y;
+                        warp_checksum.y += temp_4.x * A_radix16_4_y + temp_4.y * A_radix16_4_x;
+        
+                        warp_checksum.x += temp_5.x * A_radix16_5_x - temp_5.y * A_radix16_5_y;
+                        warp_checksum.y += temp_5.x * A_radix16_5_y + temp_5.y * A_radix16_5_x;
+        
+                        warp_checksum.x += temp_6.x * A_radix16_6_x - temp_6.y * A_radix16_6_y;
+                        warp_checksum.y += temp_6.x * A_radix16_6_y + temp_6.y * A_radix16_6_x;
+        
+                        warp_checksum.x += temp_7.x * A_radix16_7_x - temp_7.y * A_radix16_7_y;
+                        warp_checksum.y += temp_7.x * A_radix16_7_y + temp_7.y * A_radix16_7_x;
+        
+                        warp_checksum.x += temp_8.x * A_radix16_8_x - temp_8.y * A_radix16_8_y;
+                        warp_checksum.y += temp_8.x * A_radix16_8_y + temp_8.y * A_radix16_8_x;
+        
+                        warp_checksum.x += temp_9.x * A_radix16_9_x - temp_9.y * A_radix16_9_y;
+                        warp_checksum.y += temp_9.x * A_radix16_9_y + temp_9.y * A_radix16_9_x;
+        
+                        warp_checksum.x += temp_10.x * A_radix16_10_x - temp_10.y * A_radix16_10_y;
+                        warp_checksum.y += temp_10.x * A_radix16_10_y + temp_10.y * A_radix16_10_x;
+        
+                        warp_checksum.x += temp_11.x * A_radix16_11_x - temp_11.y * A_radix16_11_y;
+                        warp_checksum.y += temp_11.x * A_radix16_11_y + temp_11.y * A_radix16_11_x;
+        
+                        warp_checksum.x += temp_12.x * A_radix16_12_x - temp_12.y * A_radix16_12_y;
+                        warp_checksum.y += temp_12.x * A_radix16_12_y + temp_12.y * A_radix16_12_x;
+        
+                        warp_checksum.x += temp_13.x * A_radix16_13_x - temp_13.y * A_radix16_13_y;
+                        warp_checksum.y += temp_13.x * A_radix16_13_y + temp_13.y * A_radix16_13_x;
+        
+                        warp_checksum.x += temp_14.x * A_radix16_14_x - temp_14.y * A_radix16_14_y;
+                        warp_checksum.y += temp_14.x * A_radix16_14_y + temp_14.y * A_radix16_14_x;
+        
+                        warp_checksum.x += temp_15.x * A_radix16_15_x - temp_15.y * A_radix16_15_y;
+                        warp_checksum.y += temp_15.x * A_radix16_15_y + temp_15.y * A_radix16_15_x;
+        
+            #endif
+        
     j = 1;
     k = 8 % 1;
-    // MY_ANGLE2COMPLEX((float)(j * k) * -3.141592653589793f, tmp_angle);
-    tmp_angle.x = 1;
-    tmp_angle.y = 1;
+    MY_ANGLE2COMPLEX((float)(j * k) * -3.141592653589793f, tmp_angle);
     tmp_angle_bk = tmp_angle;
     
                     tmp_angle = tmp_angle_bk;
     
         tmp_angle_rot.x = 1.0f;
         tmp_angle_rot.y = 0.0f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -191,18 +291,14 @@ __global__ void __launch_bounds__(256) fft_radix2_logN25_1(float2* inputs, float
         
     j = 1;
     k = 8 % 2;
-    // MY_ANGLE2COMPLEX((float)(j * k) * -1.5707963267948966f, tmp_angle);
-    tmp_angle.x = 1;
-    tmp_angle.y = 1;
+    MY_ANGLE2COMPLEX((float)(j * k) * -1.5707963267948966f, tmp_angle);
     tmp_angle_bk = tmp_angle;
     
                     tmp_angle = tmp_angle_bk;
     
         tmp_angle_rot.x = 1.0f;
         tmp_angle_rot.y = 0.0f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -307,18 +403,14 @@ __global__ void __launch_bounds__(256) fft_radix2_logN25_1(float2* inputs, float
         
     j = 1;
     k = 8 % 4;
-    // MY_ANGLE2COMPLEX((float)(j * k) * -0.7853981633974483f, tmp_angle);
-    tmp_angle.x = 1;
-    tmp_angle.y = 1;
+    MY_ANGLE2COMPLEX((float)(j * k) * -0.7853981633974483f, tmp_angle);
     tmp_angle_bk = tmp_angle;
     
                     tmp_angle = tmp_angle_bk;
     
         tmp_angle_rot.x = 1.0f;
         tmp_angle_rot.y = 0.0f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -337,9 +429,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN25_1(float2* inputs, float
         
         tmp_angle_rot.x = 0.7071067811865476f;
         tmp_angle_rot.y = -0.7071067811865475f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -432,18 +522,14 @@ __global__ void __launch_bounds__(256) fft_radix2_logN25_1(float2* inputs, float
         
     j = 1;
     k = 8 % 8;
-    // MY_ANGLE2COMPLEX((float)(j * k) * -0.39269908169872414f, tmp_angle);
-    tmp_angle.x = 1;
-    tmp_angle.y = 1;
+    MY_ANGLE2COMPLEX((float)(j * k) * -0.39269908169872414f, tmp_angle);
     tmp_angle_bk = tmp_angle;
     
                     tmp_angle = tmp_angle_bk;
     
         tmp_angle_rot.x = 1.0f;
         tmp_angle_rot.y = 0.0f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -456,9 +542,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN25_1(float2* inputs, float
         
         tmp_angle_rot.x = 0.9238795325112867f;
         tmp_angle_rot.y = -0.3826834323650898f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -471,9 +555,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN25_1(float2* inputs, float
         
         tmp_angle_rot.x = 0.9238795325112867f;
         tmp_angle_rot.y = -0.3826834323650898f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -486,9 +568,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN25_1(float2* inputs, float
         
         tmp_angle_rot.x = 0.9238795325112867f;
         tmp_angle_rot.y = -0.3826834323650898f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -573,6 +653,94 @@ __global__ void __launch_bounds__(256) fft_radix2_logN25_1(float2* inputs, float
         
         n_global *= 2;
         
+            #if FT==1
+            warp_checksum_ = warp_checksum;
+            
+                        warp_checksum.x -= temp_0.x * r[0].x - temp_0.y * r[0].y;
+                        warp_checksum.y -= temp_0.x * r[0].y + temp_0.y * r[0].x;
+                        // warp_checksum.x -= temp_0.x;
+                        // warp_checksum.y -= temp_0.y;
+            
+                        warp_checksum.x -= temp_8.x * r[1].x - temp_8.y * r[1].y;
+                        warp_checksum.y -= temp_8.x * r[1].y + temp_8.y * r[1].x;
+                        // warp_checksum.x -= temp_8.x;
+                        // warp_checksum.y -= temp_8.y;
+            
+                        warp_checksum.x -= temp_4.x * r[2].x - temp_4.y * r[2].y;
+                        warp_checksum.y -= temp_4.x * r[2].y + temp_4.y * r[2].x;
+                        // warp_checksum.x -= temp_4.x;
+                        // warp_checksum.y -= temp_4.y;
+            
+                        warp_checksum.x -= temp_12.x * r[0].x - temp_12.y * r[0].y;
+                        warp_checksum.y -= temp_12.x * r[0].y + temp_12.y * r[0].x;
+                        // warp_checksum.x -= temp_12.x;
+                        // warp_checksum.y -= temp_12.y;
+            
+                        warp_checksum.x -= temp_2.x * r[1].x - temp_2.y * r[1].y;
+                        warp_checksum.y -= temp_2.x * r[1].y + temp_2.y * r[1].x;
+                        // warp_checksum.x -= temp_2.x;
+                        // warp_checksum.y -= temp_2.y;
+            
+                        warp_checksum.x -= temp_10.x * r[2].x - temp_10.y * r[2].y;
+                        warp_checksum.y -= temp_10.x * r[2].y + temp_10.y * r[2].x;
+                        // warp_checksum.x -= temp_10.x;
+                        // warp_checksum.y -= temp_10.y;
+            
+                        warp_checksum.x -= temp_6.x * r[0].x - temp_6.y * r[0].y;
+                        warp_checksum.y -= temp_6.x * r[0].y + temp_6.y * r[0].x;
+                        // warp_checksum.x -= temp_6.x;
+                        // warp_checksum.y -= temp_6.y;
+            
+                        warp_checksum.x -= temp_14.x * r[1].x - temp_14.y * r[1].y;
+                        warp_checksum.y -= temp_14.x * r[1].y + temp_14.y * r[1].x;
+                        // warp_checksum.x -= temp_14.x;
+                        // warp_checksum.y -= temp_14.y;
+            
+                        warp_checksum.x -= temp_1.x * r[2].x - temp_1.y * r[2].y;
+                        warp_checksum.y -= temp_1.x * r[2].y + temp_1.y * r[2].x;
+                        // warp_checksum.x -= temp_1.x;
+                        // warp_checksum.y -= temp_1.y;
+            
+                        warp_checksum.x -= temp_9.x * r[0].x - temp_9.y * r[0].y;
+                        warp_checksum.y -= temp_9.x * r[0].y + temp_9.y * r[0].x;
+                        // warp_checksum.x -= temp_9.x;
+                        // warp_checksum.y -= temp_9.y;
+            
+                        warp_checksum.x -= temp_5.x * r[1].x - temp_5.y * r[1].y;
+                        warp_checksum.y -= temp_5.x * r[1].y + temp_5.y * r[1].x;
+                        // warp_checksum.x -= temp_5.x;
+                        // warp_checksum.y -= temp_5.y;
+            
+                        warp_checksum.x -= temp_13.x * r[2].x - temp_13.y * r[2].y;
+                        warp_checksum.y -= temp_13.x * r[2].y + temp_13.y * r[2].x;
+                        // warp_checksum.x -= temp_13.x;
+                        // warp_checksum.y -= temp_13.y;
+            
+                        warp_checksum.x -= temp_3.x * r[0].x - temp_3.y * r[0].y;
+                        warp_checksum.y -= temp_3.x * r[0].y + temp_3.y * r[0].x;
+                        // warp_checksum.x -= temp_3.x;
+                        // warp_checksum.y -= temp_3.y;
+            
+                        warp_checksum.x -= temp_11.x * r[1].x - temp_11.y * r[1].y;
+                        warp_checksum.y -= temp_11.x * r[1].y + temp_11.y * r[1].x;
+                        // warp_checksum.x -= temp_11.x;
+                        // warp_checksum.y -= temp_11.y;
+            
+                        warp_checksum.x -= temp_7.x * r[2].x - temp_7.y * r[2].y;
+                        warp_checksum.y -= temp_7.x * r[2].y + temp_7.y * r[2].x;
+                        // warp_checksum.x -= temp_7.x;
+                        // warp_checksum.y -= temp_7.y;
+            
+                        warp_checksum.x -= temp_15.x * r[0].x - temp_15.y * r[0].y;
+                        warp_checksum.y -= temp_15.x * r[0].y + temp_15.y * r[0].x;
+                        // warp_checksum.x -= temp_15.x;
+                        // warp_checksum.y -= temp_15.y;
+            
+            
+            temp_0.x += warp_checksum.x;
+            temp_0.y += warp_checksum.y;
+            #endif
+            
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 0) / (float)(256), tmp_angle);
     MY_MUL(temp_0, tmp_angle, tmp);
@@ -720,20 +888,70 @@ __global__ void __launch_bounds__(256) fft_radix2_logN25_1(float2* inputs, float
     temp_15 = sdata[tx + 16 * (240 + ty)];
     __id[15] = ty + 240;
     
+            #if FT==1
+            warp_checksum.x = 0;
+            warp_checksum.y = 0;
+        
+                        warp_checksum.x += temp_0.x * A_radix16_0_x - temp_0.y * A_radix16_0_y;
+                        warp_checksum.y += temp_0.x * A_radix16_0_y + temp_0.y * A_radix16_0_x;
+        
+                        warp_checksum.x += temp_1.x * A_radix16_1_x - temp_1.y * A_radix16_1_y;
+                        warp_checksum.y += temp_1.x * A_radix16_1_y + temp_1.y * A_radix16_1_x;
+        
+                        warp_checksum.x += temp_2.x * A_radix16_2_x - temp_2.y * A_radix16_2_y;
+                        warp_checksum.y += temp_2.x * A_radix16_2_y + temp_2.y * A_radix16_2_x;
+        
+                        warp_checksum.x += temp_3.x * A_radix16_3_x - temp_3.y * A_radix16_3_y;
+                        warp_checksum.y += temp_3.x * A_radix16_3_y + temp_3.y * A_radix16_3_x;
+        
+                        warp_checksum.x += temp_4.x * A_radix16_4_x - temp_4.y * A_radix16_4_y;
+                        warp_checksum.y += temp_4.x * A_radix16_4_y + temp_4.y * A_radix16_4_x;
+        
+                        warp_checksum.x += temp_5.x * A_radix16_5_x - temp_5.y * A_radix16_5_y;
+                        warp_checksum.y += temp_5.x * A_radix16_5_y + temp_5.y * A_radix16_5_x;
+        
+                        warp_checksum.x += temp_6.x * A_radix16_6_x - temp_6.y * A_radix16_6_y;
+                        warp_checksum.y += temp_6.x * A_radix16_6_y + temp_6.y * A_radix16_6_x;
+        
+                        warp_checksum.x += temp_7.x * A_radix16_7_x - temp_7.y * A_radix16_7_y;
+                        warp_checksum.y += temp_7.x * A_radix16_7_y + temp_7.y * A_radix16_7_x;
+        
+                        warp_checksum.x += temp_8.x * A_radix16_8_x - temp_8.y * A_radix16_8_y;
+                        warp_checksum.y += temp_8.x * A_radix16_8_y + temp_8.y * A_radix16_8_x;
+        
+                        warp_checksum.x += temp_9.x * A_radix16_9_x - temp_9.y * A_radix16_9_y;
+                        warp_checksum.y += temp_9.x * A_radix16_9_y + temp_9.y * A_radix16_9_x;
+        
+                        warp_checksum.x += temp_10.x * A_radix16_10_x - temp_10.y * A_radix16_10_y;
+                        warp_checksum.y += temp_10.x * A_radix16_10_y + temp_10.y * A_radix16_10_x;
+        
+                        warp_checksum.x += temp_11.x * A_radix16_11_x - temp_11.y * A_radix16_11_y;
+                        warp_checksum.y += temp_11.x * A_radix16_11_y + temp_11.y * A_radix16_11_x;
+        
+                        warp_checksum.x += temp_12.x * A_radix16_12_x - temp_12.y * A_radix16_12_y;
+                        warp_checksum.y += temp_12.x * A_radix16_12_y + temp_12.y * A_radix16_12_x;
+        
+                        warp_checksum.x += temp_13.x * A_radix16_13_x - temp_13.y * A_radix16_13_y;
+                        warp_checksum.y += temp_13.x * A_radix16_13_y + temp_13.y * A_radix16_13_x;
+        
+                        warp_checksum.x += temp_14.x * A_radix16_14_x - temp_14.y * A_radix16_14_y;
+                        warp_checksum.y += temp_14.x * A_radix16_14_y + temp_14.y * A_radix16_14_x;
+        
+                        warp_checksum.x += temp_15.x * A_radix16_15_x - temp_15.y * A_radix16_15_y;
+                        warp_checksum.y += temp_15.x * A_radix16_15_y + temp_15.y * A_radix16_15_x;
+        
+            #endif
+        
     j = 1;
     k = 8 % 1;
-    // MY_ANGLE2COMPLEX((float)(j * k) * -0.19634954084936207f, tmp_angle);
-    tmp_angle.x = 1;
-    tmp_angle.y = 1;
+    MY_ANGLE2COMPLEX((float)(j * k) * -0.19634954084936207f, tmp_angle);
     tmp_angle_bk = tmp_angle;
     
                     tmp_angle = tmp_angle_bk;
     
         tmp_angle_rot.x = 1.0f;
         tmp_angle_rot.y = 0.0f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -838,18 +1056,14 @@ __global__ void __launch_bounds__(256) fft_radix2_logN25_1(float2* inputs, float
         
     j = 1;
     k = 8 % 2;
-    // MY_ANGLE2COMPLEX((float)(j * k) * -0.09817477042468103f, tmp_angle);
-    tmp_angle.x = 1;
-    tmp_angle.y = 1;
+    MY_ANGLE2COMPLEX((float)(j * k) * -0.09817477042468103f, tmp_angle);
     tmp_angle_bk = tmp_angle;
     
                     tmp_angle = tmp_angle_bk;
     
         tmp_angle_rot.x = 1.0f;
         tmp_angle_rot.y = 0.0f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -954,18 +1168,14 @@ __global__ void __launch_bounds__(256) fft_radix2_logN25_1(float2* inputs, float
         
     j = 1;
     k = 8 % 4;
-    // MY_ANGLE2COMPLEX((float)(j * k) * -0.04908738521234052f, tmp_angle);
-    tmp_angle.x = 1;
-    tmp_angle.y = 1;
+    MY_ANGLE2COMPLEX((float)(j * k) * -0.04908738521234052f, tmp_angle);
     tmp_angle_bk = tmp_angle;
     
                     tmp_angle = tmp_angle_bk;
     
         tmp_angle_rot.x = 1.0f;
         tmp_angle_rot.y = 0.0f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -984,9 +1194,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN25_1(float2* inputs, float
         
         tmp_angle_rot.x = 0.7071067811865476f;
         tmp_angle_rot.y = -0.7071067811865475f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -1079,18 +1287,14 @@ __global__ void __launch_bounds__(256) fft_radix2_logN25_1(float2* inputs, float
         
     j = 1;
     k = 8 % 8;
-    // MY_ANGLE2COMPLEX((float)(j * k) * -0.02454369260617026f, tmp_angle);
-    tmp_angle.x = 1;
-    tmp_angle.y = 1;
+    MY_ANGLE2COMPLEX((float)(j * k) * -0.02454369260617026f, tmp_angle);
     tmp_angle_bk = tmp_angle;
     
                     tmp_angle = tmp_angle_bk;
     
         tmp_angle_rot.x = 1.0f;
         tmp_angle_rot.y = 0.0f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -1103,9 +1307,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN25_1(float2* inputs, float
         
         tmp_angle_rot.x = 0.9238795325112867f;
         tmp_angle_rot.y = -0.3826834323650898f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -1118,9 +1320,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN25_1(float2* inputs, float
         
         tmp_angle_rot.x = 0.9238795325112867f;
         tmp_angle_rot.y = -0.3826834323650898f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -1133,9 +1333,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN25_1(float2* inputs, float
         
         tmp_angle_rot.x = 0.9238795325112867f;
         tmp_angle_rot.y = -0.3826834323650898f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -1220,9 +1418,142 @@ __global__ void __launch_bounds__(256) fft_radix2_logN25_1(float2* inputs, float
         
         n_global *= 2;
         
+            #if FT==1
+            warp_checksum_ = warp_checksum;
+            
+                        warp_checksum.x -= temp_0.x * r[0].x - temp_0.y * r[0].y;
+                        warp_checksum.y -= temp_0.x * r[0].y + temp_0.y * r[0].x;
+                        // warp_checksum.x -= temp_0.x;
+                        // warp_checksum.y -= temp_0.y;
+            
+                        warp_checksum.x -= temp_8.x * r[1].x - temp_8.y * r[1].y;
+                        warp_checksum.y -= temp_8.x * r[1].y + temp_8.y * r[1].x;
+                        // warp_checksum.x -= temp_8.x;
+                        // warp_checksum.y -= temp_8.y;
+            
+                        warp_checksum.x -= temp_4.x * r[2].x - temp_4.y * r[2].y;
+                        warp_checksum.y -= temp_4.x * r[2].y + temp_4.y * r[2].x;
+                        // warp_checksum.x -= temp_4.x;
+                        // warp_checksum.y -= temp_4.y;
+            
+                        warp_checksum.x -= temp_12.x * r[0].x - temp_12.y * r[0].y;
+                        warp_checksum.y -= temp_12.x * r[0].y + temp_12.y * r[0].x;
+                        // warp_checksum.x -= temp_12.x;
+                        // warp_checksum.y -= temp_12.y;
+            
+                        warp_checksum.x -= temp_2.x * r[1].x - temp_2.y * r[1].y;
+                        warp_checksum.y -= temp_2.x * r[1].y + temp_2.y * r[1].x;
+                        // warp_checksum.x -= temp_2.x;
+                        // warp_checksum.y -= temp_2.y;
+            
+                        warp_checksum.x -= temp_10.x * r[2].x - temp_10.y * r[2].y;
+                        warp_checksum.y -= temp_10.x * r[2].y + temp_10.y * r[2].x;
+                        // warp_checksum.x -= temp_10.x;
+                        // warp_checksum.y -= temp_10.y;
+            
+                        warp_checksum.x -= temp_6.x * r[0].x - temp_6.y * r[0].y;
+                        warp_checksum.y -= temp_6.x * r[0].y + temp_6.y * r[0].x;
+                        // warp_checksum.x -= temp_6.x;
+                        // warp_checksum.y -= temp_6.y;
+            
+                        warp_checksum.x -= temp_14.x * r[1].x - temp_14.y * r[1].y;
+                        warp_checksum.y -= temp_14.x * r[1].y + temp_14.y * r[1].x;
+                        // warp_checksum.x -= temp_14.x;
+                        // warp_checksum.y -= temp_14.y;
+            
+                        warp_checksum.x -= temp_1.x * r[2].x - temp_1.y * r[2].y;
+                        warp_checksum.y -= temp_1.x * r[2].y + temp_1.y * r[2].x;
+                        // warp_checksum.x -= temp_1.x;
+                        // warp_checksum.y -= temp_1.y;
+            
+                        warp_checksum.x -= temp_9.x * r[0].x - temp_9.y * r[0].y;
+                        warp_checksum.y -= temp_9.x * r[0].y + temp_9.y * r[0].x;
+                        // warp_checksum.x -= temp_9.x;
+                        // warp_checksum.y -= temp_9.y;
+            
+                        warp_checksum.x -= temp_5.x * r[1].x - temp_5.y * r[1].y;
+                        warp_checksum.y -= temp_5.x * r[1].y + temp_5.y * r[1].x;
+                        // warp_checksum.x -= temp_5.x;
+                        // warp_checksum.y -= temp_5.y;
+            
+                        warp_checksum.x -= temp_13.x * r[2].x - temp_13.y * r[2].y;
+                        warp_checksum.y -= temp_13.x * r[2].y + temp_13.y * r[2].x;
+                        // warp_checksum.x -= temp_13.x;
+                        // warp_checksum.y -= temp_13.y;
+            
+                        warp_checksum.x -= temp_3.x * r[0].x - temp_3.y * r[0].y;
+                        warp_checksum.y -= temp_3.x * r[0].y + temp_3.y * r[0].x;
+                        // warp_checksum.x -= temp_3.x;
+                        // warp_checksum.y -= temp_3.y;
+            
+                        warp_checksum.x -= temp_11.x * r[1].x - temp_11.y * r[1].y;
+                        warp_checksum.y -= temp_11.x * r[1].y + temp_11.y * r[1].x;
+                        // warp_checksum.x -= temp_11.x;
+                        // warp_checksum.y -= temp_11.y;
+            
+                        warp_checksum.x -= temp_7.x * r[2].x - temp_7.y * r[2].y;
+                        warp_checksum.y -= temp_7.x * r[2].y + temp_7.y * r[2].x;
+                        // warp_checksum.x -= temp_7.x;
+                        // warp_checksum.y -= temp_7.y;
+            
+                        warp_checksum.x -= temp_15.x * r[0].x - temp_15.y * r[0].y;
+                        warp_checksum.y -= temp_15.x * r[0].y + temp_15.y * r[0].x;
+                        // warp_checksum.x -= temp_15.x;
+                        // warp_checksum.y -= temp_15.y;
+            
+            
+            temp_0.x += warp_checksum.x;
+            temp_0.y += warp_checksum.y;
+            #endif
+            
         n_global *= 2;
         __syncthreads();
         
+            #if FT==2
+    mem_checksum.x += temp_0.x;
+            mem_checksum.y += temp_0.y;
+    mem_checksum.x += temp_1.x;
+            mem_checksum.y += temp_1.y;
+    mem_checksum.x += temp_2.x;
+            mem_checksum.y += temp_2.y;
+    mem_checksum.x += temp_3.x;
+            mem_checksum.y += temp_3.y;
+    mem_checksum.x += temp_4.x;
+            mem_checksum.y += temp_4.y;
+    mem_checksum.x += temp_5.x;
+            mem_checksum.y += temp_5.y;
+    mem_checksum.x += temp_6.x;
+            mem_checksum.y += temp_6.y;
+    mem_checksum.x += temp_7.x;
+            mem_checksum.y += temp_7.y;
+    mem_checksum.x += temp_8.x;
+            mem_checksum.y += temp_8.y;
+    mem_checksum.x += temp_9.x;
+            mem_checksum.y += temp_9.y;
+    mem_checksum.x += temp_10.x;
+            mem_checksum.y += temp_10.y;
+    mem_checksum.x += temp_11.x;
+            mem_checksum.y += temp_11.y;
+    mem_checksum.x += temp_12.x;
+            mem_checksum.y += temp_12.y;
+    mem_checksum.x += temp_13.x;
+            mem_checksum.y += temp_13.y;
+    mem_checksum.x += temp_14.x;
+            mem_checksum.y += temp_14.y;
+    mem_checksum.x += temp_15.x;
+            mem_checksum.y += temp_15.y;
+    
+            mem_checksum_t1.y = 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16, 32);
+            mem_checksum_t1.y -= 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
+            mem_checksum_t1.y -= 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
+            mem_checksum_t1.y -= 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
+            mem_checksum_t1.y -= 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
+    
+    temp_0.x += 0.001 * (mem_checksum_t1.x);
+    temp_0.y += 0.001 * (mem_checksum_t1.y);
+    // if(tid == 0 && blockIdx.x == 0)printf("kernel 3, %f\n", temp_0.x, temp_0.y);
+            #endif
+            
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[0])) / (float)(33554432), tmp_angle);
     MY_MUL(temp_0, tmp_angle, tmp);
     temp_0 = tmp;

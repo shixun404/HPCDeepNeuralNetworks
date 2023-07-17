@@ -26,6 +26,7 @@ __global__ void __launch_bounds__(4) fft_radix2_logN4(float2* inputs, float2* ou
     r[2].x = -0.5f;
     r[2].y = 0.866f;
     float2 warp_checksum;
+    float2 warp_checksum_;
     float2 tmp_angle_bk;
     
     temp_0 = inputs[0 * blockDim.x + tx];
@@ -38,6 +39,21 @@ __global__ void __launch_bounds__(4) fft_radix2_logN4(float2* inputs, float2* ou
     __id[2] = 2 * blockDim.x + tx;
     __id[3] = 3 * blockDim.x + tx;
     
+            warp_checksum.x = 0;
+            warp_checksum.y = 0;
+        
+                        warp_checksum.x += temp_0.x * A_radix4_0_x - temp_0.y * A_radix4_0_y;
+                        warp_checksum.y += temp_0.x * A_radix4_0_y + temp_0.y * A_radix4_0_x;
+        
+                        warp_checksum.x += temp_1.x * A_radix4_1_x - temp_1.y * A_radix4_1_y;
+                        warp_checksum.y += temp_1.x * A_radix4_1_y + temp_1.y * A_radix4_1_x;
+        
+                        warp_checksum.x += temp_2.x * A_radix4_2_x - temp_2.y * A_radix4_2_y;
+                        warp_checksum.y += temp_2.x * A_radix4_2_y + temp_2.y * A_radix4_2_x;
+        
+                        warp_checksum.x += temp_3.x * A_radix4_3_x - temp_3.y * A_radix4_3_y;
+                        warp_checksum.y += temp_3.x * A_radix4_3_y + temp_3.y * A_radix4_3_x;
+        
     j = 1;
     k = 2 % 1;
     MY_ANGLE2COMPLEX((float)(j * k) * -3.141592653589793f, tmp_angle);
@@ -114,6 +130,23 @@ __global__ void __launch_bounds__(4) fft_radix2_logN4(float2* inputs, float2* ou
         
         n_global *= 2;
         
+            warp_checksum_ = warp_checksum;
+            
+            
+                        warp_checksum.x -= temp_0.x * r[0].x - temp_0.y * r[0].y;
+                        warp_checksum.y -= temp_0.x * r[0].y + temp_0.y * r[0].x;
+            
+                        warp_checksum.x -= temp_2.x * r[1].x - temp_2.y * r[1].y;
+                        warp_checksum.y -= temp_2.x * r[1].y + temp_2.y * r[1].x;
+            
+                        warp_checksum.x -= temp_1.x * r[2].x - temp_1.y * r[2].y;
+                        warp_checksum.y -= temp_1.x * r[2].y + temp_1.y * r[2].x;
+            
+                        warp_checksum.x -= temp_3.x * r[0].x - temp_3.y * r[0].y;
+                        warp_checksum.y -= temp_3.x * r[0].y + temp_3.y * r[0].x;
+            
+            // printf("%f, %f, %f, %f\n", warp_checksum.x, warp_checksum.y, warp_checksum_.x, warp_checksum_.y);
+            
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 1) * 0) / (float)(16), tmp_angle);
     MY_MUL(temp_0, tmp_angle, tmp);
@@ -161,6 +194,21 @@ __global__ void __launch_bounds__(4) fft_radix2_logN4(float2* inputs, float2* ou
                         ((3 * blockDim.x + tx) % 16)];
     __id[3] = tx + 3 * 4;
     
+            warp_checksum.x = 0;
+            warp_checksum.y = 0;
+        
+                        warp_checksum.x += temp_0.x * A_radix4_0_x - temp_0.y * A_radix4_0_y;
+                        warp_checksum.y += temp_0.x * A_radix4_0_y + temp_0.y * A_radix4_0_x;
+        
+                        warp_checksum.x += temp_1.x * A_radix4_1_x - temp_1.y * A_radix4_1_y;
+                        warp_checksum.y += temp_1.x * A_radix4_1_y + temp_1.y * A_radix4_1_x;
+        
+                        warp_checksum.x += temp_2.x * A_radix4_2_x - temp_2.y * A_radix4_2_y;
+                        warp_checksum.y += temp_2.x * A_radix4_2_y + temp_2.y * A_radix4_2_x;
+        
+                        warp_checksum.x += temp_3.x * A_radix4_3_x - temp_3.y * A_radix4_3_y;
+                        warp_checksum.y += temp_3.x * A_radix4_3_y + temp_3.y * A_radix4_3_x;
+        
     j = 1;
     k = 2 % 1;
     MY_ANGLE2COMPLEX((float)(j * k) * -3.141592653589793f, tmp_angle);
@@ -236,7 +284,24 @@ __global__ void __launch_bounds__(4) fft_radix2_logN4(float2* inputs, float2* ou
         __id[3] = tmp_id + 8;
         
         n_global *= 2;
-        outputs[__id[0]] = temp_0;
+        
+            warp_checksum_ = warp_checksum;
+            
+            
+                        warp_checksum.x -= temp_0.x * r[0].x - temp_0.y * r[0].y;
+                        warp_checksum.y -= temp_0.x * r[0].y + temp_0.y * r[0].x;
+            
+                        warp_checksum.x -= temp_2.x * r[1].x - temp_2.y * r[1].y;
+                        warp_checksum.y -= temp_2.x * r[1].y + temp_2.y * r[1].x;
+            
+                        warp_checksum.x -= temp_1.x * r[2].x - temp_1.y * r[2].y;
+                        warp_checksum.y -= temp_1.x * r[2].y + temp_1.y * r[2].x;
+            
+                        warp_checksum.x -= temp_3.x * r[0].x - temp_3.y * r[0].y;
+                        warp_checksum.y -= temp_3.x * r[0].y + temp_3.y * r[0].x;
+            
+            // printf("%f, %f, %f, %f\n", warp_checksum.x, warp_checksum.y, warp_checksum_.x, warp_checksum_.y);
+            outputs[__id[0]] = temp_0;
     outputs[__id[2]] = temp_2;
     outputs[__id[1]] = temp_1;
     outputs[__id[3]] = temp_3;

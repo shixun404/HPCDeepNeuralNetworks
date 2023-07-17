@@ -22,7 +22,16 @@ __global__ void __launch_bounds__(256) fft_radix2_logN23_2(float2* inputs, float
     int k;
     int tmp_id;
     int n = 1, n_global = 1;
+    float2 r[3];
+    r[0].x = 1.0f;
+    r[0].y = 0.0f;
+    r[1].x = -0.5f;
+    r[1].y = -0.866f;
+    r[2].x = -0.5f;
+    r[2].y = 0.866f;
     float2 tmp_angle_bk;
+    float2 warp_checksum;
+    float2 warp_checksum_;
     
     temp_0 = inputs[tx + (bx % 16) * 16 + (ty * 256 + 0) + (bx / 16) * 32768];
     temp_1 = inputs[tx + (bx % 16) * 16 + (ty * 256 + 4096) + (bx / 16) * 32768];
@@ -41,20 +50,50 @@ __global__ void __launch_bounds__(256) fft_radix2_logN23_2(float2* inputs, float
     __id[6] = 96 + ty;
     __id[7] = 112 + ty;
     
+            #if FT==1
+            warp_checksum.x = 0;
+            warp_checksum.y = 0;
+        
+                        warp_checksum.x += temp_0.x * A_radix8_0_x - temp_0.y * A_radix8_0_y;
+                        warp_checksum.y += temp_0.x * A_radix8_0_y + temp_0.y * A_radix8_0_x;
+        
+                        warp_checksum.x += temp_1.x * A_radix8_1_x - temp_1.y * A_radix8_1_y;
+                        warp_checksum.y += temp_1.x * A_radix8_1_y + temp_1.y * A_radix8_1_x;
+        
+                        warp_checksum.x += temp_2.x * A_radix8_2_x - temp_2.y * A_radix8_2_y;
+                        warp_checksum.y += temp_2.x * A_radix8_2_y + temp_2.y * A_radix8_2_x;
+        
+                        warp_checksum.x += temp_3.x * A_radix8_3_x - temp_3.y * A_radix8_3_y;
+                        warp_checksum.y += temp_3.x * A_radix8_3_y + temp_3.y * A_radix8_3_x;
+        
+                        warp_checksum.x += temp_4.x * A_radix8_4_x - temp_4.y * A_radix8_4_y;
+                        warp_checksum.y += temp_4.x * A_radix8_4_y + temp_4.y * A_radix8_4_x;
+        
+                        warp_checksum.x += temp_5.x * A_radix8_5_x - temp_5.y * A_radix8_5_y;
+                        warp_checksum.y += temp_5.x * A_radix8_5_y + temp_5.y * A_radix8_5_x;
+        
+                        warp_checksum.x += temp_6.x * A_radix8_6_x - temp_6.y * A_radix8_6_y;
+                        warp_checksum.y += temp_6.x * A_radix8_6_y + temp_6.y * A_radix8_6_x;
+        
+                        warp_checksum.x += temp_7.x * A_radix8_7_x - temp_7.y * A_radix8_7_y;
+                        warp_checksum.y += temp_7.x * A_radix8_7_y + temp_7.y * A_radix8_7_x;
+        
+            #endif    
+        
     j = 1;
     k = 4 % 1;
-    // MY_ANGLE2COMPLEX((float)(j * k) * -3.141592653589793f, tmp_angle);
-    tmp_angle.x = 1;
-    tmp_angle.y = 1;
+    MY_ANGLE2COMPLEX((float)(j * k) * -3.141592653589793f, tmp_angle);
+    // tmp_angle.x = 1;
+    // tmp_angle.y = 1;
     tmp_angle_bk = tmp_angle;
     
                     tmp_angle = tmp_angle_bk;
     
         tmp_angle_rot.x = 1.0f;
         tmp_angle_rot.y = 0.0f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        // tmp.x = 1;
+        // tmp.y = 1;
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -111,18 +150,18 @@ __global__ void __launch_bounds__(256) fft_radix2_logN23_2(float2* inputs, float
     
     j = 1;
     k = 4 % 2;
-    // MY_ANGLE2COMPLEX((float)(j * k) * -1.5707963267948966f, tmp_angle);
-    tmp_angle.x = 1;
-    tmp_angle.y = 1;
+    MY_ANGLE2COMPLEX((float)(j * k) * -1.5707963267948966f, tmp_angle);
+    // tmp_angle.x = 1;
+    // tmp_angle.y = 1;
     tmp_angle_bk = tmp_angle;
     
                     tmp_angle = tmp_angle_bk;
     
         tmp_angle_rot.x = 1.0f;
         tmp_angle_rot.y = 0.0f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        // tmp.x = 1;
+        // tmp.y = 1;
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -179,18 +218,18 @@ __global__ void __launch_bounds__(256) fft_radix2_logN23_2(float2* inputs, float
     
     j = 1;
     k = 4 % 4;
-    // MY_ANGLE2COMPLEX((float)(j * k) * -0.7853981633974483f, tmp_angle);
-    tmp_angle.x = 1;
-    tmp_angle.y = 1;
+    MY_ANGLE2COMPLEX((float)(j * k) * -0.7853981633974483f, tmp_angle);
+    // tmp_angle.x = 1;
+    // tmp_angle.y = 1;
     tmp_angle_bk = tmp_angle;
     
                     tmp_angle = tmp_angle_bk;
     
         tmp_angle_rot.x = 1.0f;
         tmp_angle_rot.y = 0.0f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        // tmp.x = 1;
+        // tmp.y = 1;
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -203,9 +242,9 @@ __global__ void __launch_bounds__(256) fft_radix2_logN23_2(float2* inputs, float
         
         tmp_angle_rot.x = 0.7071067811865476f;
         tmp_angle_rot.y = -0.7071067811865475f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        // tmp.x = 1;
+        // tmp.y = 1;
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -254,6 +293,54 @@ __global__ void __launch_bounds__(256) fft_radix2_logN23_2(float2* inputs, float
         
     n_global *= 2;
     
+            #if FT == 1
+            warp_checksum_ = warp_checksum;
+            
+                        warp_checksum.x -= temp_0.x * r[0].x - temp_0.y * r[0].y;
+                        warp_checksum.y -= temp_0.x * r[0].y + temp_0.y * r[0].x;
+                        // warp_checksum.x -= temp_0.x;
+                        // warp_checksum.y -= temp_0.y;
+            
+                        warp_checksum.x -= temp_4.x * r[1].x - temp_4.y * r[1].y;
+                        warp_checksum.y -= temp_4.x * r[1].y + temp_4.y * r[1].x;
+                        // warp_checksum.x -= temp_4.x;
+                        // warp_checksum.y -= temp_4.y;
+            
+                        warp_checksum.x -= temp_2.x * r[2].x - temp_2.y * r[2].y;
+                        warp_checksum.y -= temp_2.x * r[2].y + temp_2.y * r[2].x;
+                        // warp_checksum.x -= temp_2.x;
+                        // warp_checksum.y -= temp_2.y;
+            
+                        warp_checksum.x -= temp_6.x * r[0].x - temp_6.y * r[0].y;
+                        warp_checksum.y -= temp_6.x * r[0].y + temp_6.y * r[0].x;
+                        // warp_checksum.x -= temp_6.x;
+                        // warp_checksum.y -= temp_6.y;
+            
+                        warp_checksum.x -= temp_1.x * r[1].x - temp_1.y * r[1].y;
+                        warp_checksum.y -= temp_1.x * r[1].y + temp_1.y * r[1].x;
+                        // warp_checksum.x -= temp_1.x;
+                        // warp_checksum.y -= temp_1.y;
+            
+                        warp_checksum.x -= temp_5.x * r[2].x - temp_5.y * r[2].y;
+                        warp_checksum.y -= temp_5.x * r[2].y + temp_5.y * r[2].x;
+                        // warp_checksum.x -= temp_5.x;
+                        // warp_checksum.y -= temp_5.y;
+            
+                        warp_checksum.x -= temp_3.x * r[0].x - temp_3.y * r[0].y;
+                        warp_checksum.y -= temp_3.x * r[0].y + temp_3.y * r[0].x;
+                        // warp_checksum.x -= temp_3.x;
+                        // warp_checksum.y -= temp_3.y;
+            
+                        warp_checksum.x -= temp_7.x * r[1].x - temp_7.y * r[1].y;
+                        warp_checksum.y -= temp_7.x * r[1].y + temp_7.y * r[1].x;
+                        // warp_checksum.x -= temp_7.x;
+                        // warp_checksum.y -= temp_7.y;
+            
+            
+            temp_0.x += warp_checksum.x;
+            temp_0.y += warp_checksum.y;
+            #endif
+            
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 0) / (float)(128), tmp_angle);
     MY_MUL(temp_0, tmp_angle, tmp);
@@ -329,20 +416,50 @@ __global__ void __launch_bounds__(256) fft_radix2_logN23_2(float2* inputs, float
     temp_7 = sdata[tx + 16 * (112 + ty)];
     __id[7] = ty + 112;
     
+            #if FT==1
+            warp_checksum.x = 0;
+            warp_checksum.y = 0;
+        
+                        warp_checksum.x += temp_0.x * A_radix8_0_x - temp_0.y * A_radix8_0_y;
+                        warp_checksum.y += temp_0.x * A_radix8_0_y + temp_0.y * A_radix8_0_x;
+        
+                        warp_checksum.x += temp_1.x * A_radix8_1_x - temp_1.y * A_radix8_1_y;
+                        warp_checksum.y += temp_1.x * A_radix8_1_y + temp_1.y * A_radix8_1_x;
+        
+                        warp_checksum.x += temp_2.x * A_radix8_2_x - temp_2.y * A_radix8_2_y;
+                        warp_checksum.y += temp_2.x * A_radix8_2_y + temp_2.y * A_radix8_2_x;
+        
+                        warp_checksum.x += temp_3.x * A_radix8_3_x - temp_3.y * A_radix8_3_y;
+                        warp_checksum.y += temp_3.x * A_radix8_3_y + temp_3.y * A_radix8_3_x;
+        
+                        warp_checksum.x += temp_4.x * A_radix8_4_x - temp_4.y * A_radix8_4_y;
+                        warp_checksum.y += temp_4.x * A_radix8_4_y + temp_4.y * A_radix8_4_x;
+        
+                        warp_checksum.x += temp_5.x * A_radix8_5_x - temp_5.y * A_radix8_5_y;
+                        warp_checksum.y += temp_5.x * A_radix8_5_y + temp_5.y * A_radix8_5_x;
+        
+                        warp_checksum.x += temp_6.x * A_radix8_6_x - temp_6.y * A_radix8_6_y;
+                        warp_checksum.y += temp_6.x * A_radix8_6_y + temp_6.y * A_radix8_6_x;
+        
+                        warp_checksum.x += temp_7.x * A_radix8_7_x - temp_7.y * A_radix8_7_y;
+                        warp_checksum.y += temp_7.x * A_radix8_7_y + temp_7.y * A_radix8_7_x;
+        
+            #endif    
+        
     j = 1;
     k = 4 % 1;
-    // MY_ANGLE2COMPLEX((float)(j * k) * -0.39269908169872414f, tmp_angle);
-    tmp_angle.x = 1;
-    tmp_angle.y = 1;
+    MY_ANGLE2COMPLEX((float)(j * k) * -0.39269908169872414f, tmp_angle);
+    // tmp_angle.x = 1;
+    // tmp_angle.y = 1;
     tmp_angle_bk = tmp_angle;
     
                     tmp_angle = tmp_angle_bk;
     
         tmp_angle_rot.x = 1.0f;
         tmp_angle_rot.y = 0.0f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        // tmp.x = 1;
+        // tmp.y = 1;
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -399,18 +516,18 @@ __global__ void __launch_bounds__(256) fft_radix2_logN23_2(float2* inputs, float
     
     j = 1;
     k = 4 % 2;
-    // MY_ANGLE2COMPLEX((float)(j * k) * -0.19634954084936207f, tmp_angle);
-    tmp_angle.x = 1;
-    tmp_angle.y = 1;
+    MY_ANGLE2COMPLEX((float)(j * k) * -0.19634954084936207f, tmp_angle);
+    // tmp_angle.x = 1;
+    // tmp_angle.y = 1;
     tmp_angle_bk = tmp_angle;
     
                     tmp_angle = tmp_angle_bk;
     
         tmp_angle_rot.x = 1.0f;
         tmp_angle_rot.y = 0.0f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        // tmp.x = 1;
+        // tmp.y = 1;
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -467,18 +584,18 @@ __global__ void __launch_bounds__(256) fft_radix2_logN23_2(float2* inputs, float
     
     j = 1;
     k = 4 % 4;
-    // MY_ANGLE2COMPLEX((float)(j * k) * -0.09817477042468103f, tmp_angle);
-    tmp_angle.x = 1;
-    tmp_angle.y = 1;
+    MY_ANGLE2COMPLEX((float)(j * k) * -0.09817477042468103f, tmp_angle);
+    // tmp_angle.x = 1;
+    // tmp_angle.y = 1;
     tmp_angle_bk = tmp_angle;
     
                     tmp_angle = tmp_angle_bk;
     
         tmp_angle_rot.x = 1.0f;
         tmp_angle_rot.y = 0.0f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        // tmp.x = 1;
+        // tmp.y = 1;
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -491,9 +608,9 @@ __global__ void __launch_bounds__(256) fft_radix2_logN23_2(float2* inputs, float
         
         tmp_angle_rot.x = 0.7071067811865476f;
         tmp_angle_rot.y = -0.7071067811865475f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        // tmp.x = 1;
+        // tmp.y = 1;
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -542,6 +659,54 @@ __global__ void __launch_bounds__(256) fft_radix2_logN23_2(float2* inputs, float
         
     n_global *= 2;
     
+            #if FT == 1
+            warp_checksum_ = warp_checksum;
+            
+                        warp_checksum.x -= temp_0.x * r[0].x - temp_0.y * r[0].y;
+                        warp_checksum.y -= temp_0.x * r[0].y + temp_0.y * r[0].x;
+                        // warp_checksum.x -= temp_0.x;
+                        // warp_checksum.y -= temp_0.y;
+            
+                        warp_checksum.x -= temp_4.x * r[1].x - temp_4.y * r[1].y;
+                        warp_checksum.y -= temp_4.x * r[1].y + temp_4.y * r[1].x;
+                        // warp_checksum.x -= temp_4.x;
+                        // warp_checksum.y -= temp_4.y;
+            
+                        warp_checksum.x -= temp_2.x * r[2].x - temp_2.y * r[2].y;
+                        warp_checksum.y -= temp_2.x * r[2].y + temp_2.y * r[2].x;
+                        // warp_checksum.x -= temp_2.x;
+                        // warp_checksum.y -= temp_2.y;
+            
+                        warp_checksum.x -= temp_6.x * r[0].x - temp_6.y * r[0].y;
+                        warp_checksum.y -= temp_6.x * r[0].y + temp_6.y * r[0].x;
+                        // warp_checksum.x -= temp_6.x;
+                        // warp_checksum.y -= temp_6.y;
+            
+                        warp_checksum.x -= temp_1.x * r[1].x - temp_1.y * r[1].y;
+                        warp_checksum.y -= temp_1.x * r[1].y + temp_1.y * r[1].x;
+                        // warp_checksum.x -= temp_1.x;
+                        // warp_checksum.y -= temp_1.y;
+            
+                        warp_checksum.x -= temp_5.x * r[2].x - temp_5.y * r[2].y;
+                        warp_checksum.y -= temp_5.x * r[2].y + temp_5.y * r[2].x;
+                        // warp_checksum.x -= temp_5.x;
+                        // warp_checksum.y -= temp_5.y;
+            
+                        warp_checksum.x -= temp_3.x * r[0].x - temp_3.y * r[0].y;
+                        warp_checksum.y -= temp_3.x * r[0].y + temp_3.y * r[0].x;
+                        // warp_checksum.x -= temp_3.x;
+                        // warp_checksum.y -= temp_3.y;
+            
+                        warp_checksum.x -= temp_7.x * r[1].x - temp_7.y * r[1].y;
+                        warp_checksum.y -= temp_7.x * r[1].y + temp_7.y * r[1].x;
+                        // warp_checksum.x -= temp_7.x;
+                        // warp_checksum.y -= temp_7.y;
+            
+            
+            temp_0.x += warp_checksum.x;
+            temp_0.y += warp_checksum.y;
+            #endif
+            
     __syncthreads();
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 8) * 0) / (float)(16.0), tmp_angle);
@@ -618,20 +783,50 @@ __global__ void __launch_bounds__(256) fft_radix2_logN23_2(float2* inputs, float
     temp_7 = sdata[tx + 16 * (112 + ty)];
     __id[7] = ty + 112;
     
+            #if FT==1
+            warp_checksum.x = 0;
+            warp_checksum.y = 0;
+        
+                        warp_checksum.x += temp_0.x * A_radix2_0_x - temp_0.y * A_radix2_0_y;
+                        warp_checksum.y += temp_0.x * A_radix2_0_y + temp_0.y * A_radix2_0_x;
+        
+                        warp_checksum.x += temp_4.x * A_radix2_1_x - temp_4.y * A_radix2_1_y;
+                        warp_checksum.y += temp_4.x * A_radix2_1_y + temp_4.y * A_radix2_1_x;
+        
+                        warp_checksum.x += temp_1.x * A_radix2_0_x - temp_1.y * A_radix2_0_y;
+                        warp_checksum.y += temp_1.x * A_radix2_0_y + temp_1.y * A_radix2_0_x;
+        
+                        warp_checksum.x += temp_5.x * A_radix2_1_x - temp_5.y * A_radix2_1_y;
+                        warp_checksum.y += temp_5.x * A_radix2_1_y + temp_5.y * A_radix2_1_x;
+        
+                        warp_checksum.x += temp_2.x * A_radix2_0_x - temp_2.y * A_radix2_0_y;
+                        warp_checksum.y += temp_2.x * A_radix2_0_y + temp_2.y * A_radix2_0_x;
+        
+                        warp_checksum.x += temp_6.x * A_radix2_1_x - temp_6.y * A_radix2_1_y;
+                        warp_checksum.y += temp_6.x * A_radix2_1_y + temp_6.y * A_radix2_1_x;
+        
+                        warp_checksum.x += temp_3.x * A_radix2_0_x - temp_3.y * A_radix2_0_y;
+                        warp_checksum.y += temp_3.x * A_radix2_0_y + temp_3.y * A_radix2_0_x;
+        
+                        warp_checksum.x += temp_7.x * A_radix2_1_x - temp_7.y * A_radix2_1_y;
+                        warp_checksum.y += temp_7.x * A_radix2_1_y + temp_7.y * A_radix2_1_x;
+        
+            #endif    
+        
     j = 1;
     k = 1 % 1;
-    // MY_ANGLE2COMPLEX((float)(j * k) * -0.04908738521234052f, tmp_angle);
-    tmp_angle.x = 1;
-    tmp_angle.y = 1;
+    MY_ANGLE2COMPLEX((float)(j * k) * -0.04908738521234052f, tmp_angle);
+    // tmp_angle.x = 1;
+    // tmp_angle.y = 1;
     tmp_angle_bk = tmp_angle;
     
                     tmp_angle = tmp_angle_bk;
     
         tmp_angle_rot.x = 1.0f;
         tmp_angle_rot.y = 0.0f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        // tmp.x = 1;
+        // tmp.y = 1;
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -643,9 +838,9 @@ __global__ void __launch_bounds__(256) fft_radix2_logN23_2(float2* inputs, float
     
         tmp_angle_rot.x = 1.0f;
         tmp_angle_rot.y = 0.0f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        // tmp.x = 1;
+        // tmp.y = 1;
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -657,9 +852,9 @@ __global__ void __launch_bounds__(256) fft_radix2_logN23_2(float2* inputs, float
     
         tmp_angle_rot.x = 1.0f;
         tmp_angle_rot.y = 0.0f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        // tmp.x = 1;
+        // tmp.y = 1;
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -671,9 +866,9 @@ __global__ void __launch_bounds__(256) fft_radix2_logN23_2(float2* inputs, float
     
         tmp_angle_rot.x = 1.0f;
         tmp_angle_rot.y = 0.0f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+        // tmp.x = 1;
+        // tmp.y = 1;
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -719,6 +914,54 @@ __global__ void __launch_bounds__(256) fft_radix2_logN23_2(float2* inputs, float
         
     n_global *= 2;
     
+            #if FT == 1
+            warp_checksum_ = warp_checksum;
+            
+                        warp_checksum.x -= temp_0.x * r[0].x - temp_0.y * r[0].y;
+                        warp_checksum.y -= temp_0.x * r[0].y + temp_0.y * r[0].x;
+                        // warp_checksum.x -= temp_0.x;
+                        // warp_checksum.y -= temp_0.y;
+            
+                        warp_checksum.x -= temp_4.x * r[1].x - temp_4.y * r[1].y;
+                        warp_checksum.y -= temp_4.x * r[1].y + temp_4.y * r[1].x;
+                        // warp_checksum.x -= temp_4.x;
+                        // warp_checksum.y -= temp_4.y;
+            
+                        warp_checksum.x -= temp_1.x * r[0].x - temp_1.y * r[0].y;
+                        warp_checksum.y -= temp_1.x * r[0].y + temp_1.y * r[0].x;
+                        // warp_checksum.x -= temp_1.x;
+                        // warp_checksum.y -= temp_1.y;
+            
+                        warp_checksum.x -= temp_5.x * r[1].x - temp_5.y * r[1].y;
+                        warp_checksum.y -= temp_5.x * r[1].y + temp_5.y * r[1].x;
+                        // warp_checksum.x -= temp_5.x;
+                        // warp_checksum.y -= temp_5.y;
+            
+                        warp_checksum.x -= temp_2.x * r[0].x - temp_2.y * r[0].y;
+                        warp_checksum.y -= temp_2.x * r[0].y + temp_2.y * r[0].x;
+                        // warp_checksum.x -= temp_2.x;
+                        // warp_checksum.y -= temp_2.y;
+            
+                        warp_checksum.x -= temp_6.x * r[1].x - temp_6.y * r[1].y;
+                        warp_checksum.y -= temp_6.x * r[1].y + temp_6.y * r[1].x;
+                        // warp_checksum.x -= temp_6.x;
+                        // warp_checksum.y -= temp_6.y;
+            
+                        warp_checksum.x -= temp_3.x * r[0].x - temp_3.y * r[0].y;
+                        warp_checksum.y -= temp_3.x * r[0].y + temp_3.y * r[0].x;
+                        // warp_checksum.x -= temp_3.x;
+                        // warp_checksum.y -= temp_3.y;
+            
+                        warp_checksum.x -= temp_7.x * r[1].x - temp_7.y * r[1].y;
+                        warp_checksum.y -= temp_7.x * r[1].y + temp_7.y * r[1].x;
+                        // warp_checksum.x -= temp_7.x;
+                        // warp_checksum.y -= temp_7.y;
+            
+            
+            temp_0.x += warp_checksum.x;
+            temp_0.y += warp_checksum.y;
+            #endif
+            
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((tx + bx * 16) % 256) * (__id[0])) / (float)(32768), tmp_angle);
     MY_MUL(temp_0, tmp_angle, tmp);
     temp_0 = tmp;

@@ -65,6 +65,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     int tmp_id;
     int n = 1, n_global = 1;
     float2 warp_checksum ,warp_checksum_;
+    float2 mem_checksum ,mem_checksum_t1;
     float2 tmp_angle_bk;
     '''
     n = 1
@@ -75,6 +76,31 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
         ft_fft += f'''temp_{i} = inputs[(ty + {i} * {(N1 // signal_per_thread)}) * {N2} + tx + bx * {num_thread // (N1 // signal_per_thread)}];
     '''
 
+    ft_fft += '''
+    #if FT==2
+    '''
+    for i in range(signal_per_thread):
+        ft_fft += f'''mem_checksum.x += temp_{i}.x;
+        mem_checksum.y += temp_{i}.y;
+    '''
+    ft_fft += '''
+    mem_checksum_t1.x = 0; 
+    mem_checksum_t1.y = 0; 
+    mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.x,  16,32);
+    mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 8, 32);
+    mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 4, 32);
+    mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 2, 32);
+    mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 1, 32);
+    
+    mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y,  16,32);
+    mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
+    mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
+    mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
+    mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
+    #endif
+    '''
+    
+    
     for i in range(signal_per_thread):
         ft_fft += f'''__id[{i}] = {i * blockdim_y} + ty;
     '''
@@ -217,6 +243,29 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
         __syncthreads();
         '''
             offset = 0 if  offset > 0 else signal_per_thread
+            
+            
+            ft_fft += '''
+            #if FT==2
+    '''
+            for i in range(signal_per_thread):
+                ft_fft += f'''mem_checksum.x += temp_{i}.x;
+            mem_checksum.y += temp_{i}.y;
+    '''
+            ft_fft += '''
+            mem_checksum_t1.y = 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16, 32);
+            mem_checksum_t1.y -= 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
+            mem_checksum_t1.y -= 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
+            mem_checksum_t1.y -= 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
+            mem_checksum_t1.y -= 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
+    
+    temp_0.x += 0.001 * (mem_checksum_t1.x);
+    temp_0.y += 0.001 * (mem_checksum_t1.y);
+    // if(tid == 0 && blockIdx.x == 0)printf("kernel 3, %f\\n", temp_0.x, temp_0.y);
+            #endif
+            '''
+    
+
             for i in range(signal_per_thread):
                 ft_fft += f'''
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * {blockdim_x}) * (__id[{order[signal_per_thread - offset + i]}])) / (float)({N}), tmp_angle);
