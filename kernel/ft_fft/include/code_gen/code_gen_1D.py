@@ -59,6 +59,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}'
     r[2].x = -0.5f;
     r[2].y = 0.866f;
     float2 warp_checksum;
+    float2 warp_checksum_;
     float2 tmp_angle_bk;
     '''
     n = 1
@@ -78,6 +79,20 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}'
             batch_size = 1 if twiddle_type[stage_id] == 0 else n_global // (N // signal_per_thread)
             n = 1
             n_global_ = 1
+            radix_ = 2 ** plan[stage_id]
+            ft_fft += '''
+            warp_checksum.x = 0;
+            warp_checksum.y = 0;
+        '''
+            for batch in range(batch_size):
+                for k in range(signal_per_thread // batch_size):
+                        i = k * batch_size + batch
+                        ft_fft += f'''
+                        warp_checksum.x += temp_{i}.x * A_radix{radix_}_{k}_x - temp_{i}.y * A_radix{radix_}_{k}_y;
+                        warp_checksum.y += temp_{i}.x * A_radix{radix_}_{k}_y + temp_{i}.y * A_radix{radix_}_{k}_x;
+        '''
+            
+            
             for j in range(plan[stage_id]):
                 i = 0 + signal_per_thread // radix
                 ft_fft += f'''
@@ -135,6 +150,20 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}'
                 n *= radix
                 n_global *= radix
                 n_global_ *= radix
+            ft_fft += f'''
+            warp_checksum_ = warp_checksum;
+            
+            '''
+            for batch in range(batch_size):
+                for k in range(signal_per_thread // batch_size):
+                        i = k * batch_size + batch
+                        ft_fft += f'''
+                        warp_checksum.x -= temp_{order[i + signal_per_thread - offset]}.x * r[{k % 3}].x - temp_{order[i + signal_per_thread - offset]}.y * r[{k % 3}].y;
+                        warp_checksum.y -= temp_{order[i + signal_per_thread - offset]}.x * r[{k % 3}].y + temp_{order[i + signal_per_thread - offset]}.y * r[{k % 3}].x;
+            '''
+            ft_fft += '''
+            // printf("%f, %f, %f, %f\\n", warp_checksum.x, warp_checksum.y, warp_checksum_.x, warp_checksum_.y);
+            '''
 
         if twiddle_type[stage_id] == 0:
             ft_fft += f'''

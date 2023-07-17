@@ -404,15 +404,15 @@ int main(int argc, char** argv){
         FLOAT2_NORM(res_ref, norm_ref);
         
         float err = fabs(norm - norm_ref);
-        if(i % 10000 ==0){
+        if(i % 1000000 ==0){
         printf("error %f detected at %d\\n", err / fabs(norm), i / 2);
         printf("ref[%d]: %.3f + %.3f i\\n",  i / 2, res_ref.x, res_ref.y);
         printf("res[%d]: %.3f + %.3f i\\n\\n",  i / 2, res.x, res.y);
         }
         if(err / fabs(norm) > 0.05){
-            //printf("error %f detected at %d\\n", err / fabs(norm), i / 2);
-            //printf("ref[%d]: %.3f + %.3f i\\n",  i / 2, res_ref.x, res_ref.y);
-            //printf("res[%d]: %.3f + %.3f i\\n\\n",  i / 2, res.x, res.y);
+            printf("error %f detected at %d\\n", err / fabs(norm), i / 2);
+            printf("ref[%d]: %.3f + %.3f i\\n",  i / 2, res_ref.x, res_ref.y);
+            printf("res[%d]: %.3f + %.3f i\\n\\n",  i / 2, res.x, res.y);
             pass = false;
             // break;
         }   

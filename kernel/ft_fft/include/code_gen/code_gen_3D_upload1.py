@@ -64,7 +64,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     int k;
     int tmp_id;
     int n = 1, n_global = 1;
-    float2 warp_checksum;
+    float2 warp_checksum ,warp_checksum_;
     float2 tmp_angle_bk;
     '''
     n = 1
@@ -83,14 +83,30 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
             batch_size = 1 if twiddle_type[stage_id] == 0 else n_global // (N1 // signal_per_thread)
             n = 1
             n_global_ = 1
+            radix_ = 2 ** plan[stage_id]
+            ft_fft += '''
+            #if FT==1
+            warp_checksum.x = 0;
+            warp_checksum.y = 0;
+        '''
+            for batch in range(batch_size):
+                for k in range(signal_per_thread // batch_size):
+                        i = k * batch_size + batch
+                        ft_fft += f'''
+                        warp_checksum.x += temp_{i}.x * A_radix{radix_}_{k}_x - temp_{i}.y * A_radix{radix_}_{k}_y;
+                        warp_checksum.y += temp_{i}.x * A_radix{radix_}_{k}_y + temp_{i}.y * A_radix{radix_}_{k}_x;
+        '''
+            ft_fft += '''
+            #endif
+        '''
+            
+            
             for j in range(plan[stage_id]):
                 i = 0 + signal_per_thread // radix
                 ft_fft += f'''
     j = {int(i / ((signal_per_thread) // radix))};
     k = {i // batch_size } % {n_global_};
-    // MY_ANGLE2COMPLEX((float)(j * k) * {(-2.0 * M_PI / (radix * n_global))}f, tmp_angle);
-    tmp_angle.x = 1;
-    tmp_angle.y = 1;
+    MY_ANGLE2COMPLEX((float)(j * k) * {(-2.0 * M_PI / (radix * n_global))}f, tmp_angle);
     tmp_angle_bk = tmp_angle;
     '''
                 for batch in range(batch_size):
@@ -102,9 +118,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
                         ft_fft += f'''
         tmp_angle_rot.x = {cos(- M_PI / float(n)) if k != 0 else 1.}f;
         tmp_angle_rot.y = {sin(- M_PI / float(n)) if k != 0 else 0.}f;
-        // MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-        tmp.x = 1;
-        tmp.y = 1;
+        MY_MUL(tmp_angle, tmp_angle_rot, tmp);
         tmp_angle = tmp;
         tmp_angle_rot.x = tmp_angle.y;
         tmp_angle_rot.y = -tmp_angle.x;
@@ -145,7 +159,25 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
                 n *= radix
                 n_global *= radix
                 n_global_ *= radix
-
+            ft_fft += '''
+            #if FT==1
+            warp_checksum_ = warp_checksum;
+            '''
+            for batch in range(batch_size):
+                for k in range(signal_per_thread // batch_size):
+                        i = k * batch_size + batch
+                        ft_fft += f'''
+                        warp_checksum.x -= temp_{order[i + signal_per_thread - offset]}.x * r[{k % 3}].x - temp_{order[i + signal_per_thread - offset]}.y * r[{k % 3}].y;
+                        warp_checksum.y -= temp_{order[i + signal_per_thread - offset]}.x * r[{k % 3}].y + temp_{order[i + signal_per_thread - offset]}.y * r[{k % 3}].x;
+                        // warp_checksum.x -= temp_{order[i + signal_per_thread - offset]}.x;
+                        // warp_checksum.y -= temp_{order[i + signal_per_thread - offset]}.y;
+            '''
+            ft_fft += '''
+            
+            temp_0.x += warp_checksum.x;
+            temp_0.y += warp_checksum.y;
+            #endif
+            '''
         if twiddle_type[stage_id] == 0:
             ft_fft += f'''
     __syncthreads();

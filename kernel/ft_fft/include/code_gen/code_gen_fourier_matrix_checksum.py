@@ -13,18 +13,22 @@ def code_gen_fourier_matrix_checksum(radix=2):
             
     for i in range(0, radix):
         v[i] = cos(-2 * pi * (i % 3) / 3) + sin(-2 * pi * (i % 3) / 3) * 1.j
-    
+    for i in range(0, radix):
+        v[i] = 1 + 1.j
     print(v)
+    # for i in range(radix):
+    #     print(w[i])
     # print(w)
     # print(th.matmul(w, v))
     checksum = th.matmul(w, v)
-    
+    print(checksum)
+    assert 0
     for i in range(radix):
         print(f"#define A_radix{radix}_{i}_x {checksum[i].item().real}f")
         print(f"#define A_radix{radix}_{i}_y {checksum[i].item().imag}f")
 
 if __name__ == "__main__":
-    code_gen_fourier_matrix_checksum(2)
+    code_gen_fourier_matrix_checksum(8)
     # print(cos(pi))
     
             
