@@ -26,9 +26,9 @@ __global__ void __launch_bounds__(16) fft_radix2_logN7(float2* inputs, float2* o
     r[0].x = 1.0f;
     r[0].y = 0.0f;
     r[1].x = -0.5f;
-    r[1].y = -0.866f;
+    r[1].y = -0.8660253882408142f;
     r[2].x = -0.5f;
-    r[2].y = 0.866f;
+    r[2].y = 0.8660253882408142f;
     float2 warp_checksum;
     float2 warp_checksum_;
     float2 tmp_angle_bk;

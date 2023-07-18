@@ -38,20 +38,330 @@ int main(int argc, char** argv){
     
     output_ref = (float*)calloc(N * 2, sizeof(float));
     output = (float*)calloc(N * 2, sizeof(float));
+    float r[6];
     
-    float *input_d, *output_d, *output_d_vkfft, *output_d_cufft, *output_d_1, *output_d_ref_1;
- 
+    r[0] = 1.0f;
+    r[1] = 0.0f;
+    r[2] = -0.5f;
+    r[3] = -0.8660253882408142f;
+    r[4] = -0.5f;
+    r[5] = 0.8660253882408142f;
+    for(int i = 0; i < 3; ++i){
+        r[i * 2] = cosf(-2 * M_PI * (i % 3) / 3);
+        r[i * 2 + 1] = sinf(-2 * M_PI * (i % 3) / 3);
+    }
+    
+    float *input_d, *output_d, *output_d_vkfft, *output_d_cufft, *output_d_1, *output_d_ref_1, *checksum_r, *checksum_r_d, *dftmtx;
+    checksum_r = (float*)calloc(1024*2, sizeof(float));
+    dftmtx = (float*)calloc(1024*1024*2, sizeof(float));
     CUDA_CALLER(cudaMalloc((void**)&input_d, sizeof(float) * N * 2));
     CUDA_CALLER(cudaMalloc((void**)&output_d, sizeof(float) * N * 2));
-    // CUDA_CALLER(cudaMalloc((void**)&output_d_vkfft, sizeof(float) * N * 2));
-    // CUDA_CALLER(cudaMalloc((void**)&output_d_cufft, sizeof(float) * N * 2));
     CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
-    // CUDA_CALLER(cudaMalloc((void**)&output_d_ref_1, sizeof(float) * N * 2));
+    
 
     for(int i = 0; i < N * 2; ++i){ 
-            input[i] = (float)(random() % 100) / (float)100;   
+            input[i] = (float)(random() % 100) / (float)100;
     }
+    
+        float* checksum_r_3, *checksum_r_d_3;
+        checksum_r_3 = (float*)calloc(8*2, sizeof(float));
+        CUDA_CALLER(cudaMalloc((void**)&checksum_r_d_3, sizeof(float) * 8 * 2));
+        for(int i = 0; i < 8; ++i)
+        
+        {
+        
+        for(int j = 0; j < 8; ++j )
+        
+        {
+        
+            dftmtx[i + (j * 2) * 8] = cosf((float)(-2 * M_PI * i * j) / 8.f);
+            dftmtx[i + (j * 2 + 1) * 8] = sinf((float)(-2 * M_PI * i * j) / 8.f);
+        
+        }
+    }
+    
+    for(int i = 0; i < 8; ++i)
+    
+    {
+    
+        checksum_r_3[i * 2] = 0;
+        checksum_r_3[i * 2 + 1] = 0;
+        for(int j = 0; j < 8; ++j)
+    
+    {
+    
+            float real = dftmtx[j + i * 2 * 8];
+            float imag = dftmtx[j + (i * 2 + 1) * 8];
+            checksum_r_3[i * 2] += real * r[(j % 3) * 2] - imag * r[(j % 3) * 2 + 1];
+            checksum_r_3[i * 2 + 1] += imag * r[(j % 3) * 2] + real * r[(j % 3) * 2 + 1];
+        
+    }
+    }
+    
+    cudaMemcpy((void*)checksum_r_d_3, (void*)checksum_r_3, 2 * 8 * sizeof(float), cudaMemcpyHostToDevice);
+    
+        float* checksum_r_4, *checksum_r_d_4;
+        checksum_r_4 = (float*)calloc(16*2, sizeof(float));
+        CUDA_CALLER(cudaMalloc((void**)&checksum_r_d_4, sizeof(float) * 16 * 2));
+        for(int i = 0; i < 16; ++i)
+        
+        {
+        
+        for(int j = 0; j < 16; ++j )
+        
+        {
+        
+            dftmtx[i + (j * 2) * 16] = cosf((float)(-2 * M_PI * i * j) / 16.f);
+            dftmtx[i + (j * 2 + 1) * 16] = sinf((float)(-2 * M_PI * i * j) / 16.f);
+        
+        }
+    }
+    
+    for(int i = 0; i < 16; ++i)
+    
+    {
+    
+        checksum_r_4[i * 2] = 0;
+        checksum_r_4[i * 2 + 1] = 0;
+        for(int j = 0; j < 16; ++j)
+    
+    {
+    
+            float real = dftmtx[j + i * 2 * 16];
+            float imag = dftmtx[j + (i * 2 + 1) * 16];
+            checksum_r_4[i * 2] += real * r[(j % 3) * 2] - imag * r[(j % 3) * 2 + 1];
+            checksum_r_4[i * 2 + 1] += imag * r[(j % 3) * 2] + real * r[(j % 3) * 2 + 1];
+        
+    }
+    }
+    
+    cudaMemcpy((void*)checksum_r_d_4, (void*)checksum_r_4, 2 * 16 * sizeof(float), cudaMemcpyHostToDevice);
+    
+        float* checksum_r_5, *checksum_r_d_5;
+        checksum_r_5 = (float*)calloc(32*2, sizeof(float));
+        CUDA_CALLER(cudaMalloc((void**)&checksum_r_d_5, sizeof(float) * 32 * 2));
+        for(int i = 0; i < 32; ++i)
+        
+        {
+        
+        for(int j = 0; j < 32; ++j )
+        
+        {
+        
+            dftmtx[i + (j * 2) * 32] = cosf((float)(-2 * M_PI * i * j) / 32.f);
+            dftmtx[i + (j * 2 + 1) * 32] = sinf((float)(-2 * M_PI * i * j) / 32.f);
+        
+        }
+    }
+    
+    for(int i = 0; i < 32; ++i)
+    
+    {
+    
+        checksum_r_5[i * 2] = 0;
+        checksum_r_5[i * 2 + 1] = 0;
+        for(int j = 0; j < 32; ++j)
+    
+    {
+    
+            float real = dftmtx[j + i * 2 * 32];
+            float imag = dftmtx[j + (i * 2 + 1) * 32];
+            checksum_r_5[i * 2] += real * r[(j % 3) * 2] - imag * r[(j % 3) * 2 + 1];
+            checksum_r_5[i * 2 + 1] += imag * r[(j % 3) * 2] + real * r[(j % 3) * 2 + 1];
+        
+    }
+    }
+    
+    cudaMemcpy((void*)checksum_r_d_5, (void*)checksum_r_5, 2 * 32 * sizeof(float), cudaMemcpyHostToDevice);
+    
+        float* checksum_r_6, *checksum_r_d_6;
+        checksum_r_6 = (float*)calloc(64*2, sizeof(float));
+        CUDA_CALLER(cudaMalloc((void**)&checksum_r_d_6, sizeof(float) * 64 * 2));
+        for(int i = 0; i < 64; ++i)
+        
+        {
+        
+        for(int j = 0; j < 64; ++j )
+        
+        {
+        
+            dftmtx[i + (j * 2) * 64] = cosf((float)(-2 * M_PI * i * j) / 64.f);
+            dftmtx[i + (j * 2 + 1) * 64] = sinf((float)(-2 * M_PI * i * j) / 64.f);
+        
+        }
+    }
+    
+    for(int i = 0; i < 64; ++i)
+    
+    {
+    
+        checksum_r_6[i * 2] = 0;
+        checksum_r_6[i * 2 + 1] = 0;
+        for(int j = 0; j < 64; ++j)
+    
+    {
+    
+            float real = dftmtx[j + i * 2 * 64];
+            float imag = dftmtx[j + (i * 2 + 1) * 64];
+            checksum_r_6[i * 2] += real * r[(j % 3) * 2] - imag * r[(j % 3) * 2 + 1];
+            checksum_r_6[i * 2 + 1] += imag * r[(j % 3) * 2] + real * r[(j % 3) * 2 + 1];
+        
+    }
+    }
+    
+    cudaMemcpy((void*)checksum_r_d_6, (void*)checksum_r_6, 2 * 64 * sizeof(float), cudaMemcpyHostToDevice);
+    
+        float* checksum_r_7, *checksum_r_d_7;
+        checksum_r_7 = (float*)calloc(128*2, sizeof(float));
+        CUDA_CALLER(cudaMalloc((void**)&checksum_r_d_7, sizeof(float) * 128 * 2));
+        for(int i = 0; i < 128; ++i)
+        
+        {
+        
+        for(int j = 0; j < 128; ++j )
+        
+        {
+        
+            dftmtx[i + (j * 2) * 128] = cosf((float)(-2 * M_PI * i * j) / 128.f);
+            dftmtx[i + (j * 2 + 1) * 128] = sinf((float)(-2 * M_PI * i * j) / 128.f);
+        
+        }
+    }
+    
+    for(int i = 0; i < 128; ++i)
+    
+    {
+    
+        checksum_r_7[i * 2] = 0;
+        checksum_r_7[i * 2 + 1] = 0;
+        for(int j = 0; j < 128; ++j)
+    
+    {
+    
+            float real = dftmtx[j + i * 2 * 128];
+            float imag = dftmtx[j + (i * 2 + 1) * 128];
+            checksum_r_7[i * 2] += real * r[(j % 3) * 2] - imag * r[(j % 3) * 2 + 1];
+            checksum_r_7[i * 2 + 1] += imag * r[(j % 3) * 2] + real * r[(j % 3) * 2 + 1];
+        
+    }
+    }
+    
+    cudaMemcpy((void*)checksum_r_d_7, (void*)checksum_r_7, 2 * 128 * sizeof(float), cudaMemcpyHostToDevice);
+    
+        float* checksum_r_8, *checksum_r_d_8;
+        checksum_r_8 = (float*)calloc(256*2, sizeof(float));
+        CUDA_CALLER(cudaMalloc((void**)&checksum_r_d_8, sizeof(float) * 256 * 2));
+        for(int i = 0; i < 256; ++i)
+        
+        {
+        
+        for(int j = 0; j < 256; ++j )
+        
+        {
+        
+            dftmtx[i + (j * 2) * 256] = cosf((float)(-2 * M_PI * i * j) / 256.f);
+            dftmtx[i + (j * 2 + 1) * 256] = sinf((float)(-2 * M_PI * i * j) / 256.f);
+        
+        }
+    }
+    
+    for(int i = 0; i < 256; ++i)
+    
+    {
+    
+        checksum_r_8[i * 2] = 0;
+        checksum_r_8[i * 2 + 1] = 0;
+        for(int j = 0; j < 256; ++j)
+    
+    {
+    
+            float real = dftmtx[j + i * 2 * 256];
+            float imag = dftmtx[j + (i * 2 + 1) * 256];
+            checksum_r_8[i * 2] += real * r[(j % 3) * 2] - imag * r[(j % 3) * 2 + 1];
+            checksum_r_8[i * 2 + 1] += imag * r[(j % 3) * 2] + real * r[(j % 3) * 2 + 1];
+        
+    }
+    }
+    
+    cudaMemcpy((void*)checksum_r_d_8, (void*)checksum_r_8, 2 * 256 * sizeof(float), cudaMemcpyHostToDevice);
+    
+        float* checksum_r_9, *checksum_r_d_9;
+        checksum_r_9 = (float*)calloc(512*2, sizeof(float));
+        CUDA_CALLER(cudaMalloc((void**)&checksum_r_d_9, sizeof(float) * 512 * 2));
+        for(int i = 0; i < 512; ++i)
+        
+        {
+        
+        for(int j = 0; j < 512; ++j )
+        
+        {
+        
+            dftmtx[i + (j * 2) * 512] = cosf((float)(-2 * M_PI * i * j) / 512.f);
+            dftmtx[i + (j * 2 + 1) * 512] = sinf((float)(-2 * M_PI * i * j) / 512.f);
+        
+        }
+    }
+    
+    for(int i = 0; i < 512; ++i)
+    
+    {
+    
+        checksum_r_9[i * 2] = 0;
+        checksum_r_9[i * 2 + 1] = 0;
+        for(int j = 0; j < 512; ++j)
+    
+    {
+    
+            float real = dftmtx[j + i * 2 * 512];
+            float imag = dftmtx[j + (i * 2 + 1) * 512];
+            checksum_r_9[i * 2] += real * r[(j % 3) * 2] - imag * r[(j % 3) * 2 + 1];
+            checksum_r_9[i * 2 + 1] += imag * r[(j % 3) * 2] + real * r[(j % 3) * 2 + 1];
+        
+    }
+    }
+    
+    cudaMemcpy((void*)checksum_r_d_9, (void*)checksum_r_9, 2 * 512 * sizeof(float), cudaMemcpyHostToDevice);
+    
+        float* checksum_r_10, *checksum_r_d_10;
+        checksum_r_10 = (float*)calloc(1024*2, sizeof(float));
+        CUDA_CALLER(cudaMalloc((void**)&checksum_r_d_10, sizeof(float) * 1024 * 2));
+        for(int i = 0; i < 1024; ++i)
+        
+        {
+        
+        for(int j = 0; j < 1024; ++j )
+        
+        {
+        
+            dftmtx[i + (j * 2) * 1024] = cosf((float)(-2 * M_PI * i * j) / 1024.f);
+            dftmtx[i + (j * 2 + 1) * 1024] = sinf((float)(-2 * M_PI * i * j) / 1024.f);
+        
+        }
+    }
+    
+    for(int i = 0; i < 1024; ++i)
+    
+    {
+    
+        checksum_r_10[i * 2] = 0;
+        checksum_r_10[i * 2 + 1] = 0;
+        for(int j = 0; j < 1024; ++j)
+    
+    {
+    
+            float real = dftmtx[j + i * 2 * 1024];
+            float imag = dftmtx[j + (i * 2 + 1) * 1024];
+            checksum_r_10[i * 2] += real * r[(j % 3) * 2] - imag * r[(j % 3) * 2 + 1];
+            checksum_r_10[i * 2 + 1] += imag * r[(j % 3) * 2] + real * r[(j % 3) * 2 + 1];
+        
+    }
+    }
+    
+    cudaMemcpy((void*)checksum_r_d_10, (void*)checksum_r_10, 2 * 1024 * sizeof(float), cudaMemcpyHostToDevice);
+    
+    
     cudaMemcpy((void*)input_d, (void*)input, 2 * N * sizeof(float), cudaMemcpyHostToDevice);
+    
 
     cufftHandle plan;  
     cufftCreate(&plan);
@@ -1094,7 +1404,7 @@ int main(int argc, char** argv){
         {
                 dim3 gridDim(2048, 1, 1);
                 dim3 blockDim(16, 16, 1);
-                fft_radix2_logN23_1 <<<gridDim, blockDim, 32768>>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN23_1 <<<gridDim, blockDim, 32768>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_8);
                 cudaDeviceSynchronize();
             }
         {
@@ -1153,7 +1463,7 @@ int main(int argc, char** argv){
         {
                 dim3 gridDim(4096, 1, 1);
                 dim3 blockDim(16, 16, 1);
-                fft_radix2_logN24_1 <<<gridDim, blockDim, 32768>>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN24_1 <<<gridDim, blockDim, 32768>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_8);
                 cudaDeviceSynchronize();
             }
         {
@@ -1215,7 +1525,7 @@ int main(int argc, char** argv){
         {
                 dim3 gridDim(8192, 1, 1);
                 dim3 blockDim(16, 16, 1);
-                fft_radix2_logN25_1 <<<gridDim, blockDim, 32768>>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN25_1 <<<gridDim, blockDim, 32768>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_8);
                 cudaDeviceSynchronize();
             }
         {
@@ -1280,7 +1590,7 @@ int main(int argc, char** argv){
         {
                 dim3 gridDim(8192, 1, 1);
                 dim3 blockDim(16, 32, 1);
-                fft_radix2_logN26_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN26_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_9);
                 cudaDeviceSynchronize();
             }
         {
@@ -1348,7 +1658,7 @@ int main(int argc, char** argv){
         {
                 dim3 gridDim(16384, 1, 1);
                 dim3 blockDim(16, 32, 1);
-                fft_radix2_logN27_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN27_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_9);
                 cudaDeviceSynchronize();
             }
         {
@@ -1416,7 +1726,7 @@ int main(int argc, char** argv){
         {
                 dim3 gridDim(32768, 1, 1);
                 dim3 blockDim(16, 32, 1);
-                fft_radix2_logN28_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN28_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_9);
                 cudaDeviceSynchronize();
             }
         {
@@ -1429,74 +1739,6 @@ int main(int argc, char** argv){
                 dim3 gridDim(32768, 1, 1);
                 dim3 blockDim(128, 8, 1);
                 fft_radix2_logN28_3 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d);
-                cudaDeviceSynchronize();
-            }
-        
-            }
-            timeEnd = std::chrono::steady_clock::now();
-            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
-            cudaEventRecord(fft_end);  
-            cudaEventSynchronize(fft_begin);
-            cudaEventSynchronize(fft_end);
-            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
-            CUDA_CALLER(cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
-        }
-        }
-        
-    if(log_N == 29){
-        
-        cudaFuncSetAttribute(fft_radix2_logN29_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
-        // cudaFuncSetAttribute(VkFFT_main_logN29_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
-        
-        cudaFuncSetAttribute(fft_radix2_logN29_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
-        // cudaFuncSetAttribute(VkFFT_main_logN29_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
-        
-        cudaFuncSetAttribute(fft_radix2_logN29_3, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
-        // cudaFuncSetAttribute(VkFFT_main_logN29_3, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
-        
-        {
-            cudaEventCreate(&fft_begin);
-            cudaEventCreate(&fft_end);
-            cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
-            cudaEventRecord(fft_begin);
-            timeSt = std::chrono::steady_clock::now();
-            for(int i = 0; i < num_tests; ++i){
-                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
-                cudaDeviceSynchronize(); 
-            } 
-            timeEnd = std::chrono::steady_clock::now();
-            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
-            cudaEventRecord(fft_end);  
-            cudaEventSynchronize(fft_begin);
-            cudaEventSynchronize(fft_end);
-            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);   
-            CUDA_CALLER(cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
-        }    
-    
-        {
-        cudaEventCreate(&fft_begin);
-        cudaEventCreate(&fft_end);
-        
-            cudaEventRecord(fft_begin);
-            timeSt = std::chrono::steady_clock::now();
-            
-            for(int i = 0; i < num_tests; ++i){
-        {
-                dim3 gridDim(65536, 1, 1);
-                dim3 blockDim(8, 32, 1);
-                fft_radix2_logN29_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d);
-                cudaDeviceSynchronize();
-            }
-        {
-                dim3 gridDim(65536, 1, 1);
-                dim3 blockDim(16, 64, 1);
-                fft_radix2_logN29_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d, (float2*)output_d_1);
-                cudaDeviceSynchronize();
-            }
-        {
-                dim3 gridDim(65536, 1, 1);
-                dim3 blockDim(32, 8, 1);
-                fft_radix2_logN29_3 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d);
                 cudaDeviceSynchronize();
             }
         

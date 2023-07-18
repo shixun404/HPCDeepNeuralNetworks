@@ -37,16 +37,16 @@ def ft_3D_fft_code_gen_upload1(N, N1, N2, N3, num_block, num_thread,
         order.append(i)
     offset = signal_per_thread
     ft_fft = f'''extern __shared__ float shared[];
-__global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_1''' + '''(float2* inputs, float2* outputs) {
+__global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_1''' + '''(float2* inputs, float2* outputs, float2* r_1) {
 '''
     ft_fft += '''
     float2 r[3];
     r[0].x = 1.0f;
     r[0].y = 0.0f;
     r[1].x = -0.5f;
-    r[1].y = -0.866f;
+    r[1].y = -0.8660253882408142f;
     r[2].x = -0.5f;
-    r[2].y = 0.866f;
+    r[2].y = 0.8660253882408142f;
     '''
     for i in range(signal_per_thread):
         ft_fft += f'''float2 temp_{i};
@@ -64,9 +64,25 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     int k;
     int tmp_id;
     int n = 1, n_global = 1;
+    int tid = tx + ty * blockDim.x;
     float2 warp_checksum ,warp_checksum_;
     float2 mem_checksum ,mem_checksum_t1;
     float2 tmp_angle_bk;
+    '''
+    ft_fft += f'''
+    #if FT==2
+    float{2 * N1 // num_thread} tmp_r;
+    tmp_r = *(float{2 * N1 // num_thread}*)(((float*)r_1) + tid * {2 * N1 // num_thread});
+    *(float{2 * N1 // num_thread}*)(((float*)sdata) + tid * {2 * N1 // num_thread}) = tmp_r;
+    // if(bx == 0)printf("%d, hello\\n", tid);
+    #endif
+    ''' if 2 * N1 // num_thread >= 1 else '''
+    #if FT==2
+    float tmp_r;
+    tmp_r = *((float*)r_1) + tid * {2 * N1 // num_thread});
+    *(((float*)sdata) + tid * {2 * N1 // num_thread}) = tmp_r;
+    // if(bx == 0)printf("%d, hello\\n", tid);
+    #endif
     '''
     n = 1
     n_global = 1
@@ -75,35 +91,45 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     for i in range(signal_per_thread):
         ft_fft += f'''temp_{i} = inputs[(ty + {i} * {(N1 // signal_per_thread)}) * {N2} + tx + bx * {num_thread // (N1 // signal_per_thread)}];
     '''
-
-    ft_fft += '''
-    #if FT==2
-    '''
-    for i in range(signal_per_thread):
-        ft_fft += f'''mem_checksum.x += temp_{i}.x;
-        mem_checksum.y += temp_{i}.y;
-    '''
-    ft_fft += '''
-    mem_checksum_t1.x = 0; 
-    mem_checksum_t1.y = 0; 
-    mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.x,  16,32);
-    mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 8, 32);
-    mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 4, 32);
-    mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 2, 32);
-    mem_checksum_t1.x += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 1, 32);
-    
-    mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y,  16,32);
-    mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-    mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-    mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-    mem_checksum_t1.y += 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
-    #endif
-    '''
-    
-    
     for i in range(signal_per_thread):
         ft_fft += f'''__id[{i}] = {i * blockdim_y} + ty;
     '''
+    ft_fft += '''
+    #if FT==2
+    mem_checksum.x = 0;
+    mem_checksum.y = 0;
+    mem_checksum_t1.x = 0;
+    mem_checksum_t1.y = 0;
+    __syncthreads();
+    '''
+    for i in range(signal_per_thread):
+        ft_fft += f'''
+        // if(bx == 0 && tid == 0)printf("%d, %f %f, hello\\n", __id[{i}], sdata[__id[{i}]].x, sdata[__id[{i}]].y);
+        mem_checksum.x += sdata[__id[{i}]].x * temp_{i}.x - sdata[__id[{i}]].y * temp_{i}.y;
+        mem_checksum.y += sdata[__id[{i}]].y * temp_{i}.x + sdata[__id[{i}]].x * temp_{i}.y;
+    '''
+    ft_fft += '''
+    // __syncthreads();
+    // mem_checksum_t1.x = mem_checksum.x; 
+    mem_checksum_t1.y = mem_checksum.y + mem_checksum.x; 
+    // mem_checksum_t1.x += __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 16,32);
+    // mem_checksum_t1.x += __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 8, 32);
+    // mem_checksum_t1.x += __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 4, 32);
+    // mem_checksum_t1.x += __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 2, 32);
+    // mem_checksum_t1.x += __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 1, 32);
+    
+    mem_checksum_t1.y += __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 16,32);
+    mem_checksum_t1.y += __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
+    mem_checksum_t1.y += __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
+    mem_checksum_t1.y += __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
+    mem_checksum_t1.y += __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
+    #endif
+    '''
+    # ft_fft += '''
+    # if(tid < 16 && blockIdx.x == 0)printf("%f, %f,%f, %f\\n", temp_0.x, temp_0.y, mem_checksum_t1.x, mem_checksum_t1.y );
+    # '''
+    
+    
     for stage_id in range(len(plan)):
         if True:
             batch_size = 1 if twiddle_type[stage_id] == 0 else n_global // (N1 // signal_per_thread)
@@ -207,7 +233,6 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
         if twiddle_type[stage_id] == 0:
             ft_fft += f'''
     __syncthreads();
-    ''' if stage_id != 0 else '''
     '''
             for i in range(signal_per_thread):    
                 ft_fft += f'''
@@ -247,21 +272,63 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
             
             ft_fft += '''
             #if FT==2
+            mem_checksum.x = 0;
+            mem_checksum.y = 0;
+            int r_id;
     '''
             for i in range(signal_per_thread):
-                ft_fft += f'''mem_checksum.x += temp_{i}.x;
-            mem_checksum.y += temp_{i}.y;
+                temp_id = order[signal_per_thread - offset + i]
+                ft_fft += f'''
+            r_id = __id[{order[signal_per_thread - offset + i]}] % 3;
+            mem_checksum.x += temp_{temp_id}.x * r[r_id].x - temp_{temp_id}.y * r[r_id].y;
+            mem_checksum.y += temp_{temp_id}.y * r[r_id].x + temp_{temp_id}.x * r[r_id].y;
     '''
-            ft_fft += '''
-            mem_checksum_t1.y = 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum.y, 16, 32);
-            mem_checksum_t1.y -= 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
-            mem_checksum_t1.y -= 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
-            mem_checksum_t1.y -= 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
-            mem_checksum_t1.y -= 0.001f * __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
     
-    temp_0.x += 0.001 * (mem_checksum_t1.x);
-    temp_0.y += 0.001 * (mem_checksum_t1.y);
-    // if(tid == 0 && blockIdx.x == 0)printf("kernel 3, %f\\n", temp_0.x, temp_0.y);
+            ft_fft += '''
+            mem_checksum.y = mem_checksum.y + mem_checksum.x;
+            mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, 16, 32);
+            mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, 8, 32);
+            mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, 4, 32);
+            mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, 2, 32);
+            mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, 1, 32);
+            
+            // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 16, 32);
+            // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 8, 32);
+            // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 4, 32);
+            // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 2, 32);
+            // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 1, 32);
+            if(tid % 32 == 0){
+                // mem_checksum.x  = mem_checksum.x - mem_checksum_t1.x;
+                mem_checksum.y = mem_checksum.y - mem_checksum_t1.y;
+                sdata[tid / 32] = mem_checksum;
+            }
+            __syncthreads();
+            mem_checksum.x = 0;
+            mem_checksum.y = 0;
+            '''
+            
+            ft_fft += f'''
+            if(tid < {num_thread // 32})
+            '''
+            ft_fft += f'''
+            mem_checksum = sdata[tid];
+            '''
+            i = num_thread // 32
+            while( i > 1):
+                i //= 2
+                ft_fft += f'''
+                // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, {i}, 32);
+                mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, {i}, 32);
+        '''
+            ft_fft += '''
+            // if(mem_checksum.y > 1)printf("%f, %f, %f\\n", temp_0.x, temp_0.y, mem_checksum.y );
+            // if(tid == 0)printf("%f, %f, %f\\n", temp_0.x, temp_0.y, mem_checksum.y );
+        '''
+            
+            ft_fft += f'''
+            temp_0.x += 0.1f * (mem_checksum.x);
+            temp_0.y += 0.1f * (mem_checksum.y);
+            // if(tid == 0 && blockIdx.x == 0)printf("%f, %f,%f, %f\\n", temp_0.x, temp_0.y,mem_checksum_t1.x,mem_checksum_t1.y );
             #endif
             '''
     

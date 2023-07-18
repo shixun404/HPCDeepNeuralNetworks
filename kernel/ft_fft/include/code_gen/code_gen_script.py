@@ -41,20 +41,88 @@ int main(int argc, char** argv){
     
     output_ref = (float*)calloc(N * 2, sizeof(float));
     output = (float*)calloc(N * 2, sizeof(float));
+    float r[6];
     
-    float *input_d, *output_d, *output_d_vkfft, *output_d_cufft, *output_d_1, *output_d_ref_1;
- 
+    r[0] = 1.0f;
+    r[1] = 0.0f;
+    r[2] = -0.5f;
+    r[3] = -0.8660253882408142f;
+    r[4] = -0.5f;
+    r[5] = 0.8660253882408142f;
+    for(int i = 0; i < 3; ++i){
+        r[i * 2] = cosf(-2 * M_PI * (i % 3) / 3);
+        r[i * 2 + 1] = sinf(-2 * M_PI * (i % 3) / 3);
+    }
+    
+    float *input_d, *output_d, *output_d_vkfft, *output_d_cufft, *output_d_1, *output_d_ref_1, *checksum_r, *checksum_r_d, *dftmtx;
+    checksum_r = (float*)calloc(1024*2, sizeof(float));
+    dftmtx = (float*)calloc(1024*1024*2, sizeof(float));
     CUDA_CALLER(cudaMalloc((void**)&input_d, sizeof(float) * N * 2));
     CUDA_CALLER(cudaMalloc((void**)&output_d, sizeof(float) * N * 2));
-    // CUDA_CALLER(cudaMalloc((void**)&output_d_vkfft, sizeof(float) * N * 2));
-    // CUDA_CALLER(cudaMalloc((void**)&output_d_cufft, sizeof(float) * N * 2));
     CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
-    // CUDA_CALLER(cudaMalloc((void**)&output_d_ref_1, sizeof(float) * N * 2));
+    
 
     for(int i = 0; i < N * 2; ++i){ 
-            input[i] = (float)(random() % 100) / (float)100;   
+            input[i] = (float)(random() % 100) / (float)100;
     }
+    '''
+    r_ = 8
+    for i in range(3, 11):
+        ft_fft_script += f'''
+        float* checksum_r_{i}, *checksum_r_d_{i};
+        checksum_r_{i} = (float*)calloc({r_}*2, sizeof(float));
+        CUDA_CALLER(cudaMalloc((void**)&checksum_r_d_{i}, sizeof(float) * {r_} * 2));
+        for(int i = 0; i < {r_}; ++i)
+        '''
+        ft_fft_script += '''
+        {
+        '''
+        ft_fft_script += f'''
+        for(int j = 0; j < {r_}; ++j )
+        '''
+        ft_fft_script += '''
+        {
+        '''
+        ft_fft_script += f'''
+            dftmtx[i + (j * 2) * {r_}] = cosf((float)(-2 * M_PI * i * j) / {r_}.f);
+            dftmtx[i + (j * 2 + 1) * {r_}] = sinf((float)(-2 * M_PI * i * j) / {r_}.f);
+        '''
+        ft_fft_script += '''
+        }
+    }
+    '''
+        ft_fft_script += f'''
+    for(int i = 0; i < {r_}; ++i)
+    '''
+        ft_fft_script += '''
+    {
+    '''
+        ft_fft_script += f'''
+        checksum_r_{i}[i * 2] = 0;
+        checksum_r_{i}[i * 2 + 1] = 0;
+        for(int j = 0; j < {r_}; ++j)
+    '''
+        ft_fft_script += '''
+    {
+    '''
+        ft_fft_script += f'''
+            float real = dftmtx[j + i * 2 * {r_}];
+            float imag = dftmtx[j + (i * 2 + 1) * {r_}];
+            checksum_r_{i}[i * 2] += real * r[(j % 3) * 2] - imag * r[(j % 3) * 2 + 1];
+            checksum_r_{i}[i * 2 + 1] += imag * r[(j % 3) * 2] + real * r[(j % 3) * 2 + 1];
+    '''
+        ft_fft_script += '''    
+    }
+    }
+    '''
+        ft_fft_script += f'''
+    cudaMemcpy((void*)checksum_r_d_{i}, (void*)checksum_r_{i}, 2 * {r_} * sizeof(float), cudaMemcpyHostToDevice);
+    '''
+        r_ *= 2
+    ft_fft_script += '''
+    
     cudaMemcpy((void*)input_d, (void*)input, 2 * N * sizeof(float), cudaMemcpyHostToDevice);
+    
 
     cufftHandle plan;  
     cufftCreate(&plan);
@@ -267,7 +335,7 @@ int main(int argc, char** argv){
     '''
         N += 1
     
-    while N <= 29:
+    while N <= 28:
         ft_fft_script += f'''
     if(log_N == {N})''' + '''{
         '''
@@ -355,7 +423,7 @@ int main(int argc, char** argv){
         ft_fft_script += f'''{{
                 dim3 gridDim({int(df['num_block_1'][N-1])}, 1, 1);
                 dim3 blockDim({int(df['blockdim_x_1'][N-1])}, {int(df['blockdim_y_1'][N-1])}, 1);
-                fft_radix2_logN{int(df['logN'][N-1])}_1 <<<gridDim, blockDim, {int(df['sm_size_1'][N-1])}>>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN{int(df['logN'][N-1])}_1 <<<gridDim, blockDim, {int(df['sm_size_1'][N-1])}>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_{int(df['logN1'][N-1])});
                 cudaDeviceSynchronize();
             }}
         '''
