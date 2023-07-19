@@ -28,7 +28,7 @@ int main(int argc, char** argv){
         __log_N_st__ = atoi(argv[1]);
     }
     // #endif
-    int N = pow((double)RADIX, (double)__log_N__); 
+    long long N = pow((double)RADIX, (double)__log_N__); 
     int random_seed = 10;  
     #if P_FFT == 1
     int num_tests = 100;
@@ -37,10 +37,35 @@ int main(int argc, char** argv){
     #endif
     srandom(random_seed); 
     float *input = (float*)calloc(N * 2, sizeof(float)); 
+    if(input == NULL){
+        printf("input failed!\\n");
+        printf("%s\\n",strerror(errno));
+        return -1;
+    }
+    else{
+        printf("input successed!\\n");
+    }
     float *output_ref, *output;
     
     output_ref = (float*)calloc(N * 2, sizeof(float));
+    if(output_ref == NULL){
+        printf("output_ref failed!\\n");
+        printf("%s\\n",strerror(errno));
+        return -1;
+    }
+    else{
+        printf("output_ref successed!\\n");
+    }
     output = (float*)calloc(N * 2, sizeof(float));
+    if(output == NULL){
+        printf("output failed!\\n");
+        printf("%s\\n",strerror(errno));
+        return -1;
+    }
+    else{
+        printf("input_ref successed!\\n");
+    }
+    
     float r[6];
     
     r[0] = 1.0f;
@@ -59,7 +84,7 @@ int main(int argc, char** argv){
     dftmtx = (float*)calloc(1024*1024*2, sizeof(float));
     CUDA_CALLER(cudaMalloc((void**)&input_d, sizeof(float) * N * 2));
     CUDA_CALLER(cudaMalloc((void**)&output_d, sizeof(float) * N * 2));
-    CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+    
     
 
     for(int i = 0; i < N * 2; ++i){ 
@@ -72,6 +97,7 @@ int main(int argc, char** argv){
         float* checksum_r_{i}, *checksum_r_d_{i};
         checksum_r_{i} = (float*)calloc({r_}*2, sizeof(float));
         CUDA_CALLER(cudaMalloc((void**)&checksum_r_d_{i}, sizeof(float) * {r_} * 2));
+        // printf("################################### {r_} ###################################\\n");
         for(int i = 0; i < {r_}; ++i)
         '''
         ft_fft_script += '''
@@ -115,6 +141,10 @@ int main(int argc, char** argv){
     }
     }
     '''
+    #     ft_fft_script += f'''
+    #     for(int i = 0; i < {r_}; ++i)
+    #     printf("%d, %f, %f\\n", i,  checksum_r_{i}[i * 2], checksum_r_{i}[i * 2 + 1] );
+    # '''
         ft_fft_script += f'''
     cudaMemcpy((void*)checksum_r_d_{i}, (void*)checksum_r_{i}, 2 * {r_} * sizeof(float), cudaMemcpyHostToDevice);
     '''
@@ -125,7 +155,6 @@ int main(int argc, char** argv){
     
 
     cufftHandle plan;  
-    cufftCreate(&plan);
 
 
     cudaEvent_t fft_begin, fft_end;
@@ -187,6 +216,7 @@ int main(int argc, char** argv){
         # }
         ft_fft_script += '''
         {
+            cufftCreate(&plan);
             cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
             cudaEventRecord(fft_begin);
             timeSt = std::chrono::steady_clock::now();
@@ -201,12 +231,14 @@ int main(int argc, char** argv){
             cudaEventSynchronize(fft_end);
             cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);  
             cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost); 
+            cufftDestroy(plan);
         }
     '''
         ft_fft_script += '''
         {
         '''
         ft_fft_script += f'''
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
             dim3 gridDim({int(df['num_block_1'][N-1])}, 1, 1);
             dim3 blockDim({int(df['blockdim_x_1'][N-1])}, {int(df['blockdim_y_1'][N-1])}, 1);
             cudaEventRecord(fft_begin);
@@ -228,6 +260,7 @@ int main(int argc, char** argv){
             cudaEventSynchronize(fft_end);
             cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
             cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            CUDA_CALLER(cudaFree(output_d_1));
         }
     }
         '''
@@ -250,6 +283,7 @@ int main(int argc, char** argv){
         {
         '''
         ft_fft_script += f'''
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
             cudaEventRecord(fft_begin);
             timeSt = std::chrono::steady_clock::now();
             '''
@@ -279,6 +313,7 @@ int main(int argc, char** argv){
             cudaEventSynchronize(fft_end);
             cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
             cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            CUDA_CALLER(cudaFree(output_d_1));
         }
         '''
         # ft_fft_script += '''
@@ -316,6 +351,7 @@ int main(int argc, char** argv){
         # }
         ft_fft_script += '''
         {
+            cufftCreate(&plan);
             cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
             cudaEventRecord(fft_begin);
             timeSt = std::chrono::steady_clock::now();
@@ -330,12 +366,13 @@ int main(int argc, char** argv){
             cudaEventSynchronize(fft_end);
             cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);   
             cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            cufftDestroy(plan);
         }
     }    
     '''
         N += 1
     
-    while N <= 28:
+    while N <= 29:
         ft_fft_script += f'''
     if(log_N == {N})''' + '''{
         '''
@@ -389,9 +426,14 @@ int main(int argc, char** argv){
         # }
         ft_fft_script += '''
         {
+            cufftCreate(&plan);
             cudaEventCreate(&fft_begin);
             cudaEventCreate(&fft_end);
-            cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            int res = cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            if(res != 0){
+                printf("cuFFT plan error!\\n");
+                return 0; 
+            } 
             cudaEventRecord(fft_begin);
             timeSt = std::chrono::steady_clock::now();
             for(int i = 0; i < num_tests; ++i){
@@ -404,13 +446,18 @@ int main(int argc, char** argv){
             cudaEventSynchronize(fft_begin);
             cudaEventSynchronize(fft_end);
             cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);   
+            
             CUDA_CALLER(cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
+            cufftDestroy(plan);
+
         }    
+        
     '''
         ft_fft_script += '''
         {
         cudaEventCreate(&fft_begin);
         cudaEventCreate(&fft_end);
+        CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
         '''
         
         ft_fft_script += f'''
@@ -430,14 +477,14 @@ int main(int argc, char** argv){
         ft_fft_script += f'''{{
                 dim3 gridDim({int(df['num_block_2'][N-1])}, 1, 1);
                 dim3 blockDim({int(df['blockdim_x_2'][N-1])}, {int(df['blockdim_y_2'][N-1])}, 1);
-                fft_radix2_logN{int(df['logN'][N-1])}_2 <<<gridDim, blockDim, {int(df['sm_size_2'][N-1])}>>> ((float2*)output_d, (float2*)output_d_1);
+                fft_radix2_logN{int(df['logN'][N-1])}_2 <<<gridDim, blockDim, {int(df['sm_size_2'][N-1])}>>> ((float2*)output_d, (float2*)output_d_1, (float2*) checksum_r_d_{int(df['logN2'][N-1])});
                 cudaDeviceSynchronize();
             }}
         '''
         ft_fft_script += f'''{{
                 dim3 gridDim({int(df['num_block_3'][N-1])}, 1, 1);
                 dim3 blockDim({int(df['blockdim_x_3'][N-1])}, {int(df['blockdim_y_3'][N-1])}, 1);
-                fft_radix2_logN{int(df['logN'][N-1])}_3 <<<gridDim, blockDim, {int(df['sm_size_3'][N-1])}>>> ((float2*)output_d_1, (float2*)output_d);
+                fft_radix2_logN{int(df['logN'][N-1])}_3 <<<gridDim, blockDim, {int(df['sm_size_3'][N-1])}>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_{int(df['logN3'][N-1])});
                 cudaDeviceSynchronize();
             }}
         '''
@@ -450,13 +497,14 @@ int main(int argc, char** argv){
             cudaEventSynchronize(fft_end);
             cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
             CUDA_CALLER(cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
+            CUDA_CALLER(cudaFree(output_d_1));
         }
         }
         '''
         N += 1
     
     ft_fft_script += '''
-     #if V_FFT == 1
+    #if V_FFT == 1
     // cudaMemcpy((void*)output_ref, (void*)output_d_vkfft, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
     // cudaMemcpy((void*)output, (void*)output_d, sizeof(float) * 2 * N, cudaMemcpyDeviceToHost);
     // cudaMemcpy((void*)output, (void*)output_d_cufft, sizeof(float) * 2 * N, cudaMemcpyDeviceToHost);

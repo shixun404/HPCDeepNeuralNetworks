@@ -59,10 +59,16 @@ __global__ void __launch_bounds__(256) fft_radix2_logN29_1(float2* inputs, float
     float2 tmp_angle_bk;
     
     #if FT==2
-    float8 tmp_r;
-    tmp_r = *(float8*)(((float*)r_1) + tid * 8);
-    *(float8*)(((float*)sdata) + tid * 8) = tmp_r;
+    float4 tmp_r;
+    
+    tmp_r = *(((float4*)r_1) + tid * 8 + 0);
+    *(((float4*)sdata) + tid * 8 + 0) = tmp_r;
     // if(bx == 0)printf("%d, hello\n", tid);
+    
+    tmp_r = *(((float4*)r_1) + tid * 8 + 1);
+    *(((float4*)sdata) + tid * 8 + 1) = tmp_r;
+    // if(bx == 0)printf("%d, hello\n", tid);
+    
     #endif
     
     temp_0 = inputs[(ty + 0 * 32) * 524288 + tx + bx * 8];
@@ -3496,7 +3502,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN29_1(float2* inputs, float
             // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 2, 32);
             // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 1, 32);
             if(tid % 32 == 0){
-                // mem_checksum.x  = mem_checksum.x - mem_checksum_t1.x;
+                // mem_checksum.x  = mem_checksum.y * mem_checksum.y + mem_checksum_t1.y * mem_checksum_t1.y;
                 mem_checksum.y = mem_checksum.y - mem_checksum_t1.y;
                 sdata[tid / 32] = mem_checksum;
             }
@@ -3518,7 +3524,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN29_1(float2* inputs, float
                 mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, 1, 32);
         
             // if(mem_checksum.y > 1)printf("%f, %f, %f\n", temp_0.x, temp_0.y, mem_checksum.y );
-            // if(tid == 0)printf("%f, %f, %f\n", temp_0.x, temp_0.y, mem_checksum.y );
+            if(tid == 0 && bx < 128)printf("up1 %f, %f, %f\n", mem_checksum.x, mem_checksum.y,mem_checksum.y * mem_checksum.y / mem_checksum.x);
         
             temp_0.x += 0.1f * (mem_checksum.x);
             temp_0.y += 0.1f * (mem_checksum.y);

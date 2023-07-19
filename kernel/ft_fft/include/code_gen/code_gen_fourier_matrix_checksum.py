@@ -31,7 +31,7 @@ def code_gen_fourier_matrix_checksum(radix=2):
         print(f"#define A_radix{radix}_{i}_y {checksum[i].item().imag}f")
 
 if __name__ == "__main__":
-    code_gen_fourier_matrix_checksum(512)
+    code_gen_fourier_matrix_checksum(256)
     # print(cos(pi))
     
             

@@ -69,17 +69,34 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     float2 mem_checksum ,mem_checksum_t1;
     float2 tmp_angle_bk;
     '''
-    ft_fft += f'''
+    if 2 * N1 // num_thread >= 1 and (2 * N1 // num_thread <= 4):
+        ft_fft += f'''
     #if FT==2
     float{2 * N1 // num_thread} tmp_r;
     tmp_r = *(float{2 * N1 // num_thread}*)(((float*)r_1) + tid * {2 * N1 // num_thread});
     *(float{2 * N1 // num_thread}*)(((float*)sdata) + tid * {2 * N1 // num_thread}) = tmp_r;
     // if(bx == 0)printf("%d, hello\\n", tid);
     #endif
-    ''' if 2 * N1 // num_thread >= 1 else '''
+    ''' 
+    elif 2 * N1 // num_thread > 4:
+        ft_fft += f'''
+    #if FT==2
+    float4 tmp_r;
+    '''
+        for i in range(2 * N1 // num_thread // 4):
+            ft_fft += f'''
+    tmp_r = *(((float4*)r_1) + tid * {2 * N1 // num_thread} + {i});
+    *(((float4*)sdata) + tid * {2 * N1 // num_thread} + {i}) = tmp_r;
+    // if(bx == 0)printf("%d, hello\\n", tid);
+    '''
+        ft_fft += '''
+    #endif
+    '''
+    else:
+        ft_fft += '''
     #if FT==2
     float tmp_r;
-    tmp_r = *((float*)r_1) + tid * {2 * N1 // num_thread});
+    tmp_r = *(((float*)r_1) + tid * {2 * N1 // num_thread});
     *(((float*)sdata) + tid * {2 * N1 // num_thread}) = tmp_r;
     // if(bx == 0)printf("%d, hello\\n", tid);
     #endif
@@ -298,7 +315,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
             // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 2, 32);
             // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 1, 32);
             if(tid % 32 == 0){
-                // mem_checksum.x  = mem_checksum.x - mem_checksum_t1.x;
+                // mem_checksum.x  = mem_checksum.y * mem_checksum.y + mem_checksum_t1.y * mem_checksum_t1.y;
                 mem_checksum.y = mem_checksum.y - mem_checksum_t1.y;
                 sdata[tid / 32] = mem_checksum;
             }
@@ -322,7 +339,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
         '''
             ft_fft += '''
             // if(mem_checksum.y > 1)printf("%f, %f, %f\\n", temp_0.x, temp_0.y, mem_checksum.y );
-            // if(tid == 0)printf("%f, %f, %f\\n", temp_0.x, temp_0.y, mem_checksum.y );
+            if(tid == 0 && bx < 128)printf("up1 %f, %f, %f\\n", mem_checksum.x, mem_checksum.y,mem_checksum.y * mem_checksum.y / mem_checksum.x);
         '''
             
             ft_fft += f'''

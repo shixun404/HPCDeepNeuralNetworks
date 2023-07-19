@@ -149,9 +149,9 @@
 #include "./include/radix_2_codegen/ft_fft_radix2_logN28_upload=1.cuh"
 #include "./include/radix_2_codegen/ft_fft_radix2_logN28_upload=2.cuh"
 #include "./include/radix_2_codegen/ft_fft_radix2_logN28_upload=3.cuh"
-// #include "./include/radix_2_codegen/ft_fft_radix2_logN29_upload=1.cuh"
-// #include "./include/radix_2_codegen/ft_fft_radix2_logN29_upload=2.cuh"
-// #include "./include/radix_2_codegen/ft_fft_radix2_logN29_upload=3.cuh"
+#include "./include/radix_2_codegen/ft_fft_radix2_logN29_upload=1.cuh"
+#include "./include/radix_2_codegen/ft_fft_radix2_logN29_upload=2.cuh"
+#include "./include/radix_2_codegen/ft_fft_radix2_logN29_upload=3.cuh"
 
 
 
