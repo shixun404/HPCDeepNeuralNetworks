@@ -1638,7 +1638,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN25_1(float2* inputs, float
             // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 2, 32);
             // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 1, 32);
             if(tid % 32 == 0){
-                // mem_checksum.x  = mem_checksum.y * mem_checksum.y + mem_checksum_t1.y * mem_checksum_t1.y;
+                mem_checksum.x  = mem_checksum.y;
                 mem_checksum.y = mem_checksum.y - mem_checksum_t1.y;
                 sdata[tid / 32] = mem_checksum;
             }
@@ -1660,11 +1660,14 @@ __global__ void __launch_bounds__(256) fft_radix2_logN25_1(float2* inputs, float
                 mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, 1, 32);
         
             // if(mem_checksum.y > 1)printf("%f, %f, %f\n", temp_0.x, temp_0.y, mem_checksum.y );
-            if(tid == 0 && bx < 128)printf("up1 %f, %f, %f\n", mem_checksum.x, mem_checksum.y,mem_checksum.y * mem_checksum.y / mem_checksum.x);
+            // if(tid == 0 && bx < 128)printf("up1 %f, %f, %f\n", mem_checksum.x, mem_checksum.y,mem_checksum.y * mem_checksum.y / mem_checksum.x);
         
             temp_0.x += 0.1f * (mem_checksum.x);
             temp_0.y += 0.1f * (mem_checksum.y);
-            // if(tid == 0 && blockIdx.x == 0)printf("%f, %f,%f, %f\n", temp_0.x, temp_0.y,mem_checksum_t1.x,mem_checksum_t1.y );
+            
+            #endif
+            #if defined(LOG_ON)
+            if(tid == 0 && bx < 128)printf("up1 %f, %f, %f\n", mem_checksum.x, mem_checksum.y, mem_checksum.y / mem_checksum.x);
             #endif
             
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[0])) / (float)(33554432), tmp_angle);

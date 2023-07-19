@@ -1981,19 +1981,19 @@ int main(int argc, char** argv){
             for(int i = 0; i < num_tests; ++i){
         {
                 dim3 gridDim(65536, 1, 1);
-                dim3 blockDim(8, 32, 1);
+                dim3 blockDim(8, 64, 1);
                 fft_radix2_logN29_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_10);
                 cudaDeviceSynchronize();
             }
         {
                 dim3 gridDim(65536, 1, 1);
-                dim3 blockDim(16, 64, 1);
+                dim3 blockDim(16, 32, 1);
                 fft_radix2_logN29_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d, (float2*)output_d_1, (float2*) checksum_r_d_9);
                 cudaDeviceSynchronize();
             }
         {
                 dim3 gridDim(65536, 1, 1);
-                dim3 blockDim(32, 8, 1);
+                dim3 blockDim(128, 8, 1);
                 fft_radix2_logN29_3 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_10);
                 cudaDeviceSynchronize();
             }

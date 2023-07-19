@@ -1247,12 +1247,15 @@ __global__ void __launch_bounds__(1024) fft_radix2_logN25_3(float2* inputs, floa
         
             // if(mem_checksum.y > 1)printf("%f, %f, %f\n", temp_0.x, temp_0.y, mem_checksum.y );
             // if(tid == 0 && (mem_checksum.y / mem_checksum.x) * (mem_checksum.y / mem_checksum.x) > 0.1)printf("up3 %f, %f, %f\n", mem_checksum.x, mem_checksum.y,  mem_checksum.y / mem_checksum.x);
-            if(tid == 0 && bx < 128)printf("up3 %f, %f, %f\n", mem_checksum.x, mem_checksum.y,  mem_checksum.y / mem_checksum.x);
+            // if(tid == 0 && bx < 128)printf("up3 %f, %f, %f\n", mem_checksum.x, mem_checksum.y,  mem_checksum.y / mem_checksum.x);
         
             temp_0.x += 0.1f * (mem_checksum.x);
             temp_0.y += 0.1f * (mem_checksum.y);
             __syncthreads();
             // if(tid == 0 && blockIdx.x == 0)printf("%f, %f,%f, %f\n", temp_0.x, temp_0.y,mem_checksum_t1.x,mem_checksum_t1.y );
+            #endif
+            #if defined(LOG_ON)
+            if(tid == 0 && bx < 128)printf("up3 %f, %f, %f\n", mem_checksum.x, mem_checksum.y, mem_checksum.y / mem_checksum.x);
             #endif
             
     sdata[__id[0] + ty * 512] = temp_0;

@@ -85,8 +85,8 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     '''
         for i in range(2 * N1 // num_thread // 4):
             ft_fft += f'''
-    tmp_r = *(((float4*)r_1) + tid * {2 * N1 // num_thread} + {i});
-    *(((float4*)sdata) + tid * {2 * N1 // num_thread} + {i}) = tmp_r;
+    tmp_r = *(float4*)(((float*)r_1) + tid * {2 * N1 // num_thread} + {i} * 4);
+    *(float4*)(((float*)sdata) + tid * {2 * N1 // num_thread} + {i} * 4) = tmp_r;
     // if(bx == 0)printf("%d, hello\\n", tid);
     '''
         ft_fft += '''
@@ -315,7 +315,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
             // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 2, 32);
             // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 1, 32);
             if(tid % 32 == 0){
-                // mem_checksum.x  = mem_checksum.y * mem_checksum.y + mem_checksum_t1.y * mem_checksum_t1.y;
+                mem_checksum.x  = mem_checksum.y;
                 mem_checksum.y = mem_checksum.y - mem_checksum_t1.y;
                 sdata[tid / 32] = mem_checksum;
             }
@@ -339,13 +339,16 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
         '''
             ft_fft += '''
             // if(mem_checksum.y > 1)printf("%f, %f, %f\\n", temp_0.x, temp_0.y, mem_checksum.y );
-            if(tid == 0 && bx < 128)printf("up1 %f, %f, %f\\n", mem_checksum.x, mem_checksum.y,mem_checksum.y * mem_checksum.y / mem_checksum.x);
+            // if(tid == 0 && bx < 128)printf("up1 %f, %f, %f\\n", mem_checksum.x, mem_checksum.y,mem_checksum.y * mem_checksum.y / mem_checksum.x);
         '''
             
             ft_fft += f'''
             temp_0.x += 0.1f * (mem_checksum.x);
             temp_0.y += 0.1f * (mem_checksum.y);
-            // if(tid == 0 && blockIdx.x == 0)printf("%f, %f,%f, %f\\n", temp_0.x, temp_0.y,mem_checksum_t1.x,mem_checksum_t1.y );
+            
+            #endif
+            #if defined(LOG_ON)
+            if(tid == 0 && bx < 128)printf("up1 %f, %f, %f\\n", mem_checksum.x, mem_checksum.y, mem_checksum.y / mem_checksum.x);
             #endif
             '''
     
