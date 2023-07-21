@@ -1,6 +1,6 @@
 import pandas as pd
 def code_gen_script():
-    df = pd.read_csv('parameter_radix2_vkfft.csv')
+    df = pd.read_csv('parameter_radix2.csv')
     ft_fft_script = '''
 #include <stdlib.h>
 #include <complex>
@@ -28,7 +28,7 @@ int main(int argc, char** argv){
         __log_N_st__ = atoi(argv[1]);
     }
     // #endif
-    __log_N__ = 9;
+    // __log_N__ = 10;
     long long N = pow((double)RADIX, (double)__log_N__); 
     int random_seed = 10;  
     #if P_FFT == 1
@@ -141,7 +141,7 @@ int main(int argc, char** argv){
     #else
     int log_N = __log_N__;
     #endif
-    int log_N = 9;
+    int log_N = __log_N__;
     N = pow(double(RADIX), double(log_N));
     '''
     
@@ -191,8 +191,8 @@ int main(int argc, char** argv){
             for(int i = 0; i < num_tests; ++i){
         '''
         ft_fft_script += f'''{{
-                dim3 gridDim(batch_size / 4, 1, 1);
-                dim3 blockDim({int(df['blockdim_x_2'][N-1])}, 1, 1);
+                dim3 gridDim(batch_size /  {int(df['blockdim_y_2'][N-1])}, 1, 1);
+                dim3 blockDim({int(df['blockdim_x_2'][N-1])}, {int(df['blockdim_y_2'][N-1])}, 1);
                 fft_radix2_logN{int(df['logN'][N-1])}_2 <<<gridDim, blockDim, {int(df['sm_size_2'][N-1])}>>> ((float2*)input_d, (float2*)output_d);
                 cudaDeviceSynchronize();
             }}

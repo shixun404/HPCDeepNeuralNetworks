@@ -25,7 +25,7 @@ int main(int argc, char** argv){
         __log_N_st__ = atoi(argv[1]);
     }
     // #endif
-    __log_N__ = 9;
+    // __log_N__ = 10;
     long long N = pow((double)RADIX, (double)__log_N__); 
     int random_seed = 10;  
     #if P_FFT == 1
@@ -387,7 +387,7 @@ int main(int argc, char** argv){
     #else
     int log_N = __log_N__;
     #endif
-    int log_N = 9;
+    int log_N = __log_N__;
     N = pow(double(RADIX), double(log_N));
     
         cudaFuncSetAttribute(fft_radix2_logN18_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
@@ -422,9 +422,9 @@ int main(int argc, char** argv){
             
             for(int i = 0; i < num_tests; ++i){
         {
-                dim3 gridDim(batch_size / 4, 1, 1);
+                dim3 gridDim(batch_size /  1, 1, 1);
                 dim3 blockDim(64, 1, 1);
-                fft_radix2_logN18_2 <<<gridDim, blockDim, 16384>>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN18_2 <<<gridDim, blockDim, 4352>>> ((float2*)input_d, (float2*)output_d);
                 cudaDeviceSynchronize();
             }
         

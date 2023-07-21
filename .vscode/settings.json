@@ -2,6 +2,8 @@
     "files.associations": {
         "cmath": "cpp",
         "array": "cpp",
-        "chrono": "cpp"
+        "chrono": "cpp",
+        "queue": "cpp",
+        "stack": "cpp"
     }
 }

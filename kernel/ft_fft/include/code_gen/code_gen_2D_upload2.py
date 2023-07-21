@@ -157,9 +157,9 @@ def ft_2D_fft_code_gen_upload2(N, N1, N2, num_block, num_thread,
                 for i in range(signal_per_thread):
                     ft_fft += f'''
         sdata[ty * {N2} + __id[{order[signal_per_thread - offset + i]}]] = temp_{order[signal_per_thread - offset + i]};
-        ''' if True else f'''
-        sdata[(__id[{order[signal_per_thread - offset + i]}] / 16) * 17 + 
-        (__id[{order[signal_per_thread - offset + i]}] % 16)] = temp_{order[signal_per_thread - offset + i]};
+        ''' if False else f'''
+        sdata[((ty * {N2} + __id[{order[signal_per_thread - offset + i]}]) / 16) * 17 + 
+        (ty * {N2} + __id[{order[signal_per_thread - offset + i]}]) % 16] = temp_{order[signal_per_thread - offset + i]};
         '''
                 ft_fft += f'''
         __syncthreads();
@@ -168,10 +168,10 @@ def ft_2D_fft_code_gen_upload2(N, N1, N2, num_block, num_thread,
                     ft_fft += f'''
         temp_{i} = sdata[ty * {N2} + ({i * blockdim_x} + tx)];
         __id[{i}] = tx + {i * blockdim_x};
-        ''' if True else f'''
-        temp_{i} = sdata[(({i} * blockDim.x + tx) / 16) * 17 +
-                            (({i} * blockDim.x + tx) % 16)];
-        __id[{i}] = tx + {i} * {N // signal_per_thread};
+        ''' if False else f'''
+        temp_{i} = sdata[((ty * {N2} + {i} * blockDim.x + tx) / 16) * 17 +
+                            ((ty * {N2} + {i} * blockDim.x + tx) % 16)];
+        __id[{i}] = tx + {i * blockdim_x};
         '''
                     order[i] = i
                 offset = signal_per_thread

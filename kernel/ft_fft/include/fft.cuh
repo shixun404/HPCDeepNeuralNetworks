@@ -14,6 +14,7 @@
 #define MY_MUL_REPLACE(a, b, c, d) d.x = a.x * b.x - a.y * b.y; d.y = a.y * b.x + a.x * b.y; c = d;
 // #define MY_MUL_REPLACE(a, b, c, d) d.x += a.x * b.x - a.y * b.y; d.y += a.y * b.x + a.x * b.y; c.x += d.x;c.y += d.y;
 #define MY_ANGLE2COMPLEX(angle, a) a.x = __cosf(angle); a.y =  __sinf(angle); 
+
 // #define MY_ANGLE2COMPLEX(angle, a)  a.x = __cosf(angle); a.y =  __sinf(angle); a.x += __cosf(angle * 0.9f); a.y +=  __sinf(angle * 0.9f);
 
 #define radix3_a00_x 1.0f;
