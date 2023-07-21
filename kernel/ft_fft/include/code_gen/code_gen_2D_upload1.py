@@ -62,7 +62,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     ft_fft += '''
     '''
     for i in range(signal_per_thread):
-        ft_fft += f'''temp_{i} = inputs[(ty + {i} * {(N1 // signal_per_thread)}) * {N2} + tx + bx * {num_thread // (N1 // signal_per_thread)}];
+        ft_fft += f'''temp_{i} = inputs[(ty + {i} * {(N1 // signal_per_thread)}) * gridDim.x * blockDim.x + tx + bx * {num_thread // (N1 // signal_per_thread)}];
     '''
     ft_fft += '''
     '''
@@ -170,10 +170,10 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
         elif twiddle_type[stage_id] == 1:
             for i in range(signal_per_thread):
                 ft_fft += f'''
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * {blockdim_x}) * (__id[{order[signal_per_thread - offset + i]}])) / (float)({N}), tmp_angle);
-    MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle, tmp);
-    temp_{order[signal_per_thread - offset + i]} = tmp;
-    outputs[(tx + bx * {blockdim_x}) + {N2} * __id[{order[signal_per_thread - offset + i]}]] = temp_{order[signal_per_thread - offset + i]};
+    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * {blockdim_x}) * (__id[{order[signal_per_thread - offset + i]}])) / (float)({N}), tmp_angle);
+    // MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle, tmp);
+    // temp_{order[signal_per_thread - offset + i]} = tmp;
+    outputs[(tx + bx * {blockdim_x}) + gridDim.x * blockDim.x * __id[{order[signal_per_thread - offset + i]}]] = temp_{order[signal_per_thread - offset + i]};
     '''
             ft_fft += '''
     }

@@ -739,21 +739,21 @@ extern __shared__ float shared[];
         
         n_global *= 2;
         
-        outputs[(tx + bx * 16) + 64 * __id[0]] = temp_0;
+        outputs[(tx + bx * 16) * 256 +  __id[0]] = temp_0;
         
-        outputs[(tx + bx * 16) + 64 * __id[1]] = temp_1;
+        outputs[(tx + bx * 16) * 256 +  __id[1]] = temp_1;
         
-        outputs[(tx + bx * 16) + 64 * __id[4]] = temp_4;
+        outputs[(tx + bx * 16) * 256 +  __id[4]] = temp_4;
         
-        outputs[(tx + bx * 16) + 64 * __id[5]] = temp_5;
+        outputs[(tx + bx * 16) * 256 +  __id[5]] = temp_5;
         
-        outputs[(tx + bx * 16) + 64 * __id[2]] = temp_2;
+        outputs[(tx + bx * 16) * 256 +  __id[2]] = temp_2;
         
-        outputs[(tx + bx * 16) + 64 * __id[3]] = temp_3;
+        outputs[(tx + bx * 16) * 256 +  __id[3]] = temp_3;
         
-        outputs[(tx + bx * 16) + 64 * __id[6]] = temp_6;
+        outputs[(tx + bx * 16) * 256 +  __id[6]] = temp_6;
         
-        outputs[(tx + bx * 16) + 64 * __id[7]] = temp_7;
+        outputs[(tx + bx * 16) * 256 +  __id[7]] = temp_7;
         
         }
     
