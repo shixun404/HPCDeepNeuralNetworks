@@ -1,4 +1,4 @@
-BINARY_NAME = ft_fft #ft_fft #ft_sgemm #sdot saxpy
+BINARY_NAME = ft_fft ft_fft_batch #ft_fft #ft_sgemm #sdot saxpy
 CUDA_PATH   = /usr/local/cuda
 CC          = $(CUDA_PATH)/bin/nvcc -arch=sm_75 #--ptxas-options=-v 
 CFLAGS      = -O3 -std=c++11 
@@ -14,11 +14,6 @@ CFLAGS += -DV_FFT=$(V_FFT)
 CFLAGS += -DP_FFT=$(P_FFT)
 CFLAGS += -DK_FFT=$(K_FFT)
 CFLAGS += -DFT=$(FT)
-# CFLAGS += -DV=$(V)
-# CFLAGS += -DP=$(P)
-# CFLAGS += -DP=$(K)
-
-
 
 SRC         = $(wildcard *.cu)
 build : $(BINARY_NAME)
@@ -29,12 +24,3 @@ $(BINARY_NAME): %: kernel/%/ft_fft.cu  utils/utils.cu
 clean:
 	rm $(BINARY_NAME)
 
-#run:
-#	nvcc -o saxpy saxpy.cu  -std=c++11 -lcublas -O3
-#	nvcc -o sdot sdot.cu  -std=c++11 -lcublas -O3
-
-#profile:
-#	nsys profile --stats=true ./saxpy
-
-#clean:
-#	bash -c "rm ./report*"
