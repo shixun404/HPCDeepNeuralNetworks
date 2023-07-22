@@ -6,16 +6,14 @@ from code_gen_2D_upload2 import ft_2D_fft_code_gen_upload2
 from code_gen_3D_upload1 import ft_3D_fft_code_gen_upload1
 from code_gen_3D_upload2 import ft_3D_fft_code_gen_upload2
 from code_gen_3D_upload3 import ft_3D_fft_code_gen_upload3
-# from code_gen_script import code_gen_script
-from code_gen_script_batch import code_gen_script
+from code_gen_script import code_gen_script
 if __name__ =="__main__":
     radix = 2
     N = 8
     signal_per_thread = 8
     if_abft = False
     i = 3
-    df = pd.read_csv(f'parameter_radix{radix}.csv')
-    # df = pd.read_csv(f'parameter_radix{radix}_vkfft.csv')
+    df = pd.read_csv(f'parameter_radix{radix}_vkfft.csv')
     radix = 2
     while N <= 2 ** 13:
         signal_per_thread = int(df['signal_per_thread_1'][i-1])

@@ -2641,69 +2641,69 @@ extern __shared__ float shared[];
         
         n_global *= 2;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[0]] = temp_0;
+        outputs[(tx + bx * 4) + 1024 * __id[0]] = temp_0;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[16]] = temp_16;
+        outputs[(tx + bx * 4) + 1024 * __id[16]] = temp_16;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[8]] = temp_8;
+        outputs[(tx + bx * 4) + 1024 * __id[8]] = temp_8;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[24]] = temp_24;
+        outputs[(tx + bx * 4) + 1024 * __id[24]] = temp_24;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[4]] = temp_4;
+        outputs[(tx + bx * 4) + 1024 * __id[4]] = temp_4;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[20]] = temp_20;
+        outputs[(tx + bx * 4) + 1024 * __id[20]] = temp_20;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[12]] = temp_12;
+        outputs[(tx + bx * 4) + 1024 * __id[12]] = temp_12;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[28]] = temp_28;
+        outputs[(tx + bx * 4) + 1024 * __id[28]] = temp_28;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[2]] = temp_2;
+        outputs[(tx + bx * 4) + 1024 * __id[2]] = temp_2;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[18]] = temp_18;
+        outputs[(tx + bx * 4) + 1024 * __id[18]] = temp_18;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[10]] = temp_10;
+        outputs[(tx + bx * 4) + 1024 * __id[10]] = temp_10;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[26]] = temp_26;
+        outputs[(tx + bx * 4) + 1024 * __id[26]] = temp_26;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[6]] = temp_6;
+        outputs[(tx + bx * 4) + 1024 * __id[6]] = temp_6;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[22]] = temp_22;
+        outputs[(tx + bx * 4) + 1024 * __id[22]] = temp_22;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[14]] = temp_14;
+        outputs[(tx + bx * 4) + 1024 * __id[14]] = temp_14;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[30]] = temp_30;
+        outputs[(tx + bx * 4) + 1024 * __id[30]] = temp_30;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[1]] = temp_1;
+        outputs[(tx + bx * 4) + 1024 * __id[1]] = temp_1;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[17]] = temp_17;
+        outputs[(tx + bx * 4) + 1024 * __id[17]] = temp_17;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[9]] = temp_9;
+        outputs[(tx + bx * 4) + 1024 * __id[9]] = temp_9;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[25]] = temp_25;
+        outputs[(tx + bx * 4) + 1024 * __id[25]] = temp_25;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[5]] = temp_5;
+        outputs[(tx + bx * 4) + 1024 * __id[5]] = temp_5;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[21]] = temp_21;
+        outputs[(tx + bx * 4) + 1024 * __id[21]] = temp_21;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[13]] = temp_13;
+        outputs[(tx + bx * 4) + 1024 * __id[13]] = temp_13;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[29]] = temp_29;
+        outputs[(tx + bx * 4) + 1024 * __id[29]] = temp_29;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[3]] = temp_3;
+        outputs[(tx + bx * 4) + 1024 * __id[3]] = temp_3;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[19]] = temp_19;
+        outputs[(tx + bx * 4) + 1024 * __id[19]] = temp_19;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[11]] = temp_11;
+        outputs[(tx + bx * 4) + 1024 * __id[11]] = temp_11;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[27]] = temp_27;
+        outputs[(tx + bx * 4) + 1024 * __id[27]] = temp_27;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[7]] = temp_7;
+        outputs[(tx + bx * 4) + 1024 * __id[7]] = temp_7;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[23]] = temp_23;
+        outputs[(tx + bx * 4) + 1024 * __id[23]] = temp_23;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[15]] = temp_15;
+        outputs[(tx + bx * 4) + 1024 * __id[15]] = temp_15;
         
-        outputs[(tx + bx * 4) * 1024 +  __id[31]] = temp_31;
+        outputs[(tx + bx * 4) + 1024 * __id[31]] = temp_31;
         
         }
     

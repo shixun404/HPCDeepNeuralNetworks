@@ -11,9 +11,9 @@ int main(int argc, char** argv){
     // #if (V == 1)
     int __log_N__, __log_N_st__ = 3;
     float * t_cufft, *t_vkfft, *t_fft;
-    t_cufft = (float*)malloc(sizeof(float) * 65536 / 128);
-    t_vkfft = (float*)malloc(sizeof(float) * 65536 / 128);
-    t_fft = (float*)malloc(sizeof(float) * 65536 / 128);
+    t_cufft = (float*)malloc(sizeof(float) * 34);
+    t_vkfft = (float*)malloc(sizeof(float) * 34);
+    t_fft = (float*)malloc(sizeof(float) * 34);
     
     if (argc < 2){
         printf("Please input log(N)\n");
@@ -25,7 +25,6 @@ int main(int argc, char** argv){
         __log_N_st__ = atoi(argv[1]);
     }
     // #endif
-    // __log_N__ = 10;
     long long N = pow((double)RADIX, (double)__log_N__); 
     int random_seed = 10;  
     #if P_FFT == 1
@@ -34,11 +33,35 @@ int main(int argc, char** argv){
     int num_tests = 1;
     #endif
     srandom(random_seed); 
-    float *input = (float*)calloc(N * 2 * 10240, sizeof(float)); 
+    float *input = (float*)calloc(N * 2, sizeof(float)); 
+    if(input == NULL){
+        printf("input failed!\n");
+        printf("%s\n",strerror(errno));
+        return -1;
+    }
+    else{
+        printf("input successed!\n");
+    }
     float *output_ref, *output;
     
-    output_ref = (float*)calloc(N * 2 * 10240, sizeof(float));
-    output = (float*)calloc(N * 2 * 10240, sizeof(float));
+    output_ref = (float*)calloc(N * 2, sizeof(float));
+    if(output_ref == NULL){
+        printf("output_ref failed!\n");
+        printf("%s\n",strerror(errno));
+        return -1;
+    }
+    else{
+        printf("output_ref successed!\n");
+    }
+    output = (float*)calloc(N * 2, sizeof(float));
+    if(output == NULL){
+        printf("output failed!\n");
+        printf("%s\n",strerror(errno));
+        return -1;
+    }
+    else{
+        printf("input_ref successed!\n");
+    }
     
     float r[6];
     
@@ -56,10 +79,12 @@ int main(int argc, char** argv){
     float *input_d, *output_d, *output_d_vkfft, *output_d_cufft, *output_d_1, *output_d_ref_1, *checksum_r, *checksum_r_d, *dftmtx;
     checksum_r = (float*)calloc(1024*2, sizeof(float));
     dftmtx = (float*)calloc(1024*1024*2, sizeof(float));
-    CUDA_CALLER(cudaMalloc((void**)&input_d, sizeof(float) * N * 2 * 10240));
-    CUDA_CALLER(cudaMalloc((void**)&output_d, sizeof(float) * N * 2 * 10240));
+    CUDA_CALLER(cudaMalloc((void**)&input_d, sizeof(float) * N * 2));
+    CUDA_CALLER(cudaMalloc((void**)&output_d, sizeof(float) * N * 2));
     
-    for(int i = 0; i < N * 2 * 10240; ++i){ 
+    
+
+    for(int i = 0; i < N * 2; ++i){ 
             input[i] = (float)(random() % 100) / (float)100;
     }
     
@@ -368,7 +393,7 @@ int main(int argc, char** argv){
     cudaMemcpy((void*)checksum_r_d_10, (void*)checksum_r_10, 2 * 1024 * sizeof(float), cudaMemcpyHostToDevice);
     
     
-    cudaMemcpy((void*)input_d, (void*)input, 2 * N * sizeof(float) * 10240, cudaMemcpyHostToDevice);
+    cudaMemcpy((void*)input_d, (void*)input, 2 * N * sizeof(float), cudaMemcpyHostToDevice);
     
 
     cufftHandle plan;  
@@ -383,21 +408,592 @@ int main(int argc, char** argv){
     cudaEventCreate(&fft_end);
     
     #if P_FFT == 1
-    for(int batch_size = 128; batch_size <= 10240; batch_size += 128){
+    for(int log_N = __log_N_st__; log_N <= __log_N__; ++log_N){
     #else
     int log_N = __log_N__;
     #endif
-    int log_N = __log_N__;
     N = pow(double(RADIX), double(log_N));
     
-        cudaFuncSetAttribute(fft_radix2_logN18_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
-        // cudaFuncSetAttribute(VkFFT_main_logN18_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+    if(log_N == 3){
+        
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
+        
+        {
+            cufftCreate(&plan);
+            cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);  
+            cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost); 
+            cufftDestroy(plan);
+        }
+    
+        {
+        
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            dim3 gridDim(1, 1, 1);
+            dim3 blockDim(1, 1, 1);
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            
+            for(int i = 0; i < num_tests; ++i){
+        
+                fft_radix2_logN3 <<<gridDim, blockDim, 192>>> ((float2*)input_d, (float2*)output_d);
+                cudaDeviceSynchronize();
+        
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            CUDA_CALLER(cudaFree(output_d_1));
+        }
+    }
+        
+    if(log_N == 4){
+        
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
+        
+        {
+            cufftCreate(&plan);
+            cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);  
+            cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost); 
+            cufftDestroy(plan);
+        }
+    
+        {
+        
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            dim3 gridDim(1, 1, 1);
+            dim3 blockDim(4, 1, 1);
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            
+            for(int i = 0; i < num_tests; ++i){
+        
+                fft_radix2_logN4 <<<gridDim, blockDim, 256>>> ((float2*)input_d, (float2*)output_d);
+                cudaDeviceSynchronize();
+        
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            CUDA_CALLER(cudaFree(output_d_1));
+        }
+    }
+        
+    if(log_N == 5){
+        
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
+        
+        {
+            cufftCreate(&plan);
+            cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);  
+            cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost); 
+            cufftDestroy(plan);
+        }
+    
+        {
+        
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            dim3 gridDim(1, 1, 1);
+            dim3 blockDim(4, 1, 1);
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            
+            for(int i = 0; i < num_tests; ++i){
+        
+                fft_radix2_logN5 <<<gridDim, blockDim, 384>>> ((float2*)input_d, (float2*)output_d);
+                cudaDeviceSynchronize();
+        
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            CUDA_CALLER(cudaFree(output_d_1));
+        }
+    }
+        
+    if(log_N == 6){
+        
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
+        
+        {
+            cufftCreate(&plan);
+            cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);  
+            cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost); 
+            cufftDestroy(plan);
+        }
+    
+        {
+        
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            dim3 gridDim(1, 1, 1);
+            dim3 blockDim(8, 1, 1);
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            
+            for(int i = 0; i < num_tests; ++i){
+        
+                fft_radix2_logN6 <<<gridDim, blockDim, 640>>> ((float2*)input_d, (float2*)output_d);
+                cudaDeviceSynchronize();
+        
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            CUDA_CALLER(cudaFree(output_d_1));
+        }
+    }
+        
+    if(log_N == 7){
+        
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
+        
+        {
+            cufftCreate(&plan);
+            cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);  
+            cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost); 
+            cufftDestroy(plan);
+        }
+    
+        {
+        
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            dim3 gridDim(1, 1, 1);
+            dim3 blockDim(16, 1, 1);
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            
+            for(int i = 0; i < num_tests; ++i){
+        
+                fft_radix2_logN7 <<<gridDim, blockDim, 1152>>> ((float2*)input_d, (float2*)output_d);
+                cudaDeviceSynchronize();
+        
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            CUDA_CALLER(cudaFree(output_d_1));
+        }
+    }
+        
+    if(log_N == 8){
+        
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
+        
+        {
+            cufftCreate(&plan);
+            cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);  
+            cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost); 
+            cufftDestroy(plan);
+        }
+    
+        {
+        
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            dim3 gridDim(1, 1, 1);
+            dim3 blockDim(32, 1, 1);
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            
+            for(int i = 0; i < num_tests; ++i){
+        
+                fft_radix2_logN8 <<<gridDim, blockDim, 2176>>> ((float2*)input_d, (float2*)output_d);
+                cudaDeviceSynchronize();
+        
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            CUDA_CALLER(cudaFree(output_d_1));
+        }
+    }
+        
+    if(log_N == 9){
+        
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
+        
+        {
+            cufftCreate(&plan);
+            cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);  
+            cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost); 
+            cufftDestroy(plan);
+        }
+    
+        {
+        
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            dim3 gridDim(1, 1, 1);
+            dim3 blockDim(64, 1, 1);
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            
+            for(int i = 0; i < num_tests; ++i){
+        
+                fft_radix2_logN9 <<<gridDim, blockDim, 4352>>> ((float2*)input_d, (float2*)output_d);
+                cudaDeviceSynchronize();
+        
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            CUDA_CALLER(cudaFree(output_d_1));
+        }
+    }
+        
+    if(log_N == 10){
+        
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
+        
+        {
+            cufftCreate(&plan);
+            cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);  
+            cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost); 
+            cufftDestroy(plan);
+        }
+    
+        {
+        
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            dim3 gridDim(1, 1, 1);
+            dim3 blockDim(128, 1, 1);
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            
+            for(int i = 0; i < num_tests; ++i){
+        
+                fft_radix2_logN10 <<<gridDim, blockDim, 8704>>> ((float2*)input_d, (float2*)output_d);
+                cudaDeviceSynchronize();
+        
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            CUDA_CALLER(cudaFree(output_d_1));
+        }
+    }
+        
+    if(log_N == 11){
+        
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
+        
+        {
+            cufftCreate(&plan);
+            cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);  
+            cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost); 
+            cufftDestroy(plan);
+        }
+    
+        {
+        
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            dim3 gridDim(1, 1, 1);
+            dim3 blockDim(128, 1, 1);
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            
+            for(int i = 0; i < num_tests; ++i){
+        
+                fft_radix2_logN11 <<<gridDim, blockDim, 17408>>> ((float2*)input_d, (float2*)output_d);
+                cudaDeviceSynchronize();
+        
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            CUDA_CALLER(cudaFree(output_d_1));
+        }
+    }
+        
+    if(log_N == 12){
+        
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
+        
+        {
+            cufftCreate(&plan);
+            cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);  
+            cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost); 
+            cufftDestroy(plan);
+        }
+    
+        {
+        
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            dim3 gridDim(1, 1, 1);
+            dim3 blockDim(256, 1, 1);
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            
+            for(int i = 0; i < num_tests; ++i){
+        
+                fft_radix2_logN12 <<<gridDim, blockDim, 34816>>> ((float2*)input_d, (float2*)output_d);
+                cudaDeviceSynchronize();
+        
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            CUDA_CALLER(cudaFree(output_d_1));
+        }
+    }
+        
+    if(log_N == 13){
+        
+        cudaFuncSetAttribute(fft_radix2_logN13, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        // cudaFuncSetAttribute(VkFFT_main_logN13, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
+        
+        {
+            cufftCreate(&plan);
+            cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);  
+            cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost); 
+            cufftDestroy(plan);
+        }
+    
+        {
+        
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            dim3 gridDim(1, 1, 1);
+            dim3 blockDim(1024, 1, 1);
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            
+            for(int i = 0; i < num_tests; ++i){
+        
+                fft_radix2_logN13 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d);
+                cudaDeviceSynchronize();
+        
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            CUDA_CALLER(cudaFree(output_d_1));
+        }
+    }
+        
+    if(log_N == 14){
         
         cudaEventCreate(&fft_begin);
         cudaEventCreate(&fft_end);
         {
+        
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            
+            for(int i = 0; i < num_tests; ++i){
+        {
+                dim3 gridDim(16, 1, 1);
+                dim3 blockDim(16, 8, 1);
+                fft_radix2_logN14_1 <<<gridDim, blockDim, 8192>>> ((float2*)input_d, (float2*)output_d_1);
+                cudaDeviceSynchronize();
+            }
+        {
+                dim3 gridDim(4, 1, 1);
+                dim3 blockDim(16, 32, 1);
+                fft_radix2_logN14_2 <<<gridDim, blockDim, 34816>>> ((float2*)output_d_1, (float2*)output_d);
+                cudaDeviceSynchronize();
+            }
+        
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            CUDA_CALLER(cudaFree(output_d_1));
+        }
+        
+        {
             cufftCreate(&plan);
-            cufftPlan1d(&plan, N, CUFFT_C2C, batch_size); 
+            cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
             cudaEventRecord(fft_begin);
             timeSt = std::chrono::steady_clock::now();
             for(int i = 0; i < num_tests; ++i){
@@ -410,21 +1006,35 @@ int main(int argc, char** argv){
             cudaEventSynchronize(fft_begin);
             cudaEventSynchronize(fft_end);
             cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);   
-            cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * batch_size * sizeof(float), cudaMemcpyDeviceToHost);
+            cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
             cufftDestroy(plan);
         }
+    }    
     
+    if(log_N == 15){
         
+        cudaFuncSetAttribute(fft_radix2_logN15_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        // cudaFuncSetAttribute(VkFFT_main_logN15_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
         {
         
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
             cudaEventRecord(fft_begin);
             timeSt = std::chrono::steady_clock::now();
             
             for(int i = 0; i < num_tests; ++i){
         {
-                dim3 gridDim(batch_size /  1, 1, 1);
-                dim3 blockDim(64, 1, 1);
-                fft_radix2_logN18_2 <<<gridDim, blockDim, 4352>>> ((float2*)input_d, (float2*)output_d);
+                dim3 gridDim(32, 1, 1);
+                dim3 blockDim(16, 8, 1);
+                fft_radix2_logN15_1 <<<gridDim, blockDim, 8192>>> ((float2*)input_d, (float2*)output_d_1);
+                cudaDeviceSynchronize();
+            }
+        {
+                dim3 gridDim(4, 1, 1);
+                dim3 blockDim(64, 16, 1);
+                fft_radix2_logN15_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d);
                 cudaDeviceSynchronize();
             }
         
@@ -435,8 +1045,969 @@ int main(int argc, char** argv){
             cudaEventSynchronize(fft_begin);
             cudaEventSynchronize(fft_end);
             cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
-            cudaMemcpy((void*)output, (void*)output_d, 2 * N * batch_size * sizeof(float), cudaMemcpyDeviceToHost);
+            cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
             CUDA_CALLER(cudaFree(output_d_1));
+        }
+        
+        {
+            cufftCreate(&plan);
+            cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);   
+            cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            cufftDestroy(plan);
+        }
+    }    
+    
+    if(log_N == 16){
+        
+        cudaFuncSetAttribute(fft_radix2_logN16_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        // cudaFuncSetAttribute(VkFFT_main_logN16_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
+        {
+        
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            
+            for(int i = 0; i < num_tests; ++i){
+        {
+                dim3 gridDim(32, 1, 1);
+                dim3 blockDim(16, 16, 1);
+                fft_radix2_logN16_1 <<<gridDim, blockDim, 16384>>> ((float2*)input_d, (float2*)output_d_1);
+                cudaDeviceSynchronize();
+            }
+        {
+                dim3 gridDim(8, 1, 1);
+                dim3 blockDim(64, 16, 1);
+                fft_radix2_logN16_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d);
+                cudaDeviceSynchronize();
+            }
+        
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            CUDA_CALLER(cudaFree(output_d_1));
+        }
+        
+        {
+            cufftCreate(&plan);
+            cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);   
+            cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            cufftDestroy(plan);
+        }
+    }    
+    
+    if(log_N == 17){
+        
+        cudaFuncSetAttribute(fft_radix2_logN17_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        // cudaFuncSetAttribute(VkFFT_main_logN17_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
+        {
+        
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            
+            for(int i = 0; i < num_tests; ++i){
+        {
+                dim3 gridDim(32, 1, 1);
+                dim3 blockDim(16, 16, 1);
+                fft_radix2_logN17_1 <<<gridDim, blockDim, 32768>>> ((float2*)input_d, (float2*)output_d_1);
+                cudaDeviceSynchronize();
+            }
+        {
+                dim3 gridDim(16, 1, 1);
+                dim3 blockDim(64, 16, 1);
+                fft_radix2_logN17_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d);
+                cudaDeviceSynchronize();
+            }
+        
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            CUDA_CALLER(cudaFree(output_d_1));
+        }
+        
+        {
+            cufftCreate(&plan);
+            cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);   
+            cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            cufftDestroy(plan);
+        }
+    }    
+    
+    if(log_N == 18){
+        
+        cudaFuncSetAttribute(fft_radix2_logN18_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        // cudaFuncSetAttribute(VkFFT_main_logN18_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        
+        cudaFuncSetAttribute(fft_radix2_logN18_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        // cudaFuncSetAttribute(VkFFT_main_logN18_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
+        {
+        
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            
+            for(int i = 0; i < num_tests; ++i){
+        {
+                dim3 gridDim(32, 1, 1);
+                dim3 blockDim(16, 64, 1);
+                fft_radix2_logN18_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d_1);
+                cudaDeviceSynchronize();
+            }
+        {
+                dim3 gridDim(32, 1, 1);
+                dim3 blockDim(64, 16, 1);
+                fft_radix2_logN18_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d);
+                cudaDeviceSynchronize();
+            }
+        
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            CUDA_CALLER(cudaFree(output_d_1));
+        }
+        
+        {
+            cufftCreate(&plan);
+            cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);   
+            cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            cufftDestroy(plan);
+        }
+    }    
+    
+    if(log_N == 19){
+        
+        cudaFuncSetAttribute(fft_radix2_logN19_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        // cudaFuncSetAttribute(VkFFT_main_logN19_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
+        {
+        
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            
+            for(int i = 0; i < num_tests; ++i){
+        {
+                dim3 gridDim(64, 1, 1);
+                dim3 blockDim(16, 64, 1);
+                fft_radix2_logN19_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d_1);
+                cudaDeviceSynchronize();
+            }
+        {
+                dim3 gridDim(128, 1, 1);
+                dim3 blockDim(4, 32, 1);
+                fft_radix2_logN19_2 <<<gridDim, blockDim, 40960>>> ((float2*)output_d_1, (float2*)output_d);
+                cudaDeviceSynchronize();
+            }
+        
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            CUDA_CALLER(cudaFree(output_d_1));
+        }
+        
+        {
+            cufftCreate(&plan);
+            cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);   
+            cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            cufftDestroy(plan);
+        }
+    }    
+    
+    if(log_N == 20){
+        
+        cudaFuncSetAttribute(fft_radix2_logN20_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        // cudaFuncSetAttribute(VkFFT_main_logN20_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
+        {
+        
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            
+            for(int i = 0; i < num_tests; ++i){
+        {
+                dim3 gridDim(128, 1, 1);
+                dim3 blockDim(8, 32, 1);
+                fft_radix2_logN20_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d_1);
+                cudaDeviceSynchronize();
+            }
+        {
+                dim3 gridDim(256, 1, 1);
+                dim3 blockDim(4, 32, 1);
+                fft_radix2_logN20_2 <<<gridDim, blockDim, 40960>>> ((float2*)output_d_1, (float2*)output_d);
+                cudaDeviceSynchronize();
+            }
+        
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            CUDA_CALLER(cudaFree(output_d_1));
+        }
+        
+        {
+            cufftCreate(&plan);
+            cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);   
+            cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            cufftDestroy(plan);
+        }
+    }    
+    
+    if(log_N == 21){
+        
+        cudaFuncSetAttribute(fft_radix2_logN21_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        // cudaFuncSetAttribute(VkFFT_main_logN21_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        
+        cudaFuncSetAttribute(fft_radix2_logN21_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        // cudaFuncSetAttribute(VkFFT_main_logN21_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
+        {
+        
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            
+            for(int i = 0; i < num_tests; ++i){
+        {
+                dim3 gridDim(256, 1, 1);
+                dim3 blockDim(8, 32, 1);
+                fft_radix2_logN21_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d_1);
+                cudaDeviceSynchronize();
+            }
+        {
+                dim3 gridDim(256, 1, 1);
+                dim3 blockDim(128, 4, 1);
+                fft_radix2_logN21_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d);
+                cudaDeviceSynchronize();
+            }
+        
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            CUDA_CALLER(cudaFree(output_d_1));
+        }
+        
+        {
+            cufftCreate(&plan);
+            cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);   
+            cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            cufftDestroy(plan);
+        }
+    }    
+    
+    if(log_N == 22){
+        
+        cudaFuncSetAttribute(fft_radix2_logN22_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        // cudaFuncSetAttribute(VkFFT_main_logN22_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        
+        cudaFuncSetAttribute(fft_radix2_logN22_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        // cudaFuncSetAttribute(VkFFT_main_logN22_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
+        {
+        
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            
+            for(int i = 0; i < num_tests; ++i){
+        {
+                dim3 gridDim(512, 1, 1);
+                dim3 blockDim(4, 128, 1);
+                fft_radix2_logN22_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d_1);
+                cudaDeviceSynchronize();
+            }
+        {
+                dim3 gridDim(512, 1, 1);
+                dim3 blockDim(128, 4, 1);
+                fft_radix2_logN22_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d);
+                cudaDeviceSynchronize();
+            }
+        
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            CUDA_CALLER(cudaFree(output_d_1));
+        }
+        
+        {
+            cufftCreate(&plan);
+            cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);   
+            cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            cufftDestroy(plan);
+        }
+    }    
+    
+    if(log_N == 23){
+        
+        {
+            cufftCreate(&plan);
+            cudaEventCreate(&fft_begin);
+            cudaEventCreate(&fft_end);
+            int res = cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            if(res != 0){
+                printf("cuFFT plan error!\n");
+                return 0; 
+            } 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);   
+            
+            CUDA_CALLER(cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
+            cufftDestroy(plan);
+
+        }    
+        
+    
+        {
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
+        CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+        
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            
+            for(int i = 0; i < num_tests; ++i){
+        {
+                dim3 gridDim(2048, 1, 1);
+                dim3 blockDim(16, 16, 1);
+                fft_radix2_logN23_1 <<<gridDim, blockDim, 32768>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_8);
+                cudaDeviceSynchronize();
+            }
+        {
+                dim3 gridDim(4096, 1, 1);
+                dim3 blockDim(16, 16, 1);
+                fft_radix2_logN23_2 <<<gridDim, blockDim, 16384>>> ((float2*)output_d, (float2*)output_d_1, (float2*) checksum_r_d_7);
+                cudaDeviceSynchronize();
+            }
+        {
+                dim3 gridDim(2048, 1, 1);
+                dim3 blockDim(16, 16, 1);
+                fft_radix2_logN23_3 <<<gridDim, blockDim, 34816>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_8);
+                cudaDeviceSynchronize();
+            }
+        
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            CUDA_CALLER(cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
+            CUDA_CALLER(cudaFree(output_d_1));
+        }
+        }
+        
+    if(log_N == 24){
+        
+        {
+            cufftCreate(&plan);
+            cudaEventCreate(&fft_begin);
+            cudaEventCreate(&fft_end);
+            int res = cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            if(res != 0){
+                printf("cuFFT plan error!\n");
+                return 0; 
+            } 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);   
+            
+            CUDA_CALLER(cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
+            cufftDestroy(plan);
+
+        }    
+        
+    
+        {
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
+        CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+        
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            
+            for(int i = 0; i < num_tests; ++i){
+        {
+                dim3 gridDim(4096, 1, 1);
+                dim3 blockDim(16, 16, 1);
+                fft_radix2_logN24_1 <<<gridDim, blockDim, 32768>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_8);
+                cudaDeviceSynchronize();
+            }
+        {
+                dim3 gridDim(4096, 1, 1);
+                dim3 blockDim(16, 16, 1);
+                fft_radix2_logN24_2 <<<gridDim, blockDim, 32768>>> ((float2*)output_d, (float2*)output_d_1, (float2*) checksum_r_d_8);
+                cudaDeviceSynchronize();
+            }
+        {
+                dim3 gridDim(4096, 1, 1);
+                dim3 blockDim(32, 16, 1);
+                fft_radix2_logN24_3 <<<gridDim, blockDim, 34816>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_8);
+                cudaDeviceSynchronize();
+            }
+        
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            CUDA_CALLER(cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
+            CUDA_CALLER(cudaFree(output_d_1));
+        }
+        }
+        
+    if(log_N == 25){
+        
+        cudaFuncSetAttribute(fft_radix2_logN25_3, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        // cudaFuncSetAttribute(VkFFT_main_logN25_3, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        
+        {
+            cufftCreate(&plan);
+            cudaEventCreate(&fft_begin);
+            cudaEventCreate(&fft_end);
+            int res = cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            if(res != 0){
+                printf("cuFFT plan error!\n");
+                return 0; 
+            } 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);   
+            
+            CUDA_CALLER(cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
+            cufftDestroy(plan);
+
+        }    
+        
+    
+        {
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
+        CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+        
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            
+            for(int i = 0; i < num_tests; ++i){
+        {
+                dim3 gridDim(8192, 1, 1);
+                dim3 blockDim(16, 16, 1);
+                fft_radix2_logN25_1 <<<gridDim, blockDim, 32768>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_8);
+                cudaDeviceSynchronize();
+            }
+        {
+                dim3 gridDim(8192, 1, 1);
+                dim3 blockDim(16, 16, 1);
+                fft_radix2_logN25_2 <<<gridDim, blockDim, 32768>>> ((float2*)output_d, (float2*)output_d_1, (float2*) checksum_r_d_8);
+                cudaDeviceSynchronize();
+            }
+        {
+                dim3 gridDim(4096, 1, 1);
+                dim3 blockDim(64, 16, 1);
+                fft_radix2_logN25_3 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_9);
+                cudaDeviceSynchronize();
+            }
+        
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            CUDA_CALLER(cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
+            CUDA_CALLER(cudaFree(output_d_1));
+        }
+        }
+        
+    if(log_N == 26){
+        
+        cudaFuncSetAttribute(fft_radix2_logN26_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        // cudaFuncSetAttribute(VkFFT_main_logN26_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        
+        cudaFuncSetAttribute(fft_radix2_logN26_3, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        // cudaFuncSetAttribute(VkFFT_main_logN26_3, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        
+        {
+            cufftCreate(&plan);
+            cudaEventCreate(&fft_begin);
+            cudaEventCreate(&fft_end);
+            int res = cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            if(res != 0){
+                printf("cuFFT plan error!\n");
+                return 0; 
+            } 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);   
+            
+            CUDA_CALLER(cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
+            cufftDestroy(plan);
+
+        }    
+        
+    
+        {
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
+        CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+        
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            
+            for(int i = 0; i < num_tests; ++i){
+        {
+                dim3 gridDim(8192, 1, 1);
+                dim3 blockDim(16, 32, 1);
+                fft_radix2_logN26_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_9);
+                cudaDeviceSynchronize();
+            }
+        {
+                dim3 gridDim(16384, 1, 1);
+                dim3 blockDim(16, 16, 1);
+                fft_radix2_logN26_2 <<<gridDim, blockDim, 32768>>> ((float2*)output_d, (float2*)output_d_1, (float2*) checksum_r_d_8);
+                cudaDeviceSynchronize();
+            }
+        {
+                dim3 gridDim(8192, 1, 1);
+                dim3 blockDim(64, 16, 1);
+                fft_radix2_logN26_3 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_9);
+                cudaDeviceSynchronize();
+            }
+        
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            CUDA_CALLER(cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
+            CUDA_CALLER(cudaFree(output_d_1));
+        }
+        }
+        
+    if(log_N == 27){
+        
+        cudaFuncSetAttribute(fft_radix2_logN27_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        // cudaFuncSetAttribute(VkFFT_main_logN27_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        
+        cudaFuncSetAttribute(fft_radix2_logN27_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        // cudaFuncSetAttribute(VkFFT_main_logN27_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        
+        cudaFuncSetAttribute(fft_radix2_logN27_3, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        // cudaFuncSetAttribute(VkFFT_main_logN27_3, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        
+        {
+            cufftCreate(&plan);
+            cudaEventCreate(&fft_begin);
+            cudaEventCreate(&fft_end);
+            int res = cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            if(res != 0){
+                printf("cuFFT plan error!\n");
+                return 0; 
+            } 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);   
+            
+            CUDA_CALLER(cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
+            cufftDestroy(plan);
+
+        }    
+        
+    
+        {
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
+        CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+        
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            
+            for(int i = 0; i < num_tests; ++i){
+        {
+                dim3 gridDim(16384, 1, 1);
+                dim3 blockDim(16, 32, 1);
+                fft_radix2_logN27_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_9);
+                cudaDeviceSynchronize();
+            }
+        {
+                dim3 gridDim(16384, 1, 1);
+                dim3 blockDim(16, 32, 1);
+                fft_radix2_logN27_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d, (float2*)output_d_1, (float2*) checksum_r_d_9);
+                cudaDeviceSynchronize();
+            }
+        {
+                dim3 gridDim(16384, 1, 1);
+                dim3 blockDim(64, 16, 1);
+                fft_radix2_logN27_3 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_9);
+                cudaDeviceSynchronize();
+            }
+        
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            CUDA_CALLER(cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
+            CUDA_CALLER(cudaFree(output_d_1));
+        }
+        }
+        
+    if(log_N == 28){
+        
+        cudaFuncSetAttribute(fft_radix2_logN28_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        // cudaFuncSetAttribute(VkFFT_main_logN28_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        
+        cudaFuncSetAttribute(fft_radix2_logN28_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        // cudaFuncSetAttribute(VkFFT_main_logN28_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        
+        cudaFuncSetAttribute(fft_radix2_logN28_3, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        // cudaFuncSetAttribute(VkFFT_main_logN28_3, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        
+        {
+            cufftCreate(&plan);
+            cudaEventCreate(&fft_begin);
+            cudaEventCreate(&fft_end);
+            int res = cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            if(res != 0){
+                printf("cuFFT plan error!\n");
+                return 0; 
+            } 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);   
+            
+            CUDA_CALLER(cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
+            cufftDestroy(plan);
+
+        }    
+        
+    
+        {
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
+        CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+        
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            
+            for(int i = 0; i < num_tests; ++i){
+        {
+                dim3 gridDim(32768, 1, 1);
+                dim3 blockDim(16, 32, 1);
+                fft_radix2_logN28_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_9);
+                cudaDeviceSynchronize();
+            }
+        {
+                dim3 gridDim(32768, 1, 1);
+                dim3 blockDim(16, 32, 1);
+                fft_radix2_logN28_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d, (float2*)output_d_1, (float2*) checksum_r_d_9);
+                cudaDeviceSynchronize();
+            }
+        {
+                dim3 gridDim(32768, 1, 1);
+                dim3 blockDim(128, 8, 1);
+                fft_radix2_logN28_3 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_10);
+                cudaDeviceSynchronize();
+            }
+        
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            CUDA_CALLER(cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
+            CUDA_CALLER(cudaFree(output_d_1));
+        }
+        }
+        
+    if(log_N == 29){
+        
+        cudaFuncSetAttribute(fft_radix2_logN29_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        // cudaFuncSetAttribute(VkFFT_main_logN29_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        
+        cudaFuncSetAttribute(fft_radix2_logN29_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        // cudaFuncSetAttribute(VkFFT_main_logN29_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        
+        cudaFuncSetAttribute(fft_radix2_logN29_3, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        // cudaFuncSetAttribute(VkFFT_main_logN29_3, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        
+        {
+            cufftCreate(&plan);
+            cudaEventCreate(&fft_begin);
+            cudaEventCreate(&fft_end);
+            int res = cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            if(res != 0){
+                printf("cuFFT plan error!\n");
+                return 0; 
+            } 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);   
+            
+            CUDA_CALLER(cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
+            cufftDestroy(plan);
+
+        }    
+        
+    
+        {
+        cudaEventCreate(&fft_begin);
+        cudaEventCreate(&fft_end);
+        CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+        
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            
+            for(int i = 0; i < num_tests; ++i){
+        {
+                dim3 gridDim(65536, 1, 1);
+                dim3 blockDim(8, 64, 1);
+                fft_radix2_logN29_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_10);
+                cudaDeviceSynchronize();
+            }
+        {
+                dim3 gridDim(65536, 1, 1);
+                dim3 blockDim(16, 32, 1);
+                fft_radix2_logN29_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d, (float2*)output_d_1, (float2*) checksum_r_d_9);
+                cudaDeviceSynchronize();
+            }
+        {
+                dim3 gridDim(65536, 1, 1);
+                dim3 blockDim(128, 8, 1);
+                fft_radix2_logN29_3 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_10);
+                cudaDeviceSynchronize();
+            }
+        
+            }
+            timeEnd = std::chrono::steady_clock::now();
+            totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            CUDA_CALLER(cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
+            CUDA_CALLER(cudaFree(output_d_1));
+        }
         }
         
     #if V_FFT == 1
@@ -447,7 +2018,7 @@ int main(int argc, char** argv){
     // cudaMemcpy((void*)output_ref, (void*)output_d_1, sizeof(float) * 2 * N, cudaMemcpyDeviceToHost);
     cudaDeviceSynchronize();
     bool pass = true;
-    for(int i = 0; i < 2 * N * batch_size; i +=2){
+    for(int i = 0; i < 2 * N; i +=2){
         float2 res = *(float2*)(output + i); 
         float2 res_ref = *(float2*)(output_ref + i);
         float norm, norm_ref; 
@@ -465,9 +2036,7 @@ int main(int argc, char** argv){
             printf("ref[%d]: %.3f + %.3f i\n",  i / 2, res_ref.x, res_ref.y);
             printf("res[%d]: %.3f + %.3f i\n\n",  i / 2, res.x, res.y);
             pass = false;
-            return -1;
-            break;
-            
+            // break;
         }   
     }
     if(pass) printf("Pass!\n");
@@ -481,53 +2050,53 @@ int main(int argc, char** argv){
     totTime /= num_tests;
     totTime_vkfft /= num_tests;
     totTime_cufft /= num_tests;
-    if(batch_size == 128)printf("| SIZE |  Execution Time (us)             |   Shared   | #threads |\n");
-    if(batch_size == 128)printf("|log(N)|   Ours   |   cuFFT   | Memory (KB)|          |\n");
-    // if(log_N == __log_N_st__)printf("|batch |   Ours   |   VkFFT   |   cuFFT   | Memory (KB)|          |\n");
-    // printf("|%6d| %8.3f | %8.3f  |%8.3f   |%8.3f    |%10d|\n", batch_size, elapsed_time * 1000, elapsed_time_vkfft * 1000, elapsed_time_cufft * 1000, (float)sizeof(float) * (float)N * 2.f / 1024.f, N / 8);
-    printf("|%6d| %8.3f | %8.3f  |%8.3f   |%8.3f    |%10d|\n", batch_size, elapsed_time * 1000, elapsed_time_cufft * 1000, (float)sizeof(float) * (float)N * 2.f / 1024.f, N / 8);
-    t_fft[batch_size / 128] = elapsed_time;
-    t_cufft[batch_size / 128] = elapsed_time_cufft;
-    t_vkfft[batch_size / 128] = elapsed_time_vkfft;
+    if(log_N == __log_N_st__)printf("| SIZE |  Execution Time (us)             |   Shared   | #threads |\n");
+    if(log_N == __log_N_st__)printf("|log(N)|   Ours   |   cuFFT   | Memory (KB)|          |\n");
+    // if(log_N == __log_N_st__)printf("|log(N)|   Ours   |   VkFFT   |   cuFFT   | Memory (KB)|          |\n");
+    // printf("|%6d| %8.3f | %8.3f  |%8.3f   |%8.3f    |%10d|\n", int(log2f((float)N)), elapsed_time * 1000, elapsed_time_vkfft * 1000, elapsed_time_cufft * 1000, (float)sizeof(float) * (float)N * 2.f / 1024.f, N / 8);
+    printf("|%6d| %8.3f | %8.3f  |%8.3f   |%8.3f    |%10d|\n", int(log2f((float)N)), elapsed_time * 1000, elapsed_time_cufft * 1000, (float)sizeof(float) * (float)N * 2.f / 1024.f, N / 8);
+    t_fft[log_N] = elapsed_time;
+    t_cufft[log_N] = elapsed_time_cufft;
+    t_vkfft[log_N] = elapsed_time_vkfft;
     }
     printf("Execution Time\n");
     printf("t_fft = th.as_tensor([");
-    for(int i = 128; i <= 10240; i += 128 ){
-        printf("%8f,", t_fft[i / 128]);
+    for(int i = __log_N_st__; i <= __log_N__; ++i ){
+        printf("%8f,", t_fft[i]);
     }
     printf("])\n");
 
     printf("t_cufft = th.as_tensor([");
-    for(int i = 128; i <= 10240; i += 128 ){
-        printf("%8f,", t_cufft[i / 128]);
+    for(int i = __log_N_st__; i <= __log_N__; ++i ){
+        printf("%8f,", t_cufft[i]);
     }
     printf("])\n");
     
     // printf("t_vkfft = th.as_tensor([");
-    // for(int i = 128; i <= 10240; i += 128 ){
+    // for(int i = __log_N_st__; i <= __log_N__; ++i ){
     //     printf("%8f,", t_vkfft[i]);
     // }
     // printf("])\n");
 
     printf("\n Flops\n");
     printf("gflops_fft = th.as_tensor([");
-    for(int i = 128; i <= 10240; i += 128 ){
-        long long N = pow((double)RADIX, (double)9);
-        printf("%8.1f,", 5 * N * 9 * i / t_fft[i / 128] * 1000.f / 1000000000.f);
+    for(int i = __log_N_st__; i <= __log_N__; ++i ){
+        long long N = pow((double)RADIX, (double)i);
+        printf("%8.1f,", 5 * N * i / t_fft[i] * 1000.f / 1000000000.f);
     }
     printf("])\n");
 
     printf("gflops_cufft = th.as_tensor([");
-    for(int i = 128; i <= 10240; i += 128 ){
-        long long N = pow((double)RADIX, (double)9);
-        printf("%8.1f,", 5 * N * 9 * i / t_cufft[i / 128] * 1000.f / 1000000000.f);
+    for(int i = __log_N_st__; i <= __log_N__; ++i ){
+        long long N = pow((double)RADIX, (double)i);
+        printf("%8.1f,", 5 * N * i / t_cufft[i] * 1000.f / 1000000000.f);
     }
     printf("])\n");
     
     // printf("gflops_vkfft = th.as_tensor([");
-    // for(int i = 128; i <= 10240; i += 128 ){
-    //     long long N = pow((double)RADIX, (double)9);
-    //     printf("%8.1f,", 5 * N * 9 * i / t_vkfft[i] * 1000.f / 1000000000.f);
+    // for(int i = __log_N_st__; i <= __log_N__; ++i ){
+    //     long long N = pow((double)RADIX, (double)i);
+    //     printf("%8.1f,", 5 * N * i / t_vkfft[i] * 1000.f / 1000000000.f);
     // }
     // printf("])\n");
     #endif

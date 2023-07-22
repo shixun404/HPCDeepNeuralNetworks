@@ -32,22 +32,22 @@ __global__ void __launch_bounds__(256) fft_radix2_logN17_1(float2* inputs, float
     int n = 1, n_global = 1;
     float2 tmp_angle_bk;
     
-    temp_0 = inputs[(ty + 0 * 16) * gridDim.x * blockDim.x + tx + bx * 16];
-    temp_1 = inputs[(ty + 1 * 16) * gridDim.x * blockDim.x + tx + bx * 16];
-    temp_2 = inputs[(ty + 2 * 16) * gridDim.x * blockDim.x + tx + bx * 16];
-    temp_3 = inputs[(ty + 3 * 16) * gridDim.x * blockDim.x + tx + bx * 16];
-    temp_4 = inputs[(ty + 4 * 16) * gridDim.x * blockDim.x + tx + bx * 16];
-    temp_5 = inputs[(ty + 5 * 16) * gridDim.x * blockDim.x + tx + bx * 16];
-    temp_6 = inputs[(ty + 6 * 16) * gridDim.x * blockDim.x + tx + bx * 16];
-    temp_7 = inputs[(ty + 7 * 16) * gridDim.x * blockDim.x + tx + bx * 16];
-    temp_8 = inputs[(ty + 8 * 16) * gridDim.x * blockDim.x + tx + bx * 16];
-    temp_9 = inputs[(ty + 9 * 16) * gridDim.x * blockDim.x + tx + bx * 16];
-    temp_10 = inputs[(ty + 10 * 16) * gridDim.x * blockDim.x + tx + bx * 16];
-    temp_11 = inputs[(ty + 11 * 16) * gridDim.x * blockDim.x + tx + bx * 16];
-    temp_12 = inputs[(ty + 12 * 16) * gridDim.x * blockDim.x + tx + bx * 16];
-    temp_13 = inputs[(ty + 13 * 16) * gridDim.x * blockDim.x + tx + bx * 16];
-    temp_14 = inputs[(ty + 14 * 16) * gridDim.x * blockDim.x + tx + bx * 16];
-    temp_15 = inputs[(ty + 15 * 16) * gridDim.x * blockDim.x + tx + bx * 16];
+    temp_0 = inputs[(ty + 0 * 16) * 512 + tx + bx * 16];
+    temp_1 = inputs[(ty + 1 * 16) * 512 + tx + bx * 16];
+    temp_2 = inputs[(ty + 2 * 16) * 512 + tx + bx * 16];
+    temp_3 = inputs[(ty + 3 * 16) * 512 + tx + bx * 16];
+    temp_4 = inputs[(ty + 4 * 16) * 512 + tx + bx * 16];
+    temp_5 = inputs[(ty + 5 * 16) * 512 + tx + bx * 16];
+    temp_6 = inputs[(ty + 6 * 16) * 512 + tx + bx * 16];
+    temp_7 = inputs[(ty + 7 * 16) * 512 + tx + bx * 16];
+    temp_8 = inputs[(ty + 8 * 16) * 512 + tx + bx * 16];
+    temp_9 = inputs[(ty + 9 * 16) * 512 + tx + bx * 16];
+    temp_10 = inputs[(ty + 10 * 16) * 512 + tx + bx * 16];
+    temp_11 = inputs[(ty + 11 * 16) * 512 + tx + bx * 16];
+    temp_12 = inputs[(ty + 12 * 16) * 512 + tx + bx * 16];
+    temp_13 = inputs[(ty + 13 * 16) * 512 + tx + bx * 16];
+    temp_14 = inputs[(ty + 14 * 16) * 512 + tx + bx * 16];
+    temp_15 = inputs[(ty + 15 * 16) * 512 + tx + bx * 16];
     
     __id[0] = 0 + ty;
     __id[1] = 16 + ty;
@@ -1165,84 +1165,84 @@ __global__ void __launch_bounds__(256) fft_radix2_logN17_1(float2* inputs, float
         
         n_global *= 2;
         
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[0])) / (float)(131072), tmp_angle);
-    // MY_MUL(temp_0, tmp_angle, tmp);
-    // temp_0 = tmp;
-    outputs[(tx + bx * 16) + gridDim.x * blockDim.x * __id[0]] = temp_0;
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[0])) / (float)(131072), tmp_angle);
+    MY_MUL(temp_0, tmp_angle, tmp);
+    temp_0 = tmp;
+    outputs[(tx + bx * 16) + 512 * __id[0]] = temp_0;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[8])) / (float)(131072), tmp_angle);
-    // MY_MUL(temp_8, tmp_angle, tmp);
-    // temp_8 = tmp;
-    outputs[(tx + bx * 16) + gridDim.x * blockDim.x * __id[8]] = temp_8;
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[8])) / (float)(131072), tmp_angle);
+    MY_MUL(temp_8, tmp_angle, tmp);
+    temp_8 = tmp;
+    outputs[(tx + bx * 16) + 512 * __id[8]] = temp_8;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[4])) / (float)(131072), tmp_angle);
-    // MY_MUL(temp_4, tmp_angle, tmp);
-    // temp_4 = tmp;
-    outputs[(tx + bx * 16) + gridDim.x * blockDim.x * __id[4]] = temp_4;
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[4])) / (float)(131072), tmp_angle);
+    MY_MUL(temp_4, tmp_angle, tmp);
+    temp_4 = tmp;
+    outputs[(tx + bx * 16) + 512 * __id[4]] = temp_4;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[12])) / (float)(131072), tmp_angle);
-    // MY_MUL(temp_12, tmp_angle, tmp);
-    // temp_12 = tmp;
-    outputs[(tx + bx * 16) + gridDim.x * blockDim.x * __id[12]] = temp_12;
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[12])) / (float)(131072), tmp_angle);
+    MY_MUL(temp_12, tmp_angle, tmp);
+    temp_12 = tmp;
+    outputs[(tx + bx * 16) + 512 * __id[12]] = temp_12;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[2])) / (float)(131072), tmp_angle);
-    // MY_MUL(temp_2, tmp_angle, tmp);
-    // temp_2 = tmp;
-    outputs[(tx + bx * 16) + gridDim.x * blockDim.x * __id[2]] = temp_2;
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[2])) / (float)(131072), tmp_angle);
+    MY_MUL(temp_2, tmp_angle, tmp);
+    temp_2 = tmp;
+    outputs[(tx + bx * 16) + 512 * __id[2]] = temp_2;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[10])) / (float)(131072), tmp_angle);
-    // MY_MUL(temp_10, tmp_angle, tmp);
-    // temp_10 = tmp;
-    outputs[(tx + bx * 16) + gridDim.x * blockDim.x * __id[10]] = temp_10;
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[10])) / (float)(131072), tmp_angle);
+    MY_MUL(temp_10, tmp_angle, tmp);
+    temp_10 = tmp;
+    outputs[(tx + bx * 16) + 512 * __id[10]] = temp_10;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[6])) / (float)(131072), tmp_angle);
-    // MY_MUL(temp_6, tmp_angle, tmp);
-    // temp_6 = tmp;
-    outputs[(tx + bx * 16) + gridDim.x * blockDim.x * __id[6]] = temp_6;
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[6])) / (float)(131072), tmp_angle);
+    MY_MUL(temp_6, tmp_angle, tmp);
+    temp_6 = tmp;
+    outputs[(tx + bx * 16) + 512 * __id[6]] = temp_6;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[14])) / (float)(131072), tmp_angle);
-    // MY_MUL(temp_14, tmp_angle, tmp);
-    // temp_14 = tmp;
-    outputs[(tx + bx * 16) + gridDim.x * blockDim.x * __id[14]] = temp_14;
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[14])) / (float)(131072), tmp_angle);
+    MY_MUL(temp_14, tmp_angle, tmp);
+    temp_14 = tmp;
+    outputs[(tx + bx * 16) + 512 * __id[14]] = temp_14;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[1])) / (float)(131072), tmp_angle);
-    // MY_MUL(temp_1, tmp_angle, tmp);
-    // temp_1 = tmp;
-    outputs[(tx + bx * 16) + gridDim.x * blockDim.x * __id[1]] = temp_1;
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[1])) / (float)(131072), tmp_angle);
+    MY_MUL(temp_1, tmp_angle, tmp);
+    temp_1 = tmp;
+    outputs[(tx + bx * 16) + 512 * __id[1]] = temp_1;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[9])) / (float)(131072), tmp_angle);
-    // MY_MUL(temp_9, tmp_angle, tmp);
-    // temp_9 = tmp;
-    outputs[(tx + bx * 16) + gridDim.x * blockDim.x * __id[9]] = temp_9;
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[9])) / (float)(131072), tmp_angle);
+    MY_MUL(temp_9, tmp_angle, tmp);
+    temp_9 = tmp;
+    outputs[(tx + bx * 16) + 512 * __id[9]] = temp_9;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[5])) / (float)(131072), tmp_angle);
-    // MY_MUL(temp_5, tmp_angle, tmp);
-    // temp_5 = tmp;
-    outputs[(tx + bx * 16) + gridDim.x * blockDim.x * __id[5]] = temp_5;
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[5])) / (float)(131072), tmp_angle);
+    MY_MUL(temp_5, tmp_angle, tmp);
+    temp_5 = tmp;
+    outputs[(tx + bx * 16) + 512 * __id[5]] = temp_5;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[13])) / (float)(131072), tmp_angle);
-    // MY_MUL(temp_13, tmp_angle, tmp);
-    // temp_13 = tmp;
-    outputs[(tx + bx * 16) + gridDim.x * blockDim.x * __id[13]] = temp_13;
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[13])) / (float)(131072), tmp_angle);
+    MY_MUL(temp_13, tmp_angle, tmp);
+    temp_13 = tmp;
+    outputs[(tx + bx * 16) + 512 * __id[13]] = temp_13;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[3])) / (float)(131072), tmp_angle);
-    // MY_MUL(temp_3, tmp_angle, tmp);
-    // temp_3 = tmp;
-    outputs[(tx + bx * 16) + gridDim.x * blockDim.x * __id[3]] = temp_3;
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[3])) / (float)(131072), tmp_angle);
+    MY_MUL(temp_3, tmp_angle, tmp);
+    temp_3 = tmp;
+    outputs[(tx + bx * 16) + 512 * __id[3]] = temp_3;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[11])) / (float)(131072), tmp_angle);
-    // MY_MUL(temp_11, tmp_angle, tmp);
-    // temp_11 = tmp;
-    outputs[(tx + bx * 16) + gridDim.x * blockDim.x * __id[11]] = temp_11;
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[11])) / (float)(131072), tmp_angle);
+    MY_MUL(temp_11, tmp_angle, tmp);
+    temp_11 = tmp;
+    outputs[(tx + bx * 16) + 512 * __id[11]] = temp_11;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[7])) / (float)(131072), tmp_angle);
-    // MY_MUL(temp_7, tmp_angle, tmp);
-    // temp_7 = tmp;
-    outputs[(tx + bx * 16) + gridDim.x * blockDim.x * __id[7]] = temp_7;
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[7])) / (float)(131072), tmp_angle);
+    MY_MUL(temp_7, tmp_angle, tmp);
+    temp_7 = tmp;
+    outputs[(tx + bx * 16) + 512 * __id[7]] = temp_7;
     
-    // MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[15])) / (float)(131072), tmp_angle);
-    // MY_MUL(temp_15, tmp_angle, tmp);
-    // temp_15 = tmp;
-    outputs[(tx + bx * 16) + gridDim.x * blockDim.x * __id[15]] = temp_15;
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[15])) / (float)(131072), tmp_angle);
+    MY_MUL(temp_15, tmp_angle, tmp);
+    temp_15 = tmp;
+    outputs[(tx + bx * 16) + 512 * __id[15]] = temp_15;
     
     }
