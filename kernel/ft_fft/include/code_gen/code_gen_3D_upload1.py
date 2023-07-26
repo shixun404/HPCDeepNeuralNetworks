@@ -142,9 +142,6 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     mem_checksum_t1.y += __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
     #endif
     '''
-    # ft_fft += '''
-    # if(tid < 16 && blockIdx.x == 0)printf("%f, %f,%f, %f\\n", temp_0.x, temp_0.y, mem_checksum_t1.x, mem_checksum_t1.y );
-    # '''
     
     
     for stage_id in range(len(plan)):

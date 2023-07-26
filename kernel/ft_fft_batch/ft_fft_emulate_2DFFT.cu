@@ -6,8 +6,7 @@
 #include <cufftXt.h>
 #include <math.h> 
 #include "utils/utils.cuh"          
-#include "kernels.cuh"  
-
+#include "kernels.cuh"
 #define M_PI 3.14159265358979312f 
 // #define VERIFY 0
 #define hadmard 1

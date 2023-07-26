@@ -1223,91 +1223,35 @@ __global__ void __launch_bounds__(512) fft_radix2_logN24_3(float2* inputs, float
     sdata[__id[7] + ty * 256] = temp_7;
     
     __syncthreads();
-    
-    //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
-    //inputs[tx + 0 + ty * 65536 + (bx % 16) * 1048576 + (bx / 16 * 256)]
-    // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    
-    // outputs[(bx / 16) + ((bx % 16) * 16 + ty) * 256 + (__id[0]) * 65536] = temp_0;
-    // outputs[(ty + (bx % 16) * 16) + (bx / 16) * 256 + (__id[0]) * 65536] = temp_0; 
-    
+     
     
     temp_0 = sdata[((tx + ty * 32 + 0) / 16) + ((tx + ty * 32 + 0) % 16) * 256];
     outputs[(((tx + ty * 32 + 0) % 16) + (bx % 16) * 16) + (bx / 16) * 256 + ((tx + ty * 32 + 0) / 16) * 65536] = temp_0; 
-    
-    //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
-    //inputs[tx + 32 + ty * 65536 + (bx % 16) * 1048576 + (bx / 16 * 256)]
-    // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    
-    // outputs[(bx / 16) + ((bx % 16) * 16 + ty) * 256 + (__id[1]) * 65536] = temp_1;
-    // outputs[(ty + (bx % 16) * 16) + (bx / 16) * 256 + (__id[1]) * 65536] = temp_1; 
-    
+     
     
     temp_0 = sdata[((tx + ty * 32 + 512) / 16) + ((tx + ty * 32 + 512) % 16) * 256];
     outputs[(((tx + ty * 32 + 512) % 16) + (bx % 16) * 16) + (bx / 16) * 256 + ((tx + ty * 32 + 512) / 16) * 65536] = temp_0; 
-    
-    //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
-    //inputs[tx + 64 + ty * 65536 + (bx % 16) * 1048576 + (bx / 16 * 256)]
-    // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    
-    // outputs[(bx / 16) + ((bx % 16) * 16 + ty) * 256 + (__id[4]) * 65536] = temp_4;
-    // outputs[(ty + (bx % 16) * 16) + (bx / 16) * 256 + (__id[4]) * 65536] = temp_4; 
-    
+     
     
     temp_0 = sdata[((tx + ty * 32 + 1024) / 16) + ((tx + ty * 32 + 1024) % 16) * 256];
     outputs[(((tx + ty * 32 + 1024) % 16) + (bx % 16) * 16) + (bx / 16) * 256 + ((tx + ty * 32 + 1024) / 16) * 65536] = temp_0; 
-    
-    //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
-    //inputs[tx + 96 + ty * 65536 + (bx % 16) * 1048576 + (bx / 16 * 256)]
-    // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    
-    // outputs[(bx / 16) + ((bx % 16) * 16 + ty) * 256 + (__id[5]) * 65536] = temp_5;
-    // outputs[(ty + (bx % 16) * 16) + (bx / 16) * 256 + (__id[5]) * 65536] = temp_5; 
-    
+     
     
     temp_0 = sdata[((tx + ty * 32 + 1536) / 16) + ((tx + ty * 32 + 1536) % 16) * 256];
     outputs[(((tx + ty * 32 + 1536) % 16) + (bx % 16) * 16) + (bx / 16) * 256 + ((tx + ty * 32 + 1536) / 16) * 65536] = temp_0; 
-    
-    //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
-    //inputs[tx + 128 + ty * 65536 + (bx % 16) * 1048576 + (bx / 16 * 256)]
-    // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    
-    // outputs[(bx / 16) + ((bx % 16) * 16 + ty) * 256 + (__id[2]) * 65536] = temp_2;
-    // outputs[(ty + (bx % 16) * 16) + (bx / 16) * 256 + (__id[2]) * 65536] = temp_2; 
-    
+     
     
     temp_0 = sdata[((tx + ty * 32 + 2048) / 16) + ((tx + ty * 32 + 2048) % 16) * 256];
     outputs[(((tx + ty * 32 + 2048) % 16) + (bx % 16) * 16) + (bx / 16) * 256 + ((tx + ty * 32 + 2048) / 16) * 65536] = temp_0; 
-    
-    //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
-    //inputs[tx + 160 + ty * 65536 + (bx % 16) * 1048576 + (bx / 16 * 256)]
-    // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    
-    // outputs[(bx / 16) + ((bx % 16) * 16 + ty) * 256 + (__id[3]) * 65536] = temp_3;
-    // outputs[(ty + (bx % 16) * 16) + (bx / 16) * 256 + (__id[3]) * 65536] = temp_3; 
-    
+     
     
     temp_0 = sdata[((tx + ty * 32 + 2560) / 16) + ((tx + ty * 32 + 2560) % 16) * 256];
     outputs[(((tx + ty * 32 + 2560) % 16) + (bx % 16) * 16) + (bx / 16) * 256 + ((tx + ty * 32 + 2560) / 16) * 65536] = temp_0; 
-    
-    //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
-    //inputs[tx + 192 + ty * 65536 + (bx % 16) * 1048576 + (bx / 16 * 256)]
-    // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    
-    // outputs[(bx / 16) + ((bx % 16) * 16 + ty) * 256 + (__id[6]) * 65536] = temp_6;
-    // outputs[(ty + (bx % 16) * 16) + (bx / 16) * 256 + (__id[6]) * 65536] = temp_6; 
-    
+     
     
     temp_0 = sdata[((tx + ty * 32 + 3072) / 16) + ((tx + ty * 32 + 3072) % 16) * 256];
     outputs[(((tx + ty * 32 + 3072) % 16) + (bx % 16) * 16) + (bx / 16) * 256 + ((tx + ty * 32 + 3072) / 16) * 65536] = temp_0; 
-    
-    //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
-    //inputs[tx + 224 + ty * 65536 + (bx % 16) * 1048576 + (bx / 16 * 256)]
-    // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\n", bx, tx, ty);
-    
-    // outputs[(bx / 16) + ((bx % 16) * 16 + ty) * 256 + (__id[7]) * 65536] = temp_7;
-    // outputs[(ty + (bx % 16) * 16) + (bx / 16) * 256 + (__id[7]) * 65536] = temp_7; 
-    
+     
     
     temp_0 = sdata[((tx + ty * 32 + 3584) / 16) + ((tx + ty * 32 + 3584) % 16) * 256];
     outputs[(((tx + ty * 32 + 3584) % 16) + (bx % 16) * 16) + (bx / 16) * 256 + ((tx + ty * 32 + 3584) / 16) * 65536] = temp_0; 

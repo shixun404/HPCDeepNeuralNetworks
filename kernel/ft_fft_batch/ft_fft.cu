@@ -29,7 +29,7 @@ int main(int argc, char** argv){
     long long N = pow((double)RADIX, (double)__log_N__); 
     int random_seed = 10;  
     #if P_FFT == 1
-    int num_tests = 10;
+    int num_tests = 100;
     #else
     int num_tests = 1;
     #endif
@@ -422,9 +422,9 @@ int main(int argc, char** argv){
             
             for(int i = 0; i < num_tests; ++i){
         {
-                dim3 gridDim(batch_size /  1, 1, 1);
-                dim3 blockDim(64, 1, 1);
-                fft_radix2_logN18_2 <<<gridDim, blockDim, 4352>>> ((float2*)input_d, (float2*)output_d);
+                dim3 gridDim(batch_size /  4, 1, 1);
+                dim3 blockDim(64, 4, 1);
+                fft_radix2_logN18_2 <<<gridDim, blockDim, 17408>>> ((float2*)input_d, (float2*)output_d);
                 cudaDeviceSynchronize();
             }
         

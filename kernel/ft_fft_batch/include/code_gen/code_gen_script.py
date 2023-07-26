@@ -456,6 +456,9 @@ int main(int argc, char** argv){
                 fft_radix2_logN{int(df['logN'][N-1])}_1 <<<gridDim, blockDim, {int(df['sm_size_1'][N-1])}>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_{int(df['logN1'][N-1])});
                 cudaDeviceSynchronize();
             }}
+            #if defined(GLOBAL_ON)
+            cublasSdot(handle, {int(df['num_block_3'][N-1])}, reduction_d, 1, reduction_d + {int(df['num_block_3'][N-1])}, 1, global_checksum_d);
+            #endif
         '''
         ft_fft_script += f'''{{
                 dim3 gridDim({int(df['num_block_2'][N-1])}, 1, 1);
@@ -463,30 +466,30 @@ int main(int argc, char** argv){
                 fft_radix2_logN{int(df['logN'][N-1])}_2 <<<gridDim, blockDim, {int(df['sm_size_2'][N-1])}>>> ((float2*)output_d, (float2*)output_d_1, (float2*) checksum_r_d_{int(df['logN2'][N-1])});
                 cudaDeviceSynchronize();
             }}
+            #if defined(GLOBAL_ON)
+            cublasSdot(handle, {int(df['num_block_3'][N-1])}, reduction_d, 1, reduction_d + {int(df['num_block_3'][N-1])}, 1, global_checksum_d);
+            #endif
         '''
-
+            
         ft_fft_script += f'''{{
                 dim3 gridDim({int(df['num_block_3'][N-1])}, 1, 1);
                 dim3 blockDim({int(df['blockdim_x_3'][N-1])}, {int(df['blockdim_y_3'][N-1])}, 1);
                 fft_radix2_logN{int(df['logN'][N-1])}_3 <<<gridDim, blockDim, {int(df['sm_size_3'][N-1])}>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_{int(df['logN3'][N-1])});
                 cudaDeviceSynchronize();
             }}
-            #if defined(GLOBAL_ON)
-            cublasSdot(handle, {int(df['num_block_3'][N-1])}, reduction_d, 1, reduction_d + {int(df['num_block_3'][N-1])}, 1, global_checksum_d);
-            #endif
         '''
         ft_fft_script += '''
             
             }
-            cudaFree(reduction_d);
-            cudaFree(global_checksum_d);
-
             timeEnd = std::chrono::steady_clock::now();
             totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
             cudaEventRecord(fft_end);  
             cudaEventSynchronize(fft_begin);
             cudaEventSynchronize(fft_end);
+            
             cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+            cudaFree(reduction_d);
+            cudaFree(global_checksum_d);
             CUDA_CALLER(cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
             CUDA_CALLER(cudaFree(output_d_1));
         }

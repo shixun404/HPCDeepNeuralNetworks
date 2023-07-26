@@ -1,4 +1,4 @@
-BINARY_NAME = ft_fft ft_fft_batch #ft_fft #ft_sgemm #sdot saxpy
+BINARY_NAME = ft_fft # ft_fft_batch #ft_fft #ft_sgemm #sdot saxpy
 CUDA_PATH   = /usr/local/cuda
 CC          = $(CUDA_PATH)/bin/nvcc -arch=sm_75 #--ptxas-options=-v 
 CFLAGS      = -O3 -std=c++11 
@@ -10,6 +10,7 @@ V_FFT = 0
 P_FFT = 0
 K_FFT = 2
 CFLAGS += -D$(LOG)
+CFLAGS += -D$(GLOBAL)
 CFLAGS += -DV_FFT=$(V_FFT)
 CFLAGS += -DP_FFT=$(P_FFT)
 CFLAGS += -DK_FFT=$(K_FFT)

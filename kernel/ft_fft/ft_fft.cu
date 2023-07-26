@@ -28,7 +28,7 @@ int main(int argc, char** argv){
     long long N = pow((double)RADIX, (double)__log_N__); 
     int random_seed = 10;  
     #if P_FFT == 1
-    int num_tests = 10;
+    int num_tests = 100;
     #else
     int num_tests = 1;
     #endif
@@ -77,8 +77,8 @@ int main(int argc, char** argv){
     }
     
     float *input_d, *output_d, *output_d_vkfft, *output_d_cufft, *output_d_1, *output_d_ref_1, *checksum_r, *checksum_r_d, *dftmtx;
-    checksum_r = (float*)calloc(1024*2, sizeof(float));
-    dftmtx = (float*)calloc(1024*1024*2, sizeof(float));
+    checksum_r = (float*)calloc(8192*2, sizeof(float));
+    dftmtx = (float*)calloc(8192*8192*2, sizeof(float));
     CUDA_CALLER(cudaMalloc((void**)&input_d, sizeof(float) * N * 2));
     CUDA_CALLER(cudaMalloc((void**)&output_d, sizeof(float) * N * 2));
     
@@ -392,6 +392,120 @@ int main(int argc, char** argv){
     
     cudaMemcpy((void*)checksum_r_d_10, (void*)checksum_r_10, 2 * 1024 * sizeof(float), cudaMemcpyHostToDevice);
     
+        float* checksum_r_11, *checksum_r_d_11;
+        checksum_r_11 = (float*)calloc(2048*2, sizeof(float));
+        CUDA_CALLER(cudaMalloc((void**)&checksum_r_d_11, sizeof(float) * 2048 * 2));
+        // printf("################################### 2048 ###################################\n");
+        for(int i = 0; i < 2048; ++i)
+        
+        {
+        
+        for(int j = 0; j < 2048; ++j )
+        
+        {
+        
+            dftmtx[i + (j * 2) * 2048] = cosf((float)(-2 * M_PI * i * j) / 2048.f);
+            dftmtx[i + (j * 2 + 1) * 2048] = sinf((float)(-2 * M_PI * i * j) / 2048.f);
+        
+        }
+    }
+    
+    for(int i = 0; i < 2048; ++i)
+    
+    {
+    
+        checksum_r_11[i * 2] = 0;
+        checksum_r_11[i * 2 + 1] = 0;
+        for(int j = 0; j < 2048; ++j)
+    
+    {
+    
+            float real = dftmtx[j + i * 2 * 2048];
+            float imag = dftmtx[j + (i * 2 + 1) * 2048];
+            checksum_r_11[i * 2] += real * r[(j % 3) * 2] - imag * r[(j % 3) * 2 + 1];
+            checksum_r_11[i * 2 + 1] += imag * r[(j % 3) * 2] + real * r[(j % 3) * 2 + 1];
+        
+    }
+    }
+    
+    cudaMemcpy((void*)checksum_r_d_11, (void*)checksum_r_11, 2 * 2048 * sizeof(float), cudaMemcpyHostToDevice);
+    
+        float* checksum_r_12, *checksum_r_d_12;
+        checksum_r_12 = (float*)calloc(4096*2, sizeof(float));
+        CUDA_CALLER(cudaMalloc((void**)&checksum_r_d_12, sizeof(float) * 4096 * 2));
+        // printf("################################### 4096 ###################################\n");
+        for(int i = 0; i < 4096; ++i)
+        
+        {
+        
+        for(int j = 0; j < 4096; ++j )
+        
+        {
+        
+            dftmtx[i + (j * 2) * 4096] = cosf((float)(-2 * M_PI * i * j) / 4096.f);
+            dftmtx[i + (j * 2 + 1) * 4096] = sinf((float)(-2 * M_PI * i * j) / 4096.f);
+        
+        }
+    }
+    
+    for(int i = 0; i < 4096; ++i)
+    
+    {
+    
+        checksum_r_12[i * 2] = 0;
+        checksum_r_12[i * 2 + 1] = 0;
+        for(int j = 0; j < 4096; ++j)
+    
+    {
+    
+            float real = dftmtx[j + i * 2 * 4096];
+            float imag = dftmtx[j + (i * 2 + 1) * 4096];
+            checksum_r_12[i * 2] += real * r[(j % 3) * 2] - imag * r[(j % 3) * 2 + 1];
+            checksum_r_12[i * 2 + 1] += imag * r[(j % 3) * 2] + real * r[(j % 3) * 2 + 1];
+        
+    }
+    }
+    
+    cudaMemcpy((void*)checksum_r_d_12, (void*)checksum_r_12, 2 * 4096 * sizeof(float), cudaMemcpyHostToDevice);
+    
+        float* checksum_r_13, *checksum_r_d_13;
+        checksum_r_13 = (float*)calloc(8192*2, sizeof(float));
+        CUDA_CALLER(cudaMalloc((void**)&checksum_r_d_13, sizeof(float) * 8192 * 2));
+        // printf("################################### 8192 ###################################\n");
+        for(int i = 0; i < 8192; ++i)
+        
+        {
+        
+        for(int j = 0; j < 8192; ++j )
+        
+        {
+        
+            dftmtx[i + (j * 2) * 8192] = cosf((float)(-2 * M_PI * i * j) / 8192.f);
+            dftmtx[i + (j * 2 + 1) * 8192] = sinf((float)(-2 * M_PI * i * j) / 8192.f);
+        
+        }
+    }
+    
+    for(int i = 0; i < 8192; ++i)
+    
+    {
+    
+        checksum_r_13[i * 2] = 0;
+        checksum_r_13[i * 2 + 1] = 0;
+        for(int j = 0; j < 8192; ++j)
+    
+    {
+    
+            float real = dftmtx[j + i * 2 * 8192];
+            float imag = dftmtx[j + (i * 2 + 1) * 8192];
+            checksum_r_13[i * 2] += real * r[(j % 3) * 2] - imag * r[(j % 3) * 2 + 1];
+            checksum_r_13[i * 2 + 1] += imag * r[(j % 3) * 2] + real * r[(j % 3) * 2 + 1];
+        
+    }
+    }
+    
+    cudaMemcpy((void*)checksum_r_d_13, (void*)checksum_r_13, 2 * 8192 * sizeof(float), cudaMemcpyHostToDevice);
+    
     
     cudaMemcpy((void*)input_d, (void*)input, 2 * N * sizeof(float), cudaMemcpyHostToDevice);
     
@@ -448,7 +562,7 @@ int main(int argc, char** argv){
             
             for(int i = 0; i < num_tests; ++i){
         
-                fft_radix2_logN3 <<<gridDim, blockDim, 192>>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN3 <<<gridDim, blockDim, 192>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_3);
                 cudaDeviceSynchronize();
         
             }
@@ -497,7 +611,7 @@ int main(int argc, char** argv){
             
             for(int i = 0; i < num_tests; ++i){
         
-                fft_radix2_logN4 <<<gridDim, blockDim, 256>>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN4 <<<gridDim, blockDim, 256>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_4);
                 cudaDeviceSynchronize();
         
             }
@@ -546,7 +660,7 @@ int main(int argc, char** argv){
             
             for(int i = 0; i < num_tests; ++i){
         
-                fft_radix2_logN5 <<<gridDim, blockDim, 384>>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN5 <<<gridDim, blockDim, 384>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_5);
                 cudaDeviceSynchronize();
         
             }
@@ -595,7 +709,7 @@ int main(int argc, char** argv){
             
             for(int i = 0; i < num_tests; ++i){
         
-                fft_radix2_logN6 <<<gridDim, blockDim, 640>>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN6 <<<gridDim, blockDim, 640>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_6);
                 cudaDeviceSynchronize();
         
             }
@@ -644,7 +758,7 @@ int main(int argc, char** argv){
             
             for(int i = 0; i < num_tests; ++i){
         
-                fft_radix2_logN7 <<<gridDim, blockDim, 1152>>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN7 <<<gridDim, blockDim, 1152>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_7);
                 cudaDeviceSynchronize();
         
             }
@@ -693,7 +807,7 @@ int main(int argc, char** argv){
             
             for(int i = 0; i < num_tests; ++i){
         
-                fft_radix2_logN8 <<<gridDim, blockDim, 2176>>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN8 <<<gridDim, blockDim, 2176>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_8);
                 cudaDeviceSynchronize();
         
             }
@@ -742,7 +856,7 @@ int main(int argc, char** argv){
             
             for(int i = 0; i < num_tests; ++i){
         
-                fft_radix2_logN9 <<<gridDim, blockDim, 4352>>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN9 <<<gridDim, blockDim, 4352>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_9);
                 cudaDeviceSynchronize();
         
             }
@@ -791,7 +905,7 @@ int main(int argc, char** argv){
             
             for(int i = 0; i < num_tests; ++i){
         
-                fft_radix2_logN10 <<<gridDim, blockDim, 8704>>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN10 <<<gridDim, blockDim, 8704>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_10);
                 cudaDeviceSynchronize();
         
             }
@@ -840,7 +954,7 @@ int main(int argc, char** argv){
             
             for(int i = 0; i < num_tests; ++i){
         
-                fft_radix2_logN11 <<<gridDim, blockDim, 17408>>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN11 <<<gridDim, blockDim, 17408>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_11);
                 cudaDeviceSynchronize();
         
             }
@@ -889,7 +1003,7 @@ int main(int argc, char** argv){
             
             for(int i = 0; i < num_tests; ++i){
         
-                fft_radix2_logN12 <<<gridDim, blockDim, 34816>>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN12 <<<gridDim, blockDim, 34816>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_12);
                 cudaDeviceSynchronize();
         
             }
@@ -941,7 +1055,7 @@ int main(int argc, char** argv){
             
             for(int i = 0; i < num_tests; ++i){
         
-                fft_radix2_logN13 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d);
+                fft_radix2_logN13 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_13);
                 cudaDeviceSynchronize();
         
             }
@@ -976,7 +1090,7 @@ int main(int argc, char** argv){
         {
                 dim3 gridDim(4, 1, 1);
                 dim3 blockDim(16, 32, 1);
-                fft_radix2_logN14_2 <<<gridDim, blockDim, 34816>>> ((float2*)output_d_1, (float2*)output_d);
+                fft_radix2_logN14_2 <<<gridDim, blockDim, 34816>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_8);
                 cudaDeviceSynchronize();
             }
         
@@ -1033,8 +1147,8 @@ int main(int argc, char** argv){
             }
         {
                 dim3 gridDim(4, 1, 1);
-                dim3 blockDim(64, 16, 1);
-                fft_radix2_logN15_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d);
+                dim3 blockDim(16, 64, 1);
+                fft_radix2_logN15_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_9);
                 cudaDeviceSynchronize();
             }
         
@@ -1091,8 +1205,8 @@ int main(int argc, char** argv){
             }
         {
                 dim3 gridDim(8, 1, 1);
-                dim3 blockDim(64, 16, 1);
-                fft_radix2_logN16_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d);
+                dim3 blockDim(16, 64, 1);
+                fft_radix2_logN16_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_9);
                 cudaDeviceSynchronize();
             }
         
@@ -1149,8 +1263,8 @@ int main(int argc, char** argv){
             }
         {
                 dim3 gridDim(16, 1, 1);
-                dim3 blockDim(64, 16, 1);
-                fft_radix2_logN17_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d);
+                dim3 blockDim(16, 64, 1);
+                fft_radix2_logN17_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_9);
                 cudaDeviceSynchronize();
             }
         
@@ -1210,8 +1324,8 @@ int main(int argc, char** argv){
             }
         {
                 dim3 gridDim(32, 1, 1);
-                dim3 blockDim(64, 16, 1);
-                fft_radix2_logN18_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d);
+                dim3 blockDim(16, 64, 1);
+                fft_radix2_logN18_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_9);
                 cudaDeviceSynchronize();
             }
         
@@ -1269,7 +1383,7 @@ int main(int argc, char** argv){
         {
                 dim3 gridDim(128, 1, 1);
                 dim3 blockDim(4, 32, 1);
-                fft_radix2_logN19_2 <<<gridDim, blockDim, 40960>>> ((float2*)output_d_1, (float2*)output_d);
+                fft_radix2_logN19_2 <<<gridDim, blockDim, 40960>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_10);
                 cudaDeviceSynchronize();
             }
         
@@ -1327,7 +1441,7 @@ int main(int argc, char** argv){
         {
                 dim3 gridDim(256, 1, 1);
                 dim3 blockDim(4, 32, 1);
-                fft_radix2_logN20_2 <<<gridDim, blockDim, 40960>>> ((float2*)output_d_1, (float2*)output_d);
+                fft_radix2_logN20_2 <<<gridDim, blockDim, 40960>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_10);
                 cudaDeviceSynchronize();
             }
         
@@ -1387,8 +1501,8 @@ int main(int argc, char** argv){
             }
         {
                 dim3 gridDim(256, 1, 1);
-                dim3 blockDim(128, 4, 1);
-                fft_radix2_logN21_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d);
+                dim3 blockDim(4, 128, 1);
+                fft_radix2_logN21_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_11);
                 cudaDeviceSynchronize();
             }
         
@@ -1448,8 +1562,8 @@ int main(int argc, char** argv){
             }
         {
                 dim3 gridDim(512, 1, 1);
-                dim3 blockDim(128, 4, 1);
-                fft_radix2_logN22_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d);
+                dim3 blockDim(4, 128, 1);
+                fft_radix2_logN22_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_11);
                 cudaDeviceSynchronize();
             }
         
@@ -1517,7 +1631,14 @@ int main(int argc, char** argv){
         {
         cudaEventCreate(&fft_begin);
         cudaEventCreate(&fft_end);
+        float * reduction = (float*)calloc(2 * 65536, sizeof(float));
         CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+        float * reduction_d, *global_checksum_d;
+        CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
+        CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
+        cudaMemcpy((void*)reduction_d, (void*)input, 2 * 65536 * sizeof(float), cudaMemcpyHostToDevice);
+        cublasHandle_t handle;
+        cublasCreate(&handle);
         
             cudaEventRecord(fft_begin);
             timeSt = std::chrono::steady_clock::now();
@@ -1529,12 +1650,24 @@ int main(int argc, char** argv){
                 fft_radix2_logN23_1 <<<gridDim, blockDim, 32768>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_8);
                 cudaDeviceSynchronize();
             }
+            #if defined(GLOBAL_ON)
+            cublasSdot(handle, 2048, reduction_d, 1, reduction_d + 2048, 1, global_checksum_d);
+            // int res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
+            cudaDeviceSynchronize(); 
+            // printf("sdot! %d \n", res);
+            #endif
         {
                 dim3 gridDim(4096, 1, 1);
                 dim3 blockDim(16, 16, 1);
                 fft_radix2_logN23_2 <<<gridDim, blockDim, 16384>>> ((float2*)output_d, (float2*)output_d_1, (float2*) checksum_r_d_7);
                 cudaDeviceSynchronize();
             }
+            #if defined(GLOBAL_ON)
+            cublasSdot(handle, 2048, reduction_d, 1, reduction_d + 2048, 1, global_checksum_d);
+            // res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
+            cudaDeviceSynchronize(); 
+            // printf("sdot! %d \n", res);
+            #endif
         {
                 dim3 gridDim(2048, 1, 1);
                 dim3 blockDim(16, 16, 1);
@@ -1551,6 +1684,8 @@ int main(int argc, char** argv){
             cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
             CUDA_CALLER(cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
             CUDA_CALLER(cudaFree(output_d_1));
+            cudaFree(reduction_d);
+            // cudaFree(global_checksum_d);
         }
         }
         
@@ -1587,7 +1722,14 @@ int main(int argc, char** argv){
         {
         cudaEventCreate(&fft_begin);
         cudaEventCreate(&fft_end);
+        float * reduction = (float*)calloc(2 * 65536, sizeof(float));
         CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+        float * reduction_d, *global_checksum_d;
+        CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
+        CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
+        cudaMemcpy((void*)reduction_d, (void*)input, 2 * 65536 * sizeof(float), cudaMemcpyHostToDevice);
+        cublasHandle_t handle;
+        cublasCreate(&handle);
         
             cudaEventRecord(fft_begin);
             timeSt = std::chrono::steady_clock::now();
@@ -1599,12 +1741,24 @@ int main(int argc, char** argv){
                 fft_radix2_logN24_1 <<<gridDim, blockDim, 32768>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_8);
                 cudaDeviceSynchronize();
             }
+            #if defined(GLOBAL_ON)
+            cublasSdot(handle, 4096, reduction_d, 1, reduction_d + 4096, 1, global_checksum_d);
+            // int res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
+            cudaDeviceSynchronize(); 
+            // printf("sdot! %d \n", res);
+            #endif
         {
                 dim3 gridDim(4096, 1, 1);
                 dim3 blockDim(16, 16, 1);
                 fft_radix2_logN24_2 <<<gridDim, blockDim, 32768>>> ((float2*)output_d, (float2*)output_d_1, (float2*) checksum_r_d_8);
                 cudaDeviceSynchronize();
             }
+            #if defined(GLOBAL_ON)
+            cublasSdot(handle, 4096, reduction_d, 1, reduction_d + 4096, 1, global_checksum_d);
+            // res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
+            cudaDeviceSynchronize(); 
+            // printf("sdot! %d \n", res);
+            #endif
         {
                 dim3 gridDim(4096, 1, 1);
                 dim3 blockDim(32, 16, 1);
@@ -1621,6 +1775,8 @@ int main(int argc, char** argv){
             cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
             CUDA_CALLER(cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
             CUDA_CALLER(cudaFree(output_d_1));
+            cudaFree(reduction_d);
+            // cudaFree(global_checksum_d);
         }
         }
         
@@ -1660,7 +1816,14 @@ int main(int argc, char** argv){
         {
         cudaEventCreate(&fft_begin);
         cudaEventCreate(&fft_end);
+        float * reduction = (float*)calloc(2 * 65536, sizeof(float));
         CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+        float * reduction_d, *global_checksum_d;
+        CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
+        CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
+        cudaMemcpy((void*)reduction_d, (void*)input, 2 * 65536 * sizeof(float), cudaMemcpyHostToDevice);
+        cublasHandle_t handle;
+        cublasCreate(&handle);
         
             cudaEventRecord(fft_begin);
             timeSt = std::chrono::steady_clock::now();
@@ -1672,12 +1835,24 @@ int main(int argc, char** argv){
                 fft_radix2_logN25_1 <<<gridDim, blockDim, 32768>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_8);
                 cudaDeviceSynchronize();
             }
+            #if defined(GLOBAL_ON)
+            cublasSdot(handle, 4096, reduction_d, 1, reduction_d + 4096, 1, global_checksum_d);
+            // int res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
+            cudaDeviceSynchronize(); 
+            // printf("sdot! %d \n", res);
+            #endif
         {
                 dim3 gridDim(8192, 1, 1);
                 dim3 blockDim(16, 16, 1);
                 fft_radix2_logN25_2 <<<gridDim, blockDim, 32768>>> ((float2*)output_d, (float2*)output_d_1, (float2*) checksum_r_d_8);
                 cudaDeviceSynchronize();
             }
+            #if defined(GLOBAL_ON)
+            cublasSdot(handle, 4096, reduction_d, 1, reduction_d + 4096, 1, global_checksum_d);
+            // res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
+            cudaDeviceSynchronize(); 
+            // printf("sdot! %d \n", res);
+            #endif
         {
                 dim3 gridDim(4096, 1, 1);
                 dim3 blockDim(64, 16, 1);
@@ -1694,6 +1869,8 @@ int main(int argc, char** argv){
             cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
             CUDA_CALLER(cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
             CUDA_CALLER(cudaFree(output_d_1));
+            cudaFree(reduction_d);
+            // cudaFree(global_checksum_d);
         }
         }
         
@@ -1736,7 +1913,14 @@ int main(int argc, char** argv){
         {
         cudaEventCreate(&fft_begin);
         cudaEventCreate(&fft_end);
+        float * reduction = (float*)calloc(2 * 65536, sizeof(float));
         CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+        float * reduction_d, *global_checksum_d;
+        CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
+        CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
+        cudaMemcpy((void*)reduction_d, (void*)input, 2 * 65536 * sizeof(float), cudaMemcpyHostToDevice);
+        cublasHandle_t handle;
+        cublasCreate(&handle);
         
             cudaEventRecord(fft_begin);
             timeSt = std::chrono::steady_clock::now();
@@ -1748,12 +1932,24 @@ int main(int argc, char** argv){
                 fft_radix2_logN26_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_9);
                 cudaDeviceSynchronize();
             }
+            #if defined(GLOBAL_ON)
+            cublasSdot(handle, 8192, reduction_d, 1, reduction_d + 8192, 1, global_checksum_d);
+            // int res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
+            cudaDeviceSynchronize(); 
+            // printf("sdot! %d \n", res);
+            #endif
         {
                 dim3 gridDim(16384, 1, 1);
                 dim3 blockDim(16, 16, 1);
                 fft_radix2_logN26_2 <<<gridDim, blockDim, 32768>>> ((float2*)output_d, (float2*)output_d_1, (float2*) checksum_r_d_8);
                 cudaDeviceSynchronize();
             }
+            #if defined(GLOBAL_ON)
+            cublasSdot(handle, 8192, reduction_d, 1, reduction_d + 8192, 1, global_checksum_d);
+            // res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
+            cudaDeviceSynchronize(); 
+            // printf("sdot! %d \n", res);
+            #endif
         {
                 dim3 gridDim(8192, 1, 1);
                 dim3 blockDim(64, 16, 1);
@@ -1770,6 +1966,8 @@ int main(int argc, char** argv){
             cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
             CUDA_CALLER(cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
             CUDA_CALLER(cudaFree(output_d_1));
+            cudaFree(reduction_d);
+            // cudaFree(global_checksum_d);
         }
         }
         
@@ -1815,7 +2013,14 @@ int main(int argc, char** argv){
         {
         cudaEventCreate(&fft_begin);
         cudaEventCreate(&fft_end);
+        float * reduction = (float*)calloc(2 * 65536, sizeof(float));
         CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+        float * reduction_d, *global_checksum_d;
+        CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
+        CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
+        cudaMemcpy((void*)reduction_d, (void*)input, 2 * 65536 * sizeof(float), cudaMemcpyHostToDevice);
+        cublasHandle_t handle;
+        cublasCreate(&handle);
         
             cudaEventRecord(fft_begin);
             timeSt = std::chrono::steady_clock::now();
@@ -1827,12 +2032,24 @@ int main(int argc, char** argv){
                 fft_radix2_logN27_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_9);
                 cudaDeviceSynchronize();
             }
+            #if defined(GLOBAL_ON)
+            cublasSdot(handle, 16384, reduction_d, 1, reduction_d + 16384, 1, global_checksum_d);
+            // int res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
+            cudaDeviceSynchronize(); 
+            // printf("sdot! %d \n", res);
+            #endif
         {
                 dim3 gridDim(16384, 1, 1);
                 dim3 blockDim(16, 32, 1);
                 fft_radix2_logN27_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d, (float2*)output_d_1, (float2*) checksum_r_d_9);
                 cudaDeviceSynchronize();
             }
+            #if defined(GLOBAL_ON)
+            cublasSdot(handle, 16384, reduction_d, 1, reduction_d + 16384, 1, global_checksum_d);
+            // res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
+            cudaDeviceSynchronize(); 
+            // printf("sdot! %d \n", res);
+            #endif
         {
                 dim3 gridDim(16384, 1, 1);
                 dim3 blockDim(64, 16, 1);
@@ -1849,6 +2066,8 @@ int main(int argc, char** argv){
             cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
             CUDA_CALLER(cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
             CUDA_CALLER(cudaFree(output_d_1));
+            cudaFree(reduction_d);
+            // cudaFree(global_checksum_d);
         }
         }
         
@@ -1894,7 +2113,14 @@ int main(int argc, char** argv){
         {
         cudaEventCreate(&fft_begin);
         cudaEventCreate(&fft_end);
+        float * reduction = (float*)calloc(2 * 65536, sizeof(float));
         CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+        float * reduction_d, *global_checksum_d;
+        CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
+        CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
+        cudaMemcpy((void*)reduction_d, (void*)input, 2 * 65536 * sizeof(float), cudaMemcpyHostToDevice);
+        cublasHandle_t handle;
+        cublasCreate(&handle);
         
             cudaEventRecord(fft_begin);
             timeSt = std::chrono::steady_clock::now();
@@ -1906,12 +2132,24 @@ int main(int argc, char** argv){
                 fft_radix2_logN28_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_9);
                 cudaDeviceSynchronize();
             }
+            #if defined(GLOBAL_ON)
+            cublasSdot(handle, 32768, reduction_d, 1, reduction_d + 32768, 1, global_checksum_d);
+            // int res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
+            cudaDeviceSynchronize(); 
+            // printf("sdot! %d \n", res);
+            #endif
         {
                 dim3 gridDim(32768, 1, 1);
                 dim3 blockDim(16, 32, 1);
                 fft_radix2_logN28_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d, (float2*)output_d_1, (float2*) checksum_r_d_9);
                 cudaDeviceSynchronize();
             }
+            #if defined(GLOBAL_ON)
+            cublasSdot(handle, 32768, reduction_d, 1, reduction_d + 32768, 1, global_checksum_d);
+            // res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
+            cudaDeviceSynchronize(); 
+            // printf("sdot! %d \n", res);
+            #endif
         {
                 dim3 gridDim(32768, 1, 1);
                 dim3 blockDim(128, 8, 1);
@@ -1928,6 +2166,8 @@ int main(int argc, char** argv){
             cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
             CUDA_CALLER(cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
             CUDA_CALLER(cudaFree(output_d_1));
+            cudaFree(reduction_d);
+            // cudaFree(global_checksum_d);
         }
         }
         
@@ -1973,7 +2213,14 @@ int main(int argc, char** argv){
         {
         cudaEventCreate(&fft_begin);
         cudaEventCreate(&fft_end);
+        float * reduction = (float*)calloc(2 * 65536, sizeof(float));
         CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+        float * reduction_d, *global_checksum_d;
+        CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
+        CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
+        cudaMemcpy((void*)reduction_d, (void*)input, 2 * 65536 * sizeof(float), cudaMemcpyHostToDevice);
+        cublasHandle_t handle;
+        cublasCreate(&handle);
         
             cudaEventRecord(fft_begin);
             timeSt = std::chrono::steady_clock::now();
@@ -1985,12 +2232,24 @@ int main(int argc, char** argv){
                 fft_radix2_logN29_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_10);
                 cudaDeviceSynchronize();
             }
+            #if defined(GLOBAL_ON)
+            cublasSdot(handle, 65536, reduction_d, 1, reduction_d + 65536, 1, global_checksum_d);
+            // int res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
+            cudaDeviceSynchronize(); 
+            // printf("sdot! %d \n", res);
+            #endif
         {
                 dim3 gridDim(65536, 1, 1);
                 dim3 blockDim(16, 32, 1);
                 fft_radix2_logN29_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d, (float2*)output_d_1, (float2*) checksum_r_d_9);
                 cudaDeviceSynchronize();
             }
+            #if defined(GLOBAL_ON)
+            cublasSdot(handle, 65536, reduction_d, 1, reduction_d + 65536, 1, global_checksum_d);
+            // res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
+            cudaDeviceSynchronize(); 
+            // printf("sdot! %d \n", res);
+            #endif
         {
                 dim3 gridDim(65536, 1, 1);
                 dim3 blockDim(128, 8, 1);
@@ -2007,6 +2266,8 @@ int main(int argc, char** argv){
             cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
             CUDA_CALLER(cudaMemcpy((void*)output, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost));
             CUDA_CALLER(cudaFree(output_d_1));
+            cudaFree(reduction_d);
+            // cudaFree(global_checksum_d);
         }
         }
         

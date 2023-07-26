@@ -384,14 +384,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     '''
 
             for i in range(signal_per_thread):
-                ft_fft += f'''
-    //        |    x3             |      |    x2  * N3        |                   |    x1  * N3        |
-    //inputs[tx + {i * blockdim_x} + ty * {N3_ * N2_} + (bx % {N1_ // blockdim_y}) * {blockdim_y * N3_ * N2_} + (bx / {(N1_ // blockdim_y)} * {N3_})]
-    // printf("############ finish bx = %d, tx = %d, ty = %d, ###########\\n", bx, tx, ty);
-    
-    // outputs[(bx / {(N2_ // blockdim_y)}) + ((bx % {(N2_ // blockdim_y)}) * {blockdim_y} + ty) * {N1_} + (__id[{order[signal_per_thread - offset + i]}]) * {N1_ * N2_}] = temp_{order[signal_per_thread - offset + i]};
-    // outputs[(ty + (bx % {N1_ // blockdim_y}) * {blockdim_y}) + (bx / {(N1_ // blockdim_y)}) * {N1_} + (__id[{order[signal_per_thread - offset + i]}]) * {N1_ * N2_}] = temp_{order[signal_per_thread - offset + i]}; 
-    
+                ft_fft += f''' 
     
     temp_0 = sdata[((tx + ty * {blockdim_x} + {i * num_thread}) / {blockdim_y}) + ((tx + ty * {blockdim_x} + {i * num_thread}) % {blockdim_y}) * {N3_}];
     outputs[(((tx + ty * {blockdim_x} + {i * num_thread}) % {blockdim_y}) + (bx % {N1_ // blockdim_y}) * {blockdim_y}) + (bx / {(N1_ // blockdim_y)}) * {N1_} + ((tx + ty * {blockdim_x} + {i * num_thread}) / {blockdim_y}) * {N1_ * N2_}] = temp_0; 

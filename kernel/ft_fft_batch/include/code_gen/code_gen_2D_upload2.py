@@ -59,8 +59,19 @@ def ft_2D_fft_code_gen_upload2(N, N1, N2, num_block, num_thread,
         int j;
         int k;
         int tmp_id;
+            float2 r[3];
+    r[0].x = 1.0f;
+    r[0].y = 0.0f;
+    r[1].x = -0.5f;
+    r[1].y = -0.8660253882408142f;
+    r[2].x = -0.5f;
+    r[2].y = 0.8660253882408142f;
         int n = 1, n_global = 1;
         float2 tmp_angle_bk;
+            int tid = tx + ty * blockDim.x;
+    float2 mem_checksum ,mem_checksum_t1;
+    float2 warp_checksum;
+    float2 warp_checksum_;
         '''
         n = 1
         n_global = 1
@@ -82,6 +93,41 @@ def ft_2D_fft_code_gen_upload2(N, N1, N2, num_block, num_thread,
         for i in range(signal_per_thread):
             ft_fft += f'''__id[{i}] = {i * blockdim_x} + tx;
         '''
+        
+            
+        ft_fft += '''
+        #if FT==2
+        mem_checksum.x = 0;
+        mem_checksum.y = 0;
+        mem_checksum_t1.x = 0;
+        mem_checksum_t1.y = 0;
+        __syncthreads();
+        '''
+        for i in range(signal_per_thread):
+            ft_fft += f'''
+            // if(bx == 0 && tid == 0)printf("%d, %f %f, hello\\n", __id[{i}], sdata[__id[{i}]].x, sdata[__id[{i}]].y);
+            mem_checksum.x += sdata[__id[{i}]].x * temp_{i}.x - sdata[__id[{i}]].y * temp_{i}.y;
+            mem_checksum.y += sdata[__id[{i}]].y * temp_{i}.x + sdata[__id[{i}]].x * temp_{i}.y;
+        '''
+        ft_fft += '''
+        // __syncthreads();
+        // mem_checksum_t1.x = mem_checksum.x; 
+        mem_checksum_t1.y = mem_checksum.y + mem_checksum.x; 
+        // mem_checksum_t1.x += __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 16,32);
+        // mem_checksum_t1.x += __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 8, 32);
+        // mem_checksum_t1.x += __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 4, 32);
+        // mem_checksum_t1.x += __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 2, 32);
+        // mem_checksum_t1.x += __shfl_xor_sync(0xffffffff, mem_checksum_t1.x, 1, 32);
+        
+        mem_checksum_t1.y += __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 16,32);
+        mem_checksum_t1.y += __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 8, 32);
+        mem_checksum_t1.y += __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 4, 32);
+        mem_checksum_t1.y += __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 2, 32);
+        mem_checksum_t1.y += __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
+        #endif
+        '''
+        
+        
         for stage_id in range(len(plan)):
             if True:
                 batch_size = 1 if twiddle_type[stage_id] == 0 else n_global // (N2 // signal_per_thread)
@@ -183,6 +229,73 @@ def ft_2D_fft_code_gen_upload2(N, N1, N2, num_block, num_thread,
         // __syncthreads();
         '''
                 offset = 0 if  offset > 0 else signal_per_thread
+                ft_fft += '''
+            #if FT==2
+            __syncthreads();
+            mem_checksum.x = 0;
+            mem_checksum.y = 0;
+            int r_id;
+    '''
+                for i in range(signal_per_thread):
+                    temp_id = order[signal_per_thread - offset + i]
+                    ft_fft += f'''
+            r_id = __id[{order[signal_per_thread - offset + i]}] % 3;
+            mem_checksum.x += temp_{temp_id}.x * r[r_id].x - temp_{temp_id}.y * r[r_id].y;
+            mem_checksum.y += temp_{temp_id}.y * r[r_id].x + temp_{temp_id}.x * r[r_id].y;
+    '''
+        
+                ft_fft += '''
+                mem_checksum.y = mem_checksum.y + mem_checksum.x;
+                mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, 16, 32);
+                mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, 8, 32);
+                mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, 4, 32);
+                mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, 2, 32);
+                mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, 1, 32);
+                
+                // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 16, 32);
+                // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 8, 32);
+                // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 4, 32);
+                // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 2, 32);
+                // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 1, 32);
+                if(tid % 32 == 0){
+                    mem_checksum.x  = mem_checksum.y;
+                    mem_checksum.y = mem_checksum.y - mem_checksum_t1.y;
+                    sdata[tid / 32] = mem_checksum;
+                }
+                __syncthreads();
+                mem_checksum.x = 0;
+                mem_checksum.y = 0;
+                '''
+                
+                ft_fft += f'''
+                if(tid < {num_thread // 32})
+                '''
+                ft_fft += f'''
+                mem_checksum = sdata[tid];
+                '''
+                i = num_thread // 32
+                while( i > 1):
+                    i //= 2
+                    ft_fft += f'''
+                    mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, {i}, 32);
+                    mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, {i}, 32);
+            '''
+                ft_fft += '''
+                // if(mem_checksum.y > 1)printf("%f, %f, %f\\n", temp_0.x, temp_0.y, mem_checksum.y );
+                // if(tid == 0 && mem_checksum.y * mem_checksum.y / mem_checksum.x > 1)printf("up2 %f, %f, %f\\n", mem_checksum.x, mem_checksum.y,mem_checksum.y * mem_checksum.y / mem_checksum.x);
+                // if(tid == 0 && bx < 128)printf("up2 %f, %f, %f\\n", mem_checksum.x, mem_checksum.y,  mem_checksum.y / mem_checksum.x);
+            '''
+                
+                ft_fft += f'''
+                temp_0.x += 0.1f * (mem_checksum.x);
+                temp_0.y += 0.1f * (mem_checksum.y);
+                // if(tid == 0 && blockIdx.x == 0)printf("%f, %f,%f, %f\\n", temp_0.x, temp_0.y,mem_checksum_t1.x,mem_checksum_t1.y );
+                #endif
+                #if defined(LOG_ON)
+                if(tid == 0 && bx < 128)printf("up2 %f, %f, %f\\n", mem_checksum.x, mem_checksum.y, mem_checksum.y / mem_checksum.x);
+                #endif
+                '''
+                
                 
                 for i in range(signal_per_thread):
                     ft_fft += f'''

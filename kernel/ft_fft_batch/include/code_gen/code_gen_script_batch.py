@@ -32,7 +32,7 @@ int main(int argc, char** argv){
     long long N = pow((double)RADIX, (double)__log_N__); 
     int random_seed = 10;  
     #if P_FFT == 1
-    int num_tests = 10;
+    int num_tests = 100;
     #else
     int num_tests = 1;
     #endif
