@@ -927,19 +927,19 @@ extern __shared__ float shared[];
                 
                 mem_checksum = sdata[tid];
                 
-                    mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 16, 32);
+                    // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 16, 32);
                     mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, 16, 32);
             
-                    mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 8, 32);
+                    // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 8, 32);
                     mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, 8, 32);
             
-                    mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 4, 32);
+                    // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 4, 32);
                     mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, 4, 32);
             
-                    mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 2, 32);
+                    // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 2, 32);
                     mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, 2, 32);
             
-                    mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 1, 32);
+                    // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 1, 32);
                     mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, 1, 32);
             
                 // if(mem_checksum.y > 1)printf("%f, %f, %f\n", temp_0.x, temp_0.y, mem_checksum.y );
@@ -950,7 +950,7 @@ extern __shared__ float shared[];
                 
                 #endif
                 #if defined(LOG_ON)
-                if(tid == 0 && bx < 128)printf("up1 %f, %f, %f\n", mem_checksum.x, mem_checksum.y, mem_checksum.y / mem_checksum.x);
+                if(tid == 0 && bx < 128)printf("up2 %f, %f, %f\n", mem_checksum.x, mem_checksum.y, mem_checksum.y / mem_checksum.x);
                 #endif
                 
         outputs[(tx + bx * 16) + 64 * __id[0]] = temp_0;

@@ -1,5 +1,5 @@
 extern __shared__ float shared[];
-    __global__ void __launch_bounds__(256) fft_radix2_logN19_2(float2* inputs, float2* outputs, float2* r_1) {
+    __global__ void __launch_bounds__(256) fft_radix2_logN20_2(float2* inputs, float2* outputs, float2* r_1) {
     
     float2 r[3];
     r[0].x = 1.0f;
@@ -1818,37 +1818,37 @@ extern __shared__ float shared[];
                 if(tid == 0 && bx < 128)printf("up2 %f, %f, %f\n", mem_checksum.x, mem_checksum.y, mem_checksum.y / mem_checksum.x);
                 #endif
                 
-        outputs[(tx + bx * 4) + 512 * __id[0]] = temp_0;
+        outputs[(tx + bx * 4) + 1024 * __id[0]] = temp_0;
         
-        outputs[(tx + bx * 4) + 512 * __id[1]] = temp_1;
+        outputs[(tx + bx * 4) + 1024 * __id[1]] = temp_1;
         
-        outputs[(tx + bx * 4) + 512 * __id[2]] = temp_2;
+        outputs[(tx + bx * 4) + 1024 * __id[2]] = temp_2;
         
-        outputs[(tx + bx * 4) + 512 * __id[3]] = temp_3;
+        outputs[(tx + bx * 4) + 1024 * __id[3]] = temp_3;
         
-        outputs[(tx + bx * 4) + 512 * __id[8]] = temp_8;
+        outputs[(tx + bx * 4) + 1024 * __id[8]] = temp_8;
         
-        outputs[(tx + bx * 4) + 512 * __id[9]] = temp_9;
+        outputs[(tx + bx * 4) + 1024 * __id[9]] = temp_9;
         
-        outputs[(tx + bx * 4) + 512 * __id[10]] = temp_10;
+        outputs[(tx + bx * 4) + 1024 * __id[10]] = temp_10;
         
-        outputs[(tx + bx * 4) + 512 * __id[11]] = temp_11;
+        outputs[(tx + bx * 4) + 1024 * __id[11]] = temp_11;
         
-        outputs[(tx + bx * 4) + 512 * __id[4]] = temp_4;
+        outputs[(tx + bx * 4) + 1024 * __id[4]] = temp_4;
         
-        outputs[(tx + bx * 4) + 512 * __id[5]] = temp_5;
+        outputs[(tx + bx * 4) + 1024 * __id[5]] = temp_5;
         
-        outputs[(tx + bx * 4) + 512 * __id[6]] = temp_6;
+        outputs[(tx + bx * 4) + 1024 * __id[6]] = temp_6;
         
-        outputs[(tx + bx * 4) + 512 * __id[7]] = temp_7;
+        outputs[(tx + bx * 4) + 1024 * __id[7]] = temp_7;
         
-        outputs[(tx + bx * 4) + 512 * __id[12]] = temp_12;
+        outputs[(tx + bx * 4) + 1024 * __id[12]] = temp_12;
         
-        outputs[(tx + bx * 4) + 512 * __id[13]] = temp_13;
+        outputs[(tx + bx * 4) + 1024 * __id[13]] = temp_13;
         
-        outputs[(tx + bx * 4) + 512 * __id[14]] = temp_14;
+        outputs[(tx + bx * 4) + 1024 * __id[14]] = temp_14;
         
-        outputs[(tx + bx * 4) + 512 * __id[15]] = temp_15;
+        outputs[(tx + bx * 4) + 1024 * __id[15]] = temp_15;
         
         }
     

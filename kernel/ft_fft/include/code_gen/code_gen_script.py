@@ -277,7 +277,30 @@ int main(int argc, char** argv){
         ft_fft_script += '''
         cudaEventCreate(&fft_begin);
         cudaEventCreate(&fft_end);
+        
         {
+            cufftCreate(&plan);
+            cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
+            cudaEventRecord(fft_begin);
+            timeSt = std::chrono::steady_clock::now();
+            for(int i = 0; i < num_tests; ++i){
+                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                cudaDeviceSynchronize(); 
+            } 
+            timeEnd = std::chrono::steady_clock::now();
+            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+            cudaEventRecord(fft_end);  
+            cudaEventSynchronize(fft_begin);
+            cudaEventSynchronize(fft_end);
+            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);   
+            cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
+            cufftDestroy(plan);
+        }
+        
+        
+        
+        {
+        
         '''
         ft_fft_script += f'''
             CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
@@ -290,7 +313,7 @@ int main(int argc, char** argv){
         ft_fft_script += f'''{{
                 dim3 gridDim({int(df['num_block_1'][N-1])}, 1, 1);
                 dim3 blockDim({int(df['blockdim_x_1'][N-1])}, {int(df['blockdim_y_1'][N-1])}, 1);
-                fft_radix2_logN{int(df['logN'][N-1])}_1 <<<gridDim, blockDim, {int(df['sm_size_1'][N-1])}>>> ((float2*)input_d, (float2*)output_d_1);
+                fft_radix2_logN{int(df['logN'][N-1])}_1 <<<gridDim, blockDim, {int(df['sm_size_1'][N-1])}>>> ((float2*)input_d, (float2*)output_d_1, (float2*) checksum_r_d_{int(df['logN1'][N-1])});
                 cudaDeviceSynchronize();
             }}
         '''
@@ -347,24 +370,6 @@ int main(int argc, char** argv){
         #     cudaEventElapsedTime(&elapsed_time_vkfft, fft_begin, fft_end);
         # }
         ft_fft_script += '''
-        {
-            cufftCreate(&plan);
-            cufftPlan1d(&plan, N, CUFFT_C2C, 1); 
-            cudaEventRecord(fft_begin);
-            timeSt = std::chrono::steady_clock::now();
-            for(int i = 0; i < num_tests; ++i){
-                cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
-                cudaDeviceSynchronize(); 
-            } 
-            timeEnd = std::chrono::steady_clock::now();
-            totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
-            cudaEventRecord(fft_end);  
-            cudaEventSynchronize(fft_begin);
-            cudaEventSynchronize(fft_end);
-            cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);   
-            cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
-            cufftDestroy(plan);
-        }
     }    
     '''
         N += 1

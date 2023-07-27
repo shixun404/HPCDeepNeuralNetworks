@@ -373,6 +373,7 @@ __global__ void __launch_bounds__(128) fft_radix2_logN10(float2* inputs, float2*
             
             // printf("%f, %f, %f, %f\n", warp_checksum.x, warp_checksum.y, warp_checksum_.x, warp_checksum_.y);
             
+    __syncthreads();
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx / 1) * 0) / (float)(1024), tmp_angle);
     MY_MUL(temp_0, tmp_angle, tmp);

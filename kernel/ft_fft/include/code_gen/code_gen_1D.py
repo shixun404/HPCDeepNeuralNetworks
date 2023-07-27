@@ -241,7 +241,6 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}'
         if twiddle_type[stage_id] == 0:
             ft_fft += f'''
     __syncthreads();
-    ''' if stage_id != 0 else '''
     '''
             for i in range(signal_per_thread):    
                 ft_fft += f'''

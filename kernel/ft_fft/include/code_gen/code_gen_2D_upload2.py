@@ -310,7 +310,7 @@ def ft_2D_fft_code_gen_upload2(N, N1, N2, num_block, num_thread,
                 while( i > 1):
                     i //= 2
                     ft_fft += f'''
-                    mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, {i}, 32);
+                    // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, {i}, 32);
                     mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, {i}, 32);
             '''
                 ft_fft += '''
@@ -591,7 +591,7 @@ def ft_2D_fft_code_gen_upload2(N, N1, N2, num_block, num_thread,
                 ft_fft += f'''
         n_global *= 2;
         '''
-                offset = 0 if  offset > 0 else signal_per_thread
+                # offset = 0 if  offset > 0 else signal_per_thread
                 
                 ft_fft += '''
                 #if FT==2
@@ -640,7 +640,7 @@ def ft_2D_fft_code_gen_upload2(N, N1, N2, num_block, num_thread,
                 while( i > 1):
                     i //= 2
                     ft_fft += f'''
-                    mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, {i}, 32);
+                    // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, {i}, 32);
                     mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, {i}, 32);
             '''
                 ft_fft += '''
@@ -654,7 +654,7 @@ def ft_2D_fft_code_gen_upload2(N, N1, N2, num_block, num_thread,
                 
                 #endif
                 #if defined(LOG_ON)
-                if(tid == 0 && bx < 128)printf("up1 %f, %f, %f\\n", mem_checksum.x, mem_checksum.y, mem_checksum.y / mem_checksum.x);
+                if(tid == 0 && bx < 128)printf("up2 %f, %f, %f\\n", mem_checksum.x, mem_checksum.y, mem_checksum.y / mem_checksum.x);
                 #endif
                 '''
                 

@@ -1,5 +1,5 @@
 extern __shared__ float shared[];
-    __global__ void __launch_bounds__(256) fft_radix2_logN19_2(float2* inputs, float2* outputs, float2* r_1) {
+    __global__ void __launch_bounds__(512) fft_radix2_logN16_2(float2* inputs, float2* outputs, float2* r_1) {
     
     float2 r[3];
     r[0].x = 1.0f;
@@ -32,7 +32,7 @@ extern __shared__ float shared[];
         int tx = threadIdx.x;
         int ty = threadIdx.y;
         int bx = blockIdx.x;
-        int N = 1024;
+        int N = 512;
         int __id[16];
         float2 tmp;
         float2 tmp_angle, tmp_angle_rot;
@@ -43,51 +43,45 @@ extern __shared__ float shared[];
         float2 tmp_angle_bk;
         
         #if FT==2
-        float4 tmp_r;
-        
-        tmp_r = *(float4*)(((float*)r_1) + tid * 8 + 0 * 4);
-        *(float4*)(((float*)sdata) + tid * 8 + 0 * 4) = tmp_r;
+        float2 tmp_r;
+        tmp_r = *(float2*)(((float*)r_1) + tid * 2);
+        *(float2*)(((float*)sdata) + tid * 2) = tmp_r;
         // if(bx == 0)printf("%d, hello\n", tid);
-        
-        tmp_r = *(float4*)(((float*)r_1) + tid * 8 + 1 * 4);
-        *(float4*)(((float*)sdata) + tid * 8 + 1 * 4) = tmp_r;
-        // if(bx == 0)printf("%d, hello\n", tid);
-        
         #endif
         
-        temp_0 = inputs[(ty + 0 * 64) + (tx + bx * 4) * 1024];
-        temp_1 = inputs[(ty + 1 * 64) + (tx + bx * 4) * 1024];
-        temp_2 = inputs[(ty + 2 * 64) + (tx + bx * 4) * 1024];
-        temp_3 = inputs[(ty + 3 * 64) + (tx + bx * 4) * 1024];
-        temp_4 = inputs[(ty + 4 * 64) + (tx + bx * 4) * 1024];
-        temp_5 = inputs[(ty + 5 * 64) + (tx + bx * 4) * 1024];
-        temp_6 = inputs[(ty + 6 * 64) + (tx + bx * 4) * 1024];
-        temp_7 = inputs[(ty + 7 * 64) + (tx + bx * 4) * 1024];
-        temp_8 = inputs[(ty + 8 * 64) + (tx + bx * 4) * 1024];
-        temp_9 = inputs[(ty + 9 * 64) + (tx + bx * 4) * 1024];
-        temp_10 = inputs[(ty + 10 * 64) + (tx + bx * 4) * 1024];
-        temp_11 = inputs[(ty + 11 * 64) + (tx + bx * 4) * 1024];
-        temp_12 = inputs[(ty + 12 * 64) + (tx + bx * 4) * 1024];
-        temp_13 = inputs[(ty + 13 * 64) + (tx + bx * 4) * 1024];
-        temp_14 = inputs[(ty + 14 * 64) + (tx + bx * 4) * 1024];
-        temp_15 = inputs[(ty + 15 * 64) + (tx + bx * 4) * 1024];
+        temp_0 = inputs[(ty + 0 * 32) + (tx + bx * 16) * 512];
+        temp_1 = inputs[(ty + 1 * 32) + (tx + bx * 16) * 512];
+        temp_2 = inputs[(ty + 2 * 32) + (tx + bx * 16) * 512];
+        temp_3 = inputs[(ty + 3 * 32) + (tx + bx * 16) * 512];
+        temp_4 = inputs[(ty + 4 * 32) + (tx + bx * 16) * 512];
+        temp_5 = inputs[(ty + 5 * 32) + (tx + bx * 16) * 512];
+        temp_6 = inputs[(ty + 6 * 32) + (tx + bx * 16) * 512];
+        temp_7 = inputs[(ty + 7 * 32) + (tx + bx * 16) * 512];
+        temp_8 = inputs[(ty + 8 * 32) + (tx + bx * 16) * 512];
+        temp_9 = inputs[(ty + 9 * 32) + (tx + bx * 16) * 512];
+        temp_10 = inputs[(ty + 10 * 32) + (tx + bx * 16) * 512];
+        temp_11 = inputs[(ty + 11 * 32) + (tx + bx * 16) * 512];
+        temp_12 = inputs[(ty + 12 * 32) + (tx + bx * 16) * 512];
+        temp_13 = inputs[(ty + 13 * 32) + (tx + bx * 16) * 512];
+        temp_14 = inputs[(ty + 14 * 32) + (tx + bx * 16) * 512];
+        temp_15 = inputs[(ty + 15 * 32) + (tx + bx * 16) * 512];
         
         __id[0] = 0 + ty;
-        __id[1] = 64 + ty;
-        __id[2] = 128 + ty;
-        __id[3] = 192 + ty;
-        __id[4] = 256 + ty;
-        __id[5] = 320 + ty;
-        __id[6] = 384 + ty;
-        __id[7] = 448 + ty;
-        __id[8] = 512 + ty;
-        __id[9] = 576 + ty;
-        __id[10] = 640 + ty;
-        __id[11] = 704 + ty;
-        __id[12] = 768 + ty;
-        __id[13] = 832 + ty;
-        __id[14] = 896 + ty;
-        __id[15] = 960 + ty;
+        __id[1] = 32 + ty;
+        __id[2] = 64 + ty;
+        __id[3] = 96 + ty;
+        __id[4] = 128 + ty;
+        __id[5] = 160 + ty;
+        __id[6] = 192 + ty;
+        __id[7] = 224 + ty;
+        __id[8] = 256 + ty;
+        __id[9] = 288 + ty;
+        __id[10] = 320 + ty;
+        __id[11] = 352 + ty;
+        __id[12] = 384 + ty;
+        __id[13] = 416 + ty;
+        __id[14] = 448 + ty;
+        __id[15] = 480 + ty;
         
     #if FT==2
     mem_checksum.x = 0;
@@ -654,151 +648,151 @@ extern __shared__ float shared[];
         
         __syncthreads();
         
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 0) / (float)(1024), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 0) / (float)(512), tmp_angle);
     MY_MUL(temp_0, tmp_angle, tmp);
     temp_0 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 1) / (float)(1024), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 1) / (float)(512), tmp_angle);
     MY_MUL(temp_8, tmp_angle, tmp);
     temp_8 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 2) / (float)(1024), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 2) / (float)(512), tmp_angle);
     MY_MUL(temp_4, tmp_angle, tmp);
     temp_4 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 3) / (float)(1024), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 3) / (float)(512), tmp_angle);
     MY_MUL(temp_12, tmp_angle, tmp);
     temp_12 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 4) / (float)(1024), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 4) / (float)(512), tmp_angle);
     MY_MUL(temp_2, tmp_angle, tmp);
     temp_2 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 5) / (float)(1024), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 5) / (float)(512), tmp_angle);
     MY_MUL(temp_10, tmp_angle, tmp);
     temp_10 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 6) / (float)(1024), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 6) / (float)(512), tmp_angle);
     MY_MUL(temp_6, tmp_angle, tmp);
     temp_6 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 7) / (float)(1024), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 7) / (float)(512), tmp_angle);
     MY_MUL(temp_14, tmp_angle, tmp);
     temp_14 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 8) / (float)(1024), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 8) / (float)(512), tmp_angle);
     MY_MUL(temp_1, tmp_angle, tmp);
     temp_1 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 9) / (float)(1024), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 9) / (float)(512), tmp_angle);
     MY_MUL(temp_9, tmp_angle, tmp);
     temp_9 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 10) / (float)(1024), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 10) / (float)(512), tmp_angle);
     MY_MUL(temp_5, tmp_angle, tmp);
     temp_5 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 11) / (float)(1024), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 11) / (float)(512), tmp_angle);
     MY_MUL(temp_13, tmp_angle, tmp);
     temp_13 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 12) / (float)(1024), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 12) / (float)(512), tmp_angle);
     MY_MUL(temp_3, tmp_angle, tmp);
     temp_3 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 13) / (float)(1024), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 13) / (float)(512), tmp_angle);
     MY_MUL(temp_11, tmp_angle, tmp);
     temp_11 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 14) / (float)(1024), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 14) / (float)(512), tmp_angle);
     MY_MUL(temp_7, tmp_angle, tmp);
     temp_7 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 15) / (float)(1024), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 15) / (float)(512), tmp_angle);
     MY_MUL(temp_15, tmp_angle, tmp);
     temp_15 = tmp;
     
-        sdata[tx + 4 * __id[0]] = temp_0;
+        sdata[tx + 16 * __id[0]] = temp_0;
         
-        sdata[tx + 4 * __id[8]] = temp_8;
+        sdata[tx + 16 * __id[8]] = temp_8;
         
-        sdata[tx + 4 * __id[4]] = temp_4;
+        sdata[tx + 16 * __id[4]] = temp_4;
         
-        sdata[tx + 4 * __id[12]] = temp_12;
+        sdata[tx + 16 * __id[12]] = temp_12;
         
-        sdata[tx + 4 * __id[2]] = temp_2;
+        sdata[tx + 16 * __id[2]] = temp_2;
         
-        sdata[tx + 4 * __id[10]] = temp_10;
+        sdata[tx + 16 * __id[10]] = temp_10;
         
-        sdata[tx + 4 * __id[6]] = temp_6;
+        sdata[tx + 16 * __id[6]] = temp_6;
         
-        sdata[tx + 4 * __id[14]] = temp_14;
+        sdata[tx + 16 * __id[14]] = temp_14;
         
-        sdata[tx + 4 * __id[1]] = temp_1;
+        sdata[tx + 16 * __id[1]] = temp_1;
         
-        sdata[tx + 4 * __id[9]] = temp_9;
+        sdata[tx + 16 * __id[9]] = temp_9;
         
-        sdata[tx + 4 * __id[5]] = temp_5;
+        sdata[tx + 16 * __id[5]] = temp_5;
         
-        sdata[tx + 4 * __id[13]] = temp_13;
+        sdata[tx + 16 * __id[13]] = temp_13;
         
-        sdata[tx + 4 * __id[3]] = temp_3;
+        sdata[tx + 16 * __id[3]] = temp_3;
         
-        sdata[tx + 4 * __id[11]] = temp_11;
+        sdata[tx + 16 * __id[11]] = temp_11;
         
-        sdata[tx + 4 * __id[7]] = temp_7;
+        sdata[tx + 16 * __id[7]] = temp_7;
         
-        sdata[tx + 4 * __id[15]] = temp_15;
+        sdata[tx + 16 * __id[15]] = temp_15;
         
         __syncthreads();		
         
-        temp_0 = sdata[tx + 4 * (0 + ty)];
+        temp_0 = sdata[tx + 16 * (0 + ty)];
         __id[0] = ty + 0;
         
-        temp_1 = sdata[tx + 4 * (64 + ty)];
-        __id[1] = ty + 64;
+        temp_1 = sdata[tx + 16 * (32 + ty)];
+        __id[1] = ty + 32;
         
-        temp_2 = sdata[tx + 4 * (128 + ty)];
-        __id[2] = ty + 128;
+        temp_2 = sdata[tx + 16 * (64 + ty)];
+        __id[2] = ty + 64;
         
-        temp_3 = sdata[tx + 4 * (192 + ty)];
-        __id[3] = ty + 192;
+        temp_3 = sdata[tx + 16 * (96 + ty)];
+        __id[3] = ty + 96;
         
-        temp_4 = sdata[tx + 4 * (256 + ty)];
-        __id[4] = ty + 256;
+        temp_4 = sdata[tx + 16 * (128 + ty)];
+        __id[4] = ty + 128;
         
-        temp_5 = sdata[tx + 4 * (320 + ty)];
-        __id[5] = ty + 320;
+        temp_5 = sdata[tx + 16 * (160 + ty)];
+        __id[5] = ty + 160;
         
-        temp_6 = sdata[tx + 4 * (384 + ty)];
-        __id[6] = ty + 384;
+        temp_6 = sdata[tx + 16 * (192 + ty)];
+        __id[6] = ty + 192;
         
-        temp_7 = sdata[tx + 4 * (448 + ty)];
-        __id[7] = ty + 448;
+        temp_7 = sdata[tx + 16 * (224 + ty)];
+        __id[7] = ty + 224;
         
-        temp_8 = sdata[tx + 4 * (512 + ty)];
-        __id[8] = ty + 512;
+        temp_8 = sdata[tx + 16 * (256 + ty)];
+        __id[8] = ty + 256;
         
-        temp_9 = sdata[tx + 4 * (576 + ty)];
-        __id[9] = ty + 576;
+        temp_9 = sdata[tx + 16 * (288 + ty)];
+        __id[9] = ty + 288;
         
-        temp_10 = sdata[tx + 4 * (640 + ty)];
-        __id[10] = ty + 640;
+        temp_10 = sdata[tx + 16 * (320 + ty)];
+        __id[10] = ty + 320;
         
-        temp_11 = sdata[tx + 4 * (704 + ty)];
-        __id[11] = ty + 704;
+        temp_11 = sdata[tx + 16 * (352 + ty)];
+        __id[11] = ty + 352;
         
-        temp_12 = sdata[tx + 4 * (768 + ty)];
-        __id[12] = ty + 768;
+        temp_12 = sdata[tx + 16 * (384 + ty)];
+        __id[12] = ty + 384;
         
-        temp_13 = sdata[tx + 4 * (832 + ty)];
-        __id[13] = ty + 832;
+        temp_13 = sdata[tx + 16 * (416 + ty)];
+        __id[13] = ty + 416;
         
-        temp_14 = sdata[tx + 4 * (896 + ty)];
-        __id[14] = ty + 896;
+        temp_14 = sdata[tx + 16 * (448 + ty)];
+        __id[14] = ty + 448;
         
-        temp_15 = sdata[tx + 4 * (960 + ty)];
-        __id[15] = ty + 960;
+        temp_15 = sdata[tx + 16 * (480 + ty)];
+        __id[15] = ty + 480;
         
         j = 1;
         k = 8 % 1;
@@ -1278,154 +1272,154 @@ extern __shared__ float shared[];
         
         __syncthreads();
         
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 0) / (float)(64.0), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 0) / (float)(32.0), tmp_angle);
     MY_MUL(temp_0, tmp_angle, tmp);
     temp_0 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 1) / (float)(64.0), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 1) / (float)(32.0), tmp_angle);
     MY_MUL(temp_8, tmp_angle, tmp);
     temp_8 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 2) / (float)(64.0), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 2) / (float)(32.0), tmp_angle);
     MY_MUL(temp_4, tmp_angle, tmp);
     temp_4 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 3) / (float)(64.0), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 3) / (float)(32.0), tmp_angle);
     MY_MUL(temp_12, tmp_angle, tmp);
     temp_12 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 4) / (float)(64.0), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 4) / (float)(32.0), tmp_angle);
     MY_MUL(temp_2, tmp_angle, tmp);
     temp_2 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 5) / (float)(64.0), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 5) / (float)(32.0), tmp_angle);
     MY_MUL(temp_10, tmp_angle, tmp);
     temp_10 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 6) / (float)(64.0), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 6) / (float)(32.0), tmp_angle);
     MY_MUL(temp_6, tmp_angle, tmp);
     temp_6 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 7) / (float)(64.0), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 7) / (float)(32.0), tmp_angle);
     MY_MUL(temp_14, tmp_angle, tmp);
     temp_14 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 8) / (float)(64.0), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 8) / (float)(32.0), tmp_angle);
     MY_MUL(temp_1, tmp_angle, tmp);
     temp_1 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 9) / (float)(64.0), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 9) / (float)(32.0), tmp_angle);
     MY_MUL(temp_9, tmp_angle, tmp);
     temp_9 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 10) / (float)(64.0), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 10) / (float)(32.0), tmp_angle);
     MY_MUL(temp_5, tmp_angle, tmp);
     temp_5 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 11) / (float)(64.0), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 11) / (float)(32.0), tmp_angle);
     MY_MUL(temp_13, tmp_angle, tmp);
     temp_13 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 12) / (float)(64.0), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 12) / (float)(32.0), tmp_angle);
     MY_MUL(temp_3, tmp_angle, tmp);
     temp_3 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 13) / (float)(64.0), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 13) / (float)(32.0), tmp_angle);
     MY_MUL(temp_11, tmp_angle, tmp);
     temp_11 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 14) / (float)(64.0), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 14) / (float)(32.0), tmp_angle);
     MY_MUL(temp_7, tmp_angle, tmp);
     temp_7 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 15) / (float)(64.0), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 15) / (float)(32.0), tmp_angle);
     MY_MUL(temp_15, tmp_angle, tmp);
     temp_15 = tmp;
     
-        sdata[tx + 4 * __id[0]] = temp_0;
+        sdata[tx + 16 * __id[0]] = temp_0;
         
-        sdata[tx + 4 * __id[8]] = temp_8;
+        sdata[tx + 16 * __id[8]] = temp_8;
         
-        sdata[tx + 4 * __id[4]] = temp_4;
+        sdata[tx + 16 * __id[4]] = temp_4;
         
-        sdata[tx + 4 * __id[12]] = temp_12;
+        sdata[tx + 16 * __id[12]] = temp_12;
         
-        sdata[tx + 4 * __id[2]] = temp_2;
+        sdata[tx + 16 * __id[2]] = temp_2;
         
-        sdata[tx + 4 * __id[10]] = temp_10;
+        sdata[tx + 16 * __id[10]] = temp_10;
         
-        sdata[tx + 4 * __id[6]] = temp_6;
+        sdata[tx + 16 * __id[6]] = temp_6;
         
-        sdata[tx + 4 * __id[14]] = temp_14;
+        sdata[tx + 16 * __id[14]] = temp_14;
         
-        sdata[tx + 4 * __id[1]] = temp_1;
+        sdata[tx + 16 * __id[1]] = temp_1;
         
-        sdata[tx + 4 * __id[9]] = temp_9;
+        sdata[tx + 16 * __id[9]] = temp_9;
         
-        sdata[tx + 4 * __id[5]] = temp_5;
+        sdata[tx + 16 * __id[5]] = temp_5;
         
-        sdata[tx + 4 * __id[13]] = temp_13;
+        sdata[tx + 16 * __id[13]] = temp_13;
         
-        sdata[tx + 4 * __id[3]] = temp_3;
+        sdata[tx + 16 * __id[3]] = temp_3;
         
-        sdata[tx + 4 * __id[11]] = temp_11;
+        sdata[tx + 16 * __id[11]] = temp_11;
         
-        sdata[tx + 4 * __id[7]] = temp_7;
+        sdata[tx + 16 * __id[7]] = temp_7;
         
-        sdata[tx + 4 * __id[15]] = temp_15;
+        sdata[tx + 16 * __id[15]] = temp_15;
         
         __syncthreads();		
         
-        temp_0 = sdata[tx + 4 * (0 + ty)];
+        temp_0 = sdata[tx + 16 * (0 + ty)];
         __id[0] = ty + 0;
         
-        temp_1 = sdata[tx + 4 * (64 + ty)];
-        __id[1] = ty + 64;
+        temp_1 = sdata[tx + 16 * (32 + ty)];
+        __id[1] = ty + 32;
         
-        temp_2 = sdata[tx + 4 * (128 + ty)];
-        __id[2] = ty + 128;
+        temp_2 = sdata[tx + 16 * (64 + ty)];
+        __id[2] = ty + 64;
         
-        temp_3 = sdata[tx + 4 * (192 + ty)];
-        __id[3] = ty + 192;
+        temp_3 = sdata[tx + 16 * (96 + ty)];
+        __id[3] = ty + 96;
         
-        temp_4 = sdata[tx + 4 * (256 + ty)];
-        __id[4] = ty + 256;
+        temp_4 = sdata[tx + 16 * (128 + ty)];
+        __id[4] = ty + 128;
         
-        temp_5 = sdata[tx + 4 * (320 + ty)];
-        __id[5] = ty + 320;
+        temp_5 = sdata[tx + 16 * (160 + ty)];
+        __id[5] = ty + 160;
         
-        temp_6 = sdata[tx + 4 * (384 + ty)];
-        __id[6] = ty + 384;
+        temp_6 = sdata[tx + 16 * (192 + ty)];
+        __id[6] = ty + 192;
         
-        temp_7 = sdata[tx + 4 * (448 + ty)];
-        __id[7] = ty + 448;
+        temp_7 = sdata[tx + 16 * (224 + ty)];
+        __id[7] = ty + 224;
         
-        temp_8 = sdata[tx + 4 * (512 + ty)];
-        __id[8] = ty + 512;
+        temp_8 = sdata[tx + 16 * (256 + ty)];
+        __id[8] = ty + 256;
         
-        temp_9 = sdata[tx + 4 * (576 + ty)];
-        __id[9] = ty + 576;
+        temp_9 = sdata[tx + 16 * (288 + ty)];
+        __id[9] = ty + 288;
         
-        temp_10 = sdata[tx + 4 * (640 + ty)];
-        __id[10] = ty + 640;
+        temp_10 = sdata[tx + 16 * (320 + ty)];
+        __id[10] = ty + 320;
         
-        temp_11 = sdata[tx + 4 * (704 + ty)];
-        __id[11] = ty + 704;
+        temp_11 = sdata[tx + 16 * (352 + ty)];
+        __id[11] = ty + 352;
         
-        temp_12 = sdata[tx + 4 * (768 + ty)];
-        __id[12] = ty + 768;
+        temp_12 = sdata[tx + 16 * (384 + ty)];
+        __id[12] = ty + 384;
         
-        temp_13 = sdata[tx + 4 * (832 + ty)];
-        __id[13] = ty + 832;
+        temp_13 = sdata[tx + 16 * (416 + ty)];
+        __id[13] = ty + 416;
         
-        temp_14 = sdata[tx + 4 * (896 + ty)];
-        __id[14] = ty + 896;
+        temp_14 = sdata[tx + 16 * (448 + ty)];
+        __id[14] = ty + 448;
         
-        temp_15 = sdata[tx + 4 * (960 + ty)];
-        __id[15] = ty + 960;
+        temp_15 = sdata[tx + 16 * (480 + ty)];
+        __id[15] = ty + 480;
         
         j = 1;
-        k = 2 % 1;
+        k = 1 % 1;
         MY_ANGLE2COMPLEX((float)(j * k) * -3.141592653589793f, tmp_angle);
         tmp_angle_bk = tmp_angle;
         
@@ -1441,9 +1435,6 @@ extern __shared__ float shared[];
             MY_MUL(temp_8, tmp_angle, tmp);
             temp_8 = tmp;
             
-            MY_MUL(temp_12, tmp_angle, tmp);
-            temp_12 = tmp;
-            
                     tmp_angle = tmp_angle_bk;
     
             tmp_angle_rot.x = 1.0f;
@@ -1455,9 +1446,6 @@ extern __shared__ float shared[];
             
             MY_MUL(temp_9, tmp_angle, tmp);
             temp_9 = tmp;
-            
-            MY_MUL(temp_13, tmp_angle, tmp);
-            temp_13 = tmp;
             
                     tmp_angle = tmp_angle_bk;
     
@@ -1471,9 +1459,6 @@ extern __shared__ float shared[];
             MY_MUL(temp_10, tmp_angle, tmp);
             temp_10 = tmp;
             
-            MY_MUL(temp_14, tmp_angle, tmp);
-            temp_14 = tmp;
-            
                     tmp_angle = tmp_angle_bk;
     
             tmp_angle_rot.x = 1.0f;
@@ -1485,6 +1470,51 @@ extern __shared__ float shared[];
             
             MY_MUL(temp_11, tmp_angle, tmp);
             temp_11 = tmp;
+            
+                    tmp_angle = tmp_angle_bk;
+    
+            tmp_angle_rot.x = 1.0f;
+            tmp_angle_rot.y = 0.0f;
+            MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+            tmp_angle = tmp;
+            tmp_angle_rot.x = tmp_angle.y;
+            tmp_angle_rot.y = -tmp_angle.x;
+            
+            MY_MUL(temp_12, tmp_angle, tmp);
+            temp_12 = tmp;
+            
+                    tmp_angle = tmp_angle_bk;
+    
+            tmp_angle_rot.x = 1.0f;
+            tmp_angle_rot.y = 0.0f;
+            MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+            tmp_angle = tmp;
+            tmp_angle_rot.x = tmp_angle.y;
+            tmp_angle_rot.y = -tmp_angle.x;
+            
+            MY_MUL(temp_13, tmp_angle, tmp);
+            temp_13 = tmp;
+            
+                    tmp_angle = tmp_angle_bk;
+    
+            tmp_angle_rot.x = 1.0f;
+            tmp_angle_rot.y = 0.0f;
+            MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+            tmp_angle = tmp;
+            tmp_angle_rot.x = tmp_angle.y;
+            tmp_angle_rot.y = -tmp_angle.x;
+            
+            MY_MUL(temp_14, tmp_angle, tmp);
+            temp_14 = tmp;
+            
+                    tmp_angle = tmp_angle_bk;
+    
+            tmp_angle_rot.x = 1.0f;
+            tmp_angle_rot.y = 0.0f;
+            MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+            tmp_angle = tmp;
+            tmp_angle_rot.x = tmp_angle.y;
+            tmp_angle_rot.y = -tmp_angle.x;
             
             MY_MUL(temp_15, tmp_angle, tmp);
             temp_15 = tmp;
@@ -1498,15 +1528,6 @@ extern __shared__ float shared[];
             __id[0] = tmp_id;
             __id[8] = tmp_id + 256;
             
-            tmp = temp_4;
-            MY_ADD(tmp, temp_12, temp_4);
-            MY_SUB(tmp, temp_12, temp_12);
-            
-            tmp_id = __id[4];
-            tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-            __id[4] = tmp_id;
-            __id[12] = tmp_id + 256;
-            
             tmp = temp_1;
             MY_ADD(tmp, temp_9, temp_1);
             MY_SUB(tmp, temp_9, temp_9);
@@ -1515,15 +1536,6 @@ extern __shared__ float shared[];
             tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
             __id[1] = tmp_id;
             __id[9] = tmp_id + 256;
-            
-            tmp = temp_5;
-            MY_ADD(tmp, temp_13, temp_5);
-            MY_SUB(tmp, temp_13, temp_13);
-            
-            tmp_id = __id[5];
-            tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-            __id[5] = tmp_id;
-            __id[13] = tmp_id + 256;
             
             tmp = temp_2;
             MY_ADD(tmp, temp_10, temp_2);
@@ -1534,15 +1546,6 @@ extern __shared__ float shared[];
             __id[2] = tmp_id;
             __id[10] = tmp_id + 256;
             
-            tmp = temp_6;
-            MY_ADD(tmp, temp_14, temp_6);
-            MY_SUB(tmp, temp_14, temp_14);
-            
-            tmp_id = __id[6];
-            tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-            __id[6] = tmp_id;
-            __id[14] = tmp_id + 256;
-            
             tmp = temp_3;
             MY_ADD(tmp, temp_11, temp_3);
             MY_SUB(tmp, temp_11, temp_11);
@@ -1552,6 +1555,33 @@ extern __shared__ float shared[];
             __id[3] = tmp_id;
             __id[11] = tmp_id + 256;
             
+            tmp = temp_4;
+            MY_ADD(tmp, temp_12, temp_4);
+            MY_SUB(tmp, temp_12, temp_12);
+            
+            tmp_id = __id[4];
+            tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+            __id[4] = tmp_id;
+            __id[12] = tmp_id + 256;
+            
+            tmp = temp_5;
+            MY_ADD(tmp, temp_13, temp_5);
+            MY_SUB(tmp, temp_13, temp_13);
+            
+            tmp_id = __id[5];
+            tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+            __id[5] = tmp_id;
+            __id[13] = tmp_id + 256;
+            
+            tmp = temp_6;
+            MY_ADD(tmp, temp_14, temp_6);
+            MY_SUB(tmp, temp_14, temp_14);
+            
+            tmp_id = __id[6];
+            tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+            __id[6] = tmp_id;
+            __id[14] = tmp_id + 256;
+            
             tmp = temp_7;
             MY_ADD(tmp, temp_15, temp_7);
             MY_SUB(tmp, temp_15, temp_15);
@@ -1560,145 +1590,6 @@ extern __shared__ float shared[];
             tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
             __id[7] = tmp_id;
             __id[15] = tmp_id + 256;
-            
-        n_global *= 2;
-        
-        j = 1;
-        k = 2 % 2;
-        MY_ANGLE2COMPLEX((float)(j * k) * -1.5707963267948966f, tmp_angle);
-        tmp_angle_bk = tmp_angle;
-        
-                    tmp_angle = tmp_angle_bk;
-    
-            tmp_angle_rot.x = 1.0f;
-            tmp_angle_rot.y = 0.0f;
-            MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-            tmp_angle = tmp;
-            tmp_angle_rot.x = tmp_angle.y;
-            tmp_angle_rot.y = -tmp_angle.x;
-            
-            MY_MUL(temp_4, tmp_angle, tmp);
-            temp_4 = tmp;
-            
-            MY_MUL(temp_12, tmp_angle_rot, tmp);
-            temp_12 = tmp;
-            
-                    tmp_angle = tmp_angle_bk;
-    
-            tmp_angle_rot.x = 1.0f;
-            tmp_angle_rot.y = 0.0f;
-            MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-            tmp_angle = tmp;
-            tmp_angle_rot.x = tmp_angle.y;
-            tmp_angle_rot.y = -tmp_angle.x;
-            
-            MY_MUL(temp_5, tmp_angle, tmp);
-            temp_5 = tmp;
-            
-            MY_MUL(temp_13, tmp_angle_rot, tmp);
-            temp_13 = tmp;
-            
-                    tmp_angle = tmp_angle_bk;
-    
-            tmp_angle_rot.x = 1.0f;
-            tmp_angle_rot.y = 0.0f;
-            MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-            tmp_angle = tmp;
-            tmp_angle_rot.x = tmp_angle.y;
-            tmp_angle_rot.y = -tmp_angle.x;
-            
-            MY_MUL(temp_6, tmp_angle, tmp);
-            temp_6 = tmp;
-            
-            MY_MUL(temp_14, tmp_angle_rot, tmp);
-            temp_14 = tmp;
-            
-                    tmp_angle = tmp_angle_bk;
-    
-            tmp_angle_rot.x = 1.0f;
-            tmp_angle_rot.y = 0.0f;
-            MY_MUL(tmp_angle, tmp_angle_rot, tmp);
-            tmp_angle = tmp;
-            tmp_angle_rot.x = tmp_angle.y;
-            tmp_angle_rot.y = -tmp_angle.x;
-            
-            MY_MUL(temp_7, tmp_angle, tmp);
-            temp_7 = tmp;
-            
-            MY_MUL(temp_15, tmp_angle_rot, tmp);
-            temp_15 = tmp;
-            
-            tmp = temp_0;
-            MY_ADD(tmp, temp_4, temp_0);
-            MY_SUB(tmp, temp_4, temp_4);
-            
-            tmp_id = __id[0];
-            tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-            __id[0] = tmp_id;
-            __id[4] = tmp_id + 512;
-            
-            tmp = temp_8;
-            MY_ADD(tmp, temp_12, temp_8);
-            MY_SUB(tmp, temp_12, temp_12);
-            
-            tmp_id = __id[8];
-            tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-            __id[8] = tmp_id;
-            __id[12] = tmp_id + 512;
-            
-            tmp = temp_1;
-            MY_ADD(tmp, temp_5, temp_1);
-            MY_SUB(tmp, temp_5, temp_5);
-            
-            tmp_id = __id[1];
-            tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-            __id[1] = tmp_id;
-            __id[5] = tmp_id + 512;
-            
-            tmp = temp_9;
-            MY_ADD(tmp, temp_13, temp_9);
-            MY_SUB(tmp, temp_13, temp_13);
-            
-            tmp_id = __id[9];
-            tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-            __id[9] = tmp_id;
-            __id[13] = tmp_id + 512;
-            
-            tmp = temp_2;
-            MY_ADD(tmp, temp_6, temp_2);
-            MY_SUB(tmp, temp_6, temp_6);
-            
-            tmp_id = __id[2];
-            tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-            __id[2] = tmp_id;
-            __id[6] = tmp_id + 512;
-            
-            tmp = temp_10;
-            MY_ADD(tmp, temp_14, temp_10);
-            MY_SUB(tmp, temp_14, temp_14);
-            
-            tmp_id = __id[10];
-            tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-            __id[10] = tmp_id;
-            __id[14] = tmp_id + 512;
-            
-            tmp = temp_3;
-            MY_ADD(tmp, temp_7, temp_3);
-            MY_SUB(tmp, temp_7, temp_7);
-            
-            tmp_id = __id[3];
-            tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-            __id[3] = tmp_id;
-            __id[7] = tmp_id + 512;
-            
-            tmp = temp_11;
-            MY_ADD(tmp, temp_15, temp_11);
-            MY_SUB(tmp, temp_15, temp_15);
-            
-            tmp_id = __id[11];
-            tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
-            __id[11] = tmp_id;
-            __id[15] = tmp_id + 512;
             
         n_global *= 2;
         
@@ -1725,22 +1616,6 @@ extern __shared__ float shared[];
                 mem_checksum.x += temp_3.x * r[r_id].x - temp_3.y * r[r_id].y;
                 mem_checksum.y += temp_3.y * r[r_id].x + temp_3.x * r[r_id].y;
         
-                r_id = __id[8] % 3;
-                mem_checksum.x += temp_8.x * r[r_id].x - temp_8.y * r[r_id].y;
-                mem_checksum.y += temp_8.y * r[r_id].x + temp_8.x * r[r_id].y;
-        
-                r_id = __id[9] % 3;
-                mem_checksum.x += temp_9.x * r[r_id].x - temp_9.y * r[r_id].y;
-                mem_checksum.y += temp_9.y * r[r_id].x + temp_9.x * r[r_id].y;
-        
-                r_id = __id[10] % 3;
-                mem_checksum.x += temp_10.x * r[r_id].x - temp_10.y * r[r_id].y;
-                mem_checksum.y += temp_10.y * r[r_id].x + temp_10.x * r[r_id].y;
-        
-                r_id = __id[11] % 3;
-                mem_checksum.x += temp_11.x * r[r_id].x - temp_11.y * r[r_id].y;
-                mem_checksum.y += temp_11.y * r[r_id].x + temp_11.x * r[r_id].y;
-        
                 r_id = __id[4] % 3;
                 mem_checksum.x += temp_4.x * r[r_id].x - temp_4.y * r[r_id].y;
                 mem_checksum.y += temp_4.y * r[r_id].x + temp_4.x * r[r_id].y;
@@ -1756,6 +1631,22 @@ extern __shared__ float shared[];
                 r_id = __id[7] % 3;
                 mem_checksum.x += temp_7.x * r[r_id].x - temp_7.y * r[r_id].y;
                 mem_checksum.y += temp_7.y * r[r_id].x + temp_7.x * r[r_id].y;
+        
+                r_id = __id[8] % 3;
+                mem_checksum.x += temp_8.x * r[r_id].x - temp_8.y * r[r_id].y;
+                mem_checksum.y += temp_8.y * r[r_id].x + temp_8.x * r[r_id].y;
+        
+                r_id = __id[9] % 3;
+                mem_checksum.x += temp_9.x * r[r_id].x - temp_9.y * r[r_id].y;
+                mem_checksum.y += temp_9.y * r[r_id].x + temp_9.x * r[r_id].y;
+        
+                r_id = __id[10] % 3;
+                mem_checksum.x += temp_10.x * r[r_id].x - temp_10.y * r[r_id].y;
+                mem_checksum.y += temp_10.y * r[r_id].x + temp_10.x * r[r_id].y;
+        
+                r_id = __id[11] % 3;
+                mem_checksum.x += temp_11.x * r[r_id].x - temp_11.y * r[r_id].y;
+                mem_checksum.y += temp_11.y * r[r_id].x + temp_11.x * r[r_id].y;
         
                 r_id = __id[12] % 3;
                 mem_checksum.x += temp_12.x * r[r_id].x - temp_12.y * r[r_id].y;
@@ -1794,10 +1685,13 @@ extern __shared__ float shared[];
                 mem_checksum.x = 0;
                 mem_checksum.y = 0;
                 
-                if(tid < 8)
+                if(tid < 16)
                 
                 mem_checksum = sdata[tid];
                 
+                    // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 8, 32);
+                    mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, 8, 32);
+            
                     // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 4, 32);
                     mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, 4, 32);
             
@@ -1818,37 +1712,37 @@ extern __shared__ float shared[];
                 if(tid == 0 && bx < 128)printf("up2 %f, %f, %f\n", mem_checksum.x, mem_checksum.y, mem_checksum.y / mem_checksum.x);
                 #endif
                 
-        outputs[(tx + bx * 4) + 512 * __id[0]] = temp_0;
+        outputs[(tx + bx * 16) + 128 * __id[0]] = temp_0;
         
-        outputs[(tx + bx * 4) + 512 * __id[1]] = temp_1;
+        outputs[(tx + bx * 16) + 128 * __id[1]] = temp_1;
         
-        outputs[(tx + bx * 4) + 512 * __id[2]] = temp_2;
+        outputs[(tx + bx * 16) + 128 * __id[2]] = temp_2;
         
-        outputs[(tx + bx * 4) + 512 * __id[3]] = temp_3;
+        outputs[(tx + bx * 16) + 128 * __id[3]] = temp_3;
         
-        outputs[(tx + bx * 4) + 512 * __id[8]] = temp_8;
+        outputs[(tx + bx * 16) + 128 * __id[4]] = temp_4;
         
-        outputs[(tx + bx * 4) + 512 * __id[9]] = temp_9;
+        outputs[(tx + bx * 16) + 128 * __id[5]] = temp_5;
         
-        outputs[(tx + bx * 4) + 512 * __id[10]] = temp_10;
+        outputs[(tx + bx * 16) + 128 * __id[6]] = temp_6;
         
-        outputs[(tx + bx * 4) + 512 * __id[11]] = temp_11;
+        outputs[(tx + bx * 16) + 128 * __id[7]] = temp_7;
         
-        outputs[(tx + bx * 4) + 512 * __id[4]] = temp_4;
+        outputs[(tx + bx * 16) + 128 * __id[8]] = temp_8;
         
-        outputs[(tx + bx * 4) + 512 * __id[5]] = temp_5;
+        outputs[(tx + bx * 16) + 128 * __id[9]] = temp_9;
         
-        outputs[(tx + bx * 4) + 512 * __id[6]] = temp_6;
+        outputs[(tx + bx * 16) + 128 * __id[10]] = temp_10;
         
-        outputs[(tx + bx * 4) + 512 * __id[7]] = temp_7;
+        outputs[(tx + bx * 16) + 128 * __id[11]] = temp_11;
         
-        outputs[(tx + bx * 4) + 512 * __id[12]] = temp_12;
+        outputs[(tx + bx * 16) + 128 * __id[12]] = temp_12;
         
-        outputs[(tx + bx * 4) + 512 * __id[13]] = temp_13;
+        outputs[(tx + bx * 16) + 128 * __id[13]] = temp_13;
         
-        outputs[(tx + bx * 4) + 512 * __id[14]] = temp_14;
+        outputs[(tx + bx * 16) + 128 * __id[14]] = temp_14;
         
-        outputs[(tx + bx * 4) + 512 * __id[15]] = temp_15;
+        outputs[(tx + bx * 16) + 128 * __id[15]] = temp_15;
         
         }
     
