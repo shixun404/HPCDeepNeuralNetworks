@@ -1099,9 +1099,19 @@ int main(int argc, char** argv){
         {
         
         
+
+            float * reduction = (float*)calloc(2 * 65536, sizeof(float));
             CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            float * reduction_d, *global_checksum_d;
+            CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
+            CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
+            cudaMemcpy((void*)reduction_d, (void*)input, 2 * 65536 * sizeof(float), cudaMemcpyHostToDevice);
+            cublasHandle_t handle;
+            cublasCreate(&handle);
+            
             cudaEventRecord(fft_begin);
             timeSt = std::chrono::steady_clock::now();
+            
             
             for(int i = 0; i < num_tests; ++i){
         {
@@ -1110,6 +1120,12 @@ int main(int argc, char** argv){
                 fft_radix2_logN14_1 <<<gridDim, blockDim, 8704>>> ((float2*)input_d, (float2*)output_d_1, (float2*) checksum_r_d_7);
                 cudaDeviceSynchronize();
             }
+            #if defined(GLOBAL_ON)
+            cublasSdot(handle, 16, reduction_d, 1, reduction_d + 16, 1, global_checksum_d);
+            // int res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
+            cudaDeviceSynchronize(); 
+            // printf("sdot! %d \n", res);
+            #endif
         {
                 dim3 gridDim(16, 1, 1);
                 dim3 blockDim(8, 16, 1);
@@ -1159,9 +1175,19 @@ int main(int argc, char** argv){
         {
         
         
+
+            float * reduction = (float*)calloc(2 * 65536, sizeof(float));
             CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            float * reduction_d, *global_checksum_d;
+            CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
+            CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
+            cudaMemcpy((void*)reduction_d, (void*)input, 2 * 65536 * sizeof(float), cudaMemcpyHostToDevice);
+            cublasHandle_t handle;
+            cublasCreate(&handle);
+            
             cudaEventRecord(fft_begin);
             timeSt = std::chrono::steady_clock::now();
+            
             
             for(int i = 0; i < num_tests; ++i){
         {
@@ -1170,6 +1196,12 @@ int main(int argc, char** argv){
                 fft_radix2_logN15_1 <<<gridDim, blockDim, 17408>>> ((float2*)input_d, (float2*)output_d_1, (float2*) checksum_r_d_7);
                 cudaDeviceSynchronize();
             }
+            #if defined(GLOBAL_ON)
+            cublasSdot(handle, 16, reduction_d, 1, reduction_d + 16, 1, global_checksum_d);
+            // int res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
+            cudaDeviceSynchronize(); 
+            // printf("sdot! %d \n", res);
+            #endif
         {
                 dim3 gridDim(16, 1, 1);
                 dim3 blockDim(8, 16, 1);
@@ -1222,9 +1254,19 @@ int main(int argc, char** argv){
         {
         
         
+
+            float * reduction = (float*)calloc(2 * 65536, sizeof(float));
             CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            float * reduction_d, *global_checksum_d;
+            CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
+            CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
+            cudaMemcpy((void*)reduction_d, (void*)input, 2 * 65536 * sizeof(float), cudaMemcpyHostToDevice);
+            cublasHandle_t handle;
+            cublasCreate(&handle);
+            
             cudaEventRecord(fft_begin);
             timeSt = std::chrono::steady_clock::now();
+            
             
             for(int i = 0; i < num_tests; ++i){
         {
@@ -1233,6 +1275,12 @@ int main(int argc, char** argv){
                 fft_radix2_logN16_1 <<<gridDim, blockDim, 16384>>> ((float2*)input_d, (float2*)output_d_1, (float2*) checksum_r_d_7);
                 cudaDeviceSynchronize();
             }
+            #if defined(GLOBAL_ON)
+            cublasSdot(handle, 32, reduction_d, 1, reduction_d + 32, 1, global_checksum_d);
+            // int res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
+            cudaDeviceSynchronize(); 
+            // printf("sdot! %d \n", res);
+            #endif
         {
                 dim3 gridDim(8, 1, 1);
                 dim3 blockDim(16, 32, 1);
@@ -1282,9 +1330,19 @@ int main(int argc, char** argv){
         {
         
         
+
+            float * reduction = (float*)calloc(2 * 65536, sizeof(float));
             CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            float * reduction_d, *global_checksum_d;
+            CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
+            CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
+            cudaMemcpy((void*)reduction_d, (void*)input, 2 * 65536 * sizeof(float), cudaMemcpyHostToDevice);
+            cublasHandle_t handle;
+            cublasCreate(&handle);
+            
             cudaEventRecord(fft_begin);
             timeSt = std::chrono::steady_clock::now();
+            
             
             for(int i = 0; i < num_tests; ++i){
         {
@@ -1293,6 +1351,12 @@ int main(int argc, char** argv){
                 fft_radix2_logN17_1 <<<gridDim, blockDim, 16384>>> ((float2*)input_d, (float2*)output_d_1, (float2*) checksum_r_d_8);
                 cudaDeviceSynchronize();
             }
+            #if defined(GLOBAL_ON)
+            cublasSdot(handle, 64, reduction_d, 1, reduction_d + 64, 1, global_checksum_d);
+            // int res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
+            cudaDeviceSynchronize(); 
+            // printf("sdot! %d \n", res);
+            #endif
         {
                 dim3 gridDim(64, 1, 1);
                 dim3 blockDim(4, 32, 1);
@@ -1348,9 +1412,19 @@ int main(int argc, char** argv){
         {
         
         
+
+            float * reduction = (float*)calloc(2 * 65536, sizeof(float));
             CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            float * reduction_d, *global_checksum_d;
+            CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
+            CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
+            cudaMemcpy((void*)reduction_d, (void*)input, 2 * 65536 * sizeof(float), cudaMemcpyHostToDevice);
+            cublasHandle_t handle;
+            cublasCreate(&handle);
+            
             cudaEventRecord(fft_begin);
             timeSt = std::chrono::steady_clock::now();
+            
             
             for(int i = 0; i < num_tests; ++i){
         {
@@ -1359,6 +1433,12 @@ int main(int argc, char** argv){
                 fft_radix2_logN18_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d_1, (float2*) checksum_r_d_9);
                 cudaDeviceSynchronize();
             }
+            #if defined(GLOBAL_ON)
+            cublasSdot(handle, 32, reduction_d, 1, reduction_d + 32, 1, global_checksum_d);
+            // int res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
+            cudaDeviceSynchronize(); 
+            // printf("sdot! %d \n", res);
+            #endif
         {
                 dim3 gridDim(32, 1, 1);
                 dim3 blockDim(16, 32, 1);
@@ -1411,9 +1491,19 @@ int main(int argc, char** argv){
         {
         
         
+
+            float * reduction = (float*)calloc(2 * 65536, sizeof(float));
             CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            float * reduction_d, *global_checksum_d;
+            CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
+            CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
+            cudaMemcpy((void*)reduction_d, (void*)input, 2 * 65536 * sizeof(float), cudaMemcpyHostToDevice);
+            cublasHandle_t handle;
+            cublasCreate(&handle);
+            
             cudaEventRecord(fft_begin);
             timeSt = std::chrono::steady_clock::now();
+            
             
             for(int i = 0; i < num_tests; ++i){
         {
@@ -1422,6 +1512,12 @@ int main(int argc, char** argv){
                 fft_radix2_logN19_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d_1, (float2*) checksum_r_d_9);
                 cudaDeviceSynchronize();
             }
+            #if defined(GLOBAL_ON)
+            cublasSdot(handle, 64, reduction_d, 1, reduction_d + 64, 1, global_checksum_d);
+            // int res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
+            cudaDeviceSynchronize(); 
+            // printf("sdot! %d \n", res);
+            #endif
         {
                 dim3 gridDim(128, 1, 1);
                 dim3 blockDim(4, 64, 1);
@@ -1474,9 +1570,19 @@ int main(int argc, char** argv){
         {
         
         
+
+            float * reduction = (float*)calloc(2 * 65536, sizeof(float));
             CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            float * reduction_d, *global_checksum_d;
+            CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
+            CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
+            cudaMemcpy((void*)reduction_d, (void*)input, 2 * 65536 * sizeof(float), cudaMemcpyHostToDevice);
+            cublasHandle_t handle;
+            cublasCreate(&handle);
+            
             cudaEventRecord(fft_begin);
             timeSt = std::chrono::steady_clock::now();
+            
             
             for(int i = 0; i < num_tests; ++i){
         {
@@ -1485,6 +1591,12 @@ int main(int argc, char** argv){
                 fft_radix2_logN20_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d_1, (float2*) checksum_r_d_10);
                 cudaDeviceSynchronize();
             }
+            #if defined(GLOBAL_ON)
+            cublasSdot(handle, 128, reduction_d, 1, reduction_d + 128, 1, global_checksum_d);
+            // int res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
+            cudaDeviceSynchronize(); 
+            // printf("sdot! %d \n", res);
+            #endif
         {
                 dim3 gridDim(256, 1, 1);
                 dim3 blockDim(4, 64, 1);
@@ -1540,9 +1652,19 @@ int main(int argc, char** argv){
         {
         
         
+
+            float * reduction = (float*)calloc(2 * 65536, sizeof(float));
             CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            float * reduction_d, *global_checksum_d;
+            CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
+            CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
+            cudaMemcpy((void*)reduction_d, (void*)input, 2 * 65536 * sizeof(float), cudaMemcpyHostToDevice);
+            cublasHandle_t handle;
+            cublasCreate(&handle);
+            
             cudaEventRecord(fft_begin);
             timeSt = std::chrono::steady_clock::now();
+            
             
             for(int i = 0; i < num_tests; ++i){
         {
@@ -1551,6 +1673,12 @@ int main(int argc, char** argv){
                 fft_radix2_logN21_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d_1, (float2*) checksum_r_d_10);
                 cudaDeviceSynchronize();
             }
+            #if defined(GLOBAL_ON)
+            cublasSdot(handle, 256, reduction_d, 1, reduction_d + 256, 1, global_checksum_d);
+            // int res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
+            cudaDeviceSynchronize(); 
+            // printf("sdot! %d \n", res);
+            #endif
         {
                 dim3 gridDim(256, 1, 1);
                 dim3 blockDim(4, 128, 1);
@@ -1606,9 +1734,19 @@ int main(int argc, char** argv){
         {
         
         
+
+            float * reduction = (float*)calloc(2 * 65536, sizeof(float));
             CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            float * reduction_d, *global_checksum_d;
+            CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
+            CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
+            cudaMemcpy((void*)reduction_d, (void*)input, 2 * 65536 * sizeof(float), cudaMemcpyHostToDevice);
+            cublasHandle_t handle;
+            cublasCreate(&handle);
+            
             cudaEventRecord(fft_begin);
             timeSt = std::chrono::steady_clock::now();
+            
             
             for(int i = 0; i < num_tests; ++i){
         {
@@ -1617,6 +1755,12 @@ int main(int argc, char** argv){
                 fft_radix2_logN22_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d_1, (float2*) checksum_r_d_11);
                 cudaDeviceSynchronize();
             }
+            #if defined(GLOBAL_ON)
+            cublasSdot(handle, 512, reduction_d, 1, reduction_d + 512, 1, global_checksum_d);
+            // int res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
+            cudaDeviceSynchronize(); 
+            // printf("sdot! %d \n", res);
+            #endif
         {
                 dim3 gridDim(512, 1, 1);
                 dim3 blockDim(4, 128, 1);

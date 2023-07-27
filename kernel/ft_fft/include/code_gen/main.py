@@ -32,7 +32,6 @@ if __name__ =="__main__":
         N *= radix
     
     while N <= 2 ** 22:
-        
         N = int(radix ** df['logN'][i-1])
         N1 = int(radix ** df['logN1'][i-1])
         N2 = int(radix ** df['logN2'][i-1])
@@ -46,9 +45,7 @@ if __name__ =="__main__":
             f.write(fft_kernel)
         include_list += f'''
         #include "./include/radix_2_codegen/ft_fft_radix2_logN{i}_reg{signal_per_thread}_upload=1.cuh"
-        '''
-        
-        
+        '''        
         num_block = int(df['num_block_2'][i-1])
         num_thread = int(df['num_thread_2'][i-1])
         signal_per_thread = int(df['signal_per_thread_2'][i-1])

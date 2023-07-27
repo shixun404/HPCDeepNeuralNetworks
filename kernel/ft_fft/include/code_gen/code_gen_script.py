@@ -303,9 +303,19 @@ int main(int argc, char** argv){
         
         '''
         ft_fft_script += f'''
+
+            float * reduction = (float*)calloc(2 * 65536, sizeof(float));
             CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            float * reduction_d, *global_checksum_d;
+            CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
+            CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
+            cudaMemcpy((void*)reduction_d, (void*)input, 2 * 65536 * sizeof(float), cudaMemcpyHostToDevice);
+            cublasHandle_t handle;
+            cublasCreate(&handle);
+            
             cudaEventRecord(fft_begin);
             timeSt = std::chrono::steady_clock::now();
+            
             '''
         ft_fft_script += '''
             for(int i = 0; i < num_tests; ++i){
@@ -316,6 +326,12 @@ int main(int argc, char** argv){
                 fft_radix2_logN{int(df['logN'][N-1])}_1 <<<gridDim, blockDim, {int(df['sm_size_1'][N-1])}>>> ((float2*)input_d, (float2*)output_d_1, (float2*) checksum_r_d_{int(df['logN1'][N-1])});
                 cudaDeviceSynchronize();
             }}
+            #if defined(GLOBAL_ON)
+            cublasSdot(handle, {int(df['num_block_1'][N-1])}, reduction_d, 1, reduction_d + {int(df['num_block_1'][N-1])}, 1, global_checksum_d);
+            // int res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
+            cudaDeviceSynchronize(); 
+            // printf("sdot! %d \\n", res);
+            #endif
         '''
         ft_fft_script += f'''{{
                 dim3 gridDim({int(df['num_block_2'][N-1])}, 1, 1);
