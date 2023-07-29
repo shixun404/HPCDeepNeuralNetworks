@@ -86,7 +86,7 @@ def ft_1D_fft_code_gen(N, num_thread,
             ft_fft += f'''
         #if FT==2
         float{2 * N // num_thread} tmp_r;
-        // tmp_r = *(float{2 * N // num_thread}*)(((float*)r_1) + tid * {2 * N // num_thread});
+        tmp_r = *(float{2 * N // num_thread}*)(((float*)r_1) + tid * {2 * N // num_thread});
         *(float{2 * N // num_thread}*)(((float*)sdata) + tid * {2 * N // num_thread}) = tmp_r;
         // if(bx == 0)printf("%d, hello\\n", tid);
         #endif
@@ -98,7 +98,7 @@ def ft_1D_fft_code_gen(N, num_thread,
         '''
             for i in range(2 * N // num_thread // 4):
                 ft_fft += f'''
-        // tmp_r = *(float4*)(((float*)r_1) + tid * {2 * N // num_thread} + {i} * 4);
+        tmp_r = *(float4*)(((float*)r_1) + tid * {2 * N // num_thread} + {i} * 4);
         *(float4*)(((float*)sdata) + tid * {2 * N // num_thread} + {i} * 4) = tmp_r;
         // if(bx == 0)printf("%d, hello\\n", tid);
         '''
@@ -109,7 +109,7 @@ def ft_1D_fft_code_gen(N, num_thread,
             ft_fft += '''
         #if FT==2
         float tmp_r;
-        // tmp_r = *(((float*)r_1) + tid * {2 * N1 // num_thread});
+        tmp_r = *(((float*)r_1) + tid * {2 * N1 // num_thread});
         *(((float*)sdata) + tid * {2 * N1 // num_thread}) = tmp_r;
         // if(bx == 0)printf("%d, hello\\n", tid);
         #endif
@@ -288,33 +288,33 @@ def ft_1D_fft_code_gen(N, num_thread,
                 // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 4, 32);
                 // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 2, 32);
                 // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 1, 32);
-                if(tid % 32 == 0){
+                // if(tid % 32 == 0){
                     mem_checksum.x  = mem_checksum.y;
                     mem_checksum.y = mem_checksum.y - mem_checksum_t1.y;
-                    sdata[tid / 32] = mem_checksum;
-                }
-                __syncthreads();
-                mem_checksum.x = 0;
-                mem_checksum.y = 0;
+                //     sdata[tid / 32] = mem_checksum;
+                // }
+                // __syncthreads();
+                // mem_checksum.x = 0;
+                // mem_checksum.y = 0;
                 '''
                 
-                ft_fft += f'''
-                if(tid < {num_thread // 32})
-                '''
-                ft_fft += f'''
-                mem_checksum = sdata[tid];
-                '''
-                i = num_thread // 32
-                while( i > 1):
-                    i //= 2
-                    ft_fft += f'''
-                    // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, {i}, 32);
-                    mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, {i}, 32);
-            '''
-                ft_fft += '''
-                // if(mem_checksum.y > 1)printf("%f, %f, %f\\n", temp_0.x, temp_0.y, mem_checksum.y );
-                // if(tid == 0 && bx < 128)printf("up1 %f, %f, %f\\n", mem_checksum.x, mem_checksum.y,mem_checksum.y * mem_checksum.y / mem_checksum.x);
-            '''
+            #     ft_fft += f'''
+            #     if(tid < {num_thread // 32})
+            #     '''
+            #     ft_fft += f'''
+            #     mem_checksum = sdata[tid];
+            #     '''
+            #     i = num_thread // 32
+            #     while( i > 1):
+            #         i //= 2
+            #         ft_fft += f'''
+            #         // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, {i}, 32);
+            #         mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, {i}, 32);
+            # '''
+            #     ft_fft += '''
+            #     // if(mem_checksum.y > 1)printf("%f, %f, %f\\n", temp_0.x, temp_0.y, mem_checksum.y );
+            #     // if(tid == 0 && bx < 128)printf("up1 %f, %f, %f\\n", mem_checksum.x, mem_checksum.y,mem_checksum.y * mem_checksum.y / mem_checksum.x);
+            # '''
                 
                 ft_fft += f'''
                 temp_0.x += 0.1f * (mem_checksum.x);

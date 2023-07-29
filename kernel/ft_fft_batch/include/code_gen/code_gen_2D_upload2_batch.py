@@ -111,7 +111,7 @@ float2 mem_checksum, mem_checksum_t1;
     ft_fft += '''
     '''
     for i in range(signal_per_thread):
-        ft_fft += f'''temp_{i} = inputs[(ty + {i} * {blockdim_y}) + ((tx + bx * {blockdim_x}) % {N1}) * {N2}];
+        ft_fft += f'''temp_{i} = inputs[(ty + {i} * {blockdim_y}) + ((tx + bx * {blockdim_x}) % {N1}) * {N2} + batch_id * {N}];
     '''
     ft_fft += '''
     '''

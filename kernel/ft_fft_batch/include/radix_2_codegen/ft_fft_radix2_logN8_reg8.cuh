@@ -1,9 +1,10 @@
 extern __shared__ float shared[];
         
-    __global__ void __launch_bounds__(128) fft_radix2_logN8(float2* inputs, float2* outputs, float2* r_2) {
+    __global__ void __launch_bounds__(32) fft_radix2_logN8(float2* inputs, float2* outputs, float2* r_2) {
     
     // r_1 = constData;
-    float2* r_1 = r_2 + 256 * (blockIdx.x % 8);
+    // float2* r_1 = r_2 + 256 * (blockIdx.x % 1);
+    float2* r_1 = r_2;
     float2 r[3];
     r[0].x = 1.0f;
     r[0].y = 0.0f;
@@ -38,19 +39,33 @@ extern __shared__ float shared[];
         
         #if FT==2
         float4 tmp_r;
-        tmp_r = *(float4*)(((float*)r_1) + tid * 4);
-        *(float4*)(((float*)sdata) + tid * 4) = tmp_r;
+        
+        tmp_r = *(float4*)(((float*)r_1) + tid * 16 + 0 * 4);
+        *(float4*)(((float*)sdata) + tid * 16 + 0 * 4) = tmp_r;
         // if(bx == 0)printf("%d, hello\n", tid);
+        
+        tmp_r = *(float4*)(((float*)r_1) + tid * 16 + 1 * 4);
+        *(float4*)(((float*)sdata) + tid * 16 + 1 * 4) = tmp_r;
+        // if(bx == 0)printf("%d, hello\n", tid);
+        
+        tmp_r = *(float4*)(((float*)r_1) + tid * 16 + 2 * 4);
+        *(float4*)(((float*)sdata) + tid * 16 + 2 * 4) = tmp_r;
+        // if(bx == 0)printf("%d, hello\n", tid);
+        
+        tmp_r = *(float4*)(((float*)r_1) + tid * 16 + 3 * 4);
+        *(float4*)(((float*)sdata) + tid * 16 + 3 * 4) = tmp_r;
+        // if(bx == 0)printf("%d, hello\n", tid);
+        
         #endif
         
-        temp_0 = inputs[(ty + 0 * 32) + (tx + bx * 4) * 256];
-        temp_1 = inputs[(ty + 1 * 32) + (tx + bx * 4) * 256];
-        temp_2 = inputs[(ty + 2 * 32) + (tx + bx * 4) * 256];
-        temp_3 = inputs[(ty + 3 * 32) + (tx + bx * 4) * 256];
-        temp_4 = inputs[(ty + 4 * 32) + (tx + bx * 4) * 256];
-        temp_5 = inputs[(ty + 5 * 32) + (tx + bx * 4) * 256];
-        temp_6 = inputs[(ty + 6 * 32) + (tx + bx * 4) * 256];
-        temp_7 = inputs[(ty + 7 * 32) + (tx + bx * 4) * 256];
+        temp_0 = inputs[(ty + 0 * 32) + (tx + bx * 1) * 256];
+        temp_1 = inputs[(ty + 1 * 32) + (tx + bx * 1) * 256];
+        temp_2 = inputs[(ty + 2 * 32) + (tx + bx * 1) * 256];
+        temp_3 = inputs[(ty + 3 * 32) + (tx + bx * 1) * 256];
+        temp_4 = inputs[(ty + 4 * 32) + (tx + bx * 1) * 256];
+        temp_5 = inputs[(ty + 5 * 32) + (tx + bx * 1) * 256];
+        temp_6 = inputs[(ty + 6 * 32) + (tx + bx * 1) * 256];
+        temp_7 = inputs[(ty + 7 * 32) + (tx + bx * 1) * 256];
         
         __id[0] = 0 + ty;
         __id[1] = 32 + ty;
@@ -349,62 +364,62 @@ extern __shared__ float shared[];
     MY_MUL(temp_7, tmp_angle, tmp);
     temp_7 = tmp;
     
-        sdata[((tx + 4 * __id[0]) / 16) * 17 + 
-        ((tx + 4 * __id[0]) % 16)] = temp_0;
+        sdata[((tx + 1 * __id[0]) / 16) * 17 + 
+        ((tx + 1 * __id[0]) % 16)] = temp_0;
         
-        sdata[((tx + 4 * __id[4]) / 16) * 17 + 
-        ((tx + 4 * __id[4]) % 16)] = temp_4;
+        sdata[((tx + 1 * __id[4]) / 16) * 17 + 
+        ((tx + 1 * __id[4]) % 16)] = temp_4;
         
-        sdata[((tx + 4 * __id[2]) / 16) * 17 + 
-        ((tx + 4 * __id[2]) % 16)] = temp_2;
+        sdata[((tx + 1 * __id[2]) / 16) * 17 + 
+        ((tx + 1 * __id[2]) % 16)] = temp_2;
         
-        sdata[((tx + 4 * __id[6]) / 16) * 17 + 
-        ((tx + 4 * __id[6]) % 16)] = temp_6;
+        sdata[((tx + 1 * __id[6]) / 16) * 17 + 
+        ((tx + 1 * __id[6]) % 16)] = temp_6;
         
-        sdata[((tx + 4 * __id[1]) / 16) * 17 + 
-        ((tx + 4 * __id[1]) % 16)] = temp_1;
+        sdata[((tx + 1 * __id[1]) / 16) * 17 + 
+        ((tx + 1 * __id[1]) % 16)] = temp_1;
         
-        sdata[((tx + 4 * __id[5]) / 16) * 17 + 
-        ((tx + 4 * __id[5]) % 16)] = temp_5;
+        sdata[((tx + 1 * __id[5]) / 16) * 17 + 
+        ((tx + 1 * __id[5]) % 16)] = temp_5;
         
-        sdata[((tx + 4 * __id[3]) / 16) * 17 + 
-        ((tx + 4 * __id[3]) % 16)] = temp_3;
+        sdata[((tx + 1 * __id[3]) / 16) * 17 + 
+        ((tx + 1 * __id[3]) % 16)] = temp_3;
         
-        sdata[((tx + 4 * __id[7]) / 16) * 17 + 
-        ((tx + 4 * __id[7]) % 16)] = temp_7;
+        sdata[((tx + 1 * __id[7]) / 16) * 17 + 
+        ((tx + 1 * __id[7]) % 16)] = temp_7;
         
         __syncthreads();		
         
-        temp_0 = sdata[((tx + 4 * (0 + ty)) / 16) * 17 +
-                            ((tx + 4 * (0 + ty)) % 16)];
+        temp_0 = sdata[((tx + 1 * (0 + ty)) / 16) * 17 +
+                            ((tx + 1 * (0 + ty)) % 16)];
         __id[0] = ty + 0;
         
-        temp_1 = sdata[((tx + 4 * (32 + ty)) / 16) * 17 +
-                            ((tx + 4 * (32 + ty)) % 16)];
+        temp_1 = sdata[((tx + 1 * (32 + ty)) / 16) * 17 +
+                            ((tx + 1 * (32 + ty)) % 16)];
         __id[1] = ty + 32;
         
-        temp_2 = sdata[((tx + 4 * (64 + ty)) / 16) * 17 +
-                            ((tx + 4 * (64 + ty)) % 16)];
+        temp_2 = sdata[((tx + 1 * (64 + ty)) / 16) * 17 +
+                            ((tx + 1 * (64 + ty)) % 16)];
         __id[2] = ty + 64;
         
-        temp_3 = sdata[((tx + 4 * (96 + ty)) / 16) * 17 +
-                            ((tx + 4 * (96 + ty)) % 16)];
+        temp_3 = sdata[((tx + 1 * (96 + ty)) / 16) * 17 +
+                            ((tx + 1 * (96 + ty)) % 16)];
         __id[3] = ty + 96;
         
-        temp_4 = sdata[((tx + 4 * (128 + ty)) / 16) * 17 +
-                            ((tx + 4 * (128 + ty)) % 16)];
+        temp_4 = sdata[((tx + 1 * (128 + ty)) / 16) * 17 +
+                            ((tx + 1 * (128 + ty)) % 16)];
         __id[4] = ty + 128;
         
-        temp_5 = sdata[((tx + 4 * (160 + ty)) / 16) * 17 +
-                            ((tx + 4 * (160 + ty)) % 16)];
+        temp_5 = sdata[((tx + 1 * (160 + ty)) / 16) * 17 +
+                            ((tx + 1 * (160 + ty)) % 16)];
         __id[5] = ty + 160;
         
-        temp_6 = sdata[((tx + 4 * (192 + ty)) / 16) * 17 +
-                            ((tx + 4 * (192 + ty)) % 16)];
+        temp_6 = sdata[((tx + 1 * (192 + ty)) / 16) * 17 +
+                            ((tx + 1 * (192 + ty)) % 16)];
         __id[6] = ty + 192;
         
-        temp_7 = sdata[((tx + 4 * (224 + ty)) / 16) * 17 +
-                            ((tx + 4 * (224 + ty)) % 16)];
+        temp_7 = sdata[((tx + 1 * (224 + ty)) / 16) * 17 +
+                            ((tx + 1 * (224 + ty)) % 16)];
         __id[7] = ty + 224;
         
         j = 1;
@@ -640,62 +655,62 @@ extern __shared__ float shared[];
     MY_MUL(temp_7, tmp_angle, tmp);
     temp_7 = tmp;
     
-        sdata[((tx + 4 * __id[0]) / 16) * 17 + 
-        ((tx + 4 * __id[0]) % 16)] = temp_0;
+        sdata[((tx + 1 * __id[0]) / 16) * 17 + 
+        ((tx + 1 * __id[0]) % 16)] = temp_0;
         
-        sdata[((tx + 4 * __id[4]) / 16) * 17 + 
-        ((tx + 4 * __id[4]) % 16)] = temp_4;
+        sdata[((tx + 1 * __id[4]) / 16) * 17 + 
+        ((tx + 1 * __id[4]) % 16)] = temp_4;
         
-        sdata[((tx + 4 * __id[2]) / 16) * 17 + 
-        ((tx + 4 * __id[2]) % 16)] = temp_2;
+        sdata[((tx + 1 * __id[2]) / 16) * 17 + 
+        ((tx + 1 * __id[2]) % 16)] = temp_2;
         
-        sdata[((tx + 4 * __id[6]) / 16) * 17 + 
-        ((tx + 4 * __id[6]) % 16)] = temp_6;
+        sdata[((tx + 1 * __id[6]) / 16) * 17 + 
+        ((tx + 1 * __id[6]) % 16)] = temp_6;
         
-        sdata[((tx + 4 * __id[1]) / 16) * 17 + 
-        ((tx + 4 * __id[1]) % 16)] = temp_1;
+        sdata[((tx + 1 * __id[1]) / 16) * 17 + 
+        ((tx + 1 * __id[1]) % 16)] = temp_1;
         
-        sdata[((tx + 4 * __id[5]) / 16) * 17 + 
-        ((tx + 4 * __id[5]) % 16)] = temp_5;
+        sdata[((tx + 1 * __id[5]) / 16) * 17 + 
+        ((tx + 1 * __id[5]) % 16)] = temp_5;
         
-        sdata[((tx + 4 * __id[3]) / 16) * 17 + 
-        ((tx + 4 * __id[3]) % 16)] = temp_3;
+        sdata[((tx + 1 * __id[3]) / 16) * 17 + 
+        ((tx + 1 * __id[3]) % 16)] = temp_3;
         
-        sdata[((tx + 4 * __id[7]) / 16) * 17 + 
-        ((tx + 4 * __id[7]) % 16)] = temp_7;
+        sdata[((tx + 1 * __id[7]) / 16) * 17 + 
+        ((tx + 1 * __id[7]) % 16)] = temp_7;
         
         __syncthreads();		
         
-        temp_0 = sdata[((tx + 4 * (0 + ty)) / 16) * 17 +
-                            ((tx + 4 * (0 + ty)) % 16)];
+        temp_0 = sdata[((tx + 1 * (0 + ty)) / 16) * 17 +
+                            ((tx + 1 * (0 + ty)) % 16)];
         __id[0] = ty + 0;
         
-        temp_1 = sdata[((tx + 4 * (32 + ty)) / 16) * 17 +
-                            ((tx + 4 * (32 + ty)) % 16)];
+        temp_1 = sdata[((tx + 1 * (32 + ty)) / 16) * 17 +
+                            ((tx + 1 * (32 + ty)) % 16)];
         __id[1] = ty + 32;
         
-        temp_2 = sdata[((tx + 4 * (64 + ty)) / 16) * 17 +
-                            ((tx + 4 * (64 + ty)) % 16)];
+        temp_2 = sdata[((tx + 1 * (64 + ty)) / 16) * 17 +
+                            ((tx + 1 * (64 + ty)) % 16)];
         __id[2] = ty + 64;
         
-        temp_3 = sdata[((tx + 4 * (96 + ty)) / 16) * 17 +
-                            ((tx + 4 * (96 + ty)) % 16)];
+        temp_3 = sdata[((tx + 1 * (96 + ty)) / 16) * 17 +
+                            ((tx + 1 * (96 + ty)) % 16)];
         __id[3] = ty + 96;
         
-        temp_4 = sdata[((tx + 4 * (128 + ty)) / 16) * 17 +
-                            ((tx + 4 * (128 + ty)) % 16)];
+        temp_4 = sdata[((tx + 1 * (128 + ty)) / 16) * 17 +
+                            ((tx + 1 * (128 + ty)) % 16)];
         __id[4] = ty + 128;
         
-        temp_5 = sdata[((tx + 4 * (160 + ty)) / 16) * 17 +
-                            ((tx + 4 * (160 + ty)) % 16)];
+        temp_5 = sdata[((tx + 1 * (160 + ty)) / 16) * 17 +
+                            ((tx + 1 * (160 + ty)) % 16)];
         __id[5] = ty + 160;
         
-        temp_6 = sdata[((tx + 4 * (192 + ty)) / 16) * 17 +
-                            ((tx + 4 * (192 + ty)) % 16)];
+        temp_6 = sdata[((tx + 1 * (192 + ty)) / 16) * 17 +
+                            ((tx + 1 * (192 + ty)) % 16)];
         __id[6] = ty + 192;
         
-        temp_7 = sdata[((tx + 4 * (224 + ty)) / 16) * 17 +
-                            ((tx + 4 * (224 + ty)) % 16)];
+        temp_7 = sdata[((tx + 1 * (224 + ty)) / 16) * 17 +
+                            ((tx + 1 * (224 + ty)) % 16)];
         __id[7] = ty + 224;
         
         j = 1;
@@ -895,28 +910,15 @@ extern __shared__ float shared[];
                 // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 4, 32);
                 // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 2, 32);
                 // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 1, 32);
-                if(tid % 32 == 0){
+                // if(tid % 32 == 0){
                     mem_checksum.x  = mem_checksum.y;
                     mem_checksum.y = mem_checksum.y - mem_checksum_t1.y;
-                    sdata[tid / 32] = mem_checksum;
-                }
-                __syncthreads();
-                mem_checksum.x = 0;
-                mem_checksum.y = 0;
+                //     sdata[tid / 32] = mem_checksum;
+                // }
+                // __syncthreads();
+                // mem_checksum.x = 0;
+                // mem_checksum.y = 0;
                 
-                if(tid < 4)
-                
-                mem_checksum = sdata[tid];
-                
-                    // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 2, 32);
-                    mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, 2, 32);
-            
-                    // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 1, 32);
-                    mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, 1, 32);
-            
-                // if(mem_checksum.y > 1)printf("%f, %f, %f\n", temp_0.x, temp_0.y, mem_checksum.y );
-                // if(tid == 0 && bx < 128)printf("up1 %f, %f, %f\n", mem_checksum.x, mem_checksum.y,mem_checksum.y * mem_checksum.y / mem_checksum.x);
-            
                 temp_0.x += 0.1f * (mem_checksum.x);
                 temp_0.y += 0.1f * (mem_checksum.y);
                 
@@ -925,21 +927,21 @@ extern __shared__ float shared[];
                 if(tid == 0 && bx < 128)printf("up2 %f, %f, %f\n", mem_checksum.x, mem_checksum.y, mem_checksum.y / mem_checksum.x);
                 #endif
                 
-        outputs[(tx + bx * 4) * 256 +  __id[0]] = temp_0;
+        outputs[(tx + bx * 1) * 256 +  __id[0]] = temp_0;
         
-        outputs[(tx + bx * 4) * 256 +  __id[1]] = temp_1;
+        outputs[(tx + bx * 1) * 256 +  __id[1]] = temp_1;
         
-        outputs[(tx + bx * 4) * 256 +  __id[4]] = temp_4;
+        outputs[(tx + bx * 1) * 256 +  __id[4]] = temp_4;
         
-        outputs[(tx + bx * 4) * 256 +  __id[5]] = temp_5;
+        outputs[(tx + bx * 1) * 256 +  __id[5]] = temp_5;
         
-        outputs[(tx + bx * 4) * 256 +  __id[2]] = temp_2;
+        outputs[(tx + bx * 1) * 256 +  __id[2]] = temp_2;
         
-        outputs[(tx + bx * 4) * 256 +  __id[3]] = temp_3;
+        outputs[(tx + bx * 1) * 256 +  __id[3]] = temp_3;
         
-        outputs[(tx + bx * 4) * 256 +  __id[6]] = temp_6;
+        outputs[(tx + bx * 1) * 256 +  __id[6]] = temp_6;
         
-        outputs[(tx + bx * 4) * 256 +  __id[7]] = temp_7;
+        outputs[(tx + bx * 1) * 256 +  __id[7]] = temp_7;
         
         }
     

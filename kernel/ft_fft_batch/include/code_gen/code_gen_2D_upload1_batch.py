@@ -50,6 +50,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     int N = {N1};
     int __id[{signal_per_thread}];
     int batch_id = (blockIdx.x * blockDim.x) / {N2};
+    
     float2 tmp;
     float2 tmp_angle, tmp_angle_rot;
     int j;
@@ -67,7 +68,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     r[1].y = -0.8660253882408142f;
     r[2].x = -0.5f;
     r[2].y = 0.8660253882408142f;
-    int tid = threadIdx.x + threadIdx.y * blockDim.x;
+    // if(tx == 0 && ty == 0 && bx > 3000) printf("bx %d\\n", bx);
     float2 mem_checksum, mem_checksum_t1;
     '''
     
