@@ -1,12 +1,6 @@
-
-        #include "./include/fft.cuh"
-    extern __shared__ float shared[];
-        
-    __global__ void __launch_bounds__(32) fft_radix2_logN8(float2* inputs, float2* outputs, float2* r_2) {
+extern __shared__ float shared[];
+    __global__ void __launch_bounds__(128) fft_radix2_logN9(float2* inputs, float2* outputs, float2* r_1) {
     
-    // r_1 = constData;
-    // float2* r_1 = r_2 + 256 * (blockIdx.x % 1);
-    float2* r_1 = r_2;
     float2 r[3];
     r[0].x = 1.0f;
     r[0].y = 0.0f;
@@ -37,7 +31,7 @@
         int tx = threadIdx.x;
         int ty = threadIdx.y;
         int bx = blockIdx.x;
-        int N = 256;
+        int N = 512;
         int __id[16];
         float2 tmp;
         float2 tmp_angle, tmp_angle_rot;
@@ -50,57 +44,49 @@
         #if FT==2
         float4 tmp_r;
         
-        // tmp_r = *(float4*)(((float*)r_1) + tid * 16 + 0 * 4);
-        *(float4*)(((float*)sdata) + tid * 16 + 0 * 4) = tmp_r;
+        tmp_r = *(float4*)(((float*)r_1) + tid * 8 + 0 * 4);
+        *(float4*)(((float*)sdata) + tid * 8 + 0 * 4) = tmp_r;
         // if(bx == 0)printf("%d, hello\n", tid);
         
-        // tmp_r = *(float4*)(((float*)r_1) + tid * 16 + 1 * 4);
-        *(float4*)(((float*)sdata) + tid * 16 + 1 * 4) = tmp_r;
-        // if(bx == 0)printf("%d, hello\n", tid);
-        
-        // tmp_r = *(float4*)(((float*)r_1) + tid * 16 + 2 * 4);
-        *(float4*)(((float*)sdata) + tid * 16 + 2 * 4) = tmp_r;
-        // if(bx == 0)printf("%d, hello\n", tid);
-        
-        // tmp_r = *(float4*)(((float*)r_1) + tid * 16 + 3 * 4);
-        *(float4*)(((float*)sdata) + tid * 16 + 3 * 4) = tmp_r;
+        tmp_r = *(float4*)(((float*)r_1) + tid * 8 + 1 * 4);
+        *(float4*)(((float*)sdata) + tid * 8 + 1 * 4) = tmp_r;
         // if(bx == 0)printf("%d, hello\n", tid);
         
         #endif
         
-        temp_0 = inputs[(ty + 0 * 16) + (tx + bx * 2) * 256];
-        temp_1 = inputs[(ty + 1 * 16) + (tx + bx * 2) * 256];
-        temp_2 = inputs[(ty + 2 * 16) + (tx + bx * 2) * 256];
-        temp_3 = inputs[(ty + 3 * 16) + (tx + bx * 2) * 256];
-        temp_4 = inputs[(ty + 4 * 16) + (tx + bx * 2) * 256];
-        temp_5 = inputs[(ty + 5 * 16) + (tx + bx * 2) * 256];
-        temp_6 = inputs[(ty + 6 * 16) + (tx + bx * 2) * 256];
-        temp_7 = inputs[(ty + 7 * 16) + (tx + bx * 2) * 256];
-        temp_8 = inputs[(ty + 8 * 16) + (tx + bx * 2) * 256];
-        temp_9 = inputs[(ty + 9 * 16) + (tx + bx * 2) * 256];
-        temp_10 = inputs[(ty + 10 * 16) + (tx + bx * 2) * 256];
-        temp_11 = inputs[(ty + 11 * 16) + (tx + bx * 2) * 256];
-        temp_12 = inputs[(ty + 12 * 16) + (tx + bx * 2) * 256];
-        temp_13 = inputs[(ty + 13 * 16) + (tx + bx * 2) * 256];
-        temp_14 = inputs[(ty + 14 * 16) + (tx + bx * 2) * 256];
-        temp_15 = inputs[(ty + 15 * 16) + (tx + bx * 2) * 256];
+        temp_0 = inputs[(ty + 0 * 32) + (tx + bx * 4) * 512];
+        temp_1 = inputs[(ty + 1 * 32) + (tx + bx * 4) * 512];
+        temp_2 = inputs[(ty + 2 * 32) + (tx + bx * 4) * 512];
+        temp_3 = inputs[(ty + 3 * 32) + (tx + bx * 4) * 512];
+        temp_4 = inputs[(ty + 4 * 32) + (tx + bx * 4) * 512];
+        temp_5 = inputs[(ty + 5 * 32) + (tx + bx * 4) * 512];
+        temp_6 = inputs[(ty + 6 * 32) + (tx + bx * 4) * 512];
+        temp_7 = inputs[(ty + 7 * 32) + (tx + bx * 4) * 512];
+        temp_8 = inputs[(ty + 8 * 32) + (tx + bx * 4) * 512];
+        temp_9 = inputs[(ty + 9 * 32) + (tx + bx * 4) * 512];
+        temp_10 = inputs[(ty + 10 * 32) + (tx + bx * 4) * 512];
+        temp_11 = inputs[(ty + 11 * 32) + (tx + bx * 4) * 512];
+        temp_12 = inputs[(ty + 12 * 32) + (tx + bx * 4) * 512];
+        temp_13 = inputs[(ty + 13 * 32) + (tx + bx * 4) * 512];
+        temp_14 = inputs[(ty + 14 * 32) + (tx + bx * 4) * 512];
+        temp_15 = inputs[(ty + 15 * 32) + (tx + bx * 4) * 512];
         
         __id[0] = 0 + ty;
-        __id[1] = 16 + ty;
-        __id[2] = 32 + ty;
-        __id[3] = 48 + ty;
-        __id[4] = 64 + ty;
-        __id[5] = 80 + ty;
-        __id[6] = 96 + ty;
-        __id[7] = 112 + ty;
-        __id[8] = 128 + ty;
-        __id[9] = 144 + ty;
-        __id[10] = 160 + ty;
-        __id[11] = 176 + ty;
-        __id[12] = 192 + ty;
-        __id[13] = 208 + ty;
-        __id[14] = 224 + ty;
-        __id[15] = 240 + ty;
+        __id[1] = 32 + ty;
+        __id[2] = 64 + ty;
+        __id[3] = 96 + ty;
+        __id[4] = 128 + ty;
+        __id[5] = 160 + ty;
+        __id[6] = 192 + ty;
+        __id[7] = 224 + ty;
+        __id[8] = 256 + ty;
+        __id[9] = 288 + ty;
+        __id[10] = 320 + ty;
+        __id[11] = 352 + ty;
+        __id[12] = 384 + ty;
+        __id[13] = 416 + ty;
+        __id[14] = 448 + ty;
+        __id[15] = 480 + ty;
         
     #if FT==2
     mem_checksum.x = 0;
@@ -667,183 +653,183 @@
         
         __syncthreads();
         
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 0) / (float)(256), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 0) / (float)(512), tmp_angle);
     MY_MUL(temp_0, tmp_angle, tmp);
     temp_0 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 1) / (float)(256), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 1) / (float)(512), tmp_angle);
     MY_MUL(temp_8, tmp_angle, tmp);
     temp_8 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 2) / (float)(256), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 2) / (float)(512), tmp_angle);
     MY_MUL(temp_4, tmp_angle, tmp);
     temp_4 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 3) / (float)(256), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 3) / (float)(512), tmp_angle);
     MY_MUL(temp_12, tmp_angle, tmp);
     temp_12 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 4) / (float)(256), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 4) / (float)(512), tmp_angle);
     MY_MUL(temp_2, tmp_angle, tmp);
     temp_2 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 5) / (float)(256), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 5) / (float)(512), tmp_angle);
     MY_MUL(temp_10, tmp_angle, tmp);
     temp_10 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 6) / (float)(256), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 6) / (float)(512), tmp_angle);
     MY_MUL(temp_6, tmp_angle, tmp);
     temp_6 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 7) / (float)(256), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 7) / (float)(512), tmp_angle);
     MY_MUL(temp_14, tmp_angle, tmp);
     temp_14 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 8) / (float)(256), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 8) / (float)(512), tmp_angle);
     MY_MUL(temp_1, tmp_angle, tmp);
     temp_1 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 9) / (float)(256), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 9) / (float)(512), tmp_angle);
     MY_MUL(temp_9, tmp_angle, tmp);
     temp_9 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 10) / (float)(256), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 10) / (float)(512), tmp_angle);
     MY_MUL(temp_5, tmp_angle, tmp);
     temp_5 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 11) / (float)(256), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 11) / (float)(512), tmp_angle);
     MY_MUL(temp_13, tmp_angle, tmp);
     temp_13 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 12) / (float)(256), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 12) / (float)(512), tmp_angle);
     MY_MUL(temp_3, tmp_angle, tmp);
     temp_3 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 13) / (float)(256), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 13) / (float)(512), tmp_angle);
     MY_MUL(temp_11, tmp_angle, tmp);
     temp_11 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 14) / (float)(256), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 14) / (float)(512), tmp_angle);
     MY_MUL(temp_7, tmp_angle, tmp);
     temp_7 = tmp;
     
-    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 15) / (float)(256), tmp_angle);
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 1) * 15) / (float)(512), tmp_angle);
     MY_MUL(temp_15, tmp_angle, tmp);
     temp_15 = tmp;
     
-        sdata[((tx + 2 * __id[0]) / 16) * 17 + 
-        ((tx + 2 * __id[0]) % 16)] = temp_0;
+        sdata[((tx + 4 * __id[0]) / 16) * 17 + 
+        ((tx + 4 * __id[0]) % 16)] = temp_0;
         
-        sdata[((tx + 2 * __id[8]) / 16) * 17 + 
-        ((tx + 2 * __id[8]) % 16)] = temp_8;
+        sdata[((tx + 4 * __id[8]) / 16) * 17 + 
+        ((tx + 4 * __id[8]) % 16)] = temp_8;
         
-        sdata[((tx + 2 * __id[4]) / 16) * 17 + 
-        ((tx + 2 * __id[4]) % 16)] = temp_4;
+        sdata[((tx + 4 * __id[4]) / 16) * 17 + 
+        ((tx + 4 * __id[4]) % 16)] = temp_4;
         
-        sdata[((tx + 2 * __id[12]) / 16) * 17 + 
-        ((tx + 2 * __id[12]) % 16)] = temp_12;
+        sdata[((tx + 4 * __id[12]) / 16) * 17 + 
+        ((tx + 4 * __id[12]) % 16)] = temp_12;
         
-        sdata[((tx + 2 * __id[2]) / 16) * 17 + 
-        ((tx + 2 * __id[2]) % 16)] = temp_2;
+        sdata[((tx + 4 * __id[2]) / 16) * 17 + 
+        ((tx + 4 * __id[2]) % 16)] = temp_2;
         
-        sdata[((tx + 2 * __id[10]) / 16) * 17 + 
-        ((tx + 2 * __id[10]) % 16)] = temp_10;
+        sdata[((tx + 4 * __id[10]) / 16) * 17 + 
+        ((tx + 4 * __id[10]) % 16)] = temp_10;
         
-        sdata[((tx + 2 * __id[6]) / 16) * 17 + 
-        ((tx + 2 * __id[6]) % 16)] = temp_6;
+        sdata[((tx + 4 * __id[6]) / 16) * 17 + 
+        ((tx + 4 * __id[6]) % 16)] = temp_6;
         
-        sdata[((tx + 2 * __id[14]) / 16) * 17 + 
-        ((tx + 2 * __id[14]) % 16)] = temp_14;
+        sdata[((tx + 4 * __id[14]) / 16) * 17 + 
+        ((tx + 4 * __id[14]) % 16)] = temp_14;
         
-        sdata[((tx + 2 * __id[1]) / 16) * 17 + 
-        ((tx + 2 * __id[1]) % 16)] = temp_1;
+        sdata[((tx + 4 * __id[1]) / 16) * 17 + 
+        ((tx + 4 * __id[1]) % 16)] = temp_1;
         
-        sdata[((tx + 2 * __id[9]) / 16) * 17 + 
-        ((tx + 2 * __id[9]) % 16)] = temp_9;
+        sdata[((tx + 4 * __id[9]) / 16) * 17 + 
+        ((tx + 4 * __id[9]) % 16)] = temp_9;
         
-        sdata[((tx + 2 * __id[5]) / 16) * 17 + 
-        ((tx + 2 * __id[5]) % 16)] = temp_5;
+        sdata[((tx + 4 * __id[5]) / 16) * 17 + 
+        ((tx + 4 * __id[5]) % 16)] = temp_5;
         
-        sdata[((tx + 2 * __id[13]) / 16) * 17 + 
-        ((tx + 2 * __id[13]) % 16)] = temp_13;
+        sdata[((tx + 4 * __id[13]) / 16) * 17 + 
+        ((tx + 4 * __id[13]) % 16)] = temp_13;
         
-        sdata[((tx + 2 * __id[3]) / 16) * 17 + 
-        ((tx + 2 * __id[3]) % 16)] = temp_3;
+        sdata[((tx + 4 * __id[3]) / 16) * 17 + 
+        ((tx + 4 * __id[3]) % 16)] = temp_3;
         
-        sdata[((tx + 2 * __id[11]) / 16) * 17 + 
-        ((tx + 2 * __id[11]) % 16)] = temp_11;
+        sdata[((tx + 4 * __id[11]) / 16) * 17 + 
+        ((tx + 4 * __id[11]) % 16)] = temp_11;
         
-        sdata[((tx + 2 * __id[7]) / 16) * 17 + 
-        ((tx + 2 * __id[7]) % 16)] = temp_7;
+        sdata[((tx + 4 * __id[7]) / 16) * 17 + 
+        ((tx + 4 * __id[7]) % 16)] = temp_7;
         
-        sdata[((tx + 2 * __id[15]) / 16) * 17 + 
-        ((tx + 2 * __id[15]) % 16)] = temp_15;
+        sdata[((tx + 4 * __id[15]) / 16) * 17 + 
+        ((tx + 4 * __id[15]) % 16)] = temp_15;
         
         __syncthreads();		
         
-        temp_0 = sdata[((tx + 2 * (0 + ty)) / 16) * 17 +
-                            ((tx + 2 * (0 + ty)) % 16)];
+        temp_0 = sdata[((tx + 4 * (0 + ty)) / 16) * 17 +
+                            ((tx + 4 * (0 + ty)) % 16)];
         __id[0] = ty + 0;
         
-        temp_1 = sdata[((tx + 2 * (16 + ty)) / 16) * 17 +
-                            ((tx + 2 * (16 + ty)) % 16)];
-        __id[1] = ty + 16;
+        temp_1 = sdata[((tx + 4 * (32 + ty)) / 16) * 17 +
+                            ((tx + 4 * (32 + ty)) % 16)];
+        __id[1] = ty + 32;
         
-        temp_2 = sdata[((tx + 2 * (32 + ty)) / 16) * 17 +
-                            ((tx + 2 * (32 + ty)) % 16)];
-        __id[2] = ty + 32;
+        temp_2 = sdata[((tx + 4 * (64 + ty)) / 16) * 17 +
+                            ((tx + 4 * (64 + ty)) % 16)];
+        __id[2] = ty + 64;
         
-        temp_3 = sdata[((tx + 2 * (48 + ty)) / 16) * 17 +
-                            ((tx + 2 * (48 + ty)) % 16)];
-        __id[3] = ty + 48;
+        temp_3 = sdata[((tx + 4 * (96 + ty)) / 16) * 17 +
+                            ((tx + 4 * (96 + ty)) % 16)];
+        __id[3] = ty + 96;
         
-        temp_4 = sdata[((tx + 2 * (64 + ty)) / 16) * 17 +
-                            ((tx + 2 * (64 + ty)) % 16)];
-        __id[4] = ty + 64;
+        temp_4 = sdata[((tx + 4 * (128 + ty)) / 16) * 17 +
+                            ((tx + 4 * (128 + ty)) % 16)];
+        __id[4] = ty + 128;
         
-        temp_5 = sdata[((tx + 2 * (80 + ty)) / 16) * 17 +
-                            ((tx + 2 * (80 + ty)) % 16)];
-        __id[5] = ty + 80;
+        temp_5 = sdata[((tx + 4 * (160 + ty)) / 16) * 17 +
+                            ((tx + 4 * (160 + ty)) % 16)];
+        __id[5] = ty + 160;
         
-        temp_6 = sdata[((tx + 2 * (96 + ty)) / 16) * 17 +
-                            ((tx + 2 * (96 + ty)) % 16)];
-        __id[6] = ty + 96;
+        temp_6 = sdata[((tx + 4 * (192 + ty)) / 16) * 17 +
+                            ((tx + 4 * (192 + ty)) % 16)];
+        __id[6] = ty + 192;
         
-        temp_7 = sdata[((tx + 2 * (112 + ty)) / 16) * 17 +
-                            ((tx + 2 * (112 + ty)) % 16)];
-        __id[7] = ty + 112;
+        temp_7 = sdata[((tx + 4 * (224 + ty)) / 16) * 17 +
+                            ((tx + 4 * (224 + ty)) % 16)];
+        __id[7] = ty + 224;
         
-        temp_8 = sdata[((tx + 2 * (128 + ty)) / 16) * 17 +
-                            ((tx + 2 * (128 + ty)) % 16)];
-        __id[8] = ty + 128;
+        temp_8 = sdata[((tx + 4 * (256 + ty)) / 16) * 17 +
+                            ((tx + 4 * (256 + ty)) % 16)];
+        __id[8] = ty + 256;
         
-        temp_9 = sdata[((tx + 2 * (144 + ty)) / 16) * 17 +
-                            ((tx + 2 * (144 + ty)) % 16)];
-        __id[9] = ty + 144;
+        temp_9 = sdata[((tx + 4 * (288 + ty)) / 16) * 17 +
+                            ((tx + 4 * (288 + ty)) % 16)];
+        __id[9] = ty + 288;
         
-        temp_10 = sdata[((tx + 2 * (160 + ty)) / 16) * 17 +
-                            ((tx + 2 * (160 + ty)) % 16)];
-        __id[10] = ty + 160;
+        temp_10 = sdata[((tx + 4 * (320 + ty)) / 16) * 17 +
+                            ((tx + 4 * (320 + ty)) % 16)];
+        __id[10] = ty + 320;
         
-        temp_11 = sdata[((tx + 2 * (176 + ty)) / 16) * 17 +
-                            ((tx + 2 * (176 + ty)) % 16)];
-        __id[11] = ty + 176;
+        temp_11 = sdata[((tx + 4 * (352 + ty)) / 16) * 17 +
+                            ((tx + 4 * (352 + ty)) % 16)];
+        __id[11] = ty + 352;
         
-        temp_12 = sdata[((tx + 2 * (192 + ty)) / 16) * 17 +
-                            ((tx + 2 * (192 + ty)) % 16)];
-        __id[12] = ty + 192;
+        temp_12 = sdata[((tx + 4 * (384 + ty)) / 16) * 17 +
+                            ((tx + 4 * (384 + ty)) % 16)];
+        __id[12] = ty + 384;
         
-        temp_13 = sdata[((tx + 2 * (208 + ty)) / 16) * 17 +
-                            ((tx + 2 * (208 + ty)) % 16)];
-        __id[13] = ty + 208;
+        temp_13 = sdata[((tx + 4 * (416 + ty)) / 16) * 17 +
+                            ((tx + 4 * (416 + ty)) % 16)];
+        __id[13] = ty + 416;
         
-        temp_14 = sdata[((tx + 2 * (224 + ty)) / 16) * 17 +
-                            ((tx + 2 * (224 + ty)) % 16)];
-        __id[14] = ty + 224;
+        temp_14 = sdata[((tx + 4 * (448 + ty)) / 16) * 17 +
+                            ((tx + 4 * (448 + ty)) % 16)];
+        __id[14] = ty + 448;
         
-        temp_15 = sdata[((tx + 2 * (240 + ty)) / 16) * 17 +
-                            ((tx + 2 * (240 + ty)) % 16)];
-        __id[15] = ty + 240;
+        temp_15 = sdata[((tx + 4 * (480 + ty)) / 16) * 17 +
+                            ((tx + 4 * (480 + ty)) % 16)];
+        __id[15] = ty + 480;
         
         j = 1;
         k = 8 % 1;
@@ -1321,6 +1307,361 @@
             
         n_global *= 2;
         
+        __syncthreads();
+        
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 0) / (float)(32.0), tmp_angle);
+    MY_MUL(temp_0, tmp_angle, tmp);
+    temp_0 = tmp;
+    
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 1) / (float)(32.0), tmp_angle);
+    MY_MUL(temp_8, tmp_angle, tmp);
+    temp_8 = tmp;
+    
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 2) / (float)(32.0), tmp_angle);
+    MY_MUL(temp_4, tmp_angle, tmp);
+    temp_4 = tmp;
+    
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 3) / (float)(32.0), tmp_angle);
+    MY_MUL(temp_12, tmp_angle, tmp);
+    temp_12 = tmp;
+    
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 4) / (float)(32.0), tmp_angle);
+    MY_MUL(temp_2, tmp_angle, tmp);
+    temp_2 = tmp;
+    
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 5) / (float)(32.0), tmp_angle);
+    MY_MUL(temp_10, tmp_angle, tmp);
+    temp_10 = tmp;
+    
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 6) / (float)(32.0), tmp_angle);
+    MY_MUL(temp_6, tmp_angle, tmp);
+    temp_6 = tmp;
+    
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 7) / (float)(32.0), tmp_angle);
+    MY_MUL(temp_14, tmp_angle, tmp);
+    temp_14 = tmp;
+    
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 8) / (float)(32.0), tmp_angle);
+    MY_MUL(temp_1, tmp_angle, tmp);
+    temp_1 = tmp;
+    
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 9) / (float)(32.0), tmp_angle);
+    MY_MUL(temp_9, tmp_angle, tmp);
+    temp_9 = tmp;
+    
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 10) / (float)(32.0), tmp_angle);
+    MY_MUL(temp_5, tmp_angle, tmp);
+    temp_5 = tmp;
+    
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 11) / (float)(32.0), tmp_angle);
+    MY_MUL(temp_13, tmp_angle, tmp);
+    temp_13 = tmp;
+    
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 12) / (float)(32.0), tmp_angle);
+    MY_MUL(temp_3, tmp_angle, tmp);
+    temp_3 = tmp;
+    
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 13) / (float)(32.0), tmp_angle);
+    MY_MUL(temp_11, tmp_angle, tmp);
+    temp_11 = tmp;
+    
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 14) / (float)(32.0), tmp_angle);
+    MY_MUL(temp_7, tmp_angle, tmp);
+    temp_7 = tmp;
+    
+    MY_ANGLE2COMPLEX((float)(-M_PI * 2 * ((ty) / 16) * 15) / (float)(32.0), tmp_angle);
+    MY_MUL(temp_15, tmp_angle, tmp);
+    temp_15 = tmp;
+    
+        sdata[((tx + 4 * __id[0]) / 16) * 17 + 
+        ((tx + 4 * __id[0]) % 16)] = temp_0;
+        
+        sdata[((tx + 4 * __id[8]) / 16) * 17 + 
+        ((tx + 4 * __id[8]) % 16)] = temp_8;
+        
+        sdata[((tx + 4 * __id[4]) / 16) * 17 + 
+        ((tx + 4 * __id[4]) % 16)] = temp_4;
+        
+        sdata[((tx + 4 * __id[12]) / 16) * 17 + 
+        ((tx + 4 * __id[12]) % 16)] = temp_12;
+        
+        sdata[((tx + 4 * __id[2]) / 16) * 17 + 
+        ((tx + 4 * __id[2]) % 16)] = temp_2;
+        
+        sdata[((tx + 4 * __id[10]) / 16) * 17 + 
+        ((tx + 4 * __id[10]) % 16)] = temp_10;
+        
+        sdata[((tx + 4 * __id[6]) / 16) * 17 + 
+        ((tx + 4 * __id[6]) % 16)] = temp_6;
+        
+        sdata[((tx + 4 * __id[14]) / 16) * 17 + 
+        ((tx + 4 * __id[14]) % 16)] = temp_14;
+        
+        sdata[((tx + 4 * __id[1]) / 16) * 17 + 
+        ((tx + 4 * __id[1]) % 16)] = temp_1;
+        
+        sdata[((tx + 4 * __id[9]) / 16) * 17 + 
+        ((tx + 4 * __id[9]) % 16)] = temp_9;
+        
+        sdata[((tx + 4 * __id[5]) / 16) * 17 + 
+        ((tx + 4 * __id[5]) % 16)] = temp_5;
+        
+        sdata[((tx + 4 * __id[13]) / 16) * 17 + 
+        ((tx + 4 * __id[13]) % 16)] = temp_13;
+        
+        sdata[((tx + 4 * __id[3]) / 16) * 17 + 
+        ((tx + 4 * __id[3]) % 16)] = temp_3;
+        
+        sdata[((tx + 4 * __id[11]) / 16) * 17 + 
+        ((tx + 4 * __id[11]) % 16)] = temp_11;
+        
+        sdata[((tx + 4 * __id[7]) / 16) * 17 + 
+        ((tx + 4 * __id[7]) % 16)] = temp_7;
+        
+        sdata[((tx + 4 * __id[15]) / 16) * 17 + 
+        ((tx + 4 * __id[15]) % 16)] = temp_15;
+        
+        __syncthreads();		
+        
+        temp_0 = sdata[((tx + 4 * (0 + ty)) / 16) * 17 +
+                            ((tx + 4 * (0 + ty)) % 16)];
+        __id[0] = ty + 0;
+        
+        temp_1 = sdata[((tx + 4 * (32 + ty)) / 16) * 17 +
+                            ((tx + 4 * (32 + ty)) % 16)];
+        __id[1] = ty + 32;
+        
+        temp_2 = sdata[((tx + 4 * (64 + ty)) / 16) * 17 +
+                            ((tx + 4 * (64 + ty)) % 16)];
+        __id[2] = ty + 64;
+        
+        temp_3 = sdata[((tx + 4 * (96 + ty)) / 16) * 17 +
+                            ((tx + 4 * (96 + ty)) % 16)];
+        __id[3] = ty + 96;
+        
+        temp_4 = sdata[((tx + 4 * (128 + ty)) / 16) * 17 +
+                            ((tx + 4 * (128 + ty)) % 16)];
+        __id[4] = ty + 128;
+        
+        temp_5 = sdata[((tx + 4 * (160 + ty)) / 16) * 17 +
+                            ((tx + 4 * (160 + ty)) % 16)];
+        __id[5] = ty + 160;
+        
+        temp_6 = sdata[((tx + 4 * (192 + ty)) / 16) * 17 +
+                            ((tx + 4 * (192 + ty)) % 16)];
+        __id[6] = ty + 192;
+        
+        temp_7 = sdata[((tx + 4 * (224 + ty)) / 16) * 17 +
+                            ((tx + 4 * (224 + ty)) % 16)];
+        __id[7] = ty + 224;
+        
+        temp_8 = sdata[((tx + 4 * (256 + ty)) / 16) * 17 +
+                            ((tx + 4 * (256 + ty)) % 16)];
+        __id[8] = ty + 256;
+        
+        temp_9 = sdata[((tx + 4 * (288 + ty)) / 16) * 17 +
+                            ((tx + 4 * (288 + ty)) % 16)];
+        __id[9] = ty + 288;
+        
+        temp_10 = sdata[((tx + 4 * (320 + ty)) / 16) * 17 +
+                            ((tx + 4 * (320 + ty)) % 16)];
+        __id[10] = ty + 320;
+        
+        temp_11 = sdata[((tx + 4 * (352 + ty)) / 16) * 17 +
+                            ((tx + 4 * (352 + ty)) % 16)];
+        __id[11] = ty + 352;
+        
+        temp_12 = sdata[((tx + 4 * (384 + ty)) / 16) * 17 +
+                            ((tx + 4 * (384 + ty)) % 16)];
+        __id[12] = ty + 384;
+        
+        temp_13 = sdata[((tx + 4 * (416 + ty)) / 16) * 17 +
+                            ((tx + 4 * (416 + ty)) % 16)];
+        __id[13] = ty + 416;
+        
+        temp_14 = sdata[((tx + 4 * (448 + ty)) / 16) * 17 +
+                            ((tx + 4 * (448 + ty)) % 16)];
+        __id[14] = ty + 448;
+        
+        temp_15 = sdata[((tx + 4 * (480 + ty)) / 16) * 17 +
+                            ((tx + 4 * (480 + ty)) % 16)];
+        __id[15] = ty + 480;
+        
+        j = 1;
+        k = 1 % 1;
+        MY_ANGLE2COMPLEX((float)(j * k) * -3.141592653589793f, tmp_angle);
+        tmp_angle_bk = tmp_angle;
+        
+                    tmp_angle = tmp_angle_bk;
+    
+            tmp_angle_rot.x = 1.0f;
+            tmp_angle_rot.y = 0.0f;
+            MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+            tmp_angle = tmp;
+            tmp_angle_rot.x = tmp_angle.y;
+            tmp_angle_rot.y = -tmp_angle.x;
+            
+            MY_MUL(temp_8, tmp_angle, tmp);
+            temp_8 = tmp;
+            
+                    tmp_angle = tmp_angle_bk;
+    
+            tmp_angle_rot.x = 1.0f;
+            tmp_angle_rot.y = 0.0f;
+            MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+            tmp_angle = tmp;
+            tmp_angle_rot.x = tmp_angle.y;
+            tmp_angle_rot.y = -tmp_angle.x;
+            
+            MY_MUL(temp_9, tmp_angle, tmp);
+            temp_9 = tmp;
+            
+                    tmp_angle = tmp_angle_bk;
+    
+            tmp_angle_rot.x = 1.0f;
+            tmp_angle_rot.y = 0.0f;
+            MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+            tmp_angle = tmp;
+            tmp_angle_rot.x = tmp_angle.y;
+            tmp_angle_rot.y = -tmp_angle.x;
+            
+            MY_MUL(temp_10, tmp_angle, tmp);
+            temp_10 = tmp;
+            
+                    tmp_angle = tmp_angle_bk;
+    
+            tmp_angle_rot.x = 1.0f;
+            tmp_angle_rot.y = 0.0f;
+            MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+            tmp_angle = tmp;
+            tmp_angle_rot.x = tmp_angle.y;
+            tmp_angle_rot.y = -tmp_angle.x;
+            
+            MY_MUL(temp_11, tmp_angle, tmp);
+            temp_11 = tmp;
+            
+                    tmp_angle = tmp_angle_bk;
+    
+            tmp_angle_rot.x = 1.0f;
+            tmp_angle_rot.y = 0.0f;
+            MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+            tmp_angle = tmp;
+            tmp_angle_rot.x = tmp_angle.y;
+            tmp_angle_rot.y = -tmp_angle.x;
+            
+            MY_MUL(temp_12, tmp_angle, tmp);
+            temp_12 = tmp;
+            
+                    tmp_angle = tmp_angle_bk;
+    
+            tmp_angle_rot.x = 1.0f;
+            tmp_angle_rot.y = 0.0f;
+            MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+            tmp_angle = tmp;
+            tmp_angle_rot.x = tmp_angle.y;
+            tmp_angle_rot.y = -tmp_angle.x;
+            
+            MY_MUL(temp_13, tmp_angle, tmp);
+            temp_13 = tmp;
+            
+                    tmp_angle = tmp_angle_bk;
+    
+            tmp_angle_rot.x = 1.0f;
+            tmp_angle_rot.y = 0.0f;
+            MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+            tmp_angle = tmp;
+            tmp_angle_rot.x = tmp_angle.y;
+            tmp_angle_rot.y = -tmp_angle.x;
+            
+            MY_MUL(temp_14, tmp_angle, tmp);
+            temp_14 = tmp;
+            
+                    tmp_angle = tmp_angle_bk;
+    
+            tmp_angle_rot.x = 1.0f;
+            tmp_angle_rot.y = 0.0f;
+            MY_MUL(tmp_angle, tmp_angle_rot, tmp);
+            tmp_angle = tmp;
+            tmp_angle_rot.x = tmp_angle.y;
+            tmp_angle_rot.y = -tmp_angle.x;
+            
+            MY_MUL(temp_15, tmp_angle, tmp);
+            temp_15 = tmp;
+            
+            tmp = temp_0;
+            MY_ADD(tmp, temp_8, temp_0);
+            MY_SUB(tmp, temp_8, temp_8);
+            
+            tmp_id = __id[0];
+            tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+            __id[0] = tmp_id;
+            __id[8] = tmp_id + 256;
+            
+            tmp = temp_1;
+            MY_ADD(tmp, temp_9, temp_1);
+            MY_SUB(tmp, temp_9, temp_9);
+            
+            tmp_id = __id[1];
+            tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+            __id[1] = tmp_id;
+            __id[9] = tmp_id + 256;
+            
+            tmp = temp_2;
+            MY_ADD(tmp, temp_10, temp_2);
+            MY_SUB(tmp, temp_10, temp_10);
+            
+            tmp_id = __id[2];
+            tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+            __id[2] = tmp_id;
+            __id[10] = tmp_id + 256;
+            
+            tmp = temp_3;
+            MY_ADD(tmp, temp_11, temp_3);
+            MY_SUB(tmp, temp_11, temp_11);
+            
+            tmp_id = __id[3];
+            tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+            __id[3] = tmp_id;
+            __id[11] = tmp_id + 256;
+            
+            tmp = temp_4;
+            MY_ADD(tmp, temp_12, temp_4);
+            MY_SUB(tmp, temp_12, temp_12);
+            
+            tmp_id = __id[4];
+            tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+            __id[4] = tmp_id;
+            __id[12] = tmp_id + 256;
+            
+            tmp = temp_5;
+            MY_ADD(tmp, temp_13, temp_5);
+            MY_SUB(tmp, temp_13, temp_13);
+            
+            tmp_id = __id[5];
+            tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+            __id[5] = tmp_id;
+            __id[13] = tmp_id + 256;
+            
+            tmp = temp_6;
+            MY_ADD(tmp, temp_14, temp_6);
+            MY_SUB(tmp, temp_14, temp_14);
+            
+            tmp_id = __id[6];
+            tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+            __id[6] = tmp_id;
+            __id[14] = tmp_id + 256;
+            
+            tmp = temp_7;
+            MY_ADD(tmp, temp_15, temp_7);
+            MY_SUB(tmp, temp_15, temp_15);
+            
+            tmp_id = __id[7];
+            tmp_id = (tmp_id / n_global) * 2 * n_global + (tmp_id % n_global);
+            __id[7] = tmp_id;
+            __id[15] = tmp_id + 256;
+            
+        n_global *= 2;
+        
         n_global *= 2;
         
                 #if FT==2
@@ -1332,61 +1673,61 @@
                 mem_checksum.x += temp_0.x * r[r_id].x - temp_0.y * r[r_id].y;
                 mem_checksum.y += temp_0.y * r[r_id].x + temp_0.x * r[r_id].y;
         
-                r_id = __id[8] % 3;
-                mem_checksum.x += temp_8.x * r[r_id].x - temp_8.y * r[r_id].y;
-                mem_checksum.y += temp_8.y * r[r_id].x + temp_8.x * r[r_id].y;
-        
-                r_id = __id[4] % 3;
-                mem_checksum.x += temp_4.x * r[r_id].x - temp_4.y * r[r_id].y;
-                mem_checksum.y += temp_4.y * r[r_id].x + temp_4.x * r[r_id].y;
-        
-                r_id = __id[12] % 3;
-                mem_checksum.x += temp_12.x * r[r_id].x - temp_12.y * r[r_id].y;
-                mem_checksum.y += temp_12.y * r[r_id].x + temp_12.x * r[r_id].y;
+                r_id = __id[1] % 3;
+                mem_checksum.x += temp_1.x * r[r_id].x - temp_1.y * r[r_id].y;
+                mem_checksum.y += temp_1.y * r[r_id].x + temp_1.x * r[r_id].y;
         
                 r_id = __id[2] % 3;
                 mem_checksum.x += temp_2.x * r[r_id].x - temp_2.y * r[r_id].y;
                 mem_checksum.y += temp_2.y * r[r_id].x + temp_2.x * r[r_id].y;
         
-                r_id = __id[10] % 3;
-                mem_checksum.x += temp_10.x * r[r_id].x - temp_10.y * r[r_id].y;
-                mem_checksum.y += temp_10.y * r[r_id].x + temp_10.x * r[r_id].y;
+                r_id = __id[3] % 3;
+                mem_checksum.x += temp_3.x * r[r_id].x - temp_3.y * r[r_id].y;
+                mem_checksum.y += temp_3.y * r[r_id].x + temp_3.x * r[r_id].y;
         
-                r_id = __id[6] % 3;
-                mem_checksum.x += temp_6.x * r[r_id].x - temp_6.y * r[r_id].y;
-                mem_checksum.y += temp_6.y * r[r_id].x + temp_6.x * r[r_id].y;
-        
-                r_id = __id[14] % 3;
-                mem_checksum.x += temp_14.x * r[r_id].x - temp_14.y * r[r_id].y;
-                mem_checksum.y += temp_14.y * r[r_id].x + temp_14.x * r[r_id].y;
-        
-                r_id = __id[1] % 3;
-                mem_checksum.x += temp_1.x * r[r_id].x - temp_1.y * r[r_id].y;
-                mem_checksum.y += temp_1.y * r[r_id].x + temp_1.x * r[r_id].y;
-        
-                r_id = __id[9] % 3;
-                mem_checksum.x += temp_9.x * r[r_id].x - temp_9.y * r[r_id].y;
-                mem_checksum.y += temp_9.y * r[r_id].x + temp_9.x * r[r_id].y;
+                r_id = __id[4] % 3;
+                mem_checksum.x += temp_4.x * r[r_id].x - temp_4.y * r[r_id].y;
+                mem_checksum.y += temp_4.y * r[r_id].x + temp_4.x * r[r_id].y;
         
                 r_id = __id[5] % 3;
                 mem_checksum.x += temp_5.x * r[r_id].x - temp_5.y * r[r_id].y;
                 mem_checksum.y += temp_5.y * r[r_id].x + temp_5.x * r[r_id].y;
         
-                r_id = __id[13] % 3;
-                mem_checksum.x += temp_13.x * r[r_id].x - temp_13.y * r[r_id].y;
-                mem_checksum.y += temp_13.y * r[r_id].x + temp_13.x * r[r_id].y;
+                r_id = __id[6] % 3;
+                mem_checksum.x += temp_6.x * r[r_id].x - temp_6.y * r[r_id].y;
+                mem_checksum.y += temp_6.y * r[r_id].x + temp_6.x * r[r_id].y;
         
-                r_id = __id[3] % 3;
-                mem_checksum.x += temp_3.x * r[r_id].x - temp_3.y * r[r_id].y;
-                mem_checksum.y += temp_3.y * r[r_id].x + temp_3.x * r[r_id].y;
+                r_id = __id[7] % 3;
+                mem_checksum.x += temp_7.x * r[r_id].x - temp_7.y * r[r_id].y;
+                mem_checksum.y += temp_7.y * r[r_id].x + temp_7.x * r[r_id].y;
+        
+                r_id = __id[8] % 3;
+                mem_checksum.x += temp_8.x * r[r_id].x - temp_8.y * r[r_id].y;
+                mem_checksum.y += temp_8.y * r[r_id].x + temp_8.x * r[r_id].y;
+        
+                r_id = __id[9] % 3;
+                mem_checksum.x += temp_9.x * r[r_id].x - temp_9.y * r[r_id].y;
+                mem_checksum.y += temp_9.y * r[r_id].x + temp_9.x * r[r_id].y;
+        
+                r_id = __id[10] % 3;
+                mem_checksum.x += temp_10.x * r[r_id].x - temp_10.y * r[r_id].y;
+                mem_checksum.y += temp_10.y * r[r_id].x + temp_10.x * r[r_id].y;
         
                 r_id = __id[11] % 3;
                 mem_checksum.x += temp_11.x * r[r_id].x - temp_11.y * r[r_id].y;
                 mem_checksum.y += temp_11.y * r[r_id].x + temp_11.x * r[r_id].y;
         
-                r_id = __id[7] % 3;
-                mem_checksum.x += temp_7.x * r[r_id].x - temp_7.y * r[r_id].y;
-                mem_checksum.y += temp_7.y * r[r_id].x + temp_7.x * r[r_id].y;
+                r_id = __id[12] % 3;
+                mem_checksum.x += temp_12.x * r[r_id].x - temp_12.y * r[r_id].y;
+                mem_checksum.y += temp_12.y * r[r_id].x + temp_12.x * r[r_id].y;
+        
+                r_id = __id[13] % 3;
+                mem_checksum.x += temp_13.x * r[r_id].x - temp_13.y * r[r_id].y;
+                mem_checksum.y += temp_13.y * r[r_id].x + temp_13.x * r[r_id].y;
+        
+                r_id = __id[14] % 3;
+                mem_checksum.x += temp_14.x * r[r_id].x - temp_14.y * r[r_id].y;
+                mem_checksum.y += temp_14.y * r[r_id].x + temp_14.x * r[r_id].y;
         
                 r_id = __id[15] % 3;
                 mem_checksum.x += temp_15.x * r[r_id].x - temp_15.y * r[r_id].y;
@@ -1413,10 +1754,16 @@
                 mem_checksum.x = 0;
                 mem_checksum.y = 0;
                 
-                if(tid < 1)
+                if(tid < 4)
                 
                 mem_checksum = sdata[tid];
                 
+                    // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 2, 32);
+                    mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, 2, 32);
+            
+                    // mem_checksum.x += __shfl_xor_sync(0xffffffff, mem_checksum.x, 1, 32);
+                    mem_checksum.y += __shfl_xor_sync(0xffffffff, mem_checksum.y, 1, 32);
+            
                 // if(mem_checksum.y > 1)printf("%f, %f, %f\n", temp_0.x, temp_0.y, mem_checksum.y );
                 // if(tid == 0 && bx < 128)printf("up1 %f, %f, %f\n", mem_checksum.x, mem_checksum.y,mem_checksum.y * mem_checksum.y / mem_checksum.x);
             
@@ -1428,590 +1775,37 @@
                 if(tid == 0 && bx < 128)printf("up2 %f, %f, %f\n", mem_checksum.x, mem_checksum.y, mem_checksum.y / mem_checksum.x);
                 #endif
                 
-        outputs[(tx + bx * 2) * 256 +  __id[0]] = temp_0;
+        outputs[(tx + bx * 4) * 512 +  __id[0]] = temp_0;
         
-        outputs[(tx + bx * 2) * 256 +  __id[8]] = temp_8;
+        outputs[(tx + bx * 4) * 512 +  __id[1]] = temp_1;
         
-        outputs[(tx + bx * 2) * 256 +  __id[4]] = temp_4;
+        outputs[(tx + bx * 4) * 512 +  __id[2]] = temp_2;
         
-        outputs[(tx + bx * 2) * 256 +  __id[12]] = temp_12;
+        outputs[(tx + bx * 4) * 512 +  __id[3]] = temp_3;
         
-        outputs[(tx + bx * 2) * 256 +  __id[2]] = temp_2;
+        outputs[(tx + bx * 4) * 512 +  __id[4]] = temp_4;
         
-        outputs[(tx + bx * 2) * 256 +  __id[10]] = temp_10;
+        outputs[(tx + bx * 4) * 512 +  __id[5]] = temp_5;
         
-        outputs[(tx + bx * 2) * 256 +  __id[6]] = temp_6;
+        outputs[(tx + bx * 4) * 512 +  __id[6]] = temp_6;
         
-        outputs[(tx + bx * 2) * 256 +  __id[14]] = temp_14;
+        outputs[(tx + bx * 4) * 512 +  __id[7]] = temp_7;
         
-        outputs[(tx + bx * 2) * 256 +  __id[1]] = temp_1;
+        outputs[(tx + bx * 4) * 512 +  __id[8]] = temp_8;
         
-        outputs[(tx + bx * 2) * 256 +  __id[9]] = temp_9;
+        outputs[(tx + bx * 4) * 512 +  __id[9]] = temp_9;
         
-        outputs[(tx + bx * 2) * 256 +  __id[5]] = temp_5;
+        outputs[(tx + bx * 4) * 512 +  __id[10]] = temp_10;
         
-        outputs[(tx + bx * 2) * 256 +  __id[13]] = temp_13;
+        outputs[(tx + bx * 4) * 512 +  __id[11]] = temp_11;
         
-        outputs[(tx + bx * 2) * 256 +  __id[3]] = temp_3;
+        outputs[(tx + bx * 4) * 512 +  __id[12]] = temp_12;
         
-        outputs[(tx + bx * 2) * 256 +  __id[11]] = temp_11;
+        outputs[(tx + bx * 4) * 512 +  __id[13]] = temp_13;
         
-        outputs[(tx + bx * 2) * 256 +  __id[7]] = temp_7;
+        outputs[(tx + bx * 4) * 512 +  __id[14]] = temp_14;
         
-        outputs[(tx + bx * 2) * 256 +  __id[15]] = temp_15;
-        
-        }
-    
-
-#include <stdlib.h>
-#include <complex>
-// #include "kernels.cuh"
-#include <cuda_runtime.h> 
-#include <cufftXt.h>
-#include "utils/utils.cuh"   
-# define RADIX 2
-#define FLOAT2_NORM(a, res) res = a.x * a.x + a.y * a.y;
-
-int main(int argc, char** argv){  
-    // #if (V == 1)
-    int __log_N__, __log_N_st__ = 3, batch_size=1;
-    float * t_cufft, *t_vkfft, *t_fft;
-    t_cufft = (float*)malloc(sizeof(float) * 65536 / 128);
-    t_vkfft = (float*)malloc(sizeof(float) * 65536 / 128);
-    t_fft = (float*)malloc(sizeof(float) * 65536 / 128);
-    
-    if (argc < 2){
-        printf("Please input log(N)\n");
-        return -1;
-    }
-    else if(argc == 2) __log_N__ = atoi(argv[1]);
-    else if(argc == 3){
-        __log_N__ = atoi(argv[1]);
-        batch_size = atoi(argv[2]);
-    }
-    // #endif
-    // __log_N__ = 10;
-    long long N = pow((double)RADIX, (double)__log_N__); 
-    int random_seed = 10;  
-    #if P_FFT == 1
-    int num_tests = 100;
-    #else
-    int num_tests = 1;
-    #endif
-    srandom(random_seed); 
-    float *input = (float*)calloc(N * 2 * 10240, sizeof(float)); 
-    float *output_ref, *output;
-    
-    output_ref = (float*)calloc(N * 2 * 10240, sizeof(float));
-    output = (float*)calloc(N * 2 * 10240, sizeof(float));
-    
-    float r[6];
-    
-    r[0] = 1.0f;
-    r[1] = 0.0f;
-    r[2] = -0.5f;
-    r[3] = -0.8660253882408142f;
-    r[4] = -0.5f;
-    r[5] = 0.8660253882408142f;
-    for(int i = 0; i < 3; ++i){
-        r[i * 2] = cosf(-2 * M_PI * (i % 3) / 3);
-        r[i * 2 + 1] = sinf(-2 * M_PI * (i % 3) / 3);
-    }
-    
-    float *input_d, *output_d, *output_d_vkfft, *output_d_cufft, *output_d_1, *output_d_ref_1, *checksum_r, *checksum_r_d, *dftmtx;
-    checksum_r = (float*)calloc(8192*2, sizeof(float));
-    dftmtx = (float*)calloc(8192*8192*2, sizeof(float));
-    CUDA_CALLER(cudaMalloc((void**)&input_d, sizeof(float) * N * 2 * 10240));
-    CUDA_CALLER(cudaMalloc((void**)&output_d, sizeof(float) * N * 2 * 10240));
-    
-    for(int i = 0; i < N * 2 * 10240; ++i){ 
-            input[i] = (float)(random() % 100) / (float)100;
-    }
-    
-        // printf("fffffff\n");
-        float* checksum_r_3, *checksum_r_d_3;
-        checksum_r_3 = (float*)calloc(8*2, sizeof(float));
-        CUDA_CALLER(cudaMalloc((void**)&checksum_r_d_3, sizeof(float) * 8 * 2));
-        // printf("################################### 8 ###################################\n");
-        for(int i = 0; i < 8; ++i)
-        
-        {
-        
-        for(int j = 0; j < 8; ++j )
-        
-        {
-        
-            dftmtx[i + (j * 2) * 8] = cosf((float)(-2 * M_PI * i * j) / 8.f);
-            dftmtx[i + (j * 2 + 1) * 8] = sinf((float)(-2 * M_PI * i * j) / 8.f);
+        outputs[(tx + bx * 4) * 512 +  __id[15]] = temp_15;
         
         }
-    }
-    
-    for(int i = 0; i < 8; ++i)
-    
-    {
-    
-        checksum_r_3[i * 2] = 0;
-        checksum_r_3[i * 2 + 1] = 0;
-        for(int j = 0; j < 8; ++j)
-    
-    {
-    
-            float real = dftmtx[j + i * 2 * 8];
-            float imag = dftmtx[j + (i * 2 + 1) * 8];
-            checksum_r_3[i * 2] += real * r[(j % 3) * 2] - imag * r[(j % 3) * 2 + 1];
-            checksum_r_3[i * 2 + 1] += imag * r[(j % 3) * 2] + real * r[(j % 3) * 2 + 1];
-        
-    }
-    }
-    
-    cudaMemcpy((void*)checksum_r_d_3, (void*)checksum_r_3, 2 * 8 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_3 + 8), (void*)checksum_r_3, 2 * 8 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_3 + 16), (void*)checksum_r_3, 2 * 8 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_3 + 24), (void*)checksum_r_3, 2 * 8 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_3 + 32), (void*)checksum_r_3, 2 * 8 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_3 + 40), (void*)checksum_r_3, 2 * 8 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_3 + 48), (void*)checksum_r_3, 2 * 8 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_3 + 56), (void*)checksum_r_3, 2 * 8 * sizeof(float), cudaMemcpyHostToDevice);
-    
-        // printf("fffffff\n");
-        float* checksum_r_4, *checksum_r_d_4;
-        checksum_r_4 = (float*)calloc(16*2, sizeof(float));
-        CUDA_CALLER(cudaMalloc((void**)&checksum_r_d_4, sizeof(float) * 16 * 2));
-        // printf("################################### 16 ###################################\n");
-        for(int i = 0; i < 16; ++i)
-        
-        {
-        
-        for(int j = 0; j < 16; ++j )
-        
-        {
-        
-            dftmtx[i + (j * 2) * 16] = cosf((float)(-2 * M_PI * i * j) / 16.f);
-            dftmtx[i + (j * 2 + 1) * 16] = sinf((float)(-2 * M_PI * i * j) / 16.f);
-        
-        }
-    }
-    
-    for(int i = 0; i < 16; ++i)
-    
-    {
-    
-        checksum_r_4[i * 2] = 0;
-        checksum_r_4[i * 2 + 1] = 0;
-        for(int j = 0; j < 16; ++j)
-    
-    {
-    
-            float real = dftmtx[j + i * 2 * 16];
-            float imag = dftmtx[j + (i * 2 + 1) * 16];
-            checksum_r_4[i * 2] += real * r[(j % 3) * 2] - imag * r[(j % 3) * 2 + 1];
-            checksum_r_4[i * 2 + 1] += imag * r[(j % 3) * 2] + real * r[(j % 3) * 2 + 1];
-        
-    }
-    }
-    
-    cudaMemcpy((void*)checksum_r_d_4, (void*)checksum_r_4, 2 * 16 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_4 + 16), (void*)checksum_r_4, 2 * 16 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_4 + 32), (void*)checksum_r_4, 2 * 16 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_4 + 48), (void*)checksum_r_4, 2 * 16 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_4 + 64), (void*)checksum_r_4, 2 * 16 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_4 + 80), (void*)checksum_r_4, 2 * 16 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_4 + 96), (void*)checksum_r_4, 2 * 16 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_4 + 112), (void*)checksum_r_4, 2 * 16 * sizeof(float), cudaMemcpyHostToDevice);
-    
-        // printf("fffffff\n");
-        float* checksum_r_5, *checksum_r_d_5;
-        checksum_r_5 = (float*)calloc(32*2, sizeof(float));
-        CUDA_CALLER(cudaMalloc((void**)&checksum_r_d_5, sizeof(float) * 32 * 2));
-        // printf("################################### 32 ###################################\n");
-        for(int i = 0; i < 32; ++i)
-        
-        {
-        
-        for(int j = 0; j < 32; ++j )
-        
-        {
-        
-            dftmtx[i + (j * 2) * 32] = cosf((float)(-2 * M_PI * i * j) / 32.f);
-            dftmtx[i + (j * 2 + 1) * 32] = sinf((float)(-2 * M_PI * i * j) / 32.f);
-        
-        }
-    }
-    
-    for(int i = 0; i < 32; ++i)
-    
-    {
-    
-        checksum_r_5[i * 2] = 0;
-        checksum_r_5[i * 2 + 1] = 0;
-        for(int j = 0; j < 32; ++j)
-    
-    {
-    
-            float real = dftmtx[j + i * 2 * 32];
-            float imag = dftmtx[j + (i * 2 + 1) * 32];
-            checksum_r_5[i * 2] += real * r[(j % 3) * 2] - imag * r[(j % 3) * 2 + 1];
-            checksum_r_5[i * 2 + 1] += imag * r[(j % 3) * 2] + real * r[(j % 3) * 2 + 1];
-        
-    }
-    }
-    
-    cudaMemcpy((void*)checksum_r_d_5, (void*)checksum_r_5, 2 * 32 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_5 + 32), (void*)checksum_r_5, 2 * 32 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_5 + 64), (void*)checksum_r_5, 2 * 32 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_5 + 96), (void*)checksum_r_5, 2 * 32 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_5 + 128), (void*)checksum_r_5, 2 * 32 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_5 + 160), (void*)checksum_r_5, 2 * 32 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_5 + 192), (void*)checksum_r_5, 2 * 32 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_5 + 224), (void*)checksum_r_5, 2 * 32 * sizeof(float), cudaMemcpyHostToDevice);
-    
-        // printf("fffffff\n");
-        float* checksum_r_6, *checksum_r_d_6;
-        checksum_r_6 = (float*)calloc(64*2, sizeof(float));
-        CUDA_CALLER(cudaMalloc((void**)&checksum_r_d_6, sizeof(float) * 64 * 2));
-        // printf("################################### 64 ###################################\n");
-        for(int i = 0; i < 64; ++i)
-        
-        {
-        
-        for(int j = 0; j < 64; ++j )
-        
-        {
-        
-            dftmtx[i + (j * 2) * 64] = cosf((float)(-2 * M_PI * i * j) / 64.f);
-            dftmtx[i + (j * 2 + 1) * 64] = sinf((float)(-2 * M_PI * i * j) / 64.f);
-        
-        }
-    }
-    
-    for(int i = 0; i < 64; ++i)
-    
-    {
-    
-        checksum_r_6[i * 2] = 0;
-        checksum_r_6[i * 2 + 1] = 0;
-        for(int j = 0; j < 64; ++j)
-    
-    {
-    
-            float real = dftmtx[j + i * 2 * 64];
-            float imag = dftmtx[j + (i * 2 + 1) * 64];
-            checksum_r_6[i * 2] += real * r[(j % 3) * 2] - imag * r[(j % 3) * 2 + 1];
-            checksum_r_6[i * 2 + 1] += imag * r[(j % 3) * 2] + real * r[(j % 3) * 2 + 1];
-        
-    }
-    }
-    
-    cudaMemcpy((void*)checksum_r_d_6, (void*)checksum_r_6, 2 * 64 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_6 + 64), (void*)checksum_r_6, 2 * 64 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_6 + 128), (void*)checksum_r_6, 2 * 64 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_6 + 192), (void*)checksum_r_6, 2 * 64 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_6 + 256), (void*)checksum_r_6, 2 * 64 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_6 + 320), (void*)checksum_r_6, 2 * 64 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_6 + 384), (void*)checksum_r_6, 2 * 64 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_6 + 448), (void*)checksum_r_6, 2 * 64 * sizeof(float), cudaMemcpyHostToDevice);
-    
-        // printf("fffffff\n");
-        float* checksum_r_7, *checksum_r_d_7;
-        checksum_r_7 = (float*)calloc(128*2, sizeof(float));
-        CUDA_CALLER(cudaMalloc((void**)&checksum_r_d_7, sizeof(float) * 128 * 2));
-        // printf("################################### 128 ###################################\n");
-        for(int i = 0; i < 128; ++i)
-        
-        {
-        
-        for(int j = 0; j < 128; ++j )
-        
-        {
-        
-            dftmtx[i + (j * 2) * 128] = cosf((float)(-2 * M_PI * i * j) / 128.f);
-            dftmtx[i + (j * 2 + 1) * 128] = sinf((float)(-2 * M_PI * i * j) / 128.f);
-        
-        }
-    }
-    
-    for(int i = 0; i < 128; ++i)
-    
-    {
-    
-        checksum_r_7[i * 2] = 0;
-        checksum_r_7[i * 2 + 1] = 0;
-        for(int j = 0; j < 128; ++j)
-    
-    {
-    
-            float real = dftmtx[j + i * 2 * 128];
-            float imag = dftmtx[j + (i * 2 + 1) * 128];
-            checksum_r_7[i * 2] += real * r[(j % 3) * 2] - imag * r[(j % 3) * 2 + 1];
-            checksum_r_7[i * 2 + 1] += imag * r[(j % 3) * 2] + real * r[(j % 3) * 2 + 1];
-        
-    }
-    }
-    
-    cudaMemcpy((void*)checksum_r_d_7, (void*)checksum_r_7, 2 * 128 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_7 + 128), (void*)checksum_r_7, 2 * 128 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_7 + 256), (void*)checksum_r_7, 2 * 128 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_7 + 384), (void*)checksum_r_7, 2 * 128 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_7 + 512), (void*)checksum_r_7, 2 * 128 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_7 + 640), (void*)checksum_r_7, 2 * 128 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_7 + 768), (void*)checksum_r_7, 2 * 128 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_7 + 896), (void*)checksum_r_7, 2 * 128 * sizeof(float), cudaMemcpyHostToDevice);
-    
-        // printf("fffffff\n");
-        float* checksum_r_8, *checksum_r_d_8;
-        checksum_r_8 = (float*)calloc(256*2, sizeof(float));
-        CUDA_CALLER(cudaMalloc((void**)&checksum_r_d_8, sizeof(float) * 256 * 2));
-        // printf("################################### 256 ###################################\n");
-        for(int i = 0; i < 256; ++i)
-        
-        {
-        
-        for(int j = 0; j < 256; ++j )
-        
-        {
-        
-            dftmtx[i + (j * 2) * 256] = cosf((float)(-2 * M_PI * i * j) / 256.f);
-            dftmtx[i + (j * 2 + 1) * 256] = sinf((float)(-2 * M_PI * i * j) / 256.f);
-        
-        }
-    }
-    
-    for(int i = 0; i < 256; ++i)
-    
-    {
-    
-        checksum_r_8[i * 2] = 0;
-        checksum_r_8[i * 2 + 1] = 0;
-        for(int j = 0; j < 256; ++j)
-    
-    {
-    
-            float real = dftmtx[j + i * 2 * 256];
-            float imag = dftmtx[j + (i * 2 + 1) * 256];
-            checksum_r_8[i * 2] += real * r[(j % 3) * 2] - imag * r[(j % 3) * 2 + 1];
-            checksum_r_8[i * 2 + 1] += imag * r[(j % 3) * 2] + real * r[(j % 3) * 2 + 1];
-        
-    }
-    }
-    
-    cudaMemcpy((void*)checksum_r_d_8, (void*)checksum_r_8, 2 * 256 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_8 + 256), (void*)checksum_r_8, 2 * 256 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_8 + 512), (void*)checksum_r_8, 2 * 256 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_8 + 768), (void*)checksum_r_8, 2 * 256 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_8 + 1024), (void*)checksum_r_8, 2 * 256 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_8 + 1280), (void*)checksum_r_8, 2 * 256 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_8 + 1536), (void*)checksum_r_8, 2 * 256 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_8 + 1792), (void*)checksum_r_8, 2 * 256 * sizeof(float), cudaMemcpyHostToDevice);
-    
-        // printf("fffffff\n");
-        float* checksum_r_9, *checksum_r_d_9;
-        checksum_r_9 = (float*)calloc(512*2, sizeof(float));
-        CUDA_CALLER(cudaMalloc((void**)&checksum_r_d_9, sizeof(float) * 512 * 2));
-        // printf("################################### 512 ###################################\n");
-        for(int i = 0; i < 512; ++i)
-        
-        {
-        
-        for(int j = 0; j < 512; ++j )
-        
-        {
-        
-            dftmtx[i + (j * 2) * 512] = cosf((float)(-2 * M_PI * i * j) / 512.f);
-            dftmtx[i + (j * 2 + 1) * 512] = sinf((float)(-2 * M_PI * i * j) / 512.f);
-        
-        }
-    }
-    
-    for(int i = 0; i < 512; ++i)
-    
-    {
-    
-        checksum_r_9[i * 2] = 0;
-        checksum_r_9[i * 2 + 1] = 0;
-        for(int j = 0; j < 512; ++j)
-    
-    {
-    
-            float real = dftmtx[j + i * 2 * 512];
-            float imag = dftmtx[j + (i * 2 + 1) * 512];
-            checksum_r_9[i * 2] += real * r[(j % 3) * 2] - imag * r[(j % 3) * 2 + 1];
-            checksum_r_9[i * 2 + 1] += imag * r[(j % 3) * 2] + real * r[(j % 3) * 2 + 1];
-        
-    }
-    }
-    
-    cudaMemcpy((void*)checksum_r_d_9, (void*)checksum_r_9, 2 * 512 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_9 + 512), (void*)checksum_r_9, 2 * 512 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_9 + 1024), (void*)checksum_r_9, 2 * 512 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_9 + 1536), (void*)checksum_r_9, 2 * 512 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_9 + 2048), (void*)checksum_r_9, 2 * 512 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_9 + 2560), (void*)checksum_r_9, 2 * 512 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_9 + 3072), (void*)checksum_r_9, 2 * 512 * sizeof(float), cudaMemcpyHostToDevice);
-    //cudaMemcpy((void*)(checksum_r_d_9 + 3584), (void*)checksum_r_9, 2 * 512 * sizeof(float), cudaMemcpyHostToDevice);
-    
-    
-    cudaMemcpy((void*)input_d, (void*)input, 2 * N * sizeof(float) * 10240, cudaMemcpyHostToDevice);
-    
-
-    cufftHandle plan;  
-
-
-    cudaEvent_t fft_begin, fft_end;
-    float elapsed_time_vkfft, elapsed_time, elapsed_time_cufft; 
-    std::chrono::steady_clock::time_point timeSt; // = std::chrono::steady_clock::now();
-    std::chrono::steady_clock::time_point timeEnd; // = std::chrono::steady_clock::now();
-	float totTime, totTime_vkfft, totTime_cufft;
-    cudaEventCreate(&fft_begin);
-    cudaEventCreate(&fft_end);
-    
-    #if P_FFT == 1
-    int batch_size_list[9] = {8192, 10240, 10240, 32, 64, 128, 256, 512, 1024};
-    for(int batch_size_i = 0; batch_size_i < 9; batch_size_i += 1){
-    batch_size = batch_size_list[batch_size_i];
-    #endif
-    
-    
-    N = pow(double(RADIX), double(__log_N__));
-    
-            
-            if(__log_N__ == 8)
-            
-            {
-            
-            cudaEventCreate(&fft_begin);
-            cudaEventCreate(&fft_end);
-            {
-                cufftCreate(&plan);
-                int res = cufftPlan1d(&plan, N, CUFFT_C2C, batch_size); 
-                printf("cufft: %d\n");
-                cudaEventRecord(fft_begin);
-                timeSt = std::chrono::steady_clock::now();
-                for(int i = 0; i < num_tests; ++i){
-                    res = cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
-                    // printf("cufft: %d\n");
-                    cudaDeviceSynchronize(); 
-                } 
-                timeEnd = std::chrono::steady_clock::now();
-                totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
-                cudaEventRecord(fft_end);  
-                cudaEventSynchronize(fft_begin);
-                cudaEventSynchronize(fft_end);
-                cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);   
-                cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * batch_size * sizeof(float), cudaMemcpyDeviceToHost);
-                cufftDestroy(plan);
-            }
-        
-            
-            {
-            
-                cudaEventRecord(fft_begin);
-                timeSt = std::chrono::steady_clock::now();
-                
-                // cudaMemcpyToSymbol(r_1, checksum_r_d_8, sizeof(float) * 256 * 2);
-                printf("adasdasda\n");
-                
-                for(int i = 0; i < num_tests; ++i){
-            {
-                    dim3 gridDim((batch_size + 2 - 1) /  2, 1, 1);
-                    dim3 blockDim(2, 16, 1);
-                    fft_radix2_logN8 <<<gridDim, blockDim, 4352>>> ((float2*)input_d, (float2*)output_d, (float2*)checksum_r_d_8);
-                    cudaDeviceSynchronize();
-                }
-            
-                }
-                timeEnd = std::chrono::steady_clock::now();
-                totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
-                cudaEventRecord(fft_end);  
-                cudaEventSynchronize(fft_begin);
-                cudaEventSynchronize(fft_end);
-                cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
-                cudaMemcpy((void*)output, (void*)output_d, 2 * N * batch_size * sizeof(float), cudaMemcpyDeviceToHost);
-                CUDA_CALLER(cudaFree(output_d_1));
-            }
-            }
-            
-    #if V_FFT == 1
-    // cudaMemcpy((void*)output_ref, (void*)output_d_vkfft, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
-    // cudaMemcpy((void*)output, (void*)output_d, sizeof(float) * 2 * N, cudaMemcpyDeviceToHost);
-    // cudaMemcpy((void*)output, (void*)output_d_cufft, sizeof(float) * 2 * N, cudaMemcpyDeviceToHost);
-    // cudaMemcpy((void*)output, (void*)output_d_ref_1, 2 * N * sizeof(float), cudaMemcpyDeviceToHost);
-    // cudaMemcpy((void*)output_ref, (void*)output_d_1, sizeof(float) * 2 * N, cudaMemcpyDeviceToHost);
-    cudaDeviceSynchronize();
-    bool pass = true;
-    for(int i = 0; i < 2 * N * batch_size; i +=2){
-        float2 res = *(float2*)(output + i); 
-        float2 res_ref = *(float2*)(output_ref + i);
-        float norm, norm_ref; 
-        FLOAT2_NORM(res, norm);
-        FLOAT2_NORM(res_ref, norm_ref);
-        
-        float err = fabs(norm - norm_ref);
-        if(i % 1 ==0){
-        printf("error %f detected at %d\n", err / fabs(norm), i / 2);
-        printf("ref[%d]: %.3f + %.3f i\n",  i / 2, res_ref.x, res_ref.y);
-        printf("res[%d]: %.3f + %.3f i\n\n",  i / 2, res.x, res.y);
-        }
-        if(err / fabs(norm) > 0.05){
-            printf("error %f detected at %d\n", err / fabs(norm), i / 2);
-            printf("ref[%d]: %.3f + %.3f i\n",  i / 2, res_ref.x, res_ref.y);
-            printf("res[%d]: %.3f + %.3f i\n\n",  i / 2, res.x, res.y);
-            pass = false;
-            return -1;
-            break;
-            
-        }   
-    }
-    if(pass) printf("Pass!\n");
-    else printf("Fail!\n");
-    #endif
-
-    #if P_FFT == 1
-    elapsed_time /= num_tests;
-    elapsed_time_vkfft /= num_tests;
-    elapsed_time_cufft /= num_tests;
-    totTime /= num_tests;
-    totTime_vkfft /= num_tests;
-    totTime_cufft /= num_tests;
-    if(batch_size == 1)printf("| SIZE |  Execution Time (us)             |   Shared   | #threads |\n");
-    if(batch_size == 1)printf("|log(N)|   Ours   |   cuFFT   | Memory (KB)|          |\n");
-    // if(log_N == __log_N_st__)printf("|batch |   Ours   |   VkFFT   |   cuFFT   | Memory (KB)|          |\n");
-    // printf("|%6d| %8.3f | %8.3f  |%8.3f   |%8.3f    |%10d|\n", batch_size, elapsed_time * 1000, elapsed_time_vkfft * 1000, elapsed_time_cufft * 1000, (float)sizeof(float) * (float)N * 2.f / 1024.f, N / 8);
-    printf("|%6d| %8.3f | %8.3f  |%8.3f   |%8.3f    |%10d|\n", batch_size, elapsed_time * 1000, elapsed_time_cufft * 1000, (float)sizeof(float) * (float)N * 2.f / 1024.f, N / 8);
-    t_fft[batch_size_i] = elapsed_time;
-    t_cufft[batch_size_i] = elapsed_time_cufft;
-    t_vkfft[batch_size_i] = elapsed_time_vkfft;
-    }
-    printf("Execution Time\n");
-    printf("t_fft = th.as_tensor([");
-    for(int i = 0; i < 9; i += 1 ){
-        printf("%8f,", t_fft[i]);
-    }
-    printf("])\n");
-
-    printf("t_cufft = th.as_tensor([");
-    for(int i =0; i < 9; i += 1 ){
-        printf("%8f,", t_cufft[i]);
-    }
-    printf("])\n");
-    
-
-    printf("\n Flops\n");
-    printf("gflops_fft = th.as_tensor([");
-    for(int i = 0; i < 9; i += 1 ){
-        long long N = pow((double)RADIX, (double)8);
-        printf("%8.1f,", 5 * N * 8 * batch_size_list[i] / t_fft[i] * 1000.f / 1000000000.f);
-    }
-    printf("])\n");
-
-    printf("gflops_cufft = th.as_tensor([");
-    for(int i = 0; i < 9; i += 1 ){
-        long long N = pow((double)RADIX, (double)8);
-        printf("%8.1f,", 5 * N * 8 * batch_size_list[i] / t_cufft[i] * 1000.f / 1000000000.f);
-    }
-    printf("])\n");
-    #endif
-    return 0;
-}
-
     
