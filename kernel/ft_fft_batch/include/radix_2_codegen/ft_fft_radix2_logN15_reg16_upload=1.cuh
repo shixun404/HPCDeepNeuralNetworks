@@ -22,6 +22,7 @@ __global__ void __launch_bounds__(128) fft_radix2_logN15_1(float2* inputs, float
     int tx = threadIdx.x;
     int ty = threadIdx.y;
     int bx = blockIdx.x;
+    int tid = tx + ty * blockDim.x;
     int N = 128;
     int __id[16];
     int batch_id = (blockIdx.x * blockDim.x) / 256;

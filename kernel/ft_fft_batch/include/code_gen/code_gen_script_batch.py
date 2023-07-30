@@ -45,11 +45,11 @@ int main(int argc, char** argv){
     int num_tests = 1;
     #endif
     srandom(random_seed); 
-    float *input = (float*)calloc(N * 2 * 1024, sizeof(float)); 
+    float *input = (float*)calloc(N * 2 * 256, sizeof(float)); 
     float *output_ref, *output;
     
-    output_ref = (float*)calloc(N * 2 * 1024, sizeof(float));
-    output = (float*)calloc(N * 2 * 1024, sizeof(float));
+    output_ref = (float*)calloc(N * 2 * 256, sizeof(float));
+    output = (float*)calloc(N * 2 * 256, sizeof(float));
     
     float r[6];
     
@@ -67,15 +67,15 @@ int main(int argc, char** argv){
     float *input_d, *output_d, *output_d_vkfft, *output_d_cufft, *output_d_1, *output_d_ref_1, *checksum_r, *checksum_r_d, *dftmtx;
     checksum_r = (float*)calloc(8192*2, sizeof(float));
     dftmtx = (float*)calloc(8192*8192*2, sizeof(float));
-    CUDA_CALLER(cudaMalloc((void**)&input_d, sizeof(float) * N * 2 * 1024));
-    CUDA_CALLER(cudaMalloc((void**)&output_d, sizeof(float) * N * 2 * 1024));
+    CUDA_CALLER(cudaMalloc((void**)&input_d, sizeof(float) * N * 2 * 256));
+    CUDA_CALLER(cudaMalloc((void**)&output_d, sizeof(float) * N * 2 * 256));
     
-    for(int i = 0; i < N * 2 * 1024; ++i){ 
+    for(int i = 0; i < N * 2 * 256; ++i){ 
             input[i] = (float)(random() % 100) / (float)100;
     }
     '''
     r_ = 8
-    for i in range(3, 10):
+    for i in range(3, 12):
         ft_fft_script += f'''
         // printf("fffffff\\n");
         float* checksum_r_{i}, *checksum_r_d_{i};
@@ -138,7 +138,7 @@ int main(int argc, char** argv){
         r_ *= 2
     ft_fft_script += '''
     
-    cudaMemcpy((void*)input_d, (void*)input, 2 * N * sizeof(float) * 1024, cudaMemcpyHostToDevice);
+    cudaMemcpy((void*)input_d, (void*)input, 2 * N * sizeof(float) * 256, cudaMemcpyHostToDevice);
     
 
     cufftHandle plan;  
@@ -153,7 +153,7 @@ int main(int argc, char** argv){
     cudaEventCreate(&fft_end);
     
     #if P_FFT == 1
-    int batch_size_list[9] = {1, 8, 16, 32, 64, 128, 256, 512, 1024};
+    int batch_size_list[9] = {1, 8, 16, 32, 64, 128, 256, 256, 256};
     for(int batch_size_i = 0; batch_size_i < 9; batch_size_i += 1){
     batch_size = batch_size_list[batch_size_i];
     #endif
@@ -188,7 +188,7 @@ int main(int argc, char** argv){
             {
                 cufftCreate(&plan);
                 int res = cufftPlan1d(&plan, N, CUFFT_C2C, batch_size); 
-                printf("cufft: %d\\n");
+                // printf("cufft: %d\\n");
                 cudaEventRecord(fft_begin);
                 timeSt = std::chrono::steady_clock::now();
                 for(int i = 0; i < num_tests; ++i){
@@ -243,7 +243,7 @@ int main(int argc, char** argv){
             
             '''
 
-        if j == 1:
+        if j >= 1:
             ft_fft_script += f'''
         if(__log_N__ == {N})''' + '''{
             '''
@@ -260,14 +260,14 @@ int main(int argc, char** argv){
             {
                 cufftCreate(&plan);
                 int res = cufftPlan1d(&plan, N, CUFFT_C2C, batch_size); 
-                printf("cufftPlan: %d\\n", res);
+                // printf("cufftPlan: %d\\n", res);
                 cudaEventRecord(fft_begin);
                 timeSt = std::chrono::steady_clock::now();
                 for(int i = 0; i < num_tests; ++i){
                     res = cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
                     cudaDeviceSynchronize(); 
                 } 
-                printf("cufftExecC2C: %d\\n", res);
+                // printf("cufftExecC2C: %d\\n", res);
                 timeEnd = std::chrono::steady_clock::now();
                 totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
                 cudaEventRecord(fft_end);  
@@ -303,8 +303,6 @@ int main(int argc, char** argv){
             '''
             ft_fft_script += f'''{{
                     dim3 gridDim((batch_size * {2 ** int(df['logN2'][j])} +  {int(df['blockdim_x_1'][j])} - 1) /  {int(df['blockdim_x_1'][j])}, 1, 1); 
-                    
-                    
                     dim3 blockDim({int(df['blockdim_x_1'][j])}, {int(df['blockdim_y_1'][j])}, 1);
                     fft_radix2_logN{int(df['logN'][j])}_1 <<<gridDim, blockDim, {int(df['sm_size_1'][j])}>>> ((float2*)input_d, (float2*)output_d_1, (float2*) checksum_r_d_{int(df['logN1'][j])});
                     cudaDeviceSynchronize();
@@ -318,7 +316,6 @@ int main(int argc, char** argv){
             '''
             ft_fft_script += f'''{{
                     dim3 gridDim((batch_size * {2 ** int(df['logN1'][j])} +  {int(df['blockdim_x_2'][j])} - 1) /  {int(df['blockdim_x_2'][j])}, 1, 1); 
-                    printf("%d\\n", gridDim.x);
                     dim3 blockDim({int(df['blockdim_x_2'][j])}, {int(df['blockdim_y_2'][j])}, 1);
                     fft_radix2_logN{int(df['logN'][j])}_2 <<<gridDim, blockDim, {int(df['sm_size_2'][j])}>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_{int(df['logN2'][j])});
                     cudaDeviceSynchronize();
@@ -474,18 +471,19 @@ int main(int argc, char** argv){
     printf("\\n Flops\\n");
     printf("gflops_fft = th.as_tensor([");
     for(int i = 0; i < 9; i += 1 ){
-        long long N = pow((double)RADIX, (double)8);
-        printf("%8.1f,", 5 * N * 8 * batch_size_list[i] / t_fft[i] * 1000.f / 1000000000.f);
+        long long N = pow((double)RADIX, (double)__log_N__);
+        printf("%8.1f,", 5 * N * log2f(N) * batch_size_list[i] / t_fft[i] * 1000.f / 1000000000.f);
     }
     printf("])\\n");
 
     printf("gflops_cufft = th.as_tensor([");
     for(int i = 0; i < 9; i += 1 ){
-        long long N = pow((double)RADIX, (double)8);
-        printf("%8.1f,", 5 * N * 8 * batch_size_list[i] / t_cufft[i] * 1000.f / 1000000000.f);
+        long long N = pow((double)RADIX, (double)__log_N__);
+        printf("%8.1f,", 5 * N * log2f(N) * batch_size_list[i] / t_cufft[i] * 1000.f / 1000000000.f);
     }
     printf("])\\n");
     #endif
+    
     return 0;
 }
 

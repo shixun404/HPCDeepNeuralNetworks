@@ -36,11 +36,11 @@ int main(int argc, char** argv){
     int num_tests = 1;
     #endif
     srandom(random_seed); 
-    float *input = (float*)calloc(N * 2 * 1024, sizeof(float)); 
+    float *input = (float*)calloc(N * 2 * 256, sizeof(float)); 
     float *output_ref, *output;
     
-    output_ref = (float*)calloc(N * 2 * 1024, sizeof(float));
-    output = (float*)calloc(N * 2 * 1024, sizeof(float));
+    output_ref = (float*)calloc(N * 2 * 256, sizeof(float));
+    output = (float*)calloc(N * 2 * 256, sizeof(float));
     
     float r[6];
     
@@ -58,10 +58,10 @@ int main(int argc, char** argv){
     float *input_d, *output_d, *output_d_vkfft, *output_d_cufft, *output_d_1, *output_d_ref_1, *checksum_r, *checksum_r_d, *dftmtx;
     checksum_r = (float*)calloc(8192*2, sizeof(float));
     dftmtx = (float*)calloc(8192*8192*2, sizeof(float));
-    CUDA_CALLER(cudaMalloc((void**)&input_d, sizeof(float) * N * 2 * 1024));
-    CUDA_CALLER(cudaMalloc((void**)&output_d, sizeof(float) * N * 2 * 1024));
+    CUDA_CALLER(cudaMalloc((void**)&input_d, sizeof(float) * N * 2 * 256));
+    CUDA_CALLER(cudaMalloc((void**)&output_d, sizeof(float) * N * 2 * 256));
     
-    for(int i = 0; i < N * 2 * 1024; ++i){ 
+    for(int i = 0; i < N * 2 * 256; ++i){ 
             input[i] = (float)(random() % 100) / (float)100;
     }
     
@@ -387,8 +387,100 @@ int main(int argc, char** argv){
     //cudaMemcpy((void*)(checksum_r_d_9 + 3072), (void*)checksum_r_9, 2 * 512 * sizeof(float), cudaMemcpyHostToDevice);
     //cudaMemcpy((void*)(checksum_r_d_9 + 3584), (void*)checksum_r_9, 2 * 512 * sizeof(float), cudaMemcpyHostToDevice);
     
+        // printf("fffffff\n");
+        float* checksum_r_10, *checksum_r_d_10;
+        checksum_r_10 = (float*)calloc(1024*2, sizeof(float));
+        CUDA_CALLER(cudaMalloc((void**)&checksum_r_d_10, sizeof(float) * 1024 * 2));
+        // printf("################################### 1024 ###################################\n");
+        for(int i = 0; i < 1024; ++i)
+        
+        {
+        
+        for(int j = 0; j < 1024; ++j )
+        
+        {
+        
+            dftmtx[i + (j * 2) * 1024] = cosf((float)(-2 * M_PI * i * j) / 1024.f);
+            dftmtx[i + (j * 2 + 1) * 1024] = sinf((float)(-2 * M_PI * i * j) / 1024.f);
+        
+        }
+    }
     
-    cudaMemcpy((void*)input_d, (void*)input, 2 * N * sizeof(float) * 1024, cudaMemcpyHostToDevice);
+    for(int i = 0; i < 1024; ++i)
+    
+    {
+    
+        checksum_r_10[i * 2] = 0;
+        checksum_r_10[i * 2 + 1] = 0;
+        for(int j = 0; j < 1024; ++j)
+    
+    {
+    
+            float real = dftmtx[j + i * 2 * 1024];
+            float imag = dftmtx[j + (i * 2 + 1) * 1024];
+            checksum_r_10[i * 2] += real * r[(j % 3) * 2] - imag * r[(j % 3) * 2 + 1];
+            checksum_r_10[i * 2 + 1] += imag * r[(j % 3) * 2] + real * r[(j % 3) * 2 + 1];
+        
+    }
+    }
+    
+    cudaMemcpy((void*)checksum_r_d_10, (void*)checksum_r_10, 2 * 1024 * sizeof(float), cudaMemcpyHostToDevice);
+    //cudaMemcpy((void*)(checksum_r_d_10 + 1024), (void*)checksum_r_10, 2 * 1024 * sizeof(float), cudaMemcpyHostToDevice);
+    //cudaMemcpy((void*)(checksum_r_d_10 + 2048), (void*)checksum_r_10, 2 * 1024 * sizeof(float), cudaMemcpyHostToDevice);
+    //cudaMemcpy((void*)(checksum_r_d_10 + 3072), (void*)checksum_r_10, 2 * 1024 * sizeof(float), cudaMemcpyHostToDevice);
+    //cudaMemcpy((void*)(checksum_r_d_10 + 4096), (void*)checksum_r_10, 2 * 1024 * sizeof(float), cudaMemcpyHostToDevice);
+    //cudaMemcpy((void*)(checksum_r_d_10 + 5120), (void*)checksum_r_10, 2 * 1024 * sizeof(float), cudaMemcpyHostToDevice);
+    //cudaMemcpy((void*)(checksum_r_d_10 + 6144), (void*)checksum_r_10, 2 * 1024 * sizeof(float), cudaMemcpyHostToDevice);
+    //cudaMemcpy((void*)(checksum_r_d_10 + 7168), (void*)checksum_r_10, 2 * 1024 * sizeof(float), cudaMemcpyHostToDevice);
+    
+        // printf("fffffff\n");
+        float* checksum_r_11, *checksum_r_d_11;
+        checksum_r_11 = (float*)calloc(2048*2, sizeof(float));
+        CUDA_CALLER(cudaMalloc((void**)&checksum_r_d_11, sizeof(float) * 2048 * 2));
+        // printf("################################### 2048 ###################################\n");
+        for(int i = 0; i < 2048; ++i)
+        
+        {
+        
+        for(int j = 0; j < 2048; ++j )
+        
+        {
+        
+            dftmtx[i + (j * 2) * 2048] = cosf((float)(-2 * M_PI * i * j) / 2048.f);
+            dftmtx[i + (j * 2 + 1) * 2048] = sinf((float)(-2 * M_PI * i * j) / 2048.f);
+        
+        }
+    }
+    
+    for(int i = 0; i < 2048; ++i)
+    
+    {
+    
+        checksum_r_11[i * 2] = 0;
+        checksum_r_11[i * 2 + 1] = 0;
+        for(int j = 0; j < 2048; ++j)
+    
+    {
+    
+            float real = dftmtx[j + i * 2 * 2048];
+            float imag = dftmtx[j + (i * 2 + 1) * 2048];
+            checksum_r_11[i * 2] += real * r[(j % 3) * 2] - imag * r[(j % 3) * 2 + 1];
+            checksum_r_11[i * 2 + 1] += imag * r[(j % 3) * 2] + real * r[(j % 3) * 2 + 1];
+        
+    }
+    }
+    
+    cudaMemcpy((void*)checksum_r_d_11, (void*)checksum_r_11, 2 * 2048 * sizeof(float), cudaMemcpyHostToDevice);
+    //cudaMemcpy((void*)(checksum_r_d_11 + 2048), (void*)checksum_r_11, 2 * 2048 * sizeof(float), cudaMemcpyHostToDevice);
+    //cudaMemcpy((void*)(checksum_r_d_11 + 4096), (void*)checksum_r_11, 2 * 2048 * sizeof(float), cudaMemcpyHostToDevice);
+    //cudaMemcpy((void*)(checksum_r_d_11 + 6144), (void*)checksum_r_11, 2 * 2048 * sizeof(float), cudaMemcpyHostToDevice);
+    //cudaMemcpy((void*)(checksum_r_d_11 + 8192), (void*)checksum_r_11, 2 * 2048 * sizeof(float), cudaMemcpyHostToDevice);
+    //cudaMemcpy((void*)(checksum_r_d_11 + 10240), (void*)checksum_r_11, 2 * 2048 * sizeof(float), cudaMemcpyHostToDevice);
+    //cudaMemcpy((void*)(checksum_r_d_11 + 12288), (void*)checksum_r_11, 2 * 2048 * sizeof(float), cudaMemcpyHostToDevice);
+    //cudaMemcpy((void*)(checksum_r_d_11 + 14336), (void*)checksum_r_11, 2 * 2048 * sizeof(float), cudaMemcpyHostToDevice);
+    
+    
+    cudaMemcpy((void*)input_d, (void*)input, 2 * N * sizeof(float) * 256, cudaMemcpyHostToDevice);
     
 
     cufftHandle plan;  
@@ -403,7 +495,7 @@ int main(int argc, char** argv){
     cudaEventCreate(&fft_end);
     
     #if P_FFT == 1
-    int batch_size_list[9] = {1, 8, 16, 32, 64, 128, 256, 512, 1024};
+    int batch_size_list[9] = {1, 8, 16, 32, 64, 128, 256, 256, 256};
     for(int batch_size_i = 0; batch_size_i < 9; batch_size_i += 1){
     batch_size = batch_size_list[batch_size_i];
     #endif
@@ -421,7 +513,7 @@ int main(int argc, char** argv){
             {
                 cufftCreate(&plan);
                 int res = cufftPlan1d(&plan, N, CUFFT_C2C, batch_size); 
-                printf("cufft: %d\n");
+                // printf("cufft: %d\n");
                 cudaEventRecord(fft_begin);
                 timeSt = std::chrono::steady_clock::now();
                 for(int i = 0; i < num_tests; ++i){
@@ -478,14 +570,14 @@ int main(int argc, char** argv){
             {
                 cufftCreate(&plan);
                 int res = cufftPlan1d(&plan, N, CUFFT_C2C, batch_size); 
-                printf("cufftPlan: %d\n", res);
+                // printf("cufftPlan: %d\n", res);
                 cudaEventRecord(fft_begin);
                 timeSt = std::chrono::steady_clock::now();
                 for(int i = 0; i < num_tests; ++i){
                     res = cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
                     cudaDeviceSynchronize(); 
                 } 
-                printf("cufftExecC2C: %d\n", res);
+                // printf("cufftExecC2C: %d\n", res);
                 timeEnd = std::chrono::steady_clock::now();
                 totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
                 cudaEventRecord(fft_end);  
@@ -518,8 +610,6 @@ int main(int argc, char** argv){
                 for(int i = 0; i < num_tests; ++i){
             {
                     dim3 gridDim((batch_size * 256 +  16 - 1) /  16, 1, 1); 
-                    
-                    
                     dim3 blockDim(16, 8, 1);
                     fft_radix2_logN15_1 <<<gridDim, blockDim, 17408>>> ((float2*)input_d, (float2*)output_d_1, (float2*) checksum_r_d_7);
                     cudaDeviceSynchronize();
@@ -532,9 +622,92 @@ int main(int argc, char** argv){
                 #endif
             {
                     dim3 gridDim((batch_size * 128 +  8 - 1) /  8, 1, 1); 
-                    printf("%d\n", gridDim.x);
                     dim3 blockDim(8, 16, 1);
                     fft_radix2_logN15_2 <<<gridDim, blockDim, 17408>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_8);
+                    cudaDeviceSynchronize();
+                }
+            
+                }
+                timeEnd = std::chrono::steady_clock::now();
+                totTime = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+                cudaEventRecord(fft_end);  
+                cudaEventSynchronize(fft_begin);
+                cudaEventSynchronize(fft_end);
+                cudaEventElapsedTime(&elapsed_time, fft_begin, fft_end);
+                cudaMemcpy((void*)output, (void*)output_d, 2 * N * batch_size * sizeof(float), cudaMemcpyDeviceToHost);
+                CUDA_CALLER(cudaFree(output_d_1));
+            }
+            
+        }    
+        
+        if(__log_N__ == 21){
+            
+            cudaFuncSetAttribute(fft_radix2_logN21_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+            // cudaFuncSetAttribute(VkFFT_main_logN21_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+            
+            cudaFuncSetAttribute(fft_radix2_logN21_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+            // cudaFuncSetAttribute(VkFFT_main_logN21_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+            
+            cudaEventCreate(&fft_begin);
+            cudaEventCreate(&fft_end);
+            
+            {
+                cufftCreate(&plan);
+                int res = cufftPlan1d(&plan, N, CUFFT_C2C, batch_size); 
+                // printf("cufftPlan: %d\n", res);
+                cudaEventRecord(fft_begin);
+                timeSt = std::chrono::steady_clock::now();
+                for(int i = 0; i < num_tests; ++i){
+                    res = cufftExecC2C(plan, (cufftComplex *)input_d, (cufftComplex *)output_d, CUFFT_FORWARD);
+                    cudaDeviceSynchronize(); 
+                } 
+                // printf("cufftExecC2C: %d\n", res);
+                timeEnd = std::chrono::steady_clock::now();
+                totTime_cufft = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeSt).count();
+                cudaEventRecord(fft_end);  
+                cudaEventSynchronize(fft_begin);
+                cudaEventSynchronize(fft_end);
+                cudaEventElapsedTime(&elapsed_time_cufft, fft_begin, fft_end);   
+                cudaMemcpy((void*)output_ref, (void*)output_d, 2 * N * batch_size * sizeof(float), cudaMemcpyDeviceToHost);
+                cufftDestroy(plan);
+            }
+            
+            
+            
+            {
+            
+            
+
+                float * reduction = (float*)calloc(2 * 65536, sizeof(float));
+                CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2 * batch_size));
+                float * reduction_d, *global_checksum_d;
+                CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
+                CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
+                cudaMemcpy((void*)reduction_d, (void*)input, 2 * 65536 * sizeof(float), cudaMemcpyHostToDevice);
+                cublasHandle_t handle;
+                cublasCreate(&handle);
+                
+                cudaEventRecord(fft_begin);
+                timeSt = std::chrono::steady_clock::now();
+                
+                
+                for(int i = 0; i < num_tests; ++i){
+            {
+                    dim3 gridDim((batch_size * 2048 +  8 - 1) /  8, 1, 1); 
+                    dim3 blockDim(8, 32, 1);
+                    fft_radix2_logN21_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d_1, (float2*) checksum_r_d_10);
+                    cudaDeviceSynchronize();
+                }
+                #if defined(GLOBAL_ON)
+                cublasSdot(handle, 256, reduction_d, 1, reduction_d + 256, 1, global_checksum_d);
+                // int res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
+                cudaDeviceSynchronize(); 
+                // printf("sdot! %d \n", res);
+                #endif
+            {
+                    dim3 gridDim((batch_size * 1024 +  4 - 1) /  4, 1, 1); 
+                    dim3 blockDim(4, 128, 1);
+                    fft_radix2_logN21_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_11);
                     cudaDeviceSynchronize();
                 }
             
@@ -619,18 +792,19 @@ int main(int argc, char** argv){
     printf("\n Flops\n");
     printf("gflops_fft = th.as_tensor([");
     for(int i = 0; i < 9; i += 1 ){
-        long long N = pow((double)RADIX, (double)8);
-        printf("%8.1f,", 5 * N * 8 * batch_size_list[i] / t_fft[i] * 1000.f / 1000000000.f);
+        long long N = pow((double)RADIX, (double)__log_N__);
+        printf("%8.1f,", 5 * N * log2f(N) * batch_size_list[i] / t_fft[i] * 1000.f / 1000000000.f);
     }
     printf("])\n");
 
     printf("gflops_cufft = th.as_tensor([");
     for(int i = 0; i < 9; i += 1 ){
-        long long N = pow((double)RADIX, (double)8);
-        printf("%8.1f,", 5 * N * 8 * batch_size_list[i] / t_cufft[i] * 1000.f / 1000000000.f);
+        long long N = pow((double)RADIX, (double)__log_N__);
+        printf("%8.1f,", 5 * N * log2f(N) * batch_size_list[i] / t_cufft[i] * 1000.f / 1000000000.f);
     }
     printf("])\n");
     #endif
+    
     return 0;
 }
 
