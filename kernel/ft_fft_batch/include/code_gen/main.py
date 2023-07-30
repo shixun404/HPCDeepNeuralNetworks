@@ -31,34 +31,34 @@ if __name__ =="__main__":
         #include "./include/radix_2_codegen/ft_fft_radix2_logN{int(df['logN'][0])}_reg{signal_per_thread}.cuh"
     '''
 
-    
-    N = int(radix ** df['logN'][1])
-    N1 = int(radix ** df['logN1'][1])
-    N2 = int(radix ** df['logN2'][1])
-    num_block = int(df['num_block_1'][1])
-    num_thread = int(df['num_thread_1'][1])
-    signal_per_thread = int(df['signal_per_thread_1'][1])
-    fft_kernel = ft_2D_fft_code_gen_upload1(N=N, N1=N1, N2=N2, num_block=num_block, num_thread=num_thread,
-                            radix=2, signal_per_thread=signal_per_thread, if_abft=False)
-    function_name = f'''ft_fft_radix{radix}_logN{int(df['logN'][1])}_reg{signal_per_thread}_upload=1'''
-    with open(f"../radix_2_codegen/{function_name}.cuh", 'w') as f:
-        f.write(fft_kernel)
-    include_list += f'''
-        #include "./include/radix_2_codegen/ft_fft_radix2_logN{int(df['logN'][1])}_reg{signal_per_thread}_upload=1.cuh"
-    '''
-    num_block = int(df['num_block_2'][1])
-    num_thread = int(df['num_thread_2'][1])
-    signal_per_thread = int(df['signal_per_thread_2'][1])
-    blockdim_x = int(df['blockdim_x_2'][1])
-    blockdim_y = int(df['blockdim_y_2'][1])
-    fft_kernel = ft_2D_fft_code_gen_upload2(N=N, N1=N1, N2=N2, num_block=num_block, num_thread=num_thread,
-                            radix=2, signal_per_thread=signal_per_thread, transpose=blockdim_x<blockdim_y, if_abft=False)
-    function_name = f'''ft_fft_radix{radix}_logN{int(df['logN'][1])}_reg{signal_per_thread}_upload=2'''
-    with open(f"../radix_2_codegen/{function_name}.cuh", 'w') as f:
-        f.write(fft_kernel)
-    include_list += f'''
-        #include "./include/radix_2_codegen/ft_fft_radix2_logN{int(df['logN'][1])}_reg{signal_per_thread}_upload=2.cuh"
-    '''
+    for i in range(1, 3):
+        N = int(radix ** df['logN'][i])
+        N1 = int(radix ** df['logN1'][i])
+        N2 = int(radix ** df['logN2'][i])
+        num_block = int(df['num_block_1'][i])
+        num_thread = int(df['num_thread_1'][i])
+        signal_per_thread = int(df['signal_per_thread_1'][i])
+        fft_kernel = ft_2D_fft_code_gen_upload1(N=N, N1=N1, N2=N2, num_block=num_block, num_thread=num_thread,
+                                radix=2, signal_per_thread=signal_per_thread, if_abft=False)
+        function_name = f'''ft_fft_radix{radix}_logN{int(df['logN'][i])}_reg{signal_per_thread}_upload=1'''
+        with open(f"../radix_2_codegen/{function_name}.cuh", 'w') as f:
+            f.write(fft_kernel)
+        include_list += f'''
+            #include "./include/radix_2_codegen/ft_fft_radix2_logN{int(df['logN'][i])}_reg{signal_per_thread}_upload=1.cuh"
+        '''
+        num_block = int(df['num_block_2'][i])
+        num_thread = int(df['num_thread_2'][i])
+        signal_per_thread = int(df['signal_per_thread_2'][i])
+        blockdim_x = int(df['blockdim_x_2'][i])
+        blockdim_y = int(df['blockdim_y_2'][i])
+        fft_kernel = ft_2D_fft_code_gen_upload2(N=N, N1=N1, N2=N2, num_block=num_block, num_thread=num_thread,
+                                radix=2, signal_per_thread=signal_per_thread, transpose=blockdim_x<blockdim_y, if_abft=False)
+        function_name = f'''ft_fft_radix{radix}_logN{int(df['logN'][i])}_reg{signal_per_thread}_upload=2'''
+        with open(f"../radix_2_codegen/{function_name}.cuh", 'w') as f:
+            f.write(fft_kernel)
+        include_list += f'''
+            #include "./include/radix_2_codegen/ft_fft_radix2_logN{int(df['logN'][i])}_reg{signal_per_thread}_upload=2.cuh"
+        '''
     # include_list = ''
     # if_abft = False
     # while N <= 2 ** 29:

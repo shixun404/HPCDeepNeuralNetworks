@@ -47,6 +47,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}_
     int tx = threadIdx.x;
     int ty = threadIdx.y;
     int bx = blockIdx.x;
+    int tid = tx + ty * blockDim.x;
     int N = {N1};
     int __id[{signal_per_thread}];
     int batch_id = (blockIdx.x * blockDim.x) / {N2};
