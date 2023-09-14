@@ -43,6 +43,16 @@ void generate_random_matrix(float* target, int n){
     }
 }
 
+void generate_random_matrix_double(double* target, int n){
+    for(int i = 0; i < n; ++i){
+    	for(int j = 0; j < n; ++j){
+            double tmp = (double)(rand() % 10) + rand() % 10 * (double)0.01;
+            tmp = (rand() % 2 == 0) ? tmp : tmp * (-1.);     
+            target[i * n + j] = tmp;
+	    }
+    }
+}
+
 
 void copy_vector(float *src, float *dest, int n){
     int i;
@@ -51,6 +61,12 @@ void copy_vector(float *src, float *dest, int n){
 }
 
 void copy_matrix(float *src, float *dest, int n){
+    int i;
+    for (i = 0; src + i && dest + i && i < n * n; i++) *(dest + i) = *(src + i);
+    if (i != n * n) printf("copy failed at %d while there are %d elements in total.\n", i, n * n);
+}
+
+void copy_matrix_double(double *src, double *dest, int n){
     int i;
     for (i = 0; src + i && dest + i && i < n * n; i++) *(dest + i) = *(src + i);
     if (i != n * n) printf("copy failed at %d while there are %d elements in total.\n", i, n * n);
@@ -72,6 +88,7 @@ bool verify_vector(float *vec1, float *vec2, int n){
     return true;
 }
 
+
 bool verify_matrix(float *mat1, float *mat2, int n){
     double diff = 0.0;
     int i, j;
@@ -81,6 +98,23 @@ bool verify_matrix(float *mat1, float *mat2, int n){
         double denominator = fabs(mat1[i * n  + j]) ;
         if (denominator < 1e-3)denominator += 1;
         // if (diff / denominator > 1e-4) {
+        if (diff > 1e-2){
+            printf("error is %8.5f, relateive error is %8.5f,  %8.5f,%8.5f. id: %d, %d\n",diff, (diff / denominator), mat1[i * n + j], mat2[i * n + j], i, j);
+            return false;
+        }
+        }
+    }
+    return true;
+}
+
+bool verify_matrix_double(double *mat1, double *mat2, int n){
+    double diff = 0.0;
+    int i, j;
+    for (i = 0; mat1 + i * n && mat2 + i * n && i < n; ++i){
+        for(j = 0; mat1 + i * n + j && mat2 + i * n + j && j < n; ++j){
+	    diff = fabs( (double)mat1[i * n + j] - (double)mat2[i * n + j] );
+        double denominator = fabs(mat1[i * n  + j]) ;
+        if (denominator < 1e-3)denominator += 1;
         if (diff > 1e-2){
             printf("error is %8.5f, relateive error is %8.5f,  %8.5f,%8.5f. id: %d, %d\n",diff, (diff / denominator), mat1[i * n + j], mat2[i * n + j], i, j);
             return false;
