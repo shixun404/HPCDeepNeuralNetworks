@@ -53,6 +53,10 @@
 #define CEIL_DIV(m,n) ( (m) + (n) - 1 ) / (n)
 
 
+#define Z_SUB(a, b, c) c.x = a.x - b.x; c.y = a.y - b.y;
+#define Z_ADD(a, b, c) c.x = a.x + b.x; c.y = a.y + b.y;
+#define Z_MUL(a, b, c) c.x += a.x * b.x - a.y * b.y; c.y += a.y * b.x + a.x * b.y;
+
 class saxpy_timer
 {
 public:
@@ -90,9 +94,15 @@ void fill_vector(float*, int, float);
 
 void copy_matrix(float *src, float *dest, int n);
 
+void copy_matrix_double(double *src, double *dest, int n);
+
 void generate_random_matrix(float* target, int n);
 
+void generate_random_matrix_double(double* target, int n);
+
 bool verify_matrix(float*, float*, int n);
+
+bool verify_matrix_double(double*, double*, int n);
 
 void cpu_gemm(float alpha, float beta, float *mat1, float*mat2, int max_size, float* mat3);
 

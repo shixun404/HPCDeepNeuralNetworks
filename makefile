@@ -9,9 +9,9 @@ LDFLAGS     = -L$(MATH_LIB)/lib64 -lcudart -lcublas -lcufft
 INCFLAGS    = -I$(CUDA_PATH)/include -Icuda-samples/Common -I. 
 LOG = LOG_OFF
 GLOBAL = GLOBAL_ON
-V_FFT = 0
-P_FFT = 0
-K_FFT = 2
+# V_FFT = 0
+# P_FFT = 0
+# K_FFT = 2
 CFLAGS += -D$(LOG)
 CFLAGS += -D$(GLOBAL)
 CFLAGS += -DV_FFT=$(V_FFT)
@@ -22,7 +22,8 @@ CFLAGS += -DFT=$(FT)
 SRC         = $(wildcard *.cu)
 build : $(BINARY_NAME)
 
-$(BINARY_NAME): %: kernel/%/ft_fft.cu  utils/utils.cu 
+# $(BINARY_NAME): %: kernel/%/ft_fft.cu  utils/utils.cu 
+$(BINARY_NAME): %: kernel/%/zgemm.cu  utils/utils.cu 
 	$(CC) $(CFLAGS) $(LDFLAGS) $(INCFLAGS)  $^   -o $@ 
 
 clean:
