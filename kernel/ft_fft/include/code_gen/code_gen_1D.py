@@ -154,6 +154,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}'
             n_global_ = 1
             radix_ = 2 ** plan[stage_id]
             ft_fft += '''
+            #if FT==1
             warp_checksum.x = 0;
             warp_checksum.y = 0;
         '''
@@ -163,6 +164,9 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}'
                         ft_fft += f'''
                         warp_checksum.x += temp_{i}.x * A_radix{radix_}_{k}_x - temp_{i}.y * A_radix{radix_}_{k}_y;
                         warp_checksum.y += temp_{i}.x * A_radix{radix_}_{k}_y + temp_{i}.y * A_radix{radix_}_{k}_x;
+        '''
+            ft_fft += '''
+            #endif
         '''
             
             
@@ -224,6 +228,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}'
                 n_global *= radix
                 n_global_ *= radix
             ft_fft += f'''
+            #if FT==1
             warp_checksum_ = warp_checksum;
             
             '''
@@ -235,6 +240,7 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}'
                         warp_checksum.y -= temp_{order[i + signal_per_thread - offset]}.x * r[{k % 3}].y + temp_{order[i + signal_per_thread - offset]}.y * r[{k % 3}].x;
             '''
             ft_fft += '''
+            #endif
             // printf("%f, %f, %f, %f\\n", warp_checksum.x, warp_checksum.y, warp_checksum_.x, warp_checksum_.y);
             '''
 

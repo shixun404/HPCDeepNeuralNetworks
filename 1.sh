@@ -3,12 +3,12 @@ rm kernels.cuh
 rm ft_fft.cu
 cd -
 cd kernel/ft_fft_batch/
-# rm kernels.cuh
+rm kernels.cuh
 rm ft_fft.cu
 cd -
-# cd kernel/ft_fft/include/code_gen/
-# python main.py
-# cd -
+cd kernel/ft_fft/include/code_gen/
+python main.py
+cd -
 cd kernel/ft_fft_batch/include/code_gen/
 python3 main.py
 cd -

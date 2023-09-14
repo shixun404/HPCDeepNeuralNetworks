@@ -1,0 +1,8 @@
+input successed!
+output_ref successed!
+input_ref successed!
+error 0.000000 detected at 0
+ref[0]: 491.780 + 494.180 i
+res[0]: 491.780 + 494.180 i
+
+Pass!

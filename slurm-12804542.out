@@ -1,0 +1,16 @@
+input successed!
+output_ref successed!
+input_ref successed!
+error 0.000000 detected at 0
+ref[0]: 519220.000 + 518518.250 i
+res[0]: 519220.000 + 518518.250 i
+
+error 0.000001 detected at 500000
+ref[500000]: -178.153 + 325.946 i
+res[500000]: -178.153 + 325.945 i
+
+error 0.000006 detected at 1000000
+ref[1000000]: 63.799 + 16.290 i
+res[1000000]: 63.799 + 16.290 i
+
+Pass!
