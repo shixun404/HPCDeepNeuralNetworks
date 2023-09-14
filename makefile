@@ -1,9 +1,12 @@
-BINARY_NAME = zgemm # ft_fft_batch #ft_fft #ft_sgemm #sdot saxpy
-CUDA_PATH   = /usr/local/cuda
-CC          = $(CUDA_PATH)/bin/nvcc -arch=sm_75 #--ptxas-options=-v 
+# BINARY_NAME = ft_fft_batch # ft_fft_batch #ft_fft #ft_sgemm #sdot saxpy
+BINARY_NAME = ft_fft
+CUDA_PATH   = /opt/nvidia/hpc_sdk/Linux_x86_64/22.7/cuda
+MATH_LIB = /opt/nvidia/hpc_sdk/Linux_x86_64/22.7/math_libs/11.7
+CC          = nvcc -arch=sm_80 #--ptxas-options=-v
+
 CFLAGS      = -O3 -std=c++11 
-LDFLAGS     = -L$(CUDA_PATH)/lib64 -lcudart -lcublas #-lcufft
-INCFLAGS    = -I$(CUDA_PATH)/include -I$(CUDA_PATH)/samples/common/inc -I. 
+LDFLAGS     = -L$(MATH_LIB)/lib64 -lcudart -lcublas -lcufft
+INCFLAGS    = -I$(CUDA_PATH)/include -Icuda-samples/Common -I. 
 LOG = LOG_OFF
 GLOBAL = GLOBAL_ON
 # V_FFT = 0

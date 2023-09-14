@@ -130,6 +130,7 @@ __global__ void __launch_bounds__(16) fft_radix2_logN7(float2* inputs, float2* o
     mem_checksum_t1.y += __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
     #endif
     
+            #if FT==1
             warp_checksum.x = 0;
             warp_checksum.y = 0;
         
@@ -156,6 +157,8 @@ __global__ void __launch_bounds__(16) fft_radix2_logN7(float2* inputs, float2* o
         
                         warp_checksum.x += temp_7.x * A_radix8_7_x - temp_7.y * A_radix8_7_y;
                         warp_checksum.y += temp_7.x * A_radix8_7_y + temp_7.y * A_radix8_7_x;
+        
+            #endif
         
     j = 1;
     k = 4 % 1;
@@ -344,6 +347,7 @@ __global__ void __launch_bounds__(16) fft_radix2_logN7(float2* inputs, float2* o
         
         n_global *= 2;
         
+            #if FT==1
             warp_checksum_ = warp_checksum;
             
             
@@ -371,6 +375,7 @@ __global__ void __launch_bounds__(16) fft_radix2_logN7(float2* inputs, float2* o
                         warp_checksum.x -= temp_7.x * r[1].x - temp_7.y * r[1].y;
                         warp_checksum.y -= temp_7.x * r[1].y + temp_7.y * r[1].x;
             
+            #endif
             // printf("%f, %f, %f, %f\n", warp_checksum.x, warp_checksum.y, warp_checksum_.x, warp_checksum_.y);
             
     __syncthreads();
@@ -465,6 +470,7 @@ __global__ void __launch_bounds__(16) fft_radix2_logN7(float2* inputs, float2* o
                         ((7 * blockDim.x + tx) % 16)];
     __id[7] = tx + 7 * 16;
     
+            #if FT==1
             warp_checksum.x = 0;
             warp_checksum.y = 0;
         
@@ -491,6 +497,8 @@ __global__ void __launch_bounds__(16) fft_radix2_logN7(float2* inputs, float2* o
         
                         warp_checksum.x += temp_7.x * A_radix8_7_x - temp_7.y * A_radix8_7_y;
                         warp_checksum.y += temp_7.x * A_radix8_7_y + temp_7.y * A_radix8_7_x;
+        
+            #endif
         
     j = 1;
     k = 4 % 1;
@@ -679,6 +687,7 @@ __global__ void __launch_bounds__(16) fft_radix2_logN7(float2* inputs, float2* o
         
         n_global *= 2;
         
+            #if FT==1
             warp_checksum_ = warp_checksum;
             
             
@@ -706,6 +715,7 @@ __global__ void __launch_bounds__(16) fft_radix2_logN7(float2* inputs, float2* o
                         warp_checksum.x -= temp_7.x * r[1].x - temp_7.y * r[1].y;
                         warp_checksum.y -= temp_7.x * r[1].y + temp_7.y * r[1].x;
             
+            #endif
             // printf("%f, %f, %f, %f\n", warp_checksum.x, warp_checksum.y, warp_checksum_.x, warp_checksum_.y);
             
     __syncthreads();
@@ -800,6 +810,7 @@ __global__ void __launch_bounds__(16) fft_radix2_logN7(float2* inputs, float2* o
                         ((7 * blockDim.x + tx) % 16)];
     __id[7] = tx + 7 * 16;
     
+            #if FT==1
             warp_checksum.x = 0;
             warp_checksum.y = 0;
         
@@ -826,6 +837,8 @@ __global__ void __launch_bounds__(16) fft_radix2_logN7(float2* inputs, float2* o
         
                         warp_checksum.x += temp_7.x * A_radix2_1_x - temp_7.y * A_radix2_1_y;
                         warp_checksum.y += temp_7.x * A_radix2_1_y + temp_7.y * A_radix2_1_x;
+        
+            #endif
         
     j = 1;
     k = 1 % 1;
@@ -914,6 +927,7 @@ __global__ void __launch_bounds__(16) fft_radix2_logN7(float2* inputs, float2* o
         
         n_global *= 2;
         
+            #if FT==1
             warp_checksum_ = warp_checksum;
             
             
@@ -941,6 +955,7 @@ __global__ void __launch_bounds__(16) fft_radix2_logN7(float2* inputs, float2* o
                         warp_checksum.x -= temp_7.x * r[1].x - temp_7.y * r[1].y;
                         warp_checksum.y -= temp_7.x * r[1].y + temp_7.y * r[1].x;
             
+            #endif
             // printf("%f, %f, %f, %f\n", warp_checksum.x, warp_checksum.y, warp_checksum_.x, warp_checksum_.y);
             
             #if FT==2

@@ -153,7 +153,8 @@ int main(int argc, char** argv){
     cudaEventCreate(&fft_end);
     
     #if P_FFT == 1
-    int batch_size_list[9] = {1, 8, 16, 32, 64, 128, 256, 256, 256};
+    //int batch_size_list[9] = {1, 2, 4, 8, 16, 32, 64, 128, 256};
+    int batch_size_list[9] = {1, 8, 16, 32, 64, 128, 256, 512, 1024};
     for(int batch_size_i = 0; batch_size_i < 9; batch_size_i += 1){
     batch_size = batch_size_list[batch_size_i];
     #endif

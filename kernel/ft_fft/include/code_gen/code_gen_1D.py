@@ -165,7 +165,6 @@ __global__ void __launch_bounds__({num_thread}) fft_radix{radix}_logN{exponent}'
                         warp_checksum.x += temp_{i}.x * A_radix{radix_}_{k}_x - temp_{i}.y * A_radix{radix_}_{k}_y;
                         warp_checksum.y += temp_{i}.x * A_radix{radix_}_{k}_y + temp_{i}.y * A_radix{radix_}_{k}_x;
         '''
-        
             ft_fft += '''
             #endif
         '''

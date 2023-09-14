@@ -202,6 +202,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN12(float2* inputs, float2*
     mem_checksum_t1.y += __shfl_xor_sync(0xffffffff, mem_checksum_t1.y, 1, 32);
     #endif
     
+            #if FT==1
             warp_checksum.x = 0;
             warp_checksum.y = 0;
         
@@ -252,6 +253,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN12(float2* inputs, float2*
         
                         warp_checksum.x += temp_15.x * A_radix16_15_x - temp_15.y * A_radix16_15_y;
                         warp_checksum.y += temp_15.x * A_radix16_15_y + temp_15.y * A_radix16_15_x;
+        
+            #endif
         
     j = 1;
     k = 8 % 1;
@@ -697,6 +700,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN12(float2* inputs, float2*
         
         n_global *= 2;
         
+            #if FT==1
             warp_checksum_ = warp_checksum;
             
             
@@ -748,6 +752,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN12(float2* inputs, float2*
                         warp_checksum.x -= temp_15.x * r[0].x - temp_15.y * r[0].y;
                         warp_checksum.y -= temp_15.x * r[0].y + temp_15.y * r[0].x;
             
+            #endif
             // printf("%f, %f, %f, %f\n", warp_checksum.x, warp_checksum.y, warp_checksum_.x, warp_checksum_.y);
             
     __syncthreads();
@@ -930,6 +935,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN12(float2* inputs, float2*
                         ((15 * blockDim.x + tx) % 16)];
     __id[15] = tx + 15 * 256;
     
+            #if FT==1
             warp_checksum.x = 0;
             warp_checksum.y = 0;
         
@@ -980,6 +986,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN12(float2* inputs, float2*
         
                         warp_checksum.x += temp_15.x * A_radix16_15_x - temp_15.y * A_radix16_15_y;
                         warp_checksum.y += temp_15.x * A_radix16_15_y + temp_15.y * A_radix16_15_x;
+        
+            #endif
         
     j = 1;
     k = 8 % 1;
@@ -1425,6 +1433,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN12(float2* inputs, float2*
         
         n_global *= 2;
         
+            #if FT==1
             warp_checksum_ = warp_checksum;
             
             
@@ -1476,6 +1485,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN12(float2* inputs, float2*
                         warp_checksum.x -= temp_15.x * r[0].x - temp_15.y * r[0].y;
                         warp_checksum.y -= temp_15.x * r[0].y + temp_15.y * r[0].x;
             
+            #endif
             // printf("%f, %f, %f, %f\n", warp_checksum.x, warp_checksum.y, warp_checksum_.x, warp_checksum_.y);
             
     __syncthreads();
@@ -1658,6 +1668,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN12(float2* inputs, float2*
                         ((15 * blockDim.x + tx) % 16)];
     __id[15] = tx + 15 * 256;
     
+            #if FT==1
             warp_checksum.x = 0;
             warp_checksum.y = 0;
         
@@ -1708,6 +1719,8 @@ __global__ void __launch_bounds__(256) fft_radix2_logN12(float2* inputs, float2*
         
                         warp_checksum.x += temp_15.x * A_radix16_15_x - temp_15.y * A_radix16_15_y;
                         warp_checksum.y += temp_15.x * A_radix16_15_y + temp_15.y * A_radix16_15_x;
+        
+            #endif
         
     j = 1;
     k = 8 % 1;
@@ -2153,6 +2166,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN12(float2* inputs, float2*
         
         n_global *= 2;
         
+            #if FT==1
             warp_checksum_ = warp_checksum;
             
             
@@ -2204,6 +2218,7 @@ __global__ void __launch_bounds__(256) fft_radix2_logN12(float2* inputs, float2*
                         warp_checksum.x -= temp_15.x * r[0].x - temp_15.y * r[0].y;
                         warp_checksum.y -= temp_15.x * r[0].y + temp_15.y * r[0].x;
             
+            #endif
             // printf("%f, %f, %f, %f\n", warp_checksum.x, warp_checksum.y, warp_checksum_.x, warp_checksum_.y);
             
             #if FT==2
