@@ -1,5 +1,5 @@
 # BINARY_NAME = ft_fft_batch # ft_fft_batch #ft_fft #ft_sgemm #sdot saxpy
-BINARY_NAME = ft_fft
+BINARY_NAME = zgemm
 CUDA_PATH   = /opt/nvidia/hpc_sdk/Linux_x86_64/22.7/cuda
 MATH_LIB = /opt/nvidia/hpc_sdk/Linux_x86_64/22.7/math_libs/11.7
 CC          = nvcc -arch=sm_80 #--ptxas-options=-v

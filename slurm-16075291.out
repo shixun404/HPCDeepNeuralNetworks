@@ -1,0 +1,22 @@
+      64|
+    2.00|
+tx 0 |i 0 |j 0 |r 0 |c 0| 0.000000
+tx 0 |i 0 |j 0 |r 0 |c 1| 64.000000
+tx 0 |i 0 |j 1 |r 8 |c 0| 8.000000
+tx 0 |i 0 |j 1 |r 31 |c 4| 287.000000
+tx 0 |i 0 |j 2 |r 16 |c 0| 16.000000
+tx 0 |i 0 |j 2 |r 39 |c 0| 39.000000
+tx 0 |i 0 |j 3 |r 24 |c 0| 24.000000
+tx 0 |i 0 |j 3 |r 39 |c 4| 295.000000
+tx 0 |i 1 |j 0 |r 0 |c 8| 512.000000
+tx 0 |i 1 |j 0 |r 35 |c 0| 35.000000
+tx 0 |i 1 |j 1 |r 8 |c 8| 520.000000
+tx 0 |i 1 |j 1 |r 35 |c 4| 291.000000
+tx 0 |i 1 |j 2 |r 16 |c 8| 528.000000
+tx 0 |i 1 |j 2 |r 43 |c 0| 43.000000
+tx 0 |i 1 |j 3 |r 24 |c 8| 536.000000
+tx 0 |i 1 |j 3 |r 43 |c 4| 299.000000
+error is 14.00000, relateive error is  0.93333,  -15.00000,-1.00000. row: 0, col: 0, real or imag: 0
+Failed to pass the correctness verification against NVIDIA cuBLAS. Exited.
+srun: error: nid008700: task 0: Exited with exit code 253
+srun: Terminating StepId=16075291.0

@@ -1,0 +1,38 @@
+      64|
+    2.00|
+tx 0 |i 0 |j 0 |r 0 |c 0| 0.000000
+tx 1 |i 0 |j 0 |r 0 |c 2| 128.000000
+tx 0 |i 0 |j 0 |r 0 |c 1| 64.000000
+tx 1 |i 0 |j 0 |r 0 |c 3| 192.000000
+tx 0 |i 0 |j 1 |r 8 |c 0| 8.000000
+tx 1 |i 0 |j 1 |r 8 |c 2| 136.000000
+tx 0 |i 0 |j 1 |r 8 |c 1| 72.000000
+tx 1 |i 0 |j 1 |r 8 |c 3| 200.000000
+tx 0 |i 0 |j 2 |r 16 |c 0| 16.000000
+tx 1 |i 0 |j 2 |r 16 |c 2| 144.000000
+tx 0 |i 0 |j 2 |r 16 |c 1| 80.000000
+tx 1 |i 0 |j 2 |r 16 |c 3| 208.000000
+tx 0 |i 0 |j 3 |r 24 |c 0| 24.000000
+tx 1 |i 0 |j 3 |r 24 |c 2| 152.000000
+tx 0 |i 0 |j 3 |r 24 |c 1| 88.000000
+tx 1 |i 0 |j 3 |r 24 |c 3| 216.000000
+tx 0 |i 1 |j 0 |r 0 |c 8| 512.000000
+tx 1 |i 1 |j 0 |r 0 |c 10| 640.000000
+tx 0 |i 1 |j 0 |r 0 |c 9| 576.000000
+tx 1 |i 1 |j 0 |r 0 |c 11| 704.000000
+tx 0 |i 1 |j 1 |r 8 |c 8| 520.000000
+tx 1 |i 1 |j 1 |r 8 |c 10| 648.000000
+tx 0 |i 1 |j 1 |r 8 |c 9| 584.000000
+tx 1 |i 1 |j 1 |r 8 |c 11| 712.000000
+tx 0 |i 1 |j 2 |r 16 |c 8| 528.000000
+tx 1 |i 1 |j 2 |r 16 |c 10| 656.000000
+tx 0 |i 1 |j 2 |r 16 |c 9| 592.000000
+tx 1 |i 1 |j 2 |r 16 |c 11| 720.000000
+tx 0 |i 1 |j 3 |r 24 |c 8| 536.000000
+tx 1 |i 1 |j 3 |r 24 |c 10| 664.000000
+tx 0 |i 1 |j 3 |r 24 |c 9| 600.000000
+tx 1 |i 1 |j 3 |r 24 |c 11| 728.000000
+error is  1.00000, relateive error is  0.11111,  -9.00000,-8.00000. row: 1, col: 0, real or imag: 0
+Failed to pass the correctness verification against NVIDIA cuBLAS. Exited.
+srun: error: nid001009: task 0: Exited with exit code 253
+srun: Terminating StepId=16078660.0

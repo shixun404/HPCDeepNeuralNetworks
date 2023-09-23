@@ -104,6 +104,8 @@ bool verify_matrix(float*, float*, int n);
 
 bool verify_matrix_double(double*, double*, int n);
 
+bool verify_matrix_double2(double*, double*, int n);
+
 void cpu_gemm(float alpha, float beta, float *mat1, float*mat2, int max_size, float* mat3);
 
 void print_matrix(float*, int);

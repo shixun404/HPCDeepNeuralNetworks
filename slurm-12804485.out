@@ -1,8 +1,0 @@
-input successed!
-output_ref successed!
-input_ref successed!
-error 0.000000 detected at 0
-ref[0]: 4045.650 + 4036.090 i
-res[0]: 4045.650 + 4036.090 i
-
-Pass!

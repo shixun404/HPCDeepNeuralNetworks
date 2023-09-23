@@ -1,0 +1,22 @@
+      64|
+    2.00|
+tx 0 i 0 j 0 r 0 c 0
+tx 0 i 0 j 0 r 0 c 1
+tx 0 i 0 j 1 r 8 c 0
+tx 0 i 0 j 1 r 49 c 37
+tx 0 i 0 j 2 r 16 c 0
+tx 0 i 0 j 2 r 9 c 4
+tx 0 i 0 j 3 r 24 c 0
+tx 0 i 0 j 3 r 41 c 46
+tx 0 i 1 j 0 r 0 c 8
+tx 0 i 1 j 0 r 45 c 3
+tx 0 i 1 j 1 r 8 c 8
+tx 0 i 1 j 1 r 13 c 42
+tx 0 i 1 j 2 r 16 c 8
+tx 0 i 1 j 2 r 37 c 4
+tx 0 i 1 j 3 r 24 c 8
+tx 0 i 1 j 3 r 5 c 51
+error is 34.00000, relateive error is  3.77778,  -9.00000,25.00000. row: 1, col: 0, real or imag: 0
+Failed to pass the correctness verification against NVIDIA cuBLAS. Exited.
+srun: error: nid001549: task 0: Exited with exit code 253
+srun: Terminating StepId=16074817.0

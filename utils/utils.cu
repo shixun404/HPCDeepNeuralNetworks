@@ -124,6 +124,25 @@ bool verify_matrix_double(double *mat1, double *mat2, int n){
     return true;
 }
 
+bool verify_matrix_double2(double *mat1, double *mat2, int n){
+    double diff = 0.0;
+    int i, j;
+    for (i = 0; mat1 + i * n * 2 && mat2 + i * n * 2 && i < n; ++i){
+        for(j = 0; mat1 + i * n * 2 + j * 2 && mat2 + i * n * 2 + j * 2 && j < n; ++j){
+	        for(int k = 0; k < 2; ++k){
+                diff = fabs( (double)mat1[i * n * 2 + j * 2 + k] - (double)mat2[i * n * 2 + j * 2 + k] );
+                double denominator = fabs(mat1[i * n * 2  + j * 2 + k]) ;
+                if (denominator < 1e-3)denominator += 1;
+                if (diff > 1e-2){
+                    printf("error is %8.5f, relateive error is %8.5f,  %8.5f,%8.5f. row: %d, col: %d, real or imag: %d\n",diff, (diff / denominator), mat1[i * n * 2 + j * 2 + k], mat2[i * n * 2 + j * 2 + k], j, i, k);
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+
 void cpu_gemm(float alpha, float beta, float *mat1, float *mat2, int n, float *mat3){
     int i = 0, j = 0, k  = 0;
     for(i = 0; i < n; ++i){
