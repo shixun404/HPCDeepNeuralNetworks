@@ -86,6 +86,8 @@ int main(int argc, char **argv)
     //     exit(-3); 
     // } 
     int M, N, K;   
+    int shared_mem_size = 34816;
+    cudaFuncSetAttribute(zgemm_8, cudaFuncAttributeMaxDynamicSharedMemorySize, shared_mem_size);
     for(int max_size = start_size; max_size <= end_size; max_size += gap_size){
         M = max_size, N = max_size, K = max_size;
         cublasZgemm(handle, CUBLAS_OP_N,CUBLAS_OP_N, M, N, K, &alpha, (cuDoubleComplex*)dA, M, (cuDoubleComplex*)dB, K, &beta, (cuDoubleComplex*)dC_ref, M);
@@ -119,6 +121,21 @@ int main(int argc, char **argv)
             dim3 gridDim(CEIL_DIV(max_size, 64), CEIL_DIV(max_size, 64));
             zgemm_5 <<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta); 
         }  
+        else if(kernel_number == 6){
+            dim3 blockDim(256);   
+            dim3 gridDim(CEIL_DIV(max_size, 64), CEIL_DIV(max_size, 64));
+            zgemm_6 <<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta); 
+        }  
+        else if(kernel_number == 7){
+            dim3 blockDim(256);   
+            dim3 gridDim(CEIL_DIV(max_size, 64), CEIL_DIV(max_size, 64));
+            zgemm_7 <<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta); 
+        }  
+        else if(kernel_number == 8){
+            dim3 blockDim(256);   
+            dim3 gridDim(CEIL_DIV(max_size, 64), CEIL_DIV(max_size, 64));
+            zgemm_8 <<<gridDim, blockDim, shared_mem_size>>>(M, N, K, dA, dB, dC, alpha, beta); 
+        }  
        
         cudaDeviceSynchronize();  
         cudaMemcpy(C, dC, sizeof(double) * max_size * max_size * 2, cudaMemcpyDeviceToHost);
@@ -126,14 +143,15 @@ int main(int argc, char **argv)
         cudaMemcpy(C_ref, dC_ref, sizeof(double) * max_size * max_size * 2, cudaMemcpyDeviceToHost);
         cudaDeviceSynchronize();   
   
-        // if (!verify_matrix_double2(C_ref, C, max_size)) {
-        //     printf("Failed to pass the correctness verification against NVIDIA cuBLAS. Exited.\n");
-        // exit(-3);     
-        // }
+        if (!verify_matrix_double2(C_ref, C, max_size)) {
+            printf("Failed to pass the correctness verification against NVIDIA cuBLAS. Exited.\n");
+        exit(-3);     
+        }
         cudaEvent_t beg, end; 
         cudaEventCreate(&beg); 
         cudaEventCreate(&end);
         float elapsed = 0;
+        
         if (kernel_number == 0){
             cudaEventRecord(beg);
             for(int ii = 0; ii < num_tests; ++ii){
@@ -204,6 +222,45 @@ int main(int argc, char **argv)
             for(int ii = 0; ii < num_tests; ++ii){
                 cudaDeviceSynchronize();
                 zgemm_5<<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta);
+                cudaDeviceSynchronize();
+            }
+            cudaEventRecord(end);
+            cudaEventSynchronize(beg);
+            cudaEventSynchronize(end);
+        } 
+        else if(kernel_number == 6){
+            cudaEventRecord(beg);
+            dim3 blockDim(256); 
+            dim3 gridDim(CEIL_DIV(max_size, 64), CEIL_DIV(max_size, 64));
+            for(int ii = 0; ii < num_tests; ++ii){
+                cudaDeviceSynchronize(); 
+                zgemm_6<<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta);
+                cudaDeviceSynchronize();
+            } 
+            cudaEventRecord(end);
+            cudaEventSynchronize(beg);
+            cudaEventSynchronize(end);
+        } 
+        else if(kernel_number == 7){
+            cudaEventRecord(beg); 
+            dim3 blockDim(256); 
+            dim3 gridDim(CEIL_DIV(max_size, 64), CEIL_DIV(max_size, 64));
+            for(int ii = 0; ii < num_tests; ++ii){
+                cudaDeviceSynchronize();
+                zgemm_7<<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta);
+                cudaDeviceSynchronize();
+            }
+            cudaEventRecord(end);
+            cudaEventSynchronize(beg);
+            cudaEventSynchronize(end);
+        } 
+        else if(kernel_number == 8){
+            cudaEventRecord(beg);
+            dim3 blockDim(256); 
+            dim3 gridDim(CEIL_DIV(max_size, 64), CEIL_DIV(max_size, 64));
+            for(int ii = 0; ii < num_tests; ++ii){
+                cudaDeviceSynchronize();
+                zgemm_8<<<gridDim, blockDim, shared_mem_size>>>(M, N, K, dA, dB, dC, alpha, beta);
                 cudaDeviceSynchronize();
             }
             cudaEventRecord(end);

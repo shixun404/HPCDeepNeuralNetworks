@@ -3,3 +3,6 @@
 #include "./kernel/zgemm/include/kernel_3.cuh"
 #include "./kernel/zgemm/include/kernel_4.cuh"
 #include "./kernel/zgemm/include/kernel_5.cuh"
+#include "./kernel/zgemm/include/kernel_6.cuh"
+#include "./kernel/zgemm/include/kernel_7.cuh"
+#include "./kernel/zgemm/include/kernel_8.cuh"
