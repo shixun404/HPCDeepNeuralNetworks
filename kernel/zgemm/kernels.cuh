@@ -1,2 +1,4 @@
 #include "./kernel/zgemm/include/kernel_1.cuh"
 #include "./kernel/zgemm/include/kernel_2.cuh"
+#include "./kernel/zgemm/include/kernel_3.cuh"
+#include "./kernel/zgemm/include/kernel_4.cuh"

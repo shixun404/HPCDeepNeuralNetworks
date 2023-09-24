@@ -8,4 +8,4 @@
 export SLURM_CPU_BIND="cores"
 # srun ./ft_fft_batch 8 128
 # srun ./ft_fft 29
-srun ./zgemm 2 1024 1024 16
+srun ./zgemm 3 10240 10240 16

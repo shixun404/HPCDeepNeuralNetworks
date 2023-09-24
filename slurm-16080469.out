@@ -1,6 +1,0 @@
-    2048|
-    8.10|
-error is 70.88240, relateive error is  0.02452,  -2891.03650,-2820.15410. row: 508, col: 1248, real or imag: 0
-Failed to pass the correctness verification against NVIDIA cuBLAS. Exited.
-srun: error: nid001625: task 0: Exited with exit code 253
-srun: Terminating StepId=16080469.0

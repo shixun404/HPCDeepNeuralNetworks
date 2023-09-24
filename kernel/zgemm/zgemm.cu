@@ -1,18 +1,18 @@
 #include <stdio.h>
-#include <cublas_v2.h>
+#include <cublas_v2.h>  
 #include "utils/utils.cuh"
-#include "kernels.cuh"
+#include "kernels.cuh"   
 #define PPP 1  
 #include <cuda_runtime.h> 
 #include <helper_functions.h> 
 #include <helper_cuda.h>
 int main(int argc, char **argv)
-{       
+{        
     if (argc < 2) {
         printf("Please select a kernel (range 0 - 1, here 0 is for NVIDIA cuBLAS).\n");
          exit(-1);
     }
-    srand(10);
+    srand(10);  
     int kernel_number = atoi(argv[1]);
     int num_tests = 10;
     int start_size = atoi(argv[2]);   
@@ -36,7 +36,7 @@ int main(int argc, char **argv)
     double *dA = NULL,*dB = NULL, *dC_ref = NULL, *dC = NULL;
     int size = max_size * sizeof (int);
     int deviceId;
-    cudaGetDevice(&deviceId);
+    cudaGetDevice(&deviceId); 
     cudaDeviceProp props = getDetails(deviceId);
     
     A = (double *)malloc(sizeof(double) * max_size * max_size * 2);
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
     CUDA_CALLER(cudaMalloc((void**) &dB, sizeof(double) * max_size * max_size * 2));
     CUDA_CALLER(cudaMalloc((void**) &dC, sizeof(double) * max_size * max_size * 2));
     CUDA_CALLER(cudaMalloc((void**) &dC_ref, sizeof(double) * max_size * max_size * 2));
-    
+      
     CUDA_CALLER(cudaMemcpy(dA, A, sizeof(double) * max_size * max_size * 2, cudaMemcpyHostToDevice));
     CUDA_CALLER(cudaMemcpy(dB, B, sizeof(double) * max_size * max_size * 2, cudaMemcpyHostToDevice));
     CUDA_CALLER(cudaMemcpy(dC, C, sizeof(double) * max_size * max_size * 2, cudaMemcpyHostToDevice));
@@ -91,7 +91,7 @@ int main(int argc, char **argv)
         cublasZgemm(handle, CUBLAS_OP_N,CUBLAS_OP_N, M, N, K, &alpha, (cuDoubleComplex*)dA, M, (cuDoubleComplex*)dB, K, &beta, (cuDoubleComplex*)dC_ref, M);
     
         if(kernel_number == 0)
-        {
+        {  
             cublasZgemm(handle, CUBLAS_OP_N,CUBLAS_OP_N, M, N, K, &alpha, (cuDoubleComplex*)dA, M, (cuDoubleComplex*)dB, K, &beta, (cuDoubleComplex*)dC, M);
         } 
         else if(kernel_number == 1){
@@ -104,19 +104,29 @@ int main(int argc, char **argv)
             dim3 gridDim(CEIL_DIV(max_size, 64), CEIL_DIV(max_size, 64));
             zgemm_2 <<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta); 
         } 
-     
-        cudaDeviceSynchronize();
+        else if(kernel_number == 3){
+            dim3 blockDim(256);   
+            dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
+            zgemm_3 <<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta); 
+        } 
+        else if(kernel_number == 4){
+            dim3 blockDim(256);   
+            dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
+            zgemm_4 <<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta); 
+        }  
+       
+        cudaDeviceSynchronize();  
         cudaMemcpy(C, dC, sizeof(double) * max_size * max_size * 2, cudaMemcpyDeviceToHost);
-        cudaDeviceSynchronize();
+        cudaDeviceSynchronize(); 
         cudaMemcpy(C_ref, dC_ref, sizeof(double) * max_size * max_size * 2, cudaMemcpyDeviceToHost);
-        cudaDeviceSynchronize();
- 
+        cudaDeviceSynchronize();   
+  
         // if (!verify_matrix_double2(C_ref, C, max_size)) {
         //     printf("Failed to pass the correctness verification against NVIDIA cuBLAS. Exited.\n");
-        // exit(-3);
+        // exit(-3);     
         // }
         cudaEvent_t beg, end; 
-        cudaEventCreate(&beg);
+        cudaEventCreate(&beg); 
         cudaEventCreate(&end);
         float elapsed = 0;
         if (kernel_number == 0){
@@ -129,7 +139,7 @@ int main(int argc, char **argv)
             cudaEventRecord(end);
             cudaEventSynchronize(beg);
             cudaEventSynchronize(end);
-        }
+        } 
         else if(kernel_number == 1){
             cudaEventRecord(beg);
             dim3 blockDim(threads_x, threads_x);
@@ -139,17 +149,43 @@ int main(int argc, char **argv)
                 zgemm_1<<<gridDim, blockDim>>>(max_size, dA, dB, dC, alpha, beta);
                 cudaDeviceSynchronize();
             }
-            cudaEventRecord(end);
+            cudaEventRecord(end); 
             cudaEventSynchronize(beg);
             cudaEventSynchronize(end);
         }
         else if(kernel_number == 2){
             cudaEventRecord(beg);
-            dim3 blockDim(256);
+            dim3 blockDim(256); 
             dim3 gridDim(CEIL_DIV(max_size, 64), CEIL_DIV(max_size, 64));
             for(int ii = 0; ii < num_tests; ++ii){
                 cudaDeviceSynchronize();
                 zgemm_2<<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta);
+                cudaDeviceSynchronize();
+            }
+            cudaEventRecord(end);
+            cudaEventSynchronize(beg);
+            cudaEventSynchronize(end);
+        } 
+        else if(kernel_number == 3){
+            cudaEventRecord(beg);
+            dim3 blockDim(256); 
+            dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
+            for(int ii = 0; ii < num_tests; ++ii){
+                cudaDeviceSynchronize();
+                zgemm_3<<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta);
+                cudaDeviceSynchronize();
+            } 
+            cudaEventRecord(end);
+            cudaEventSynchronize(beg);
+            cudaEventSynchronize(end);
+        } 
+        else if(kernel_number == 4){
+            cudaEventRecord(beg);
+            dim3 blockDim(256); 
+            dim3 gridDim(CEIL_DIV(max_size, 128), CEIL_DIV(max_size, 128));
+            for(int ii = 0; ii < num_tests; ++ii){
+                cudaDeviceSynchronize();
+                zgemm_4<<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta);
                 cudaDeviceSynchronize();
             }
             cudaEventRecord(end);

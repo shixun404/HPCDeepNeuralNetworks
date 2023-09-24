@@ -3,22 +3,28 @@
 using namespace nvcuda;
 #define warp_col_tiles 2
 #define warp_row_tiles 4
+#define SKEW_KERNEL_2 4
 __global__ void zgemm_2(int M, int N, int K, double *A, double *B, double *C, double2 alpha, double2 beta){
     int threadblock_tile_M = 64, threadblock_tile_N = 64;
     int tid = threadIdx.x;
     int bid_x = blockIdx.x, bid_y = blockIdx.y;
     int wid = tid / 32;
     
-    __shared__ double shared_mem[64 * 16];
+    // __shared__ double shared_mem[64 * 16];
+    __shared__ double shared_mem[(64 + SKEW_KERNEL_2) * 16];
 
     double2 * gA = (double2*)A;
     double2 * gB = (double2*)B;
     double2 * gC = (((double2*)C));
     
-    double* sA_real = (shared_mem + 256 * 0);
-    double* sA_imag = (shared_mem + 256 * 1);
-    double* sB_real = (shared_mem + 256 * 2);
-    double* sB_imag = (shared_mem + 256 * 3);
+    // double* sA_real = (shared_mem + 256 * 0);
+    // double* sA_imag = (shared_mem + 256 * 1);
+    // double* sB_real = (shared_mem + 256 * 2);
+    // double* sB_imag = (shared_mem + 256 * 3);
+    double* sA_real = (shared_mem + (64 + SKEW_KERNEL_2) * 4 * 0);
+    double* sA_imag = (shared_mem + (64 + SKEW_KERNEL_2) * 4 * 1);
+    double* sB_real = (shared_mem + (64 + SKEW_KERNEL_2) * 4 * 2);
+    double* sB_imag = (shared_mem + (64 + SKEW_KERNEL_2) * 4 * 3);
     
     double2 mem_temp[4];
     // beta /= alpha;
@@ -60,31 +66,44 @@ __global__ void zgemm_2(int M, int N, int K, double *A, double *B, double *C, do
         mem_temp[0] = *(gA + (bid_x * 64 + tid % 64) + (k + tid / 64) * M);
         mem_temp[1] = *(gB + (k + tid / 64) + (bid_y * 64 + tid % 64) * K);
 
-        *(sA_real + tid) = mem_temp[0].x;
-        *(sA_imag + tid) = mem_temp[0].y;
-        *(sB_real + tid) = mem_temp[1].x;
-        *(sB_imag + tid) = mem_temp[1].y;
+        *(sA_real + (tid / 64) * (64 + SKEW_KERNEL_2) + (tid % 64)) = mem_temp[0].x;
+        *(sA_imag + (tid / 64) * (64 + SKEW_KERNEL_2) + (tid % 64)) = mem_temp[0].y;
+        *(sB_real + (tid / 64) * (64 + SKEW_KERNEL_2) + (tid % 64)) = mem_temp[1].x;
+        *(sB_imag + (tid / 64) * (64 + SKEW_KERNEL_2) + (tid % 64)) = mem_temp[1].y;
         
         __syncthreads();
-        wmma::load_matrix_sync(a_real_frag[0], sA_real + (wid % 2) * 32 + 0 * 8, 64);
-        wmma::load_matrix_sync(a_imag_frag[0], sA_imag + (wid % 2) * 32 + 0 * 8, 64);
-        wmma::load_matrix_sync(a_real_frag[1], sA_real + (wid % 2) * 32 + 1 * 8, 64);
-        wmma::load_matrix_sync(a_imag_frag[1], sA_imag + (wid % 2) * 32 + 1 * 8, 64);
-        wmma::load_matrix_sync(a_real_frag[2], sA_real + (wid % 2) * 32 + 2 * 8, 64);
-        wmma::load_matrix_sync(a_imag_frag[2], sA_imag + (wid % 2) * 32 + 2 * 8, 64);
-        wmma::load_matrix_sync(a_real_frag[3], sA_real + (wid % 2) * 32 + 3 * 8, 64);
-        wmma::load_matrix_sync(a_imag_frag[3], sA_imag + (wid % 2) * 32 + 3 * 8, 64);
+        // wmma::load_matrix_sync(a_real_frag[0], sA_real + (wid % 2) * 32 + 0 * 8, 64);
+        // wmma::load_matrix_sync(a_imag_frag[0], sA_imag + (wid % 2) * 32 + 0 * 8, 64);
+        // wmma::load_matrix_sync(a_real_frag[1], sA_real + (wid % 2) * 32 + 1 * 8, 64);
+        // wmma::load_matrix_sync(a_imag_frag[1], sA_imag + (wid % 2) * 32 + 1 * 8, 64);
+        // wmma::load_matrix_sync(a_real_frag[2], sA_real + (wid % 2) * 32 + 2 * 8, 64);
+        // wmma::load_matrix_sync(a_imag_frag[2], sA_imag + (wid % 2) * 32 + 2 * 8, 64);
+        // wmma::load_matrix_sync(a_real_frag[3], sA_real + (wid % 2) * 32 + 3 * 8, 64);
+        // wmma::load_matrix_sync(a_imag_frag[3], sA_imag + (wid % 2) * 32 + 3 * 8, 64);
         
-        wmma::load_matrix_sync(b_real_frag[0], sB_real + (wid / 2) * 16 + 0 * 8, 64);
-        wmma::load_matrix_sync(b_imag_frag[0], sB_imag + (wid / 2) * 16 + 0 * 8, 64);
-        wmma::load_matrix_sync(b_real_frag[1], sB_real + (wid / 2) * 16 + 1 * 8, 64);
-        wmma::load_matrix_sync(b_imag_frag[1], sB_imag + (wid / 2) * 16 + 1 * 8, 64);
+        // wmma::load_matrix_sync(b_real_frag[0], sB_real + (wid / 2) * 16 + 0 * 8, 64);
+        // wmma::load_matrix_sync(b_imag_frag[0], sB_imag + (wid / 2) * 16 + 0 * 8, 64);
+        // wmma::load_matrix_sync(b_real_frag[1], sB_real + (wid / 2) * 16 + 1 * 8, 64);
+        // wmma::load_matrix_sync(b_imag_frag[1], sB_imag + (wid / 2) * 16 + 1 * 8, 64);
+        wmma::load_matrix_sync(a_real_frag[0], sA_real + (wid % 2) * 32 + 0 * 8, (64 + SKEW_KERNEL_2));
+        wmma::load_matrix_sync(a_imag_frag[0], sA_imag + (wid % 2) * 32 + 0 * 8, (64 + SKEW_KERNEL_2));
+        wmma::load_matrix_sync(a_real_frag[1], sA_real + (wid % 2) * 32 + 1 * 8, (64 + SKEW_KERNEL_2));
+        wmma::load_matrix_sync(a_imag_frag[1], sA_imag + (wid % 2) * 32 + 1 * 8, (64 + SKEW_KERNEL_2));
+        wmma::load_matrix_sync(a_real_frag[2], sA_real + (wid % 2) * 32 + 2 * 8, (64 + SKEW_KERNEL_2));
+        wmma::load_matrix_sync(a_imag_frag[2], sA_imag + (wid % 2) * 32 + 2 * 8, (64 + SKEW_KERNEL_2));
+        wmma::load_matrix_sync(a_real_frag[3], sA_real + (wid % 2) * 32 + 3 * 8, (64 + SKEW_KERNEL_2));
+        wmma::load_matrix_sync(a_imag_frag[3], sA_imag + (wid % 2) * 32 + 3 * 8, (64 + SKEW_KERNEL_2));
+        
+        wmma::load_matrix_sync(b_real_frag[0], sB_real + (wid / 2) * 16 + 0 * 8, (64 + SKEW_KERNEL_2));
+        wmma::load_matrix_sync(b_imag_frag[0], sB_imag + (wid / 2) * 16 + 0 * 8, (64 + SKEW_KERNEL_2));
+        wmma::load_matrix_sync(b_real_frag[1], sB_real + (wid / 2) * 16 + 1 * 8, (64 + SKEW_KERNEL_2));
+        wmma::load_matrix_sync(b_imag_frag[1], sB_imag + (wid / 2) * 16 + 1 * 8, (64 + SKEW_KERNEL_2));
         
         for(int ii = 0; ii < neg_b_imag_frag[0].num_elements; ii++) {
             neg_b_imag_frag[0].x[ii] = (double)-1.0f * b_imag_frag[0].x[ii];
             neg_b_imag_frag[1].x[ii] = (double)-1.0f * b_imag_frag[1].x[ii];
         }
-        // __syncthreads();
+        
         #pragma unroll
         for(int i = 0; i < warp_col_tiles; ++i){
             #pragma unroll
@@ -99,15 +118,12 @@ __global__ void zgemm_2(int M, int N, int K, double *A, double *B, double *C, do
                 // }      
                 
                 wmma::mma_sync(c_imag[i][j], a_real_frag[j], b_imag_frag[i], c_imag[i][j]);
-                wmma::mma_sync(c_imag[i][j], a_imag_frag[j], b_real_frag[i], c_imag[i][j]);
-     
-
-          
-                
+                wmma::mma_sync(c_imag[i][j], a_imag_frag[j], b_real_frag[i], c_imag[i][j]);        
                 wmma::mma_sync(c_real[i][j], a_real_frag[j], b_real_frag[i], c_real[i][j]);
                 wmma::mma_sync(c_real[i][j], a_imag_frag[j], neg_b_imag_frag[i], c_real[i][j]);
             }
         }
+        // __syncthreads();
     }
     
     for(int i = 0; i < warp_col_tiles; ++i){
