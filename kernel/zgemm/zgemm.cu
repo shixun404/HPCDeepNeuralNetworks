@@ -85,7 +85,7 @@ int main(int argc, char **argv)
     //     printf("Failed to pass the correctness verification against NVIDIA cuBLAS. Exited.\n");
     //     exit(-3); 
     // } 
-    int M, N, K;   
+    int M, N, K;       
     int shared_mem_size = 34816;
     cudaFuncSetAttribute(zgemm_8, cudaFuncAttributeMaxDynamicSharedMemorySize, shared_mem_size);
     // cudaFuncSetAttribute(zgemm_9, cudaFuncAttributeMaxDynamicSharedMemorySize, shared_mem_size);
@@ -126,9 +126,9 @@ int main(int argc, char **argv)
             dim3 blockDim(256);   
             dim3 gridDim(CEIL_DIV(max_size, 64), CEIL_DIV(max_size, 64));
             zgemm_6 <<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta); 
-        }  
-        else if(kernel_number == 7){
-            dim3 blockDim(256);   
+        }    
+        else if(kernel_number == 7){  
+            dim3 blockDim(256);    
             dim3 gridDim(CEIL_DIV(max_size, 64), CEIL_DIV(max_size, 64));
             zgemm_7 <<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta); 
         }  
@@ -136,23 +136,27 @@ int main(int argc, char **argv)
             dim3 blockDim(256);    
             dim3 gridDim(CEIL_DIV(max_size, 64), CEIL_DIV(max_size, 64));
             zgemm_8 <<<gridDim, blockDim, shared_mem_size>>>(M, N, K, dA, dB, dC, alpha, beta); 
-        }   
+        }    
         else if(kernel_number == 9){
             dim3 blockDim(256);   
             dim3 gridDim(CEIL_DIV(max_size, 64), CEIL_DIV(max_size, 64));
             zgemm_9 <<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta); 
         }     
-              
-        cudaDeviceSynchronize();   
+        else if(kernel_number == 10){
+            dim3 blockDim(256);      
+            dim3 gridDim(CEIL_DIV(max_size, 64), CEIL_DIV(max_size, 64));
+            zgemm_10<<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta); 
+        }  
+        cudaDeviceSynchronize();       
         cudaMemcpy(C, dC, sizeof(double) * max_size * max_size * 2, cudaMemcpyDeviceToHost);
         cudaDeviceSynchronize();  
         cudaMemcpy(C_ref, dC_ref, sizeof(double) * max_size * max_size * 2, cudaMemcpyDeviceToHost);
         cudaDeviceSynchronize();    
   
-        // if (!verify_matrix_double2(C_ref, C, max_size)) {
-        //     printf("Failed to pass the correctness verification against NVIDIA cuBLAS. Exited.\n");
-        // exit(-3);        
-        // }
+        if (!verify_matrix_double2(C_ref, C, max_size)) {
+            printf("Failed to pass the correctness verification against NVIDIA cuBLAS. Exited.\n");
+        exit(-3);            
+        }
         cudaEvent_t beg, end; 
         cudaEventCreate(&beg); 
         cudaEventCreate(&end); 
@@ -164,10 +168,10 @@ int main(int argc, char **argv)
                     cudaDeviceSynchronize();
                     cublasZgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, M, N, K, &alpha, (cuDoubleComplex*)dA, M, (cuDoubleComplex*)dB, K, &beta, (cuDoubleComplex*)dC, M);
                     cudaDeviceSynchronize();
-            }
+            }  
             cudaEventRecord(end);
             cudaEventSynchronize(beg);
-            cudaEventSynchronize(end);
+            cudaEventSynchronize(end);   
         } 
         else if(kernel_number == 1){
             cudaEventRecord(beg);
@@ -284,6 +288,19 @@ int main(int argc, char **argv)
             }
             cudaEventRecord(end);
             cudaEventSynchronize(beg);
+            cudaEventSynchronize(end);
+        } 
+        else if(kernel_number == 10){
+            cudaEventRecord(beg); 
+            dim3 blockDim(256); 
+            dim3 gridDim(CEIL_DIV(max_size, 64), CEIL_DIV(max_size, 64));
+            for(int ii = 0; ii < num_tests; ++ii){
+                cudaDeviceSynchronize();
+                zgemm_10<<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta);
+                cudaDeviceSynchronize();
+            }
+            cudaEventRecord(end);
+            cudaEventSynchronize(beg); 
             cudaEventSynchronize(end);
         } 
         cudaEventElapsedTime(&elapsed, beg, end);

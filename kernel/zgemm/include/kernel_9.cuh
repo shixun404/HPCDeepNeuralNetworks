@@ -1,3 +1,4 @@
+// Double fragment for prefetching, performance bad
 #include <stdio.h>
 #include <mma.h>
 using namespace nvcuda;
@@ -126,7 +127,7 @@ __global__ void zgemm_9(int M, int N, int K, double *A, double *B, double *C, do
             }
 
             frag_offset = 1 - frag_offset;
-            
+
             for(int ii = 0; ii < neg_b_imag_frag[0].num_elements; ii++) {
                 neg_b_imag_frag[0].x[ii] = (double)-1.0f * b_imag_frag[frag_offset][0].x[ii];
                 neg_b_imag_frag[1].x[ii] = (double)-1.0f * b_imag_frag[frag_offset][1].x[ii];

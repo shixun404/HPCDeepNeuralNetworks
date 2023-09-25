@@ -7,3 +7,4 @@
 #include "./kernel/zgemm/include/kernel_7.cuh"
 #include "./kernel/zgemm/include/kernel_8.cuh"
 #include "./kernel/zgemm/include/kernel_9.cuh"
+#include "./kernel/zgemm/include/kernel_10.cuh"
