@@ -10,6 +10,7 @@ __global__ void zgemm_7(int M, int N, int K, double *A, double *B, double *C, do
     int bid_x = blockIdx.x, bid_y = blockIdx.y;
     int wid = tid / 32;
     
+    
     __shared__ double shared_mem[((64 + SKEW_KERNEL_2) * 16 * 2) * 2];
 
     double2 * gA = (double2*)A;
@@ -21,7 +22,7 @@ __global__ void zgemm_7(int M, int N, int K, double *A, double *B, double *C, do
     double* sB_real = (shared_mem + (64 + SKEW_KERNEL_2) * 8 * 2);
     double* sB_imag = (shared_mem + (64 + SKEW_KERNEL_2) * 8 * 3);
     
-    double2 mem_temp[4];
+    double2 mem_temp[32];
     
     wmma::fragment<wmma::accumulator, 8, 8, 4, double> c_real[warp_col_tiles][warp_row_tiles];
     wmma::fragment<wmma::accumulator, 8, 8, 4, double> c_imag[warp_col_tiles][warp_row_tiles];
@@ -62,7 +63,15 @@ __global__ void zgemm_7(int M, int N, int K, double *A, double *B, double *C, do
         mem_temp[1] = *(gA + (bid_x * 64 + tid % 64) + (k + 8 + tid / 64 + 4) * M);
         mem_temp[2] = *(gB + (k + 8 + tid / 64) + (bid_y * 64 + tid % 64) * K);
         mem_temp[3] = *(gB + (k + 8 + tid / 64 + 4) + (bid_y * 64 + tid % 64) * K);
+        // #pragma unroll
         for(int kk = 0; kk < 2; ++kk){
+            wmma::load_matrix_sync(b_real_frag[0], sB_real + offset + (wid / 2) * 16 + 0 * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
+            wmma::load_matrix_sync(b_imag_frag[0], sB_imag + offset + (wid / 2) * 16 + 0 * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
+            wmma::load_matrix_sync(b_real_frag[1], sB_real + offset + (wid / 2) * 16 + 1 * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
+            wmma::load_matrix_sync(b_imag_frag[1], sB_imag + offset + (wid / 2) * 16 + 1 * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
+            
+            neg_b_imag_frag[0].x[0] = (double)-1.0f * b_imag_frag[0].x[0];
+            neg_b_imag_frag[1].x[0] = (double)-1.0f * b_imag_frag[1].x[0];
             wmma::load_matrix_sync(a_real_frag[0], sA_real + offset + (wid % 2) * 32 + 0 * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
             wmma::load_matrix_sync(a_imag_frag[0], sA_imag + offset + (wid % 2) * 32 + 0 * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
             wmma::load_matrix_sync(a_real_frag[1], sA_real + offset + (wid % 2) * 32 + 1 * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
@@ -72,26 +81,128 @@ __global__ void zgemm_7(int M, int N, int K, double *A, double *B, double *C, do
             wmma::load_matrix_sync(a_real_frag[3], sA_real + offset + (wid % 2) * 32 + 3 * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
             wmma::load_matrix_sync(a_imag_frag[3], sA_imag + offset + (wid % 2) * 32 + 3 * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
             
-            wmma::load_matrix_sync(b_real_frag[0], sB_real + offset + (wid / 2) * 16 + 0 * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
-            wmma::load_matrix_sync(b_imag_frag[0], sB_imag + offset + (wid / 2) * 16 + 0 * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
-            wmma::load_matrix_sync(b_real_frag[1], sB_real + offset + (wid / 2) * 16 + 1 * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
-            wmma::load_matrix_sync(b_imag_frag[1], sB_imag + offset + (wid / 2) * 16 + 1 * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
             
-            for(int ii = 0; ii < neg_b_imag_frag[0].num_elements; ii++) {
-                neg_b_imag_frag[0].x[ii] = (double)-1.0f * b_imag_frag[0].x[ii];
-                neg_b_imag_frag[1].x[ii] = (double)-1.0f * b_imag_frag[1].x[ii];
-            }
             
-            #pragma unroll
+
+        //     // int i = 0, j = 0;
+        //     wmma::mma_sync(c_imag[0][0], a_real_frag[0], b_imag_frag[0], c_imag[0][0]);
+        //     wmma::mma_sync(c_imag[0][0], a_imag_frag[0], b_real_frag[0], c_imag[0][0]);        
+        //     wmma::mma_sync(c_real[0][0], a_real_frag[0], b_real_frag[0], c_real[0][0]);
+        //     wmma::mma_sync(c_real[0][0], a_imag_frag[0], neg_b_imag_frag[0], c_real[0][0]);
+
+        //     // i = 1, j = 0;
+        //     wmma::mma_sync(c_imag[1][0], a_real_frag[0], b_imag_frag[1], c_imag[1][0]);
+        //     wmma::mma_sync(c_imag[1][0], a_imag_frag[0], b_real_frag[1], c_imag[1][0]);        
+        //     wmma::mma_sync(c_real[1][0], a_real_frag[0], b_real_frag[1], c_real[1][0]);
+        //     wmma::mma_sync(c_real[1][0], a_imag_frag[0], neg_b_imag_frag[1], c_real[1][0]);
+
+        //     // i = 1, j = 1;
+        //     wmma::mma_sync(c_imag[1][1], a_real_frag[1], b_imag_frag[1], c_imag[1][1]);
+        //     wmma::mma_sync(c_imag[1][1], a_imag_frag[1], b_real_frag[1], c_imag[1][1]);        
+        //     wmma::mma_sync(c_real[1][1], a_real_frag[1], b_real_frag[1], c_real[1][1]);
+        //     wmma::mma_sync(c_real[1][1], a_imag_frag[1], neg_b_imag_frag[1], c_real[1][1]);
+
+ 
+        //     // i = 0, j = 1;
+        //     wmma::mma_sync(c_imag[0][1], a_real_frag[1], b_imag_frag[0], c_imag[0][1]);
+        //     wmma::mma_sync(c_imag[0][1], a_imag_frag[1], b_real_frag[0], c_imag[0][1]);        
+        //     wmma::mma_sync(c_real[0][1], a_real_frag[1], b_real_frag[0], c_real[0][1]);
+        //     wmma::mma_sync(c_real[0][1], a_imag_frag[1], neg_b_imag_frag[0], c_real[0][1]);
+            
+
+
+
+        //     // i = 0, j = 2;
+        //     wmma::mma_sync(c_imag[0][2], a_real_frag[2], b_imag_frag[0], c_imag[0][2]);
+        //     wmma::mma_sync(c_imag[0][2], a_imag_frag[2], b_real_frag[0], c_imag[0][2]);        
+        //     wmma::mma_sync(c_real[0][2], a_real_frag[2], b_real_frag[0], c_real[0][2]);
+        //     wmma::mma_sync(c_real[0][2], a_imag_frag[2], neg_b_imag_frag[0], c_real[0][2]);
+
+
+
+            
+        //     // i = 1, j = 2;
+        //     wmma::mma_sync(c_imag[1][2], a_real_frag[2], b_imag_frag[1], c_imag[1][2]);
+        //     wmma::mma_sync(c_imag[1][2], a_imag_frag[2], b_real_frag[1], c_imag[1][2]);        
+        //     wmma::mma_sync(c_real[1][2], a_real_frag[2], b_real_frag[1], c_real[1][2]);
+        //     wmma::mma_sync(c_real[1][2], a_imag_frag[2], neg_b_imag_frag[1], c_real[1][2]);
+            
+
+        //    // i = 1, j = 3;
+        //     wmma::mma_sync(c_imag[1][3], a_real_frag[3], b_imag_frag[1], c_imag[1][3]);
+        //     wmma::mma_sync(c_imag[1][3], a_imag_frag[3], b_real_frag[1], c_imag[1][3]);        
+        //     wmma::mma_sync(c_real[1][3], a_real_frag[3], b_real_frag[1], c_real[1][3]);
+        //     wmma::mma_sync(c_real[1][3], a_imag_frag[3], neg_b_imag_frag[1], c_real[1][3]);            
+            
+            
+        //     // i = 0, j = 3;
+        //     wmma::mma_sync(c_imag[0][3], a_real_frag[3], b_imag_frag[0], c_imag[0][3]);
+        //     wmma::mma_sync(c_imag[0][3], a_imag_frag[3], b_real_frag[0], c_imag[0][3]);        
+        //     wmma::mma_sync(c_real[0][3], a_real_frag[3], b_real_frag[0], c_real[0][3]);
+        //     wmma::mma_sync(c_real[0][3], a_imag_frag[3], neg_b_imag_frag[0], c_real[0][3]);
+            
+            
+            
+            
+            // for(int ii = 0; ii < neg_b_imag_frag[0].num_elements; ii++) {
+            
+
+            // }
+            
+            // #pragma unroll
+            for(int j = 0; j < warp_row_tiles; ++j){
             for(int i = 0; i < warp_col_tiles; ++i){
-                #pragma unroll
-                for(int j = 0; j < warp_row_tiles; ++j){
+                // wmma::load_matrix_sync(b_real_frag[i], sB_real + offset + (wid / 2) * 16 + i * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
+                // wmma::load_matrix_sync(b_imag_frag[i], sB_imag + offset + (wid / 2) * 16 + i * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
+                // neg_b_imag_frag[i].x[0] = (double)-1.0f * b_imag_frag[i].x[0];
+                // #pragma unroll
+                
+                    // if(i == 0){
+                    //     wmma::load_matrix_sync(a_real_frag[j], sA_real + offset + (wid % 2) * 32 + j * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
+                    //     wmma::load_matrix_sync(a_imag_frag[j], sA_imag + offset + (wid % 2) * 32 + j * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
+                    // }
                     wmma::mma_sync(c_imag[i][j], a_real_frag[j], b_imag_frag[i], c_imag[i][j]);
                     wmma::mma_sync(c_imag[i][j], a_imag_frag[j], b_real_frag[i], c_imag[i][j]);        
                     wmma::mma_sync(c_real[i][j], a_real_frag[j], b_real_frag[i], c_real[i][j]);
                     wmma::mma_sync(c_real[i][j], a_imag_frag[j], neg_b_imag_frag[i], c_real[i][j]);
                 }
             }
+
+
+            // for(int j = 0; j < warp_row_tiles; j+=2){
+            // // for(int i = 0; i < warp_col_tiles; ++i){
+            //     // wmma::load_matrix_sync(b_real_frag[i], sB_real + offset + (wid / 2) * 16 + i * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
+            //     // wmma::load_matrix_sync(b_imag_frag[i], sB_imag + offset + (wid / 2) * 16 + i * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
+            //     // neg_b_imag_frag[i].x[0] = (double)-1.0f * b_imag_frag[i].x[0];
+            //     // #pragma unroll
+                
+            //         // if(i == 0){
+            //         //     wmma::load_matrix_sync(a_real_frag[j], sA_real + offset + (wid % 2) * 32 + j * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
+            //         //     wmma::load_matrix_sync(a_imag_frag[j], sA_imag + offset + (wid % 2) * 32 + j * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
+            //         // }
+            //         wmma::mma_sync(c_imag[0][j], a_real_frag[j], b_imag_frag[0], c_imag[0][j]);
+            //         wmma::mma_sync(c_imag[0][j], a_imag_frag[j], b_real_frag[0], c_imag[0][j]);        
+            //         wmma::mma_sync(c_real[0][j], a_real_frag[j], b_real_frag[0], c_real[0][j]);
+            //         wmma::mma_sync(c_real[0][j], a_imag_frag[j], neg_b_imag_frag[0], c_real[0][j]);
+                    
+            //         wmma::mma_sync(c_imag[1][j], a_real_frag[j], b_imag_frag[1], c_imag[1][j]);
+            //         wmma::mma_sync(c_imag[1][j], a_imag_frag[j], b_real_frag[1], c_imag[1][j]);        
+            //         wmma::mma_sync(c_real[1][j], a_real_frag[j], b_real_frag[1], c_real[1][j]);
+            //         wmma::mma_sync(c_real[1][j], a_imag_frag[j], neg_b_imag_frag[1], c_real[1][j]);
+                    
+                    
+            //         wmma::mma_sync(c_imag[1][j + 1], a_real_frag[j + 1], b_imag_frag[1], c_imag[1][j + 1]);
+            //         wmma::mma_sync(c_imag[1][j + 1], a_imag_frag[j + 1], b_real_frag[1], c_imag[1][j + 1]);        
+            //         wmma::mma_sync(c_real[1][j + 1], a_real_frag[j + 1], b_real_frag[1], c_real[1][j + 1]);
+            //         wmma::mma_sync(c_real[1][j + 1], a_imag_frag[j + 1], neg_b_imag_frag[1], c_real[1][j + 1]);
+
+            //         wmma::mma_sync(c_imag[0][j + 1], a_real_frag[j + 1], b_imag_frag[0], c_imag[0][j + 1]);
+            //         wmma::mma_sync(c_imag[0][j + 1], a_imag_frag[j + 1], b_real_frag[0], c_imag[0][j + 1]);        
+            //         wmma::mma_sync(c_real[0][j + 1], a_real_frag[j + 1], b_real_frag[0], c_real[0][j + 1]);
+            //         wmma::mma_sync(c_real[0][j + 1], a_imag_frag[j + 1], neg_b_imag_frag[0], c_real[0][j + 1]);
+                    
+            //     // }
+            // }
         }
         
         offset = offset > 0 ? 0 : ((64 + SKEW_KERNEL_2) * 16 * 2);
@@ -106,19 +217,67 @@ __global__ void zgemm_7(int M, int N, int K, double *A, double *B, double *C, do
         __syncthreads();
     }
     
-    for(int i = 0; i < warp_col_tiles; ++i){
-        for(int j = 0; j < warp_row_tiles; ++j){
-            mem_temp[0] =   *(gC + (bid_x * 64 + (wid % 2) * 32 + j * 8 + ((tid % 32) / 4)) + (bid_y * 64 + (wid / 2) * 16 + i * 8 + ((tid % 32) % 4) * 2 + 0) * M);
-            mem_temp[1] =   *(gC + (bid_x * 64 + (wid % 2) * 32 + j * 8 + ((tid % 32) / 4)) + (bid_y * 64 + (wid / 2) * 16 + i * 8 + ((tid % 32) % 4) * 2 + 1) * M);
-            for(int ii = 0; ii < c_real[i][j].num_elements; ii++) {
-                mem_temp[ii + 2].x = alpha.x * c_real[i][j].x[ii] + beta.x * mem_temp[ii].x - 
-                                    alpha.y * c_imag[i][j].x[ii] - beta.y * mem_temp[ii].y;
-                mem_temp[ii + 2].y = alpha.x * c_imag[i][j].x[ii] + beta.x * mem_temp[ii].y +
-                                    alpha.y * c_real[i][j].x[ii] + beta.y * mem_temp[ii].x;
-            }
-            *(gC + (bid_x * 64 + (wid % 2) * 32 + j * 8 + ((tid % 32) / 4)) + (bid_y * 64 + (wid / 2) * 16 + i * 8 + ((tid % 32) % 4) * 2 + 0) * M) = mem_temp[0 + 2];
-            *(gC + (bid_x * 64 + (wid % 2) * 32 + j * 8 + ((tid % 32) / 4)) + (bid_y * 64 + (wid / 2) * 16 + i * 8 + ((tid % 32) % 4) * 2 + 1) * M) = mem_temp[1 + 2];
+    
+    
+    
+    // #pragma unroll
+    // for(int i = 0; i < warp_col_tiles; ++i){
+    //     #pragma unroll
+    //     for(int j = 0; j < warp_row_tiles; ++j){
+    //         mem_temp[0] = *(gC + (bid_x * 64 + (wid % 2) * 32 + j * 8 + ((tid % 32) / 4)) + (bid_y * 64 + (wid / 2) * 16 + i * 8 + ((tid % 32) % 4) * 2 + 0) * M);
+    //         mem_temp[1] = *(gC + (bid_x * 64 + (wid % 2) * 32 + j * 8 + ((tid % 32) / 4)) + (bid_y * 64 + (wid / 2) * 16 + i * 8 + ((tid % 32) % 4) * 2 + 1) * M);
+    //         #pragma unroll
+    //         for(int ii = 0; ii < c_real[i][j].num_elements; ii++) {
+    //             mem_temp[ii + 2].x = alpha.x * c_real[i][j].x[ii] + beta.x * mem_temp[ii].x - 
+    //                                     alpha.y * c_imag[i][j].x[ii] - beta.y * mem_temp[ii].y;
+    //             mem_temp[ii + 2].y = alpha.x * c_imag[i][j].x[ii] + beta.x * mem_temp[ii].y +
+    //                                     alpha.y * c_real[i][j].x[ii] + beta.y * mem_temp[ii].x;       
+    //         }
+    //         *(gC + (bid_x * 64 + (wid % 2) * 32 + j * 8 + ((tid % 32) / 4)) + (bid_y * 64 + (wid / 2) * 16 + i * 8 + ((tid % 32) % 4) * 2 + 0) * M) = mem_temp[0 + 2];
+    //         *(gC + (bid_x * 64 + (wid % 2) * 32 + j * 8 + ((tid % 32) / 4)) + (bid_y * 64 + (wid / 2) * 16 + i * 8 + ((tid % 32) % 4) * 2 + 1) * M) = mem_temp[1 + 2];
 
+    //     }
+    // }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    #pragma unroll
+    for(int i = 0; i < warp_col_tiles; ++i){
+        #pragma unroll
+        for(int j = 0; j < warp_row_tiles; ++j){
+            mem_temp[0 * warp_col_tiles * warp_row_tiles + i * warp_row_tiles + j] =   *(gC + (bid_x * 64 + (wid % 2) * 32 + j * 8 + ((tid % 32) / 4)) + (bid_y * 64 + (wid / 2) * 16 + i * 8 + ((tid % 32) % 4) * 2 + 0) * M);
+            mem_temp[1 * warp_col_tiles * warp_row_tiles + i * warp_row_tiles + j] =   *(gC + (bid_x * 64 + (wid % 2) * 32 + j * 8 + ((tid % 32) / 4)) + (bid_y * 64 + (wid / 2) * 16 + i * 8 + ((tid % 32) % 4) * 2 + 1) * M);
+            
+        }
+    }
+
+    #pragma unroll
+    for(int i = 0; i < warp_col_tiles; ++i){
+        #pragma unroll
+        for(int j = 0; j < warp_row_tiles; ++j){
+            for(int ii = 0; ii < c_real[i][j].num_elements; ii++) {
+                mem_temp[ii * warp_col_tiles * warp_row_tiles + i * warp_row_tiles + j + 16].x = alpha.x * c_real[i][j].x[ii] + beta.x * mem_temp[ii * warp_col_tiles * warp_row_tiles + i * warp_row_tiles + j].x - 
+                                    alpha.y * c_imag[i][j].x[ii] - beta.y * mem_temp[ii * warp_col_tiles * warp_row_tiles + i * warp_row_tiles + j].y;
+                mem_temp[ii * warp_col_tiles * warp_row_tiles + i * warp_row_tiles + j + 16].y = alpha.x * c_imag[i][j].x[ii] + beta.x * mem_temp[ii * warp_col_tiles * warp_row_tiles + i * warp_row_tiles + j].y +
+                                    alpha.y * c_real[i][j].x[ii] + beta.y * mem_temp[ii * warp_col_tiles * warp_row_tiles + i * warp_row_tiles + j].x;
+            }
+        }
+    }
+
+    #pragma unroll
+    for(int i = 0; i < warp_col_tiles; ++i){
+        #pragma unroll
+        for(int j = 0; j < warp_row_tiles; ++j){
+            *(gC + (bid_x * 64 + (wid % 2) * 32 + j * 8 + ((tid % 32) / 4)) + (bid_y * 64 + (wid / 2) * 16 + i * 8 + ((tid % 32) % 4) * 2 + 0) * M) = mem_temp[0 * warp_col_tiles * warp_row_tiles + i * warp_row_tiles + j + 16];
+            *(gC + (bid_x * 64 + (wid % 2) * 32 + j * 8 + ((tid % 32) / 4)) + (bid_y * 64 + (wid / 2) * 16 + i * 8 + ((tid % 32) % 4) * 2 + 1) * M) = mem_temp[1 * warp_col_tiles * warp_row_tiles + i * warp_row_tiles + j + 16];
         }
     }
 }

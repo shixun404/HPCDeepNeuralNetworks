@@ -92,8 +92,9 @@ __global__ void zgemm_9(int M, int N, int K, double *A, double *B, double *C, do
         mem_temp[1] = *(gA + (bid_x * 64 + tid % 64) + (k + 8 + tid / 64 + 4) * M);
         mem_temp[2] = *(gB + (k + 8 + tid / 64) + (bid_y * 64 + tid % 64) * K);
         mem_temp[3] = *(gB + (k + 8 + tid / 64 + 4) + (bid_y * 64 + tid % 64) * K);
-        for(int kk = 0; kk < 2; ++kk){
+        // for(int kk = 0; kk < 2; ++kk){
             frag_offset = 1 - frag_offset;
+            int kk = 0;
             wmma::load_matrix_sync(a_real_frag[1 - frag_offset][0], sA_real + offset + (wid % 2) * 32 + 0 * 8 + ((kk + 1) % 2) * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
             wmma::load_matrix_sync(a_imag_frag[1 - frag_offset][0], sA_imag + offset + (wid % 2) * 32 + 0 * 8 + ((kk + 1) % 2) * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
             wmma::load_matrix_sync(a_real_frag[1 - frag_offset][1], sA_real + offset + (wid % 2) * 32 + 1 * 8 + ((kk + 1) % 2) * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
@@ -123,8 +124,26 @@ __global__ void zgemm_9(int M, int N, int K, double *A, double *B, double *C, do
                     wmma::mma_sync(c_real[i][j], a_imag_frag[frag_offset][j], neg_b_imag_frag[i], c_real[i][j]);
                 }
             }
+
+            frag_offset = 1 - frag_offset;
             
-        }
+            for(int ii = 0; ii < neg_b_imag_frag[0].num_elements; ii++) {
+                neg_b_imag_frag[0].x[ii] = (double)-1.0f * b_imag_frag[frag_offset][0].x[ii];
+                neg_b_imag_frag[1].x[ii] = (double)-1.0f * b_imag_frag[frag_offset][1].x[ii];
+            }
+            
+            #pragma unroll
+            for(int i = 0; i < warp_col_tiles; ++i){
+                #pragma unroll
+                for(int j = 0; j < warp_row_tiles; ++j){
+                    wmma::mma_sync(c_imag[i][j], a_real_frag[frag_offset][j], b_imag_frag[frag_offset][i], c_imag[i][j]);
+                    wmma::mma_sync(c_imag[i][j], a_imag_frag[frag_offset][j], b_real_frag[frag_offset][i], c_imag[i][j]);        
+                    wmma::mma_sync(c_real[i][j], a_real_frag[frag_offset][j], b_real_frag[frag_offset][i], c_real[i][j]);
+                    wmma::mma_sync(c_real[i][j], a_imag_frag[frag_offset][j], neg_b_imag_frag[i], c_real[i][j]);
+                }
+            }
+            
+        // }
         
         offset = offset > 0 ? 0 : ((64 + SKEW_KERNEL_2) * 16 * 2);
         *(sA_real + offset + (tid / 64) * (64 + SKEW_KERNEL_2) + (tid % 64)) = mem_temp[0].x;
