@@ -109,7 +109,7 @@ __global__ void zgemm_6(int M, int N, int K, double *A, double *B, double *C, do
         // wmma::load_matrix_sync(b_imag_frag[0], sB_imag + (wid / 2) * 16 + 0 * 8, 64);
         // wmma::load_matrix_sync(b_real_frag[1], sB_real + (wid / 2) * 16 + 1 * 8, 64);
         // wmma::load_matrix_sync(b_imag_frag[1], sB_imag + (wid / 2) * 16 + 1 * 8, 64);
-        for(int kk = 0; kk < (BK / 4); ++kk){
+        for(int kk = 0; kk < (BK / 4); ++kk){  
             wmma::load_matrix_sync(a_real_frag[0], sA_real + (wid % 2) * 32 + 0 * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
             wmma::load_matrix_sync(a_imag_frag[0], sA_imag + (wid % 2) * 32 + 0 * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
             wmma::load_matrix_sync(a_real_frag[1], sA_real + (wid % 2) * 32 + 1 * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));

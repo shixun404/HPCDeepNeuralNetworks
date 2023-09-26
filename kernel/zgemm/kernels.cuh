@@ -8,3 +8,8 @@
 #include "./kernel/zgemm/include/kernel_8.cuh"
 #include "./kernel/zgemm/include/kernel_9.cuh"
 #include "./kernel/zgemm/include/kernel_10.cuh"
+#include "./kernel/zgemm/include/kernel_11.cuh"
+#include "./kernel/zgemm/include/kernel_12.cuh"
+#include "./kernel/zgemm/include/kernel_13.cuh"
+#include "./kernel/zgemm/include/kernel_14.cuh"
+#include "./kernel/zgemm/include/kernel_15.cuh"
