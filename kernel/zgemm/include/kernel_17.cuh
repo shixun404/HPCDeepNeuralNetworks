@@ -3,7 +3,7 @@
 using namespace nvcuda;
 #define warp_col_tiles 2
 #define warp_row_tiles 4
-#define SKEW_KERNEL_2 0
+#define SKEW_KERNEL_2 1
 extern __shared__ double shared_mem[];
 __global__ void zgemm_17(int M, int N, int K, double *A, double *B, double *C, double2 alpha, double2 beta){
     int threadblock_tile_M = 64, threadblock_tile_N = 64;
@@ -40,31 +40,47 @@ __global__ void zgemm_17(int M, int N, int K, double *A, double *B, double *C, d
     }
     int offset = 0, offset_k = 0;
     
-    mem_temp[0] = *(gA + (bid_x * 64 + tid % 64) + (0 + tid / 64 + 0) * M);
-    mem_temp[1] = *(gA + (bid_x * 64 + tid % 64) + (0 + tid / 64 + 4) * M);
-    mem_temp[2] = *(gB + (0 + tid / 64 + 0) + (bid_y * 64 + tid % 64) * K);
-    mem_temp[3] = *(gB + (0 + tid / 64 + 4) + (bid_y * 64 + tid % 64) * K);
+    // mem_temp[0] = *(gA + (bid_x * 64 + tid % 64) + (0 + tid / 64 + 0) * M);
+    // mem_temp[1] = *(gA + (bid_x * 64 + tid % 64) + (0 + tid / 64 + 4) * M);
+    // mem_temp[2] = *(gB + (0 + tid / 64 + 0) + (bid_y * 64 + tid % 64) * K);
+    // mem_temp[3] = *(gB + (0 + tid / 64 + 4) + (bid_y * 64 + tid % 64) * K);
 
-    *(sA + (tid / 64 + 0) * (64 + SKEW_KERNEL_2) + (tid % 64) + offset) = mem_temp[0];
-    *(sA + (tid / 64 + 4) * (64 + SKEW_KERNEL_2) + (tid % 64) + offset) = mem_temp[1];
-    *(sB + (tid / 64 + 0) * (64 + SKEW_KERNEL_2) + (tid % 64) + offset) = mem_temp[2];
-    *(sB + (tid / 64 + 4) * (64 + SKEW_KERNEL_2) + (tid % 64) + offset) = mem_temp[3];
+    // *(sA + (tid / 64 + 0) * (64 + SKEW_KERNEL_2) + (tid % 64) + offset) = mem_temp[0];
+    // *(sA + (tid / 64 + 4) * (64 + SKEW_KERNEL_2) + (tid % 64) + offset) = mem_temp[1];
+    // *(sB + (tid / 64 + 0) * (64 + SKEW_KERNEL_2) + (tid % 64) + offset) = mem_temp[2];
+    // *(sB + (tid / 64 + 4) * (64 + SKEW_KERNEL_2) + (tid % 64) + offset) = mem_temp[3];
 
-    __syncthreads();
+    // __syncthreads();
+    int k = 0;
+    asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
+            : "l"(__cvta_generic_to_shared(sA) + (0 + (tid / 64) * (64 + SKEW_KERNEL_2) + (tid % 64)) * sizeof(double) * 2), 
+                "l"(&A[((bid_x * 64 + tid % 64) + ((k + 0) % K + tid / 64) * M) * 2 + 0]));
+    asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
+        : "l"(__cvta_generic_to_shared(sA) + (0 + (tid / 64 + 4) * (64 + SKEW_KERNEL_2) + (tid % 64)) * sizeof(double) * 2), 
+            "l"(&A[((bid_x * 64 + tid % 64) + ((k + 0) % K + tid / 64 + 4) * M) * 2 + 0]));
+    asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
+        : "l"(__cvta_generic_to_shared(sB) + (0 + (tid / 64) * (64 + SKEW_KERNEL_2) + (tid % 64)) * sizeof(double) * 2), 
+            "l"(&B[(((k + 0) % K + tid / 64) + (bid_y * 64 + tid % 64) * K) * 2 + 0]));
+    asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
+        : "l"(__cvta_generic_to_shared(sB) + (0 + (tid / 64 + 4) * (64 + SKEW_KERNEL_2) + (tid % 64)) * sizeof(double) * 2), 
+            "l"(&B[(((k + 0) % K + tid / 64 + 4) + (bid_y * 64 + tid % 64) * K) * 2 + 0]));
     offset_k = (offset_k + 1) % 3;
     offset = (offset_k *  ((64 + SKEW_KERNEL_2 + 64 + SKEW_KERNEL_2) * 8));
-
-    mem_temp[0] = *(gA + (bid_x * 64 + tid % 64) + (8 + tid / 64 + 0) * M);
-    mem_temp[1] = *(gA + (bid_x * 64 + tid % 64) + (8 + tid / 64 + 4) * M);
-    mem_temp[2] = *(gB + (8 + tid / 64 + 0) + (bid_y * 64 + tid % 64) * K);
-    mem_temp[3] = *(gB + (8 + tid / 64 + 4) + (bid_y * 64 + tid % 64) * K);
-
-    *(sA + (tid / 64 + 0) * (64 + SKEW_KERNEL_2) + (tid % 64) + offset) = mem_temp[0];
-    *(sA + (tid / 64 + 4) * (64 + SKEW_KERNEL_2) + (tid % 64) + offset) = mem_temp[1];
-    *(sB + (tid / 64 + 0) * (64 + SKEW_KERNEL_2) + (tid % 64) + offset) = mem_temp[2];
-    *(sB + (tid / 64 + 4) * (64 + SKEW_KERNEL_2) + (tid % 64) + offset) = mem_temp[3];
+    asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
+            : "l"(__cvta_generic_to_shared(sA) + (offset + (tid / 64) * (64 + SKEW_KERNEL_2) + (tid % 64)) * sizeof(double) * 2), 
+                "l"(&A[((bid_x * 64 + tid % 64) + ((k + 8) % K + tid / 64) * M) * 2 + 0]));
+    asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
+        : "l"(__cvta_generic_to_shared(sA) + (offset + (tid / 64 + 4) * (64 + SKEW_KERNEL_2) + (tid % 64)) * sizeof(double) * 2), 
+            "l"(&A[((bid_x * 64 + tid % 64) + ((k + 8) % K + tid / 64 + 4) * M) * 2 + 0]));
+    asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
+        : "l"(__cvta_generic_to_shared(sB) + (offset + (tid / 64) * (64 + SKEW_KERNEL_2) + (tid % 64)) * sizeof(double) * 2), 
+            "l"(&B[(((k + 8) % K + tid / 64) + (bid_y * 64 + tid % 64) * K) * 2 + 0]));
+    asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
+        : "l"(__cvta_generic_to_shared(sB) + (offset + (tid / 64 + 4) * (64 + SKEW_KERNEL_2) + (tid % 64)) * sizeof(double) * 2), 
+            "l"(&B[(((k + 8) % K + tid / 64 + 4) + (bid_y * 64 + tid % 64) * K) * 2 + 0]));
     int offset_cur = ((offset_k + 2) % 3) * ((64 + SKEW_KERNEL_2 + 64 + SKEW_KERNEL_2) * 8);
-    
+    asm ("cp.async.commit_group;\n" ::);
+    asm ("cp.async.wait_group 0;\n" ::);
     __syncthreads();
     b[0][0] = *(sB + offset_cur + ((wid / 2) * 16 + (tid % 32) / 4 + 0 * 8) + (0 * 4 + (tid % 32) % 4) * (64 + SKEW_KERNEL_2));
     b[0][1] = *(sB + offset_cur + ((wid / 2) * 16 + (tid % 32) / 4 + 1 * 8) + (0 * 4 + (tid % 32) % 4) * (64 + SKEW_KERNEL_2));
@@ -76,15 +92,10 @@ __global__ void zgemm_17(int M, int N, int K, double *A, double *B, double *C, d
     a[0][3] = *(sA + offset_cur + ((wid % 2) * 32 + (tid % 32) / 4 + 3 * 8) + (0 * 4 + (tid % 32) % 4) * (64 + SKEW_KERNEL_2));
 
 
-
+ 
 
     #pragma unroll
-    for(int k = 0; k < K; k += 8){
-        // mem_temp[0] = *(gA + (bid_x * 64 + tid % 64) + (k + 8 + tid / 64) * M);
-        // mem_temp[1] = *(gA + (bid_x * 64 + tid % 64) + (k + 8 + tid / 64 + 4) * M);
-        // mem_temp[2] = *(gB + (k + 8 + tid / 64) + (bid_y * 64 + tid % 64) * K);
-        // mem_temp[3] = *(gB + (k + 8 + tid / 64 + 4) + (bid_y * 64 + tid % 64) * K);
-
+    for(k = 0; k < K - 16; k += 8){
         int offset_next_k = (offset_k + 1) % 3;
         int offset_next = (offset_next_k *  ((64 + SKEW_KERNEL_2 + 64 + SKEW_KERNEL_2) * 8));
         asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
@@ -163,7 +174,7 @@ __global__ void zgemm_17(int M, int N, int K, double *A, double *B, double *C, d
         offset_cur = ((offset_k + 2) % 3) * ((64 + SKEW_KERNEL_2 + 64 + SKEW_KERNEL_2) * 8);
         
         asm ("cp.async.commit_group;\n" ::);
-        asm ("cp.async.wait_group 0;\n" ::);
+        asm ("cp.async.wait_group 1;\n" ::);
         __syncthreads();
         b[0][0] = *(sB + offset_cur + ((wid / 2) * 16 + (tid % 32) / 4 + 0 * 8) + (0 * 4 + (tid % 32) % 4) * (64 + SKEW_KERNEL_2));
         b[0][1] = *(sB + offset_cur + ((wid / 2) * 16 + (tid % 32) / 4 + 1 * 8) + (0 * 4 + (tid % 32) % 4) * (64 + SKEW_KERNEL_2));
@@ -173,10 +184,77 @@ __global__ void zgemm_17(int M, int N, int K, double *A, double *B, double *C, d
         a[0][1] = *(sA + offset_cur + ((wid % 2) * 32 + (tid % 32) / 4 + 1 * 8) + (0 * 4 + (tid % 32) % 4) * (64 + SKEW_KERNEL_2));
         a[0][2] = *(sA + offset_cur + ((wid % 2) * 32 + (tid % 32) / 4 + 2 * 8) + (0 * 4 + (tid % 32) % 4) * (64 + SKEW_KERNEL_2));
         a[0][3] = *(sA + offset_cur + ((wid % 2) * 32 + (tid % 32) / 4 + 3 * 8) + (0 * 4 + (tid % 32) % 4) * (64 + SKEW_KERNEL_2));
+    }
 
 
+    #pragma unroll
+    for(; k < K; k += 8){
+        int offset_cur = ((offset_k + 2) % 3) * ((64 + SKEW_KERNEL_2 + 64 + SKEW_KERNEL_2) * 8);    
+            b[1][0] = *(sB + offset_cur + ((wid / 2) * 16 + (tid % 32) / 4 + 0 * 8) + (1 * 4 + (tid % 32) % 4) * (64 + SKEW_KERNEL_2));
+            b[1][1] = *(sB + offset_cur + ((wid / 2) * 16 + (tid % 32) / 4 + 1 * 8) + (1 * 4 + (tid % 32) % 4) * (64 + SKEW_KERNEL_2));
+            
 
+            a[1][0] = *(sA + offset_cur + ((wid % 2) * 32 + (tid % 32) / 4 + 0 * 8) + (1 * 4 + (tid % 32) % 4) * (64 + SKEW_KERNEL_2));
+            a[1][1] = *(sA + offset_cur + ((wid % 2) * 32 + (tid % 32) / 4 + 1 * 8) + (1 * 4 + (tid % 32) % 4) * (64 + SKEW_KERNEL_2));
+            a[1][2] = *(sA + offset_cur + ((wid % 2) * 32 + (tid % 32) / 4 + 2 * 8) + (1 * 4 + (tid % 32) % 4) * (64 + SKEW_KERNEL_2));
+            a[1][3] = *(sA + offset_cur + ((wid % 2) * 32 + (tid % 32) / 4 + 3 * 8) + (1 * 4 + (tid % 32) % 4) * (64 + SKEW_KERNEL_2));
 
+            #pragma unroll
+            for(int i = 0; i < warp_col_tiles; ++i){
+                #pragma unroll
+                for(int j = 0; j < warp_row_tiles; ++j){
+                    asm volatile("mma.sync.aligned.m8n8k4.row.col.f64.f64.f64.f64 {%0,%1}, {%2}, {%3}, {%4,%5};\n"
+                    : "=d"(c[i][j][0].x), "=d"(c[i][j][1].x)
+                    : "d"(a[0][j].x), "d"(b[0][i].x), "d"(c[i][j][0].x), "d"(c[i][j][1].x));
+
+                    asm volatile("mma.sync.aligned.m8n8k4.row.col.f64.f64.f64.f64 {%0,%1}, {%2}, {%3}, {%4,%5};\n"
+                    : "=d"(c[i][j][0].x), "=d"(c[i][j][1].x)
+                    : "d"(a[0][j].y), "d"(-b[0][i].y), "d"(c[i][j][0].x), "d"(c[i][j][1].x));
+
+                    asm volatile("mma.sync.aligned.m8n8k4.row.col.f64.f64.f64.f64 {%0,%1}, {%2}, {%3}, {%4,%5};\n"
+                    : "=d"(c[i][j][0].y), "=d"(c[i][j][1].y)
+                    : "d"(a[0][j].x), "d"(b[0][i].y), "d"(c[i][j][0].y), "d"(c[i][j][1].y));
+
+                    asm volatile("mma.sync.aligned.m8n8k4.row.col.f64.f64.f64.f64 {%0,%1}, {%2}, {%3}, {%4,%5};\n"
+                    : "=d"(c[i][j][0].y), "=d"(c[i][j][1].y)
+                    : "d"(a[0][j].y), "d"(b[0][i].x), "d"(c[i][j][0].y), "d"(c[i][j][1].y));
+                }
+            }
+
+            #pragma unroll
+            for(int i = 0; i < warp_col_tiles; ++i){
+                #pragma unroll
+                for(int j = 0; j < warp_row_tiles; ++j){
+                    asm volatile("mma.sync.aligned.m8n8k4.row.col.f64.f64.f64.f64 {%0,%1}, {%2}, {%3}, {%4,%5};\n"
+                    : "=d"(c[i][j][0].x), "=d"(c[i][j][1].x)
+                    : "d"(a[1][j].x), "d"(b[1][i].x), "d"(c[i][j][0].x), "d"(c[i][j][1].x));
+
+                    asm volatile("mma.sync.aligned.m8n8k4.row.col.f64.f64.f64.f64 {%0,%1}, {%2}, {%3}, {%4,%5};\n"
+                    : "=d"(c[i][j][0].x), "=d"(c[i][j][1].x)
+                    : "d"(a[1][j].y), "d"(-b[1][i].y), "d"(c[i][j][0].x), "d"(c[i][j][1].x));
+
+                    asm volatile("mma.sync.aligned.m8n8k4.row.col.f64.f64.f64.f64 {%0,%1}, {%2}, {%3}, {%4,%5};\n"
+                    : "=d"(c[i][j][0].y), "=d"(c[i][j][1].y)
+                    : "d"(a[1][j].x), "d"(b[1][i].y), "d"(c[i][j][0].y), "d"(c[i][j][1].y));
+
+                    asm volatile("mma.sync.aligned.m8n8k4.row.col.f64.f64.f64.f64 {%0,%1}, {%2}, {%3}, {%4,%5};\n"
+                    : "=d"(c[i][j][0].y), "=d"(c[i][j][1].y)
+                    : "d"(a[1][j].y), "d"(b[1][i].x), "d"(c[i][j][0].y), "d"(c[i][j][1].y));
+                }
+            }
+        // }
+        offset_k = (offset_k + 1) % 3;
+        offset = (offset_k * ((64 + SKEW_KERNEL_2 + 64 + SKEW_KERNEL_2) * 8));
+        offset_cur = ((offset_k + 2) % 3) * ((64 + SKEW_KERNEL_2 + 64 + SKEW_KERNEL_2) * 8);
+        
+        b[0][0] = *(sB + offset_cur + ((wid / 2) * 16 + (tid % 32) / 4 + 0 * 8) + (0 * 4 + (tid % 32) % 4) * (64 + SKEW_KERNEL_2));
+        b[0][1] = *(sB + offset_cur + ((wid / 2) * 16 + (tid % 32) / 4 + 1 * 8) + (0 * 4 + (tid % 32) % 4) * (64 + SKEW_KERNEL_2));
+        
+
+        a[0][0] = *(sA + offset_cur + ((wid % 2) * 32 + (tid % 32) / 4 + 0 * 8) + (0 * 4 + (tid % 32) % 4) * (64 + SKEW_KERNEL_2));
+        a[0][1] = *(sA + offset_cur + ((wid % 2) * 32 + (tid % 32) / 4 + 1 * 8) + (0 * 4 + (tid % 32) % 4) * (64 + SKEW_KERNEL_2));
+        a[0][2] = *(sA + offset_cur + ((wid % 2) * 32 + (tid % 32) / 4 + 2 * 8) + (0 * 4 + (tid % 32) % 4) * (64 + SKEW_KERNEL_2));
+        a[0][3] = *(sA + offset_cur + ((wid % 2) * 32 + (tid % 32) / 4 + 3 * 8) + (0 * 4 + (tid % 32) % 4) * (64 + SKEW_KERNEL_2));
     }
 
     

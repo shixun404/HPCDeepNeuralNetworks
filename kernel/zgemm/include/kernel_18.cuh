@@ -14,11 +14,6 @@ __global__ void zgemm_18(int M, int N, int K, double *A, double *B, double *C, d
     
     // __shared__ double shared_mem[((64 + SKEW_KERNEL_2) * 16 * 2) * 2];
     double2 *shared_mem_double2 = (double2*)shared_mem;
-    double * gA_1 = A + ((bid_x * 64 + tid / 4) + (0 + tid % 4 + 0) * M) * 2 + 0;
-    double * gA_2 = A + ((bid_x * 64 + tid / 4) + (0 + tid % 4 + 4) * M) * 2 + 0;
-    double * gB_1 = B + ((0 + tid % 4) + (bid_y * 64 + tid / 4) * K) * 2 + 0;
-    double * gB_2 = B + ((0 + tid % 4 + 4) + (bid_y * 64 + tid / 4) * K) * 2 + 0;
-    
     double2 * gC = (((double2*)C));
 
     double2* sA = (shared_mem_double2 + (64 + SKEW_KERNEL_2) * 8 * 0);
@@ -45,43 +40,41 @@ __global__ void zgemm_18(int M, int N, int K, double *A, double *B, double *C, d
     int k = 0;
     asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
             : "l"(__cvta_generic_to_shared(sA) + (0 + (tid % 4) + (tid / 4 +  0) * (4 + SKEW_KERNEL_2)) * sizeof(double) * 2), 
-                "l"(gA_1));
+                "l"(&A[((bid_x * 64 + tid / 4) + (0 + tid % 4 + 0) * M) * 2 + 0]));
     asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
         : "l"(__cvta_generic_to_shared(sA) + (0 + (tid % 4) + (tid / 4 + 64) * (4 + SKEW_KERNEL_2)) * sizeof(double) * 2), 
-            "l"(gA_2));
+            "l"(&A[((bid_x * 64 + tid / 4) + (0 + tid % 4 + 4) * M) * 2 + 0]));
 
     asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
         : "l"(__cvta_generic_to_shared(sB) + (0 + (tid % 4) + (tid / 4 +  0) * (4 + SKEW_KERNEL_2)) * sizeof(double) * 2), 
-            "l"(gB_1));
+            "l"(&B[((0 + tid % 4) + (bid_y * 64 + tid / 4) * K) * 2 + 0]));
     asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
         : "l"(__cvta_generic_to_shared(sB) + (0 + (tid % 4) + (tid / 4 + 64) * (4 + SKEW_KERNEL_2)) * sizeof(double) * 2), 
-            "l"(gB_2));
+            "l"(&B[((0 + tid % 4 + 4) + (bid_y * 64 + tid / 4) * K) * 2 + 0]));
 
+    asm volatile("cp.async.commit_group;\n" ::);
     offset_k = (offset_k + 1) % 3;
     offset = (offset_k *  ((64 + SKEW_KERNEL_2 + 64 + SKEW_KERNEL_2) * 8));
-    
-    gA_1 += 16 * M;
-    gA_2 += 16 * M;
-    gB_1 += 16;
-    gB_2 += 16;
+
     asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
             : "l"(__cvta_generic_to_shared(sA) + (offset + (tid % 4) + (tid / 4 +  0) * (4 + SKEW_KERNEL_2)) * sizeof(double) * 2), 
-                "l"(gA_1));
+                "l"(&A[((bid_x * 64 + tid / 4) + (8 + tid % 4 + 0) * M) * 2 + 0]));
     asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
         : "l"(__cvta_generic_to_shared(sA) + (offset + (tid % 4) + (tid / 4 + 64) * (4 + SKEW_KERNEL_2)) * sizeof(double) * 2), 
-            "l"(gA_2));
+            "l"(&A[((bid_x * 64 + tid / 4) + (8 + tid % 4 + 4) * M) * 2 + 0]));
 
     asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
         : "l"(__cvta_generic_to_shared(sB) + (offset + (tid % 4) + (tid / 4 +  0) * (4 + SKEW_KERNEL_2)) * sizeof(double) * 2), 
-            "l"(gB_1));
+            "l"(&B[((8 + tid % 4) + (bid_y * 64 + tid / 4) * K) * 2 + 0]));
     asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
         : "l"(__cvta_generic_to_shared(sB) + (offset + (tid % 4) + (tid / 4 + 64) * (4 + SKEW_KERNEL_2)) * sizeof(double) * 2), 
-            "l"(gB_2));
+            "l"(&B[((8 + tid % 4 + 4) + (bid_y * 64 + tid / 4) * K) * 2 + 0]));
 
 
     int offset_cur = ((offset_k + 2) % 3) * ((64 + SKEW_KERNEL_2 + 64 + SKEW_KERNEL_2) * 8);
-    asm ("cp.async.commit_group;\n" ::);
-    asm ("cp.async.wait_group 0;\n" ::);
+    asm volatile("cp.async.commit_group;\n" ::);
+    asm ("cp.async.wait_group 1;\n" ::);
+    // asm volatile("cp.async.wait_all;\n" ::);
     __syncthreads();
     b[0][0] = *(sB + offset_cur + ((wid % 4) * 16 + (tid % 32) / 4 + 0 * 8) * (4 + SKEW_KERNEL_2) + (0 * 4 + (tid % 32) % 4));
     b[0][1] = *(sB + offset_cur + ((wid % 4) * 16 + (tid % 32) / 4 + 1 * 8) * (4 + SKEW_KERNEL_2) + (0 * 4 + (tid % 32) % 4));
@@ -94,27 +87,24 @@ __global__ void zgemm_18(int M, int N, int K, double *A, double *B, double *C, d
 
 
     
-    gA_1 += 16 * M;
-    gA_2 += 16 * M;
-    gB_1 += 16;
-    gB_2 += 16;
+
     #pragma unroll
     for(k = 0; k < K - 16; k += 8){
         int offset_next_k = (offset_k + 1) % 3;
         int offset_next = (offset_next_k *  ((64 + SKEW_KERNEL_2 + 64 + SKEW_KERNEL_2) * 8));
         asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
             : "l"(__cvta_generic_to_shared(sA) + (offset_next + (tid % 4) + (tid / 4 +  0) * (4 + SKEW_KERNEL_2)) * sizeof(double) * 2), 
-                "l"(gA_1));
+                "l"(&A[((bid_x * 64 + tid / 4) + ((k + 16) + tid % 4 + 0) * M) * 2 + 0]));
         asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
             : "l"(__cvta_generic_to_shared(sA) + (offset_next + (tid % 4) + (tid / 4 + 64) * (4 + SKEW_KERNEL_2)) * sizeof(double) * 2), 
-                "l"(gA_2));
+                "l"(&A[((bid_x * 64 + tid / 4) + ((k + 16) + tid % 4 + 4) * M) * 2 + 0]));
 
         asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
             : "l"(__cvta_generic_to_shared(sB) + (offset_next + (tid % 4) + (tid / 4 +  0) * (4 + SKEW_KERNEL_2)) * sizeof(double) * 2), 
-                "l"(gB_1));
+                "l"(&B[(((k + 16) + tid % 4) + (bid_y * 64 + tid / 4) * K) * 2 + 0]));
         asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
             : "l"(__cvta_generic_to_shared(sB) + (offset_next + (tid % 4) + (tid / 4 + 64) * (4 + SKEW_KERNEL_2)) * sizeof(double) * 2), 
-                "l"(gB_2));
+                "l"(&B[(((k + 16) + tid % 4 + 4) + (bid_y * 64 + tid / 4) * K) * 2 + 0]));
 
         int offset_cur = ((offset_k + 2) % 3) * ((64 + SKEW_KERNEL_2 + 64 + SKEW_KERNEL_2) * 8);
         b[1][0] = *(sB + offset_cur + ((wid % 4) * 16 + (tid % 32) / 4 + 0 * 8 + 64) * (4 + SKEW_KERNEL_2) + ((tid % 32) % 4));
@@ -153,9 +143,11 @@ __global__ void zgemm_18(int M, int N, int K, double *A, double *B, double *C, d
         offset_k = (offset_k + 1) % 3;
         offset = (offset_k * ((64 + SKEW_KERNEL_2 + 64 + SKEW_KERNEL_2) * 8));
         offset_cur = ((offset_k + 2) % 3) * ((64 + SKEW_KERNEL_2 + 64 + SKEW_KERNEL_2) * 8);
-        
+        // const int n_wait = (k != (K - 24));
         asm ("cp.async.commit_group;\n" ::);
-        asm ("cp.async.wait_group 0;\n" ::);
+        asm volatile("cp.async.wait_group %0;\n" ::"n"(1));
+        // asm volatile("cp.async.wait_all;\n" ::);
+        __syncthreads();
         b[0][0] = *(sB + offset_cur + ((wid % 4) * 16 + (tid % 32) / 4 + 0 * 8) * (4 + SKEW_KERNEL_2) + (0 * 4 + (tid % 32) % 4));
         b[0][1] = *(sB + offset_cur + ((wid % 4) * 16 + (tid % 32) / 4 + 1 * 8) * (4 + SKEW_KERNEL_2) + (0 * 4 + (tid % 32) % 4));
         
@@ -165,15 +157,21 @@ __global__ void zgemm_18(int M, int N, int K, double *A, double *B, double *C, d
         a[0][2] = *(sA + offset_cur + ((wid / 4) * 32 + (tid % 32) / 4 + 2 * 8) * (4 + SKEW_KERNEL_2) + (0 * 4 + (tid % 32) % 4));
         a[0][3] = *(sA + offset_cur + ((wid / 4) * 32 + (tid % 32) / 4 + 3 * 8) * (4 + SKEW_KERNEL_2) + (0 * 4 + (tid % 32) % 4));
 
-        __syncthreads();
-        gA_1 += 16 * M;
-        gA_2 += 16 * M;
-        gB_1 += 16;
-        gB_2 += 16;
-        
 
     }
-    #pragma unroll
+    // asm ("cp.async.commit_group;\n" ::);
+    // asm volatile("cp.async.wait_all;\n" ::);
+    // __syncthreads();
+    // b[0][0] = *(sB + offset_cur + ((wid % 4) * 16 + (tid % 32) / 4 + 0 * 8) * (4 + SKEW_KERNEL_2) + (0 * 4 + (tid % 32) % 4));
+    // b[0][1] = *(sB + offset_cur + ((wid % 4) * 16 + (tid % 32) / 4 + 1 * 8) * (4 + SKEW_KERNEL_2) + (0 * 4 + (tid % 32) % 4));
+    
+
+    // a[0][0] = *(sA + offset_cur + ((wid / 4) * 32 + (tid % 32) / 4 + 0 * 8) * (4 + SKEW_KERNEL_2) + (0 * 4 + (tid % 32) % 4));
+    // a[0][1] = *(sA + offset_cur + ((wid / 4) * 32 + (tid % 32) / 4 + 1 * 8) * (4 + SKEW_KERNEL_2) + (0 * 4 + (tid % 32) % 4));
+    // a[0][2] = *(sA + offset_cur + ((wid / 4) * 32 + (tid % 32) / 4 + 2 * 8) * (4 + SKEW_KERNEL_2) + (0 * 4 + (tid % 32) % 4));
+    // a[0][3] = *(sA + offset_cur + ((wid / 4) * 32 + (tid % 32) / 4 + 3 * 8) * (4 + SKEW_KERNEL_2) + (0 * 4 + (tid % 32) % 4));
+
+
     for(; k < K; k += 8){
         int offset_cur = ((offset_k + 2) % 3) * ((64 + SKEW_KERNEL_2 + 64 + SKEW_KERNEL_2) * 8);
         b[1][0] = *(sB + offset_cur + ((wid % 4) * 16 + (tid % 32) / 4 + 0 * 8 + 64) * (4 + SKEW_KERNEL_2) + ((tid % 32) % 4));
@@ -212,7 +210,10 @@ __global__ void zgemm_18(int M, int N, int K, double *A, double *B, double *C, d
         offset_k = (offset_k + 1) % 3;
         offset = (offset_k * ((64 + SKEW_KERNEL_2 + 64 + SKEW_KERNEL_2) * 8));
         offset_cur = ((offset_k + 2) % 3) * ((64 + SKEW_KERNEL_2 + 64 + SKEW_KERNEL_2) * 8);
-       
+        // // asm ("cp.async.commit_group;\n" ::);
+        // asm volatile("cp.async.wait_group %0;\n" ::"n"(k != (K - 24)));
+        // // asm volatile("cp.async.wait_all;\n" ::);
+        // __syncthreads();
         b[0][0] = *(sB + offset_cur + ((wid % 4) * 16 + (tid % 32) / 4 + 0 * 8) * (4 + SKEW_KERNEL_2) + (0 * 4 + (tid % 32) % 4));
         b[0][1] = *(sB + offset_cur + ((wid % 4) * 16 + (tid % 32) / 4 + 1 * 8) * (4 + SKEW_KERNEL_2) + (0 * 4 + (tid % 32) % 4));
         
