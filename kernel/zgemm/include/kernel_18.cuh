@@ -60,20 +60,23 @@ __global__ void zgemm_18(int M, int N, int K, double *A, double *B, double *C, d
     offset_k = (offset_k + 1) % 3;
     offset = (offset_k *  ((64 + SKEW_KERNEL_2 + 64 + SKEW_KERNEL_2) * 8));
     
-    gA
+    gA_1 += 16 * M;
+    gA_2 += 16 * M;
+    gB_1 += 16;
+    gB_2 += 16;
     asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
             : "l"(__cvta_generic_to_shared(sA) + (offset + (tid % 4) + (tid / 4 +  0) * (4 + SKEW_KERNEL_2)) * sizeof(double) * 2), 
-                "l"(&A[((bid_x * 64 + tid / 4) + (8 + tid % 4 + 0) * M) * 2 + 0]));
+                "l"(gA_1));
     asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
         : "l"(__cvta_generic_to_shared(sA) + (offset + (tid % 4) + (tid / 4 + 64) * (4 + SKEW_KERNEL_2)) * sizeof(double) * 2), 
-            "l"(&A[((bid_x * 64 + tid / 4) + (8 + tid % 4 + 4) * M) * 2 + 0]));
+            "l"(gA_2));
 
     asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
         : "l"(__cvta_generic_to_shared(sB) + (offset + (tid % 4) + (tid / 4 +  0) * (4 + SKEW_KERNEL_2)) * sizeof(double) * 2), 
-            "l"(&B[((8 + tid % 4) + (bid_y * 64 + tid / 4) * K) * 2 + 0]));
+            "l"(gB_1));
     asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
         : "l"(__cvta_generic_to_shared(sB) + (offset + (tid % 4) + (tid / 4 + 64) * (4 + SKEW_KERNEL_2)) * sizeof(double) * 2), 
-            "l"(&B[((8 + tid % 4 + 4) + (bid_y * 64 + tid / 4) * K) * 2 + 0]));
+            "l"(gB_2));
 
 
     int offset_cur = ((offset_k + 2) % 3) * ((64 + SKEW_KERNEL_2 + 64 + SKEW_KERNEL_2) * 8);
@@ -91,24 +94,27 @@ __global__ void zgemm_18(int M, int N, int K, double *A, double *B, double *C, d
 
 
     
-
+    gA_1 += 16 * M;
+    gA_2 += 16 * M;
+    gB_1 += 16;
+    gB_2 += 16;
     #pragma unroll
     for(k = 0; k < K - 16; k += 8){
         int offset_next_k = (offset_k + 1) % 3;
         int offset_next = (offset_next_k *  ((64 + SKEW_KERNEL_2 + 64 + SKEW_KERNEL_2) * 8));
         asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
             : "l"(__cvta_generic_to_shared(sA) + (offset_next + (tid % 4) + (tid / 4 +  0) * (4 + SKEW_KERNEL_2)) * sizeof(double) * 2), 
-                "l"(&A[((bid_x * 64 + tid / 4) + ((k + 16) + tid % 4 + 0) * M) * 2 + 0]));
+                "l"(gA_1));
         asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
             : "l"(__cvta_generic_to_shared(sA) + (offset_next + (tid % 4) + (tid / 4 + 64) * (4 + SKEW_KERNEL_2)) * sizeof(double) * 2), 
-                "l"(&A[((bid_x * 64 + tid / 4) + ((k + 16) + tid % 4 + 4) * M) * 2 + 0]));
+                "l"(gA_2));
 
         asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
             : "l"(__cvta_generic_to_shared(sB) + (offset_next + (tid % 4) + (tid / 4 +  0) * (4 + SKEW_KERNEL_2)) * sizeof(double) * 2), 
-                "l"(&B[(((k + 16) + tid % 4) + (bid_y * 64 + tid / 4) * K) * 2 + 0]));
+                "l"(gB_1));
         asm ("cp.async.ca.shared.global [%0], [%1], 16;\n" :
             : "l"(__cvta_generic_to_shared(sB) + (offset_next + (tid % 4) + (tid / 4 + 64) * (4 + SKEW_KERNEL_2)) * sizeof(double) * 2), 
-                "l"(&B[(((k + 16) + tid % 4 + 4) + (bid_y * 64 + tid / 4) * K) * 2 + 0]));
+                "l"(gB_2));
 
         int offset_cur = ((offset_k + 2) % 3) * ((64 + SKEW_KERNEL_2 + 64 + SKEW_KERNEL_2) * 8);
         b[1][0] = *(sB + offset_cur + ((wid % 4) * 16 + (tid % 32) / 4 + 0 * 8 + 64) * (4 + SKEW_KERNEL_2) + ((tid % 32) % 4));
@@ -160,10 +166,14 @@ __global__ void zgemm_18(int M, int N, int K, double *A, double *B, double *C, d
         a[0][3] = *(sA + offset_cur + ((wid / 4) * 32 + (tid % 32) / 4 + 3 * 8) * (4 + SKEW_KERNEL_2) + (0 * 4 + (tid % 32) % 4));
 
         __syncthreads();
+        gA_1 += 16 * M;
+        gA_2 += 16 * M;
+        gB_1 += 16;
+        gB_2 += 16;
         
 
     }
-
+    #pragma unroll
     for(; k < K; k += 8){
         int offset_cur = ((offset_k + 2) % 3) * ((64 + SKEW_KERNEL_2 + 64 + SKEW_KERNEL_2) * 8);
         b[1][0] = *(sB + offset_cur + ((wid % 4) * 16 + (tid % 32) / 4 + 0 * 8 + 64) * (4 + SKEW_KERNEL_2) + ((tid % 32) % 4));

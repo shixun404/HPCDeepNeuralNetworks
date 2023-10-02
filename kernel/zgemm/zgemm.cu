@@ -141,7 +141,7 @@ int main(int argc, char **argv)
             dim3 blockDim(256);    
             dim3 gridDim(CEIL_DIV(max_size, 64), CEIL_DIV(max_size, 64));
             zgemm_7 <<<gridDim, blockDim>>>(M, N, K, dA, dB, dC, alpha, beta); 
-        }  
+        }   
         else if(kernel_number == 8){
             dim3 blockDim(256);    
             dim3 gridDim(CEIL_DIV(max_size, 64), CEIL_DIV(max_size, 64));
@@ -195,7 +195,7 @@ int main(int argc, char **argv)
             dim3 blockDim(256);    
             dim3 gridDim(CEIL_DIV(max_size, 64), CEIL_DIV(max_size, 64));
             zgemm_17 <<<gridDim, blockDim, shared_mem_size>>>(M, N, K, dA, dB, dC, alpha, beta); 
-        }  
+        }   
         else if(kernel_number == 18){  
             dim3 blockDim(256);     
             dim3 gridDim(CEIL_DIV(max_size, 64), CEIL_DIV(max_size, 64));
