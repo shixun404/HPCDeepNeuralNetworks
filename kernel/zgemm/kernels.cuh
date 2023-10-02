@@ -15,3 +15,4 @@
 #include "./kernel/zgemm/include/kernel_15.cuh"
 #include "./kernel/zgemm/include/kernel_16.cuh"
 #include "./kernel/zgemm/include/kernel_17.cuh"
+#include "./kernel/zgemm/include/kernel_18.cuh"
