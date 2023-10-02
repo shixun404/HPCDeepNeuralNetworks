@@ -26,11 +26,14 @@ __global__ void zgemm_7(int M, int N, int K, double *A, double *B, double *C, do
     
     wmma::fragment<wmma::accumulator, 8, 8, 4, double> c_real[warp_col_tiles][warp_row_tiles];
     wmma::fragment<wmma::accumulator, 8, 8, 4, double> c_imag[warp_col_tiles][warp_row_tiles];
+    wmma::fragment<wmma::accumulator, 8, 8, 4, double> t1;
+    wmma::fragment<wmma::accumulator, 8, 8, 4, double> t2;
     wmma::fragment<wmma::matrix_a, 8, 8, 4, double, wmma::col_major> a_real_frag[4];
     wmma::fragment<wmma::matrix_a, 8, 8, 4, double, wmma::col_major> a_imag_frag[4];
     wmma::fragment<wmma::matrix_b, 8, 8, 4, double, wmma::row_major> b_real_frag[2];
     wmma::fragment<wmma::matrix_b, 8, 8, 4, double, wmma::row_major> b_imag_frag[2];
     wmma::fragment<wmma::matrix_b, 8, 8, 4, double, wmma::row_major> neg_b_imag_frag[2];
+    wmma::fragment<wmma::matrix_a, 8, 8, 4, double, wmma::col_major> neg_a_imag_frag[2];
     
     #pragma unroll
     for(int i = 0; i < warp_col_tiles; i++){
@@ -81,6 +84,7 @@ __global__ void zgemm_7(int M, int N, int K, double *A, double *B, double *C, do
             // }
             neg_b_imag_frag[0].x[0] = (double)-1.0f * b_imag_frag[0].x[0];
             neg_b_imag_frag[1].x[0] = (double)-1.0f * b_imag_frag[1].x[0];
+
             wmma::load_matrix_sync(a_real_frag[0], sA_real + offset + (wid % 2) * 32 + 0 * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
             wmma::load_matrix_sync(a_imag_frag[0], sA_imag + offset + (wid % 2) * 32 + 0 * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
             wmma::load_matrix_sync(a_real_frag[1], sA_real + offset + (wid % 2) * 32 + 1 * 8 + kk * 4 * (64 + SKEW_KERNEL_2), (64 + SKEW_KERNEL_2));
@@ -136,10 +140,26 @@ __global__ void zgemm_7(int M, int N, int K, double *A, double *B, double *C, do
             
             for(int i = 0; i < warp_col_tiles; ++i){
                 for(int j = 0; j < warp_row_tiles; ++j){
+                    // wmma::fill_fragment(t1, 0);        
+                    // wmma::fill_fragment(t2, 0);        
+                    // wmma::mma_sync(t1, a_real_frag[j], b_real_frag[i], t1);
+                    // wmma::mma_sync(t2, a_imag_frag[j], b_imag_frag[i], t2);
+
+
+                    // neg_a_imag_frag[0].x[0] = a_real_frag[j].x[0] + a_imag_frag[j].x[0];
+                    // neg_b_imag_frag[0].x[0] = b_real_frag[i].x[0] + b_imag_frag[i].x[0];
+                    // c_real[i][j].x[0] += t1.x[0] - t2.x[0];
+                    // c_real[i][j].x[1] += t1.x[1] - t2.x[1];
+
+                    // c_imag[i][j].x[0] += -t1.x[0] - t2.x[0];
+                    // c_imag[i][j].x[1] += -t1.x[1] - t2.x[1];
+                    // wmma::mma_sync(c_imag[i][j], neg_a_imag_frag[0], neg_b_imag_frag[0], c_imag[i][j]);
+
                     wmma::mma_sync(c_imag[i][j], a_real_frag[j], b_imag_frag[i], c_imag[i][j]);
                     wmma::mma_sync(c_imag[i][j], a_imag_frag[j], b_real_frag[i], c_imag[i][j]);        
                     wmma::mma_sync(c_real[i][j], a_real_frag[j], b_real_frag[i], c_real[i][j]);
                     wmma::mma_sync(c_real[i][j], a_imag_frag[j], neg_b_imag_frag[i], c_real[i][j]);
+                    
                 }
             }
 
