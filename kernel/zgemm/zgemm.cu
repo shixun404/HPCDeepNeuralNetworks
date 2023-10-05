@@ -136,7 +136,7 @@ int main(int argc, char **argv)
             zgemm_20 <<<gridDim, blockDim, shared_mem_size_64x128x8>>>(M, N, K, dA, dB, dC, alpha, beta); 
         }   
   
-        
+         
         cudaDeviceSynchronize();       
         cudaMemcpy(C, dC, sizeof(double) * max_size * max_size * 2, cudaMemcpyDeviceToHost);
         cudaDeviceSynchronize();  

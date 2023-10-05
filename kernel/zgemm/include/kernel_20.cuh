@@ -10,7 +10,7 @@ __global__ void zgemm_20(int M, int N, int K, double *A, double *B, double *C, d
     int tid = threadIdx.x;
     int bid_x = blockIdx.x, bid_y = blockIdx.y;
     int wid = tid / 32;
-    
+    double tmp_r, tmp_c, tmp_a, tmp_b;
     
     // __shared__ double shared_mem[((64 + SKEW_KERNEL_2) * 16 * 2) * 2];
     double2 *shared_mem_double2 = (double2*)shared_mem;
@@ -166,6 +166,39 @@ __global__ void zgemm_20(int M, int N, int K, double *A, double *B, double *C, d
         a[1][2] = *(sA + offset_cur + ((wid / 4) * 32 + (tid % 32) / 4 + 2 * 8 + 64) * (4 + SKEW_KERNEL_2) + ((tid % 32) % 4));
         a[1][3] = *(sA + offset_cur + ((wid / 4) * 32 + (tid % 32) / 4 + 3 * 8 + 64) * (4 + SKEW_KERNEL_2) + ((tid % 32) % 4));
         
+
+        tmp_r = a[1][0].x, tmp_c = a[1][0].y;
+
+        asm volatile("mma.sync.aligned.m8n8k4.row.col.f64.f64.f64.f64 {%0,%1}, {%2}, {%3}, {%4,%5};\n"
+        : "=d"(tmp_r), "=d"(tmp_c)
+        : "d"(a[1][2].x), "d"(a[1][2].y), "d"(a[1][1].x), "d"(a[1][1].y));
+        asm volatile("mma.sync.aligned.m8n8k4.row.col.f64.f64.f64.f64 {%0,%1}, {%2}, {%3}, {%4,%5};\n"
+        : "=d"(tmp_r), "=d"(tmp_c)
+        : "d"(a[1][2].x), "d"(a[1][2].y), "d"(a[1][3].x), "d"(a[1][3].y));
+
+        tmp_a = b[1][0].x, tmp_b = b[1][0].y;
+        asm volatile("mma.sync.aligned.m8n8k4.row.col.f64.f64.f64.f64 {%0,%1}, {%2}, {%3}, {%4,%5};\n"
+        : "=d"(tmp_a), "=d"(tmp_b)
+        : "d"(b[1][2].x), "d"(b[1][2].y), "d"(b[1][1].x), "d"(b[1][1].y));
+        asm volatile("mma.sync.aligned.m8n8k4.row.col.f64.f64.f64.f64 {%0,%1}, {%2}, {%3}, {%4,%5};\n"
+        : "=d"(tmp_a), "=d"(tmp_b)
+        : "d"(b[1][2].x), "d"(b[1][2].y), "d"(b[1][3].x), "d"(b[1][3].y));
+        
+
+
+        asm volatile("mma.sync.aligned.m8n8k4.row.col.f64.f64.f64.f64 {%0,%1}, {%2}, {%3}, {%4,%5};\n"
+        : "=d"(c[0][0][0].y), "=d"(c[0][0][1].y)
+        : "d"(tmp_r), "d"(tmp_a), "d"(c[0][0][0].y), "d"(c[0][0][1].y));
+        asm volatile("mma.sync.aligned.m8n8k4.row.col.f64.f64.f64.f64 {%0,%1}, {%2}, {%3}, {%4,%5};\n"
+        : "=d"(c[0][0][0].y), "=d"(c[0][0][1].y)
+        : "d"(tmp_c), "d"(-tmp_b), "d"(c[0][0][0].y), "d"(c[0][0][1].y));
+        asm volatile("mma.sync.aligned.m8n8k4.row.col.f64.f64.f64.f64 {%0,%1}, {%2}, {%3}, {%4,%5};\n"
+        : "=d"(c[0][0][0].y), "=d"(c[0][0][1].y)
+        : "d"(tmp_r), "d"(tmp_b), "d"(c[0][0][0].y), "d"(c[0][0][1].y));
+        asm volatile("mma.sync.aligned.m8n8k4.row.col.f64.f64.f64.f64 {%0,%1}, {%2}, {%3}, {%4,%5};\n"
+        : "=d"(c[0][0][0].y), "=d"(c[0][0][1].y)
+        : "d"(tmp_c), "d"(tmp_a), "d"(c[0][0][0].y), "d"(c[0][0][1].y));
+        
         #pragma unroll
         for(int kk = 0; kk < 2; ++kk){   
             #pragma unroll
@@ -209,7 +242,37 @@ __global__ void zgemm_20(int M, int N, int K, double *A, double *B, double *C, d
         a[0][2] = *(sA + offset_cur + ((wid / 4) * 32 + (tid % 32) / 4 + 2 * 8) * (4 + SKEW_KERNEL_2) + (0 * 4 + (tid % 32) % 4));
         a[0][3] = *(sA + offset_cur + ((wid / 4) * 32 + (tid % 32) / 4 + 3 * 8) * (4 + SKEW_KERNEL_2) + (0 * 4 + (tid % 32) % 4));
 
+        tmp_r = a[0][0].x, tmp_c = a[0][0].y;
 
+        asm volatile("mma.sync.aligned.m8n8k4.row.col.f64.f64.f64.f64 {%0,%1}, {%2}, {%3}, {%4,%5};\n"
+        : "=d"(tmp_r), "=d"(tmp_c)
+        : "d"(a[0][2].x), "d"(a[0][2].y), "d"(a[0][1].x), "d"(a[0][1].y));
+        asm volatile("mma.sync.aligned.m8n8k4.row.col.f64.f64.f64.f64 {%0,%1}, {%2}, {%3}, {%4,%5};\n"
+        : "=d"(tmp_r), "=d"(tmp_c)
+        : "d"(a[0][2].x), "d"(a[0][2].y), "d"(a[0][3].x), "d"(a[0][3].y));
+
+        tmp_a = b[0][0].x, tmp_b = b[0][0].y;
+        asm volatile("mma.sync.aligned.m8n8k4.row.col.f64.f64.f64.f64 {%0,%1}, {%2}, {%3}, {%4,%5};\n"
+        : "=d"(tmp_a), "=d"(tmp_b)
+        : "d"(b[0][2].x), "d"(b[0][2].y), "d"(b[0][1].x), "d"(b[0][1].y));
+        asm volatile("mma.sync.aligned.m8n8k4.row.col.f64.f64.f64.f64 {%0,%1}, {%2}, {%3}, {%4,%5};\n"
+        : "=d"(tmp_a), "=d"(tmp_b)
+        : "d"(b[0][2].x), "d"(b[0][2].y), "d"(b[0][3].x), "d"(b[0][3].y));
+        
+
+
+        asm volatile("mma.sync.aligned.m8n8k4.row.col.f64.f64.f64.f64 {%0,%1}, {%2}, {%3}, {%4,%5};\n"
+        : "=d"(c[0][0][0].y), "=d"(c[0][0][1].y)
+        : "d"(tmp_r), "d"(tmp_a), "d"(c[0][0][0].y), "d"(c[0][0][1].y));
+        asm volatile("mma.sync.aligned.m8n8k4.row.col.f64.f64.f64.f64 {%0,%1}, {%2}, {%3}, {%4,%5};\n"
+        : "=d"(c[0][0][0].y), "=d"(c[0][0][1].y)
+        : "d"(tmp_c), "d"(-tmp_b), "d"(c[0][0][0].y), "d"(c[0][0][1].y));
+        asm volatile("mma.sync.aligned.m8n8k4.row.col.f64.f64.f64.f64 {%0,%1}, {%2}, {%3}, {%4,%5};\n"
+        : "=d"(c[0][0][0].y), "=d"(c[0][0][1].y)
+        : "d"(tmp_r), "d"(tmp_b), "d"(c[0][0][0].y), "d"(c[0][0][1].y));
+        asm volatile("mma.sync.aligned.m8n8k4.row.col.f64.f64.f64.f64 {%0,%1}, {%2}, {%3}, {%4,%5};\n"
+        : "=d"(c[0][0][0].y), "=d"(c[0][0][1].y)
+        : "d"(tmp_c), "d"(tmp_a), "d"(c[0][0][0].y), "d"(c[0][0][1].y));
     }
     // asm ("cp.async.commit_group;\n" ::);
     // asm volatile("cp.async.wait_all;\n" ::);
