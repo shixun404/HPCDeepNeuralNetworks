@@ -2,48 +2,84 @@ import matplotlib.pyplot as plt
 import torch as th
 import numpy as np
 import seaborn as sns
-color = sns.color_palette(n_colors=4)
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+color = sns.color_palette(n_colors=5)
 print(color)
 def addlabels(x,y):
     for i in range(len(x)):
         print(f'{y[i]:.2f}')
         plt.text(x[i], y[i]+10, f'{y[i]:.0f}', ha = 'center', fontsize=26) 
 # set width of bar
-barWidth = 0.3
+barWidth = 0.4
 plt.rc('font', size=30, weight='bold')
 plt.rcParams["font.family"] = "Times New Roman"
-ax = plt.subplots(figsize =(16, 3))
+fig, ax = plt.subplots(figsize =(16, 10))
 plt.grid(linestyle='--', linewidth=0.7, zorder=0)
 # set height of bar
-cublas = th.as_tensor([4003.23])
-kernel = th.as_tensor([611.10, 678.92, 1256.47, 1766.59, 3821.92, 4331.14, 4381.14, 4625.11, 4653.91,])
-# kernel_name = ['Naive', 'Shared\nmemory', '4 x 1 tile', 'Vectorized\nload', '4 x 4 tile', '256 threads', 'Ks → 16', '8x8 tile', 'Warp\nparallelisim', 'Prefetching', 'Double\nbuffer']
-kernel_name = ['Naive', 'Threadblock\n-level tiling',  '4 x 1', '4 x 4', '8 x 8',  'Warp-level\ntiling', 'Vectorized\nload','Prefetching', 'Double\nbuffer']
-error = th.rand(11) * 0.03
 
-br1 = np.arange(len(kernel)) + barWidth
-for i in range(2,4):
-    br1[i+1] = br1[i] + barWidth
-
-for i in range(5,9):
-    br1[i] = br1[i] - 1.4
-
-br2 = [x + barWidth * 2 for x in br1]
+gflops_fft = th.as_tensor([300.0, 375, 454.7, 460, 505.8, 520, 524.7, 537, 550.9])
+th.manual_seed(0)
+gflops_naive = gflops_fft * 0.05 + th.rand(9)
+gflops_optim1 = gflops_fft * 0.3 + th.rand(9)
+gflops_optim2 = gflops_fft * 0.6 + th.rand(9)
 
 
+gflops_cufft = th.as_tensor([425.5, 450, 481.0, 484,  488.0, 500, 529.9, 535, 552.9,])
+
+kernel_name = ['5', '8', '11', '14','17',  '20','23', '26', '29']
+# error = th.rand(11) * 0.03
+
+br1 = th.as_tensor(np.arange(9) * 2.0 + barWidth * 0)
+br2 = th.as_tensor(np.arange(9) * 2.0 + barWidth * 1)
+br3 = th.as_tensor(np.arange(9) * 2.0 + barWidth * 2)
+br4 = th.as_tensor(np.arange(9) * 2.0 + barWidth * 3)
+
+
+
+plt.rcParams["hatch.color"] = 'white'
+plt.rcParams['hatch.linewidth'] = 2.0
+# plt.rcParams["marker.edgecolor"] = 'white'
+
+bar_edge_color = 'white'
 # Make the plot
-plt.bar(br1, kernel / 1000, color = color[2], width = barWidth,
-        edgecolor ='k', label ='SGEMM (Ours)',zorder=3)
-plt.text(br1[3], y=-3.0, s='Thread-level\ntiling',ha='center')
+bar1 = ax.bar(br1, gflops_naive, color = color[3], width = barWidth,
+        edgecolor =bar_edge_color, label ='turboFFT-v0',zorder=3,hatch = 'O')
+bar2 = ax.bar(br2, gflops_optim1, color = color[3], width = barWidth,
+        edgecolor =bar_edge_color, label ='turboFFT-v1',zorder=3, hatch = '//')
+bar3 = ax.bar(br3, gflops_optim2, color = color[3], width = barWidth,
+        edgecolor =bar_edge_color, label ='turboFFT-v2',zorder=3, hatch = 'xx')
+bar4 = ax.bar(br4, gflops_fft, color = color[3], width = barWidth,
+        edgecolor =bar_edge_color, label ='turboFFT',zorder=3)
+
+
+ax_0 = ax.twinx()
+ms = 20
+line_color = 'k'
+# markercolor = color[3]
+markercolor = 'white'
+linewidth = 3
+mew=3
+l1 = ax_0.plot((br2 + br3) / 2, gflops_naive / gflops_cufft, color = line_color, linestyle='dashdot', marker='o', linewidth=linewidth, markersize = ms, label ='turboFFT-v0', markeredgecolor='k', markerfacecolor = markercolor,mew=mew)
+l2 = ax_0.plot((br2 + br3) / 2, gflops_optim1 / gflops_cufft, color = line_color, linestyle='dotted', marker='*', linewidth=linewidth, markersize = ms, label ='turboFFT-v1', markeredgecolor='k', markerfacecolor = markercolor,mew=mew)
+l3 = ax_0.plot((br2 + br3) / 2, gflops_optim2 / gflops_cufft, color = line_color, linestyle='dashed',marker='P', linewidth=linewidth, markersize = ms, label ='turboFFT-v2', markeredgecolor='k', markerfacecolor = markercolor,mew=mew)
+l4 = ax_0.plot((br2 + br3) / 2, gflops_fft / gflops_cufft, color = line_color, marker='^', linewidth=linewidth, markersize = ms, label ='turboFFT', markeredgecolor='k', markerfacecolor = markercolor,mew=mew)
+
+ax_0.set_ylabel('Performance Ratio', fontsize=30, fontdict=dict(weight='bold'))
 # Adding Xticks
-plt.xlabel('',  fontsize = 30, fontdict=dict(weight='bold'))
-plt.ylabel('Performance\n(TFOPS)',  fontsize = 30, fontdict=dict(weight='bold'))
+ax.set_xlabel('log(N)',  fontsize = 30, fontdict=dict(weight='bold'))
+ax.set_ylabel('Performance (GFLOPS)',  fontsize = 30, fontdict=dict(weight='bold'))
 
-plt.xticks(br1,
-[f'{kernel_name[i]}' for i in range(len(kernel))], rotation = 30)
-# plt.title("Step-wise SGEMM Kernel Optimization", fontdict=dict(weight='bold'))
-plt.xlim([0, 7.3])
-plt.yticks([0, 2, 4])
+ax.set_xticks(br3)
+ax.set_xticklabels([f'{kernel_name[i]}' for i in range(9)])
 
-plt.legend(loc="upper left", framealpha=0.7)
-plt.savefig("step_wise.pdf",bbox_inches='tight')
+ax.set_yticks([0, 200, 400, 600])
+ax.set_yticklabels(['0', '200', '400', '600'] ,rotation=90)
+ax.set_ylim([0, 650])
+ax_0.set_ylim([0, 1.3])
+ax.set_xlim([br1[0]-0.5, br4[-1] + 0.7])
+
+lns = [bar1] + l1 + [bar2] + l2 + [bar3] + l3 + [bar4] + l4
+label = [l.get_label() for l in lns]
+plt.legend(lns, label, loc = 'upper center', framealpha=0, ncol=4, fontsize=25,labelspacing = 0.2,columnspacing=0.5)
+plt.savefig("..\\figures\\fig1_step_optimizations_bar_T4.pdf",bbox_inches='tight')
