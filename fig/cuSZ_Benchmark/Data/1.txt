@@ -1,0 +1,5 @@
+Miranda: finished
+jhtdb: cusz,cuszi: error < 1e-3
+rtm: cusz,cuszi: error < 1e-3
+qmcpack: cusz,cuszi: error < 1e-3
+S3D:    cusz,cuszi, cuszp

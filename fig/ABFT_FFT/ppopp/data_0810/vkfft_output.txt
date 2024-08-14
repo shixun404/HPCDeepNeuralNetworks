@@ -1,0 +1,244 @@
+STDOUT: VkFFT System: 2x1x1 Batch: 1 Buffer: 0 MB avg_time_per_step: 0.028 ms std_error: 0.000 num_iter: 1 benchmark: 0 scaled bandwidth: 0.0 real bandwidth: 0.0
+
+STDOUT: VkFFT System: 2x1x1 Batch: 2 Buffer: 0 MB avg_time_per_step: 0.036 ms std_error: 0.007 num_iter: 1 benchmark: 0 scaled bandwidth: 0.0 real bandwidth: 0.0
+
+STDOUT: VkFFT System: 2x1x1 Batch: 4 Buffer: 0 MB avg_time_per_step: 0.036 ms std_error: 0.003 num_iter: 1 benchmark: 1 scaled bandwidth: 0.0 real bandwidth: 0.0
+
+STDOUT: VkFFT System: 2x1x1 Batch: 8 Buffer: 0 MB avg_time_per_step: 0.031 ms std_error: 0.002 num_iter: 1 benchmark: 4 scaled bandwidth: 0.0 real bandwidth: 0.0
+
+STDOUT: VkFFT System: 2x1x1 Batch: 16 Buffer: 0 MB avg_time_per_step: 0.032 ms std_error: 0.004 num_iter: 1 benchmark: 7 scaled bandwidth: 0.0 real bandwidth: 0.0
+
+STDOUT: VkFFT System: 2x1x1 Batch: 32 Buffer: 0 MB avg_time_per_step: 0.031 ms std_error: 0.003 num_iter: 1 benchmark: 16 scaled bandwidth: 0.1 real bandwidth: 0.1
+
+STDOUT: VkFFT System: 2x1x1 Batch: 64 Buffer: 0 MB avg_time_per_step: 0.034 ms std_error: 0.001 num_iter: 1 benchmark: 29 scaled bandwidth: 0.1 real bandwidth: 0.1
+
+STDOUT: VkFFT System: 2x1x1 Batch: 128 Buffer: 0 MB avg_time_per_step: 0.032 ms std_error: 0.001 num_iter: 1 benchmark: 62 scaled bandwidth: 0.2 real bandwidth: 0.2
+
+STDOUT: VkFFT System: 2x1x1 Batch: 256 Buffer: 0 MB avg_time_per_step: 0.032 ms std_error: 0.004 num_iter: 1 benchmark: 125 scaled bandwidth: 0.5 real bandwidth: 0.5
+
+STDOUT: VkFFT System: 2x1x1 Batch: 512 Buffer: 0 MB avg_time_per_step: 0.035 ms std_error: 0.002 num_iter: 1 benchmark: 228 scaled bandwidth: 0.9 real bandwidth: 0.9
+
+STDOUT: VkFFT System: 2x1x1 Batch: 1024 Buffer: 0 MB avg_time_per_step: 0.031 ms std_error: 0.003 num_iter: 1 benchmark: 510 scaled bandwidth: 1.9 real bandwidth: 1.9
+
+STDOUT: VkFFT System: 2x1x1 Batch: 2048 Buffer: 0 MB avg_time_per_step: 0.028 ms std_error: 0.001 num_iter: 1 benchmark: 1156 scaled bandwidth: 4.4 real bandwidth: 4.4
+
+STDOUT: VkFFT System: 2x1x1 Batch: 4096 Buffer: 0 MB avg_time_per_step: 0.032 ms std_error: 0.003 num_iter: 1 benchmark: 2021 scaled bandwidth: 7.7 real bandwidth: 7.7
+
+STDOUT: VkFFT System: 2x1x1 Batch: 8192 Buffer: 0 MB avg_time_per_step: 0.035 ms std_error: 0.001 num_iter: 1 benchmark: 3692 scaled bandwidth: 14.1 real bandwidth: 14.1
+
+STDOUT: VkFFT System: 2x1x1 Batch: 16384 Buffer: 0 MB avg_time_per_step: 0.035 ms std_error: 0.006 num_iter: 1 benchmark: 7245 scaled bandwidth: 27.6 real bandwidth: 27.6
+
+STDOUT: VkFFT System: 2x1x1 Batch: 32768 Buffer: 0 MB avg_time_per_step: 0.032 ms std_error: 0.002 num_iter: 1 benchmark: 16168 scaled bandwidth: 61.7 real bandwidth: 61.7
+
+STDOUT: VkFFT System: 2x1x1 Batch: 65536 Buffer: 1 MB avg_time_per_step: 0.032 ms std_error: 0.003 num_iter: 1 benchmark: 32336 scaled bandwidth: 123.4 real bandwidth: 123.4
+
+STDOUT: VkFFT System: 2x1x1 Batch: 131072 Buffer: 2 MB avg_time_per_step: 0.039 ms std_error: 0.010 num_iter: 1 benchmark: 52067 scaled bandwidth: 198.6 real bandwidth: 198.6
+
+STDOUT: VkFFT System: 2x1x1 Batch: 262144 Buffer: 4 MB avg_time_per_step: 0.036 ms std_error: 0.002 num_iter: 1 benchmark: 112733 scaled bandwidth: 430.0 real bandwidth: 430.0
+
+STDOUT: VkFFT System: 2x1x1 Batch: 524288 Buffer: 8 MB avg_time_per_step: 0.046 ms std_error: 0.002 num_iter: 1 benchmark: 176805 scaled bandwidth: 674.5 real bandwidth: 674.5
+
+STDOUT: VkFFT System: 2x1x1 Batch: 1048576 Buffer: 16 MB avg_time_per_step: 0.063 ms std_error: 0.001 num_iter: 1 benchmark: 261446 scaled bandwidth: 997.3 real bandwidth: 997.3
+
+STDOUT: VkFFT System: 2x1x1 Batch: 2097152 Buffer: 32 MB avg_time_per_step: 0.105 ms std_error: 0.001 num_iter: 1 benchmark: 311088 scaled bandwidth: 1186.7 real bandwidth: 1186.7
+
+STDOUT: VkFFT System: 2x1x1 Batch: 4194304 Buffer: 64 MB avg_time_per_step: 0.228 ms std_error: 0.001 num_iter: 1 benchmark: 287438 scaled bandwidth: 1096.5 real bandwidth: 1096.5
+
+STDOUT: VkFFT System: 2x1x1 Batch: 8388608 Buffer: 128 MB avg_time_per_step: 0.418 ms std_error: 0.003 num_iter: 1 benchmark: 313319 scaled bandwidth: 1195.2 real bandwidth: 1195.2
+
+STDOUT: VkFFT System: 2x1x1 Batch: 16777216 Buffer: 256 MB avg_time_per_step: 0.808 ms std_error: 0.001 num_iter: 1 benchmark: 324569 scaled bandwidth: 1238.1 real bandwidth: 1238.1
+
+STDOUT: VkFFT System: 2x1x1 Batch: 33554432 Buffer: 512 MB avg_time_per_step: 1.585 ms std_error: 0.002 num_iter: 1 benchmark: 330711 scaled bandwidth: 1261.6 real bandwidth: 1261.6
+
+STDOUT: VkFFT System: 2x1x1 Batch: 67108864 Buffer: 1024 MB avg_time_per_step: 3.149 ms std_error: 0.005 num_iter: 1 benchmark: 333022 scaled bandwidth: 1270.4 real bandwidth: 1270.4
+
+STDOUT: VkFFT System: 2x1x1 Batch: 134217728 Buffer: 2048 MB avg_time_per_step: 6.273 ms std_error: 0.006 num_iter: 1 benchmark: 334314 scaled bandwidth: 1275.3 real bandwidth: 1275.3
+
+STDOUT: VkFFT System: 4x1x1 Batch: 1 Buffer: 0 MB avg_time_per_step: 0.052 ms std_error: 0.020 num_iter: 1 benchmark: 0 scaled bandwidth: 0.0 real bandwidth: 0.0
+
+STDOUT: VkFFT System: 4x1x1 Batch: 2 Buffer: 0 MB avg_time_per_step: 0.034 ms std_error: 0.003 num_iter: 1 benchmark: 1 scaled bandwidth: 0.0 real bandwidth: 0.0
+
+STDOUT: VkFFT System: 4x1x1 Batch: 4 Buffer: 0 MB avg_time_per_step: 0.033 ms std_error: 0.003 num_iter: 1 benchmark: 3 scaled bandwidth: 0.0 real bandwidth: 0.0
+
+STDOUT: VkFFT System: 4x1x1 Batch: 8 Buffer: 0 MB avg_time_per_step: 0.032 ms std_error: 0.001 num_iter: 1 benchmark: 7 scaled bandwidth: 0.0 real bandwidth: 0.0
+
+STDOUT: VkFFT System: 4x1x1 Batch: 16 Buffer: 0 MB avg_time_per_step: 0.035 ms std_error: 0.001 num_iter: 1 benchmark: 14 scaled bandwidth: 0.1 real bandwidth: 0.1
+
+STDOUT: VkFFT System: 4x1x1 Batch: 32 Buffer: 0 MB avg_time_per_step: 0.031 ms std_error: 0.004 num_iter: 1 benchmark: 31 scaled bandwidth: 0.1 real bandwidth: 0.1
+
+STDOUT: VkFFT System: 4x1x1 Batch: 64 Buffer: 0 MB avg_time_per_step: 0.032 ms std_error: 0.003 num_iter: 1 benchmark: 61 scaled bandwidth: 0.2 real bandwidth: 0.2
+
+STDOUT: VkFFT System: 4x1x1 Batch: 128 Buffer: 0 MB avg_time_per_step: 0.034 ms std_error: 0.006 num_iter: 1 benchmark: 118 scaled bandwidth: 0.5 real bandwidth: 0.5
+
+STDOUT: VkFFT System: 4x1x1 Batch: 256 Buffer: 0 MB avg_time_per_step: 0.034 ms std_error: 0.002 num_iter: 1 benchmark: 237 scaled bandwidth: 0.9 real bandwidth: 0.9
+
+STDOUT: VkFFT System: 4x1x1 Batch: 512 Buffer: 0 MB avg_time_per_step: 0.032 ms std_error: 0.002 num_iter: 1 benchmark: 505 scaled bandwidth: 1.9 real bandwidth: 1.9
+
+STDOUT: VkFFT System: 4x1x1 Batch: 1024 Buffer: 0 MB avg_time_per_step: 0.030 ms std_error: 0.002 num_iter: 1 benchmark: 1066 scaled bandwidth: 4.1 real bandwidth: 4.1
+
+STDOUT: VkFFT System: 4x1x1 Batch: 2048 Buffer: 0 MB avg_time_per_step: 0.030 ms std_error: 0.002 num_iter: 1 benchmark: 2157 scaled bandwidth: 8.2 real bandwidth: 8.2
+
+STDOUT: VkFFT System: 4x1x1 Batch: 4096 Buffer: 0 MB avg_time_per_step: 0.033 ms std_error: 0.000 num_iter: 1 benchmark: 3918 scaled bandwidth: 14.9 real bandwidth: 14.9
+
+STDOUT: VkFFT System: 4x1x1 Batch: 8192 Buffer: 0 MB avg_time_per_step: 0.031 ms std_error: 0.001 num_iter: 1 benchmark: 8170 scaled bandwidth: 31.2 real bandwidth: 31.2
+
+STDOUT: VkFFT System: 4x1x1 Batch: 16384 Buffer: 0 MB avg_time_per_step: 0.031 ms std_error: 0.003 num_iter: 1 benchmark: 16340 scaled bandwidth: 62.3 real bandwidth: 62.3
+
+STDOUT: VkFFT System: 4x1x1 Batch: 32768 Buffer: 1 MB avg_time_per_step: 0.031 ms std_error: 0.000 num_iter: 1 benchmark: 33391 scaled bandwidth: 127.4 real bandwidth: 127.4
+
+STDOUT: VkFFT System: 4x1x1 Batch: 65536 Buffer: 2 MB avg_time_per_step: 0.040 ms std_error: 0.007 num_iter: 1 benchmark: 50776 scaled bandwidth: 193.7 real bandwidth: 193.7
+
+STDOUT: VkFFT System: 4x1x1 Batch: 131072 Buffer: 4 MB avg_time_per_step: 0.034 ms std_error: 0.000 num_iter: 1 benchmark: 121663 scaled bandwidth: 464.1 real bandwidth: 464.1
+
+STDOUT: VkFFT System: 4x1x1 Batch: 262144 Buffer: 8 MB avg_time_per_step: 0.043 ms std_error: 0.002 num_iter: 1 benchmark: 189046 scaled bandwidth: 721.2 real bandwidth: 721.2
+
+STDOUT: VkFFT System: 4x1x1 Batch: 524288 Buffer: 16 MB avg_time_per_step: 0.065 ms std_error: 0.001 num_iter: 1 benchmark: 253360 scaled bandwidth: 966.5 real bandwidth: 966.5
+
+STDOUT: VkFFT System: 4x1x1 Batch: 1048576 Buffer: 32 MB avg_time_per_step: 0.117 ms std_error: 0.003 num_iter: 1 benchmark: 280868 scaled bandwidth: 1071.4 real bandwidth: 1071.4
+
+STDOUT: VkFFT System: 4x1x1 Batch: 2097152 Buffer: 64 MB avg_time_per_step: 0.223 ms std_error: 0.002 num_iter: 1 benchmark: 293883 scaled bandwidth: 1121.1 real bandwidth: 1121.1
+
+STDOUT: VkFFT System: 4x1x1 Batch: 4194304 Buffer: 128 MB avg_time_per_step: 0.423 ms std_error: 0.004 num_iter: 1 benchmark: 310107 scaled bandwidth: 1183.0 real bandwidth: 1183.0
+
+STDOUT: VkFFT System: 4x1x1 Batch: 8388608 Buffer: 256 MB avg_time_per_step: 0.816 ms std_error: 0.000 num_iter: 1 benchmark: 321123 scaled bandwidth: 1225.0 real bandwidth: 1225.0
+
+STDOUT: VkFFT System: 4x1x1 Batch: 16777216 Buffer: 512 MB avg_time_per_step: 1.603 ms std_error: 0.001 num_iter: 1 benchmark: 327066 scaled bandwidth: 1247.7 real bandwidth: 1247.7
+
+STDOUT: VkFFT System: 4x1x1 Batch: 33554432 Buffer: 1024 MB avg_time_per_step: 3.187 ms std_error: 0.001 num_iter: 1 benchmark: 329051 scaled bandwidth: 1255.2 real bandwidth: 1255.2
+
+STDOUT: VkFFT System: 4x1x1 Batch: 67108864 Buffer: 2048 MB avg_time_per_step: 6.345 ms std_error: 0.002 num_iter: 1 benchmark: 330537 scaled bandwidth: 1260.9 real bandwidth: 1260.9
+
+STDOUT: VkFFT System: 8x1x1 Batch: 1 Buffer: 0 MB avg_time_per_step: 0.032 ms std_error: 0.002 num_iter: 1 benchmark: 1 scaled bandwidth: 0.0 real bandwidth: 0.0
+
+STDOUT: VkFFT System: 8x1x1 Batch: 2 Buffer: 0 MB avg_time_per_step: 0.031 ms std_error: 0.003 num_iter: 1 benchmark: 3 scaled bandwidth: 0.0 real bandwidth: 0.0
+
+STDOUT: VkFFT System: 8x1x1 Batch: 4 Buffer: 0 MB avg_time_per_step: 0.030 ms std_error: 0.001 num_iter: 1 benchmark: 8 scaled bandwidth: 0.0 real bandwidth: 0.0
+
+STDOUT: VkFFT System: 8x1x1 Batch: 8 Buffer: 0 MB avg_time_per_step: 0.032 ms std_error: 0.003 num_iter: 1 benchmark: 15 scaled bandwidth: 0.1 real bandwidth: 0.1
+
+STDOUT: VkFFT System: 8x1x1 Batch: 16 Buffer: 0 MB avg_time_per_step: 0.033 ms std_error: 0.001 num_iter: 1 benchmark: 30 scaled bandwidth: 0.1 real bandwidth: 0.1
+
+STDOUT: VkFFT System: 8x1x1 Batch: 32 Buffer: 0 MB avg_time_per_step: 0.029 ms std_error: 0.004 num_iter: 1 benchmark: 68 scaled bandwidth: 0.3 real bandwidth: 0.3
+
+STDOUT: VkFFT System: 8x1x1 Batch: 64 Buffer: 0 MB avg_time_per_step: 0.031 ms std_error: 0.001 num_iter: 1 benchmark: 129 scaled bandwidth: 0.5 real bandwidth: 0.5
+
+STDOUT: VkFFT System: 8x1x1 Batch: 128 Buffer: 0 MB avg_time_per_step: 0.032 ms std_error: 0.001 num_iter: 1 benchmark: 252 scaled bandwidth: 1.0 real bandwidth: 1.0
+
+STDOUT: VkFFT System: 8x1x1 Batch: 256 Buffer: 0 MB avg_time_per_step: 0.046 ms std_error: 0.006 num_iter: 1 benchmark: 345 scaled bandwidth: 1.3 real bandwidth: 1.3
+
+STDOUT: VkFFT System: 8x1x1 Batch: 512 Buffer: 0 MB avg_time_per_step: 0.037 ms std_error: 0.002 num_iter: 1 benchmark: 864 scaled bandwidth: 3.3 real bandwidth: 3.3
+
+STDOUT: VkFFT System: 8x1x1 Batch: 1024 Buffer: 0 MB avg_time_per_step: 0.045 ms std_error: 0.010 num_iter: 1 benchmark: 1411 scaled bandwidth: 5.4 real bandwidth: 5.4
+
+STDOUT: VkFFT System: 8x1x1 Batch: 2048 Buffer: 0 MB avg_time_per_step: 0.032 ms std_error: 0.002 num_iter: 1 benchmark: 4000 scaled bandwidth: 15.3 real bandwidth: 15.3
+
+STDOUT: VkFFT System: 8x1x1 Batch: 4096 Buffer: 0 MB avg_time_per_step: 0.029 ms std_error: 0.002 num_iter: 1 benchmark: 8827 scaled bandwidth: 33.7 real bandwidth: 33.7
+
+STDOUT: VkFFT System: 8x1x1 Batch: 8192 Buffer: 0 MB avg_time_per_step: 0.034 ms std_error: 0.002 num_iter: 1 benchmark: 15207 scaled bandwidth: 58.0 real bandwidth: 58.0
+
+STDOUT: VkFFT System: 8x1x1 Batch: 16384 Buffer: 1 MB avg_time_per_step: 0.030 ms std_error: 0.000 num_iter: 1 benchmark: 34516 scaled bandwidth: 131.7 real bandwidth: 131.7
+
+STDOUT: VkFFT System: 8x1x1 Batch: 32768 Buffer: 2 MB avg_time_per_step: 0.032 ms std_error: 0.001 num_iter: 1 benchmark: 63340 scaled bandwidth: 241.6 real bandwidth: 241.6
+
+STDOUT: VkFFT System: 8x1x1 Batch: 65536 Buffer: 4 MB avg_time_per_step: 0.039 ms std_error: 0.001 num_iter: 1 benchmark: 105025 scaled bandwidth: 400.6 real bandwidth: 400.6
+
+STDOUT: VkFFT System: 8x1x1 Batch: 131072 Buffer: 8 MB avg_time_per_step: 0.051 ms std_error: 0.002 num_iter: 1 benchmark: 160627 scaled bandwidth: 612.7 real bandwidth: 612.7
+
+STDOUT: VkFFT System: 8x1x1 Batch: 262144 Buffer: 16 MB avg_time_per_step: 0.065 ms std_error: 0.002 num_iter: 1 benchmark: 253360 scaled bandwidth: 966.5 real bandwidth: 966.5
+
+STDOUT: VkFFT System: 8x1x1 Batch: 524288 Buffer: 32 MB avg_time_per_step: 0.120 ms std_error: 0.002 num_iter: 1 benchmark: 273066 scaled bandwidth: 1041.7 real bandwidth: 1041.7
+
+STDOUT: VkFFT System: 8x1x1 Batch: 1048576 Buffer: 64 MB avg_time_per_step: 0.225 ms std_error: 0.000 num_iter: 1 benchmark: 290840 scaled bandwidth: 1109.5 real bandwidth: 1109.5
+
+STDOUT: VkFFT System: 8x1x1 Batch: 2097152 Buffer: 128 MB avg_time_per_step: 0.423 ms std_error: 0.000 num_iter: 1 benchmark: 310107 scaled bandwidth: 1183.0 real bandwidth: 1183.0
+
+STDOUT: VkFFT System: 8x1x1 Batch: 4194304 Buffer: 256 MB avg_time_per_step: 0.817 ms std_error: 0.005 num_iter: 1 benchmark: 320861 scaled bandwidth: 1224.0 real bandwidth: 1224.0
+
+STDOUT: VkFFT System: 8x1x1 Batch: 8388608 Buffer: 512 MB avg_time_per_step: 1.603 ms std_error: 0.002 num_iter: 1 benchmark: 327066 scaled bandwidth: 1247.7 real bandwidth: 1247.7
+
+STDOUT: VkFFT System: 8x1x1 Batch: 16777216 Buffer: 1024 MB avg_time_per_step: 3.170 ms std_error: 0.002 num_iter: 1 benchmark: 330815 scaled bandwidth: 1262.0 real bandwidth: 1262.0
+
+STDOUT: VkFFT System: 8x1x1 Batch: 33554432 Buffer: 2048 MB avg_time_per_step: 6.321 ms std_error: 0.014 num_iter: 1 benchmark: 331757 scaled bandwidth: 1265.6 real bandwidth: 1265.6
+
+STDOUT: VkFFT System: 16x1x1 Batch: 1 Buffer: 0 MB avg_time_per_step: 0.031 ms std_error: 0.004 num_iter: 1 benchmark: 4 scaled bandwidth: 0.0 real bandwidth: 0.0
+
+STDOUT: VkFFT System: 16x1x1 Batch: 2 Buffer: 0 MB avg_time_per_step: 0.028 ms std_error: 0.001 num_iter: 1 benchmark: 9 scaled bandwidth: 0.0 real bandwidth: 0.0
+
+STDOUT: VkFFT System: 16x1x1 Batch: 4 Buffer: 0 MB avg_time_per_step: 0.033 ms std_error: 0.000 num_iter: 1 benchmark: 15 scaled bandwidth: 0.1 real bandwidth: 0.1
+
+STDOUT: VkFFT System: 16x1x1 Batch: 8 Buffer: 0 MB avg_time_per_step: 0.032 ms std_error: 0.001 num_iter: 1 benchmark: 31 scaled bandwidth: 0.1 real bandwidth: 0.1
+
+STDOUT: VkFFT System: 16x1x1 Batch: 16 Buffer: 0 MB avg_time_per_step: 0.033 ms std_error: 0.003 num_iter: 1 benchmark: 60 scaled bandwidth: 0.2 real bandwidth: 0.2
+
+STDOUT: VkFFT System: 16x1x1 Batch: 32 Buffer: 0 MB avg_time_per_step: 0.031 ms std_error: 0.001 num_iter: 1 benchmark: 127 scaled bandwidth: 0.5 real bandwidth: 0.5
+
+STDOUT: VkFFT System: 16x1x1 Batch: 64 Buffer: 0 MB avg_time_per_step: 0.032 ms std_error: 0.002 num_iter: 1 benchmark: 247 scaled bandwidth: 0.9 real bandwidth: 0.9
+
+STDOUT: VkFFT System: 16x1x1 Batch: 128 Buffer: 0 MB avg_time_per_step: 0.031 ms std_error: 0.002 num_iter: 1 benchmark: 516 scaled bandwidth: 2.0 real bandwidth: 2.0
+
+STDOUT: VkFFT System: 16x1x1 Batch: 256 Buffer: 0 MB avg_time_per_step: 0.035 ms std_error: 0.004 num_iter: 1 benchmark: 914 scaled bandwidth: 3.5 real bandwidth: 3.5
+
+STDOUT: VkFFT System: 16x1x1 Batch: 512 Buffer: 0 MB avg_time_per_step: 0.035 ms std_error: 0.001 num_iter: 1 benchmark: 1846 scaled bandwidth: 7.0 real bandwidth: 7.0
+
+STDOUT: VkFFT System: 16x1x1 Batch: 1024 Buffer: 0 MB avg_time_per_step: 0.032 ms std_error: 0.002 num_iter: 1 benchmark: 4042 scaled bandwidth: 15.4 real bandwidth: 15.4
+
+STDOUT: VkFFT System: 16x1x1 Batch: 2048 Buffer: 0 MB avg_time_per_step: 0.038 ms std_error: 0.001 num_iter: 1 benchmark: 6678 scaled bandwidth: 25.5 real bandwidth: 25.5
+
+STDOUT: VkFFT System: 16x1x1 Batch: 4096 Buffer: 0 MB avg_time_per_step: 0.039 ms std_error: 0.004 num_iter: 1 benchmark: 13241 scaled bandwidth: 50.5 real bandwidth: 50.5
+
+STDOUT: VkFFT System: 16x1x1 Batch: 8192 Buffer: 1 MB avg_time_per_step: 0.036 ms std_error: 0.003 num_iter: 1 benchmark: 28710 scaled bandwidth: 109.5 real bandwidth: 109.5
+
+STDOUT: VkFFT System: 16x1x1 Batch: 16384 Buffer: 2 MB avg_time_per_step: 0.043 ms std_error: 0.001 num_iter: 1 benchmark: 47627 scaled bandwidth: 181.7 real bandwidth: 181.7
+
+STDOUT: VkFFT System: 16x1x1 Batch: 32768 Buffer: 4 MB avg_time_per_step: 0.047 ms std_error: 0.003 num_iter: 1 benchmark: 87148 scaled bandwidth: 332.4 real bandwidth: 332.4
+
+STDOUT: VkFFT System: 16x1x1 Batch: 65536 Buffer: 8 MB avg_time_per_step: 0.046 ms std_error: 0.003 num_iter: 1 benchmark: 176805 scaled bandwidth: 674.5 real bandwidth: 674.5
+
+STDOUT: VkFFT System: 16x1x1 Batch: 131072 Buffer: 16 MB avg_time_per_step: 0.068 ms std_error: 0.004 num_iter: 1 benchmark: 242128 scaled bandwidth: 923.6 real bandwidth: 923.6
+
+STDOUT: VkFFT System: 16x1x1 Batch: 262144 Buffer: 32 MB avg_time_per_step: 0.127 ms std_error: 0.011 num_iter: 1 benchmark: 258694 scaled bandwidth: 986.8 real bandwidth: 986.8
+
+STDOUT: VkFFT System: 16x1x1 Batch: 524288 Buffer: 64 MB avg_time_per_step: 0.231 ms std_error: 0.005 num_iter: 1 benchmark: 283296 scaled bandwidth: 1080.7 real bandwidth: 1080.7
+
+STDOUT: VkFFT System: 16x1x1 Batch: 1048576 Buffer: 128 MB avg_time_per_step: 0.425 ms std_error: 0.001 num_iter: 1 benchmark: 308163 scaled bandwidth: 1175.5 real bandwidth: 1175.5
+
+STDOUT: VkFFT System: 16x1x1 Batch: 2097152 Buffer: 256 MB avg_time_per_step: 0.823 ms std_error: 0.002 num_iter: 1 benchmark: 318522 scaled bandwidth: 1215.1 real bandwidth: 1215.1
+
+STDOUT: VkFFT System: 16x1x1 Batch: 4194304 Buffer: 512 MB avg_time_per_step: 1.605 ms std_error: 0.004 num_iter: 1 benchmark: 326591 scaled bandwidth: 1245.8 real bandwidth: 1245.8
+
+STDOUT: VkFFT System: 16x1x1 Batch: 8388608 Buffer: 1024 MB avg_time_per_step: 3.179 ms std_error: 0.004 num_iter: 1 benchmark: 329810 scaled bandwidth: 1258.1 real bandwidth: 1258.1
+
+STDOUT: VkFFT System: 16x1x1 Batch: 16777216 Buffer: 2048 MB avg_time_per_step: 6.333 ms std_error: 0.006 num_iter: 1 benchmark: 331164 scaled bandwidth: 1263.3 real bandwidth: 1263.3
+
+STDOUT: VkFFT System: 32x1x1 Batch: 1 Buffer: 0 MB avg_time_per_step: 0.034 ms std_error: 0.003 num_iter: 1 benchmark: 7 scaled bandwidth: 0.0 real bandwidth: 0.0
+
+STDOUT: VkFFT System: 32x1x1 Batch: 2 Buffer: 0 MB avg_time_per_step: 0.036 ms std_error: 0.002 num_iter: 1 benchmark: 13 scaled bandwidth: 0.1 real bandwidth: 0.1
+
+STDOUT: VkFFT System: 32x1x1 Batch: 4 Buffer: 0 MB avg_time_per_step: 0.046 ms std_error: 0.013 num_iter: 1 benchmark: 21 scaled bandwidth: 0.1 real bandwidth: 0.1
+
+STDOUT: VkFFT System: 32x1x1 Batch: 8 Buffer: 0 MB avg_time_per_step: 0.034 ms std_error: 0.002 num_iter: 1 benchmark: 59 scaled bandwidth: 0.2 real bandwidth: 0.2
+
+STDOUT: VkFFT System: 32x1x1 Batch: 16 Buffer: 0 MB avg_time_per_step: 0.037 ms std_error: 0.008 num_iter: 1 benchmark: 107 scaled bandwidth: 0.4 real bandwidth: 0.4
+
+STDOUT: VkFFT System: 32x1x1 Batch: 32 Buffer: 0 MB avg_time_per_step: 0.031 ms std_error: 0.001 num_iter: 1 benchmark: 258 scaled bandwidth: 1.0 real bandwidth: 1.0
+
+STDOUT: VkFFT System: 32x1x1 Batch: 64 Buffer: 0 MB avg_time_per_step: 0.052 ms std_error: 0.015 num_iter: 1 benchmark: 307 scaled bandwidth: 1.2 real bandwidth: 1.2
+
+STDOUT: VkFFT System: 32x1x1 Batch: 128 Buffer: 0 MB avg_time_per_step: 0.036 ms std_error: 0.001 num_iter: 1 benchmark: 897 scaled bandwidth: 3.4 real bandwidth: 3.4
+
+STDOUT: VkFFT System: 32x1x1 Batch: 256 Buffer: 0 MB avg_time_per_step: 0.043 ms std_error: 0.005 num_iter: 1 benchmark: 1488 scaled bandwidth: 5.7 real bandwidth: 5.7
+
+STDOUT: VkFFT System: 32x1x1 Batch: 512 Buffer: 0 MB avg_time_per_step: 0.034 ms std_error: 0.003 num_iter: 1 benchmark: 3728 scaled bandwidth: 14.2 real bandwidth: 14.2
+
+STDOUT: VkFFT System: 32x1x1 Batch: 1024 Buffer: 0 MB avg_time_per_step: 0.039 ms std_error: 0.003 num_iter: 1 benchmark: 6508 scaled bandwidth: 24.8 real bandwidth: 24.8
+
+STDOUT: VkFFT System: 32x1x1 Batch: 2048 Buffer: 0 MB avg_time_per_step: 0.042 ms std_error: 0.008 num_iter: 1 benchmark: 12094 scaled bandwidth: 46.1 real bandwidth: 46.1
+
+^[[1;2BSTDOUT: VkFFT System: 32x1x1 Batch: 4096 Buffer: 1 MB avg_time_per_step: 0.048 ms std_error: 0.013 num_iter: 1 benchmark: 21333 scaled bandwidth: 81.4 real bandwidth: 81.4
+
+STDOUT: VkFFT System: 32x1x1 Batch: 8192 Buffer: 2 MB avg_time_per_step: 0.036 ms std_error: 0.000 num_iter: 1 benchmark: 57420 scaled bandwidth: 219.0 real bandwidth: 219.0
+
+STDOUT: VkFFT System: 32x1x1 Batch: 16384 Buffer: 4 MB avg_time_per_step: 0.051 ms std_error: 0.011 num_iter: 1 benchmark: 80842 scaled bandwidth: 308.4 real bandwidth: 308.4
+
+STDOUT: VkFFT System: 32x1x1 Batch: 32768 Buffer: 8 MB avg_time_per_step: 0.056 ms std_error: 0.003 num_iter: 1 benchmark: 146285 scaled bandwidth: 558.0 real bandwidth: 558.0
+

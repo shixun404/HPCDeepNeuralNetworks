@@ -34,7 +34,7 @@ plt.rc('font', size=30, weight='bold')
 plt.rcParams["font.family"] = "Times New Roman"
 plt.rcParams["hatch.color"] = 'white'
 plt.rcParams['hatch.linewidth'] = 2.0
-fig, ax = plt.subplots(nrows=2, figsize =(16, 20))
+fig, ax = plt.subplots(nrows=2, figsize =(16, 10))
 N = [i for i in range(3, 30)]
 # set height of bar
 
@@ -69,15 +69,15 @@ gflops_cufft /= gflops_cufft
 bar_edge_color = color[3]
 
 ax[0].bar(br1, gflops_ft_fft_xin[id], color = 'grey', width = barWidth,
-        edgecolor=edgecolor1, label = "SC'17 FT-FFT c",zorder=3, hatch='xx')
-ax[0].bar(br1, gflops_ft_fft_xin[id] * 0.8, color = 'grey', width = barWidth,
-        edgecolor=edgecolor1, label = "SC'17 FT-FFT c+m",zorder=3)
+        edgecolor=edgecolor1, label = "SC'17 FT-FFT",zorder=3, hatch='xx')
+# ax[0].bar(br1, gflops_ft_fft_xin[id] * 0.8, color = 'grey', width = barWidth,
+#         edgecolor=edgecolor1, label = "SC'17 FT-FFT c+m",zorder=3)
 ax[0].bar(br1, gflops_ft_fft_xin[id] * 0.6, color = 'grey', width = barWidth,
         edgecolor=edgecolor1, label = "SC'17 FT-FFT error injected",zorder=3, hatch='//')
 ax[0].bar(br2, gflops_ft_fft[id] * 0.95, color = color_white, width = barWidth,
-        edgecolor=edgecolor2, label = "turboFFT w/ FT c",zorder=3, hatch='xx')
-ax[0].bar(br2, gflops_ft_fft[id] * 0.85, color = color_white, width = barWidth,
-        edgecolor=edgecolor2, label = "turboFFT w/ FT c+m",zorder=3)
+        edgecolor=edgecolor2, label = "turboFFT w/ FT",zorder=3, hatch='xx')
+# ax[0].bar(br2, gflops_ft_fft[id] * 0.85, color = color_white, width = barWidth,
+#         edgecolor=edgecolor2, label = "turboFFT w/ FT",zorder=3)
 ax[0].bar(br2, gflops_ft_fft[id] * 0.83, color = color_white, width = barWidth,
         edgecolor=edgecolor2, label = "turboFFT w/ FT error injected",zorder=3, hatch='//')
 ax[0].bar(br2 + barWidth, gflops_fft[id], color = color[3], width = barWidth,
@@ -88,7 +88,7 @@ ax[0].bar(br4, gflops_cufft[id], color = color_cufft, width = barWidth,
         edgecolor=edgecolor5, label = "cuFFT",zorder=3,)
 
 # Adding Xticks
-ax[0].set_xlabel('log(N)',  fontsize = 30, fontdict=dict(weight='bold'))
+# ax[0].set_xlabel('log(N)',  fontsize = 30, fontdict=dict(weight='bold'))
 ax[0].set_ylabel('Scale Performance',  fontsize = 30, fontdict=dict(weight='bold'))
 
 # kernel_name = []
@@ -99,7 +99,7 @@ ax[0].set_xticks(br3)
 ax[0].set_xticklabels([f'{kernel_name[i]}' for i in range(N)], rotation=30)
 ax[0].set_ylim([0,1.5])
 ax[0].grid(linestyle='--', linewidth=0.7, zorder=0)
-ax[0].legend(loc = 'upper center', framealpha=0.3, labelspacing=0.5,columnspacing=0.5,  ncol=3, fontsize=20)
+# ax[0].legend(loc = 'upper center', framealpha=0.3, labelspacing=0.5,columnspacing=0.5,  ncol=3, fontsize=20)
 
 gflops_ft_fft = th.as_tensor([  2326.0,  2869.2,  3357.4,  3746.7,  3916.3,  4022.2,  4093.6,  4099.7,  4114.1,])
 gflops_cufft = th.as_tensor([  2761.3,  3290.0,  3660.1,  3966.2,  4161.8,  4242.1,  4286.6,  4297.6,  4307.5,])
@@ -115,15 +115,15 @@ gflops_cufft /= gflops_cufft
 # N = th.as_tensor([i for i in range(1, 1 + (10240 // 128))]) * 128
 id = th.as_tensor(np.arange(9), dtype=th.long)
 ax[1].bar(br1, gflops_ft_fft_xin[id], color = 'grey', width = barWidth,
-        edgecolor =edgecolor1, label = "SC'17 FT-FFT c", zorder=3, hatch='xx')
-ax[1].bar(br1, gflops_ft_fft_xin[id] * 0.8, color = 'grey', width = barWidth,
-        edgecolor =edgecolor1, label = "SC'17 FT-FFT c+m",zorder=3)
+        edgecolor =edgecolor1, label = "SC'17 FT-FFT", zorder=3, hatch='xx')
+# ax[1].bar(br1, gflops_ft_fft_xin[id] * 0.8, color = 'grey', width = barWidth,
+#         edgecolor =edgecolor1, label = "SC'17 FT-FFT c+m",zorder=3)
 ax[1].bar(br1, gflops_ft_fft_xin[id] * 0.6, color = 'grey', width = barWidth,
         edgecolor=edgecolor1, label = "SC'17 FT-FFT error injected",zorder=3, hatch='//')
 ax[1].bar(br2, gflops_ft_fft[id] * 0.95, color = color_white, width = barWidth,
-        edgecolor =edgecolor2, label = "turboFFT w/ FT c",zorder=3, hatch='xx')
-ax[1].bar(br2, gflops_ft_fft[id] * 0.85, color = color_white, width = barWidth,
-        edgecolor =edgecolor2, label = "turboFFT w/ FT c+m",zorder=3)
+        edgecolor =edgecolor2, label = "turboFFT w/ FT",zorder=3, hatch='xx')
+# ax[1].bar(br2, gflops_ft_fft[id] * 0.85, color = color_white, width = barWidth,
+#         edgecolor =edgecolor2, label = "turboFFT w/ FT c+m",zorder=3)
 ax[1].bar(br2, gflops_ft_fft[id] * 0.83, color = color_white, width = barWidth,
         edgecolor=edgecolor2, label = "turboFFT w/ FT error injected",zorder=3, hatch='//')
 ax[1].bar(br2 + barWidth, gflops_fft[id], color = color[3], width = barWidth,
@@ -132,12 +132,15 @@ ax[1].bar(br3, gflops_vkfft[id], color = color_vkfft, width = barWidth,
         edgecolor =edgecolor4, label = "VkFFT",zorder=3,)
 ax[1].bar(br4, gflops_cufft[id], color = color_cufft, width = barWidth,
         edgecolor =edgecolor5, label = "cuFFT",zorder=3,)
-ax[1].set_xlabel('batch size, N = 2^21',  fontsize = 30, fontdict=dict(weight='bold'))
+# ax[1].set_xlabel('batch size, N = 2^21',  fontsize = 30, fontdict=dict(weight='bold'))
 kernel_name = ['1', '2', '4', '8', '16', '32', '64', '128', '256']
 ax[1].set_xticks(br3)
 ax[1].set_xticklabels([f'{kernel_name[i]}' for i in range(N)], rotation=0,)
 ax[1].set_ylabel('Scale Performance',  fontsize = 30, fontdict=dict(weight='bold'))
 ax[1].set_ylim([0, 1.5])
 ax[1].grid(linestyle='--', linewidth=0.7, zorder=0)
-ax[1].legend(loc = 'upper center', framealpha=0.3, labelspacing=0.5,columnspacing=0.5,  ncol=3, fontsize=20)
+# ax[1].legend(loc = 'lower center', framealpha=0.3, labelspacing=0.5,columnspacing=0.5,  ncol=3, fontsize=20)
+ax[1].legend(bbox_to_anchor=(1, -0.1), framealpha=0.3, labelspacing=0.5,columnspacing=0.5,  ncol=3, fontsize=20)
+ax[0].text(0.01, 1.2, 'BS=1, logN 5 to 29')
+ax[1].text(0.01, 1.2, 'logN=21, BS 1 to 256')
 fig.savefig("..\\figures\\fig11_error_injection_A100.pdf",bbox_inches='tight')

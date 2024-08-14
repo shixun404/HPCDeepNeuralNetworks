@@ -1,0 +1,8 @@
+Error_Bound,CR,BR,PSNR,NRMSE,cmp_cTP,cmp_xTP,nsys_cmp_cTP,nsys_cmp_xTP,nvcomp_CR,nvcomp_cTP,nvcomp_xTP,bitcomp_CR,bitcomp_cTP,bitcomp_xTP
+1.0e-05,,,,,,,,,,,,,,
+5.0e-05,,,,,,,,,,,,,,
+1.0e-04,,,,,,,,,,,,,,
+5.0e-04,,,,,,,,,,,,,,
+1.0e-03,,,,,,,,,,,,,,
+5.0e-03,,,,,,,,,,,,,,
+1.0e-02,,,,,,,,,,,,,,

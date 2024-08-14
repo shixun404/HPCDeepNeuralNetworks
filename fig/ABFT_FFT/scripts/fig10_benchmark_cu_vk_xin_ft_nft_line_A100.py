@@ -46,7 +46,7 @@ plt.rc('font', size=30, weight='bold')
 plt.rcParams["font.family"] = "Times New Roman"
 plt.rcParams["hatch.color"] = 'white'
 plt.rcParams['hatch.linewidth'] = 2.0
-fig, ax = plt.subplots(nrows=4, figsize =(16, 40))
+fig, ax = plt.subplots(nrows=4, figsize =(16, 20))
 N = [i for i in range(3, 30)]
 # set height of bar
 
@@ -81,13 +81,13 @@ gflops_cufft /= gflops_cufft
 bar_edge_color = color[3]
 
 ax[0].bar(br1, gflops_ft_fft_xin[id], color = color1, width = barWidth,
-        edgecolor=edgecolor1, label = "SC'17 FT-FFT c",zorder=3, hatch='xx')
-ax[0].bar(br1, gflops_ft_fft_xin[id] * 0.8, color = color1, width = barWidth,
-        edgecolor=edgecolor1, label = "SC'17 FT-FFT c+m",zorder=3)
+        edgecolor=edgecolor1, label = "SC'17 FT-FFT",zorder=3, hatch='xx')
+# ax[0].bar(br1, gflops_ft_fft_xin[id] * 0.8, color = color1, width = barWidth,
+#         edgecolor=edgecolor1, label = "SC'17 FT-FFT c+m",zorder=3)
 ax[0].bar(br2, gflops_ft_fft[id] * 0.95, color = color2, width = barWidth,
-        edgecolor=edgecolor2, label = "turboFFT w/ FT c",zorder=3, hatch='xx')
-ax[0].bar(br2, gflops_ft_fft[id] * 0.85, color = color_white, width = barWidth,
-        edgecolor=edgecolor2, label = "turboFFT w/ FT c+m",zorder=3)
+        edgecolor=edgecolor2, label = "turboFFT w/ FT",zorder=3, hatch='xx')
+# ax[0].bar(br2, gflops_ft_fft[id] * 0.85, color = color_white, width = barWidth,
+#         edgecolor=edgecolor2, label = "turboFFT w/ FT c+m",zorder=3)
 ax[0].bar(br2 + barWidth, gflops_fft[id], color = color[3], width = barWidth,
         edgecolor=edgecolor3, label = "turboFFT w/o FT",zorder=3,)
 ax[0].bar(br3, gflops_vkfft[id], color = color_vkfft, width = barWidth,
@@ -96,7 +96,7 @@ ax[0].bar(br4, gflops_cufft[id], color = color_cufft, width = barWidth,
         edgecolor=edgecolor5, label = "cuFFT",zorder=3,)
 
 # Adding Xticks
-ax[0].set_xlabel('log(N)',  fontsize = 30, fontdict=dict(weight='bold'))
+
 ax[0].set_ylabel('Scale Performance',  fontsize = 30, fontdict=dict(weight='bold'))
 
 # kernel_name = []
@@ -106,7 +106,7 @@ kernel_name = ['5', '8', '11', '14', '17', '20', '23', '26', '29']
 ax[0].set_xticks(br3)
 ax[0].set_xticklabels([f'{kernel_name[i]}' for i in range(N)], rotation=30)
 ax[0].grid(linestyle='--', linewidth=0.7, zorder=0)
-ax[0].legend(loc = 'upper center', framealpha=0.3, labelspacing=0.5,columnspacing=0.5,  ncol=4, fontsize=20)
+# ax[0].legend(loc = 'upper center', framealpha=0.3, labelspacing=0.5,columnspacing=0.5,  ncol=4, fontsize=20)
 # gflops_ft_fft_xin = th.as_tensor([   160.9,   264.8,   310.3,   377.9,   366.1,   396.1,   421.3,   438.8,   457.3,   471.2,   493.8,   501.9,   509.1,   519.3,   527.4,   536.3,   540.4,   543.7,   542.5,   554.3,   558.8,   560.7,   562.7,   566.6,   570.0,   572.0,   572.4,   577.3,   579.3,   581.7,   582.0,   585.9,   585.2,   588.7,   590.7,   592.2,   592.8,   593.4,   596.8,   594.7,   596.9,   596.9,   594.6,   599.9,   602.7,   601.7,   603.2,   605.1,   604.3,   607.2,   608.0,   605.7,   606.4,   608.8,   609.8,   611.1,   609.1,   611.3,   611.5,   613.9,   612.1,   613.4,   614.7,   616.2,   613.6,   615.3,   614.6,   615.5,   615.7,   616.3,   616.8,   618.3,   616.6,   616.9,   619.1,   618.9,   617.3,   618.4,   619.0,   620.1,])
 # gflops_fft = th.as_tensor([   199.1,   280.8,   381.1,   456.2,   435.7,   493.1,   504.6,   520.2,   525.6,   531.5,   539.5,   551.8,   562.0,   568.7,   574.4,   580.4,   583.9,   589.2,   593.2,   597.2,   600.2,   603.3,   605.6,   610.0,   611.6,   613.4,   615.3,   617.5,   618.5,   620.6,   622.7,   624.6,   625.8,   627.0,   628.2,   629.9,   631.3,   631.5,   632.6,   633.4,   634.3,   635.4,   636.5,   637.1,   637.1,   637.6,   638.9,   639.9,   640.4,   641.4,   641.7,   641.9,   642.4,   643.1,   643.8,   644.4,   644.3,   644.6,   644.8,   645.5,   645.8,   646.5,   646.6,   646.7,   646.6,   647.9,   648.5,   648.6,   648.8,   649.3,   649.1,   649.4,   649.6,   650.3,   651.0,   651.4,   650.9,   651.2,   651.7,   652.1,])
 # gflops_ft_fft_xin = th.as_tensor([   121.8,   201.0,   262.1,   282.8,   298.4,   329.4,   334.7,   366.4,   378.0,   393.6,   408.3,   417.6,   422.0,   429.6,   434.9,   439.8,   445.5,   450.5,   452.6,   458.0,   457.1,   461.5,   462.7,   463.4,   465.5,   469.6,   475.5,   478.9,   481.4,   483.6,   485.6,   487.6,   485.3,   486.6,   491.4,   492.8,   491.0,   492.2,   493.7,   494.9,   492.7,   495.3,   496.5,   498.3,   496.3,   498.9,   499.3,   502.1,   498.3,   499.5,   501.6,   503.7,   500.3,   501.2,   502.7,   503.9,   502.4,   503.3,   505.6,   505.8,   503.5,   504.0,   505.8,   505.8,   504.4,   505.0,   505.5,   506.5,   506.6,   508.7,   507.7,   507.7,   507.8,   507.1,   508.0,   508.9,   502.4,   509.0,   508.1,   508.6,])
@@ -129,27 +129,27 @@ id = th.as_tensor(np.arange(9), dtype=th.long)
 # N = th.as_tensor([i for i in range(1, 1 + (10240 // 128))]) * 128
 # id = id - 2
 ax[1].bar(br1, gflops_ft_fft_xin[id], color = color1, width = barWidth,
-        edgecolor =edgecolor1, label = "SC'17 FT-FFT c", zorder=3, hatch='xx')
-ax[1].bar(br1, gflops_ft_fft_xin[id] * 0.8, color = color1, width = barWidth,
-        edgecolor =edgecolor1, label = "SC'17 FT-FFT c+m",zorder=3)
+        edgecolor =edgecolor1, label = "SC'17 FT-FFT", zorder=3, hatch='xx')
+# ax[1].bar(br1, gflops_ft_fft_xin[id] * 0.8, color = color1, width = barWidth,
+        # edgecolor =edgecolor1, label = "SC'17 FT-FFT c+m",zorder=3)
 ax[1].bar(br2, gflops_ft_fft[id] * 0.95, color = color2, width = barWidth,
-        edgecolor =edgecolor2, label = "turboFFT w/ FT c",zorder=3, hatch='xx')
-ax[1].bar(br2, gflops_ft_fft[id] * 0.85, color = color_white, width = barWidth,
-        edgecolor =edgecolor2, label = "turboFFT w/ FT c+m",zorder=3)
+        edgecolor =edgecolor2, label = "turboFFT w/ FT",zorder=3, hatch='xx')
+# ax[1].bar(br2, gflops_ft_fft[id] * 0.85, color = color_white, width = barWidth,
+        # edgecolor =edgecolor2, label = "turboFFT w/ FT c+m",zorder=3)
 ax[1].bar(br2 + barWidth, gflops_fft[id], color = color[3], width = barWidth,
         edgecolor =edgecolor3, label = "turboFFT w/o FT",zorder=3,)
 ax[1].bar(br3, gflops_vkfft[id], color = color_vkfft, width = barWidth,
         edgecolor =edgecolor4, label = "VkFFT",zorder=3,)
 ax[1].bar(br4, gflops_cufft[id], color = color_cufft, width = barWidth,
         edgecolor =edgecolor5, label = "cuFFT",zorder=3,)
-ax[1].set_xlabel('batch size, N = 2^9',  fontsize = 30, fontdict=dict(weight='bold'))
+
 kernel_name = ['1', '4',  '16', '32', '64', '128', '256','512', '1024']
 ax[1].set_xticks(br3)
 ax[1].set_xticklabels([f'{kernel_name[i]}' for i in range(N)], rotation=0,)
 ax[1].set_ylabel('Scale Performance',  fontsize = 30, fontdict=dict(weight='bold'))
 ax[1].set_ylim([0, 1.35])
 ax[1].grid(linestyle='--', linewidth=0.7, zorder=0)
-ax[1].legend(loc = 'upper center', framealpha=0.3, labelspacing=0.5,columnspacing=0.5,  ncol=4, fontsize=20)
+# ax[1].legend(loc = 'upper center', framealpha=0.3, labelspacing=0.5,columnspacing=0.5,  ncol=4, fontsize=20)
 
 gflops_fft = th.as_tensor([   107.0,   752.0,  1364.7,  2165.5,  2589.3,  2495.6,  2761.3,  2906.5,  2983.6,])
 gflops_ft_fft = th.as_tensor([   108.4,   779.1,  1359.3,  2206.9,  2582.7,  2503.1,  2756.6,  2761.6,  2770.0,])
@@ -166,20 +166,20 @@ gflops_cufft /= gflops_cufft
 
 # id = id + 1
 ax[2].bar(br1, gflops_ft_fft_xin[id], color = color1, width = barWidth,
-        edgecolor =edgecolor1, label = "SC'17 FT-FFT c", zorder=3, hatch='xx')
-ax[2].bar(br1, gflops_ft_fft_xin[id] * 0.8, color = color1, width = barWidth,
-        edgecolor =edgecolor1, label = "SC'17 FT-FFT c+m",zorder=3)
+        edgecolor =edgecolor1, label = "SC'17 FT-FFT", zorder=3, hatch='xx')
+# ax[2].bar(br1, gflops_ft_fft_xin[id] * 0.8, color = color1, width = barWidth,
+#         edgecolor =edgecolor1, label = "SC'17 FT-FFT c+m",zorder=3)
 ax[2].bar(br2, gflops_ft_fft[id] * 0.95, color = color2, width = barWidth,
-        edgecolor =edgecolor2, label = "turboFFT w/ FT c",zorder=3, hatch='xx')
-ax[2].bar(br2, gflops_ft_fft[id] * 0.85, color = color_white, width = barWidth,
-        edgecolor =edgecolor2, label = "turboFFT w/ FT c+m",zorder=3)
+        edgecolor =edgecolor2, label = "turboFFT w/ FT",zorder=3, hatch='xx')
+# ax[2].bar(br2, gflops_ft_fft[id] * 0.85, color = color_white, width = barWidth,
+#         edgecolor =edgecolor2, label = "turboFFT w/ FT c+m",zorder=3)
 ax[2].bar(br2 + barWidth, gflops_fft[id], color = color[3], width = barWidth,
         edgecolor =edgecolor3, label = "turboFFT w/o FT",zorder=3,)
 ax[2].bar(br3, gflops_vkfft[id], color = color_vkfft, width = barWidth,
         edgecolor =edgecolor4, label = "VkFFT",zorder=3,)
 ax[2].bar(br4, gflops_cufft[id], color = color_cufft, width = barWidth,
         edgecolor =edgecolor5, label = "cuFFT",zorder=3,)
-ax[2].set_xlabel('batch size, N = 2^15',  fontsize = 30, fontdict=dict(weight='bold'))
+
 kernel_name = ['1', '4',  '16', '32', '64', '128', '256','512', '1024']
 ax[2].set_xticks(br3)
 ax[2].set_xticklabels([f'{kernel_name[i]}' for i in range(N)], rotation=0,)
@@ -187,7 +187,7 @@ ax[2].set_ylabel('Scale Performance',  fontsize = 30, fontdict=dict(weight='bold
 # ax[2].set_yticks([0, 200, 400, 600])
 ax[2].set_ylim([0, 1.35])
 ax[2].grid(linestyle='--', linewidth=0.7, zorder=0)
-ax[2].legend(loc = 'upper center', framealpha=0.3, labelspacing=0.5,columnspacing=0.5,  ncol=4, fontsize=20)
+# ax[2].legend(loc = 'upper center', framealpha=0.3, labelspacing=0.5,columnspacing=0.5,  ncol=4, fontsize=20)
 
 gflops_ft_fft = th.as_tensor([  2326.0,  2869.2,  3357.4,  3746.7,  3916.3,  4022.2,  4093.6,  4099.7,  4114.1,])
 gflops_cufft = th.as_tensor([  2761.3,  3290.0,  3660.1,  3966.2,  4161.8,  4242.1,  4286.6,  4297.6,  4307.5,])
@@ -202,20 +202,36 @@ gflops_vkfft /= gflops_cufft
 gflops_cufft /= gflops_cufft
 # id = id + 1
 ax[3].bar(br1, gflops_ft_fft_xin[id], color = color1, width = barWidth,
-        edgecolor =edgecolor1, label = "SC'17 FT-FFT c", zorder=3, hatch='xx')
-ax[3].bar(br1, gflops_ft_fft_xin[id] * 0.8, color = color1, width = barWidth,
-        edgecolor =edgecolor1, label = "SC'17 FT-FFT c+m",zorder=3)
+        edgecolor =edgecolor1, label = "SC'17 FT-FFT", zorder=3, hatch='xx')
+# ax[3].bar(br1, gflops_ft_fft_xin[id] * 0.8, color = color1, width = barWidth,
+#         edgecolor =edgecolor1, label = "SC'17 FT-FFT c+m",zorder=3)
 ax[3].bar(br2, gflops_ft_fft[id] * 0.95, color = color2, width = barWidth,
-        edgecolor =edgecolor2, label = "turboFFT w/ FT c",zorder=3, hatch='xx')
-ax[3].bar(br2, gflops_ft_fft[id] * 0.85, color = color_white, width = barWidth,
-        edgecolor =edgecolor2, label = "turboFFT w/ FT c+m",zorder=3)
+        edgecolor =edgecolor2, label = "turboFFT w/ FT",zorder=3, hatch='xx')
+# ax[3].bar(br2, gflops_ft_fft[id] * 0.85, color = color_white, width = barWidth,
+#         edgecolor =edgecolor2, label = "turboFFT w/ FT c+m",zorder=3)
 ax[3].bar(br2 + barWidth, gflops_fft[id], color = color[3], width = barWidth,
         edgecolor =edgecolor3, label = "turboFFT w/o FT",zorder=3,)
 ax[3].bar(br3, gflops_vkfft[id], color = color_vkfft, width = barWidth,
         edgecolor =edgecolor4, label = "VkFFT",zorder=3,)
 ax[3].bar(br4, gflops_cufft[id], color = color_cufft, width = barWidth,
         edgecolor =edgecolor5, label = "cuFFT",zorder=3,)
-ax[3].set_xlabel('batch size, N = 2^21',  fontsize = 30, fontdict=dict(weight='bold'))
+
+# ax[0].set_xlabel('logN',  fontsize = 30, fontdict=dict(weight='bold'),loc='right')
+# ax[1].set_xlabel('bs',  fontsize = 30, fontdict=dict(weight='bold'),loc='right')
+# ax[2].set_xlabel('bs',  fontsize = 30, fontdict=dict(weight='bold'),loc='right')
+# ax[3].set_xlabel('bs',  fontsize = 30, fontdict=dict(weight='bold'),loc='right')
+ax[0].text(0.01, 1.2, 'BS=1, logN 5 to 29')
+ax[1].text(0.01, 1.2, 'logN=9, BS 1 to 1024')
+ax[2].text(0.01, 1.2, 'logN=15, BS 1 to 1024')
+ax[3].text(0.01, 1.2, 'logN=21, BS 1 to 256')
+# ax[0].xaxis.set_label_position('top') 
+# ax[1].xaxis.set_label_position('top') 
+# ax[2].xaxis.set_label_position('top') 
+# ax[3].xaxis.set_label_position('top')
+# ax[0].xaxis.set_label_coords(0.9,0.05) 
+# ax[1].xaxis.set_label_coords(0.9,0.05) 
+# ax[2].xaxis.set_label_coords(0.9,0.05) 
+# ax[3].xaxis.set_label_coords(0.9,0.05) 
 kernel_name = ['1', '2', '4','8', '16', '32', '64', '128', '256']
 ax[3].set_xticks(br3)
 ax[3].set_xticklabels([f'{kernel_name[i]}' for i in range(N)], rotation=0,)
@@ -223,7 +239,8 @@ ax[3].set_ylabel('Scale Performance',  fontsize = 30, fontdict=dict(weight='bold
 # ax[3].set_yticks([0, 200, 400, 600])
 ax[3].set_ylim([0, 1.35])
 ax[3].grid(linestyle='--', linewidth=0.7, zorder=0)
-ax[3].legend(loc = 'upper center', framealpha=0.3, labelspacing=0.5,columnspacing=0.5,  ncol=4, fontsize=20)
+# ax[3].legend(loc = 'lower center', framealpha=0.3, labelspacing=0.5,columnspacing=0.5,  ncol=4, fontsize=20)
+ax[3].legend(bbox_to_anchor=(0.9, -0.1), framealpha=0.3, labelspacing=0.5,columnspacing=0.5,  ncol=4, fontsize=20)
 
 
 
