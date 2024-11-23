@@ -59,7 +59,7 @@ ax[1].plot(N,  vkfft / unit, label="VkFFT", marker='*',markersize=ms,  color =  
 ax[1].plot(N, turbofft_no_ft[1:, 0, 1] / unit,  label="TurboFFT w/o FT", marker='P',markersize=ms, color = color[2], clip_on=False)
 ax[1].plot(N, turbofft_ft[1:, 0, 1] / unit,  label="TurboFFT w/ FT", marker='s',markersize=ms,  color = color[3], clip_on=False)
 ax[1].plot(N,  turbofft_err[1:, 0, 1] / unit, '--', label="TurboFFT: err. inj.", marker='^',markersize=ms,  color =  'purple', clip_on=False)
-ax[1].plot(N,  xin[1:, 0, 1] / unit, '--', label="Xin's FT-FFT: err. inj.", marker='D',markersize=ms,  color =  'k', clip_on=False)
+ax[1].plot(N,  xin[1:, 0, 1] / unit, '--', label="Offline FT-FFT: err. inj.", marker='D',markersize=ms,  color =  'k', clip_on=False)
 print('FP64, A100')
 def data_analysis(d1, cufft, name):
     rel = (d1 - cufft) / cufft
@@ -137,7 +137,7 @@ ax[0].plot(N, turbofft_no_ft[1:, 0, 1] / unit,  label="TurboFFT w/o FT", marker=
 ax[0].plot(N, turbofft_ft[1:, 0, 1] / unit,  label="TurboFFT w/ FT", marker='s',markersize=ms,  color = color[3], clip_on=False)
 # ax[0].plot(N, (abft_baseline[:l] - 100) / unit,  label="Ding et al. 2011: err. inj.",marker='^',markersize=ms,  color = color[0], clip_on=False)
 ax[0].plot(N,  turbofft_err[1:, 0, 1] / unit, '--', label="TurboFFT: err. inj.", marker='^',markersize=ms,  color =  'purple', clip_on=False)
-ax[0].plot(N,  xin[1:, 0, 1] / unit, '--', label="Xin's FT-FFT: err. inj.", marker='D',markersize=ms,  color =  'k', clip_on=False)
+ax[0].plot(N,  xin[1:, 0, 1] / unit, '--', label="Offline FT-FFT: err. inj.", marker='D',markersize=ms,  color =  'k', clip_on=False)
 # # ax[1].plot(N, roofline_model[:l] / unit,  label="roofline", marker='x', markersize=ms, color = 'k', clip_on=False)
 
 ax[0].set_xlabel("(a) FP32 on A100", fontdict=dict(weight='bold', size=40))
@@ -190,4 +190,5 @@ ax[0].set_yticks(yticks)
 ax[0].yaxis.set_tick_params(rotation=90)
 ax[1].yaxis.set_tick_params(rotation=90)
 ax[0].legend(loc="lower right", prop={'size': 24},  labelspacing=0, bbox_to_anchor=(1.02,-0.03))
-fig.savefig(f"..//sc_figures//A100_error_injection.pdf", bbox_inches='tight')
+# fig.savefig(f"..//sc_figures//A100_error_injection.pdf", bbox_inches='tight')
+fig.savefig(f"C:/Users/SHIXUNWU/TurboFFT/fig/A100_error_injection.png", bbox_inches='tight')

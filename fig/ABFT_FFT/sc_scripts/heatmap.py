@@ -23,7 +23,7 @@ thread = f'../ft_data/ft_scheme_thread_bs=1_{device}_{datatype}.csv'
 file_name = [xin, thread,thread ]
 thread_bs_list = [[], [], thread_bs]
 label = [
-    '(a) TurboFFT w/\n1-sided ABFT',
+    '(a) Offline FT-FFT',
     '(b) TurboFFT w/\n2-sided ABFT\nthread-level',
     '(c) TurboFFT w/\n2-sided ABFT\nthreadblock-level',
 ]

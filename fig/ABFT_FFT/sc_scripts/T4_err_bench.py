@@ -91,7 +91,7 @@ for i in range(2):
     ax[i].plot(N, turbofft_no_ft[1:, 0, 1+i] / unit,  label="TurboFFT w/o FT", marker='P',markersize=ms, color = color[2], clip_on=False)
     ax[i].plot(N, turbofft_ft[1:, 0, 1+i] / unit,  label="TurboFFT w/ FT", marker='s',markersize=ms,  color = color[3], clip_on=False)
     ax[i].plot(N,  turbofft_err[1:, 0, 1+i] / unit, '--', label="TurboFFT: err. inj.", marker='^',markersize=ms,  color =  'purple', clip_on=False)
-    ax[i].plot(N,  xin[1:, 0, 1+i] / unit, '--', label="Xin's FT-FFT: err. inj.", marker='D',markersize=ms,  color =  'k', clip_on=False)
+    ax[i].plot(N,  xin[1:, 0, 1+i] / unit, '--', label="Offline FT-FFT: err. inj.", marker='D',markersize=ms,  color =  'k', clip_on=False)
 
     ax[i].set_xlabel(x_label[i], fontdict=dict(weight='bold', size=40))
     ax[i].set_ylabel(y_label[i], fontdict=dict(weight='bold'))
