@@ -7,12 +7,12 @@
 // #include "./include/sgemm_wide.cuh"
 // #include "./include/sgemm_huge.cuh"
 
-#include "./include/ft_sgemm_small.cuh"
+// #include "./include/ft_sgemm_small.cuh"
 #include "./include/ft_sgemm_medium.cuh"
 #include "./include/ft_sgemm_large.cuh"
 #include "./include/ft_sgemm_tall.cuh"
 // #include "./include/ft_sgemm_wide.cuh"
-#include "./include/ft_sgemm_huge.cuh"
+// #include "./include/ft_sgemm_huge.cuh"
 #include "./include/ft_sgemm_huge_thread.cuh"
 #include "./include/ft_sgemm_huge_warp.cuh"
 
@@ -24,7 +24,7 @@
 #include "./include_code_gen/sgemm_huge.cuh"
 #include "./include_code_gen/sgemm_test.cuh"
 
-// #include "./include_code_gen/ft_sgemm_small.cuh"
+#include "./include_code_gen/ft_sgemm_small.cuh"
 // #include "./include_code_gen/ft_sgemm_medium.cuh"
 // #include "./include_code_gen/ft_sgemm_large.cuh"
 // #include "./include_code_gen/ft_sgemm_tall.cuh"

@@ -954,41 +954,112 @@ __syncthreads();
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[0])) / (float)(262144), tmp_angle);
     MY_MUL(temp_0, tmp_angle, tmp);
     temp_0 = tmp;
-    outputs[(tx + bx * 16) + 512 * __id[0]] = temp_0;
+    sdata[tx + 16 * __id[0]] = temp_0;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[4])) / (float)(262144), tmp_angle);
     MY_MUL(temp_4, tmp_angle, tmp);
     temp_4 = tmp;
-    outputs[(tx + bx * 16) + 512 * __id[4]] = temp_4;
+    sdata[tx + 16 * __id[4]] = temp_4;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[2])) / (float)(262144), tmp_angle);
     MY_MUL(temp_2, tmp_angle, tmp);
     temp_2 = tmp;
-    outputs[(tx + bx * 16) + 512 * __id[2]] = temp_2;
+    sdata[tx + 16 * __id[2]] = temp_2;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[6])) / (float)(262144), tmp_angle);
     MY_MUL(temp_6, tmp_angle, tmp);
     temp_6 = tmp;
-    outputs[(tx + bx * 16) + 512 * __id[6]] = temp_6;
+    sdata[tx + 16 * __id[6]] = temp_6;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[1])) / (float)(262144), tmp_angle);
     MY_MUL(temp_1, tmp_angle, tmp);
     temp_1 = tmp;
-    outputs[(tx + bx * 16) + 512 * __id[1]] = temp_1;
+    sdata[tx + 16 * __id[1]] = temp_1;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[5])) / (float)(262144), tmp_angle);
     MY_MUL(temp_5, tmp_angle, tmp);
     temp_5 = tmp;
-    outputs[(tx + bx * 16) + 512 * __id[5]] = temp_5;
+    sdata[tx + 16 * __id[5]] = temp_5;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[3])) / (float)(262144), tmp_angle);
     MY_MUL(temp_3, tmp_angle, tmp);
     temp_3 = tmp;
-    outputs[(tx + bx * 16) + 512 * __id[3]] = temp_3;
+    sdata[tx + 16 * __id[3]] = temp_3;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 16) * (__id[7])) / (float)(262144), tmp_angle);
     MY_MUL(temp_7, tmp_angle, tmp);
     temp_7 = tmp;
-    outputs[(tx + bx * 16) + 512 * __id[7]] = temp_7;
+    sdata[tx + 16 * __id[7]] = temp_7;
+    
+            __syncthreads();
+            float global_mem_checksum = 0;
+    
+    temp_0 = sdata[tx + 16 * (((ty * 16) / 32) * 8 * (2) + 0 * (2) + (ty % 2))];
+    global_mem_checksum += temp_0.x + temp_0.y;
+    outputs[(tx + bx * 16) + 512 * (((ty * 16) / 32) * 8 * (2) + 0 * (2) + (ty % 2))] = temp_0;
+    
+    temp_1 = sdata[tx + 16 * (((ty * 16) / 32) * 8 * (2) + 1 * (2) + (ty % 2))];
+    global_mem_checksum += temp_1.x + temp_1.y;
+    outputs[(tx + bx * 16) + 512 * (((ty * 16) / 32) * 8 * (2) + 1 * (2) + (ty % 2))] = temp_1;
+    
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 16, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 8, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 4, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 2, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 1, 32);
+    
+    outputs[262144 + bx * 128 + 4 * (tid / 32) +  1].x = global_mem_checksum;
+    global_mem_checksum = 0;
+    
+    temp_2 = sdata[tx + 16 * (((ty * 16) / 32) * 8 * (2) + 2 * (2) + (ty % 2))];
+    global_mem_checksum += temp_2.x + temp_2.y;
+    outputs[(tx + bx * 16) + 512 * (((ty * 16) / 32) * 8 * (2) + 2 * (2) + (ty % 2))] = temp_2;
+    
+    temp_3 = sdata[tx + 16 * (((ty * 16) / 32) * 8 * (2) + 3 * (2) + (ty % 2))];
+    global_mem_checksum += temp_3.x + temp_3.y;
+    outputs[(tx + bx * 16) + 512 * (((ty * 16) / 32) * 8 * (2) + 3 * (2) + (ty % 2))] = temp_3;
+    
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 16, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 8, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 4, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 2, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 1, 32);
+    
+    outputs[262144 + bx * 128 + 4 * (tid / 32) +  2].x = global_mem_checksum;
+    global_mem_checksum = 0;
+    
+    temp_4 = sdata[tx + 16 * (((ty * 16) / 32) * 8 * (2) + 4 * (2) + (ty % 2))];
+    global_mem_checksum += temp_4.x + temp_4.y;
+    outputs[(tx + bx * 16) + 512 * (((ty * 16) / 32) * 8 * (2) + 4 * (2) + (ty % 2))] = temp_4;
+    
+    temp_5 = sdata[tx + 16 * (((ty * 16) / 32) * 8 * (2) + 5 * (2) + (ty % 2))];
+    global_mem_checksum += temp_5.x + temp_5.y;
+    outputs[(tx + bx * 16) + 512 * (((ty * 16) / 32) * 8 * (2) + 5 * (2) + (ty % 2))] = temp_5;
+    
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 16, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 8, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 4, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 2, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 1, 32);
+    
+    outputs[262144 + bx * 128 + 4 * (tid / 32) +  3].x = global_mem_checksum;
+    global_mem_checksum = 0;
+    
+    temp_6 = sdata[tx + 16 * (((ty * 16) / 32) * 8 * (2) + 6 * (2) + (ty % 2))];
+    global_mem_checksum += temp_6.x + temp_6.y;
+    outputs[(tx + bx * 16) + 512 * (((ty * 16) / 32) * 8 * (2) + 6 * (2) + (ty % 2))] = temp_6;
+    
+    temp_7 = sdata[tx + 16 * (((ty * 16) / 32) * 8 * (2) + 7 * (2) + (ty % 2))];
+    global_mem_checksum += temp_7.x + temp_7.y;
+    outputs[(tx + bx * 16) + 512 * (((ty * 16) / 32) * 8 * (2) + 7 * (2) + (ty % 2))] = temp_7;
+    
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 16, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 8, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 4, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 2, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 1, 32);
+    
+    outputs[262144 + bx * 128 + 4 * (tid / 32) +  4].x = global_mem_checksum;
+    global_mem_checksum = 0;
     
     }

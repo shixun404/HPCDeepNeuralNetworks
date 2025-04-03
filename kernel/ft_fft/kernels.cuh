@@ -21,35 +21,35 @@
         
         #include "./include/radix_2_codegen/ft_fft_radix2_logN12_reg16.cuh"
         
-        #include "./include/radix_2_codegen/ft_fft_radix2_logN13_reg8.cuh"
+        #include "./include/radix_2_codegen/ft_fft_radix2_logN13_reg32.cuh"
         
         #include "./include/radix_2_codegen/ft_fft_radix2_logN14_reg8_upload=1.cuh"
         
         #include "./include/radix_2_codegen/ft_fft_radix2_logN14_reg8_upload=2.cuh"
         
-        #include "./include/radix_2_codegen/ft_fft_radix2_logN15_reg16_upload=1.cuh"
+        #include "./include/radix_2_codegen/ft_fft_radix2_logN15_reg8_upload=1.cuh"
         
-        #include "./include/radix_2_codegen/ft_fft_radix2_logN15_reg16_upload=2.cuh"
+        #include "./include/radix_2_codegen/ft_fft_radix2_logN15_reg8_upload=2.cuh"
         
-        #include "./include/radix_2_codegen/ft_fft_radix2_logN16_reg32_upload=1.cuh"
+        #include "./include/radix_2_codegen/ft_fft_radix2_logN16_reg8_upload=1.cuh"
         
-        #include "./include/radix_2_codegen/ft_fft_radix2_logN16_reg16_upload=2.cuh"
+        #include "./include/radix_2_codegen/ft_fft_radix2_logN16_reg8_upload=2.cuh"
         
         #include "./include/radix_2_codegen/ft_fft_radix2_logN17_reg16_upload=1.cuh"
         
-        #include "./include/radix_2_codegen/ft_fft_radix2_logN17_reg16_upload=2.cuh"
+        #include "./include/radix_2_codegen/ft_fft_radix2_logN17_reg8_upload=2.cuh"
         
-        #include "./include/radix_2_codegen/ft_fft_radix2_logN18_reg8_upload=1.cuh"
+        #include "./include/radix_2_codegen/ft_fft_radix2_logN18_reg16_upload=1.cuh"
         
-        #include "./include/radix_2_codegen/ft_fft_radix2_logN18_reg16_upload=2.cuh"
+        #include "./include/radix_2_codegen/ft_fft_radix2_logN18_reg8_upload=2.cuh"
         
         #include "./include/radix_2_codegen/ft_fft_radix2_logN19_reg8_upload=1.cuh"
         
-        #include "./include/radix_2_codegen/ft_fft_radix2_logN19_reg16_upload=2.cuh"
+        #include "./include/radix_2_codegen/ft_fft_radix2_logN19_reg8_upload=2.cuh"
         
         #include "./include/radix_2_codegen/ft_fft_radix2_logN20_reg32_upload=1.cuh"
         
-        #include "./include/radix_2_codegen/ft_fft_radix2_logN20_reg16_upload=2.cuh"
+        #include "./include/radix_2_codegen/ft_fft_radix2_logN20_reg32_upload=2.cuh"
         
         #include "./include/radix_2_codegen/ft_fft_radix2_logN21_reg32_upload=1.cuh"
         

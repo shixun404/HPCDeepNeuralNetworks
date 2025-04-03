@@ -28,7 +28,7 @@ int main(int argc, char** argv){
     long long N = pow((double)RADIX, (double)__log_N__); 
     int random_seed = 10;  
     #if P_FFT == 1
-    int num_tests = 100;
+    int num_tests = 1;
     #else
     int num_tests = 1;
     #endif
@@ -80,7 +80,7 @@ int main(int argc, char** argv){
     checksum_r = (float*)calloc(8192*2, sizeof(float));
     dftmtx = (float*)calloc(8192*8192*2, sizeof(float));
     CUDA_CALLER(cudaMalloc((void**)&input_d, sizeof(float) * N * 2));
-    CUDA_CALLER(cudaMalloc((void**)&output_d, sizeof(float) * N * 2));
+    CUDA_CALLER(cudaMalloc((void**)&output_d, sizeof(float) * ((N + 63) / 64 * 65) * 2));
     
     
 
@@ -554,7 +554,7 @@ int main(int argc, char** argv){
     
         {
         
-            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
             dim3 gridDim(1, 1, 1);
             dim3 blockDim(1, 1, 1);
             cudaEventRecord(fft_begin);
@@ -603,7 +603,7 @@ int main(int argc, char** argv){
     
         {
         
-            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
             dim3 gridDim(1, 1, 1);
             dim3 blockDim(4, 1, 1);
             cudaEventRecord(fft_begin);
@@ -652,7 +652,7 @@ int main(int argc, char** argv){
     
         {
         
-            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
             dim3 gridDim(1, 1, 1);
             dim3 blockDim(4, 1, 1);
             cudaEventRecord(fft_begin);
@@ -701,7 +701,7 @@ int main(int argc, char** argv){
     
         {
         
-            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
             dim3 gridDim(1, 1, 1);
             dim3 blockDim(8, 1, 1);
             cudaEventRecord(fft_begin);
@@ -750,7 +750,7 @@ int main(int argc, char** argv){
     
         {
         
-            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
             dim3 gridDim(1, 1, 1);
             dim3 blockDim(16, 1, 1);
             cudaEventRecord(fft_begin);
@@ -799,7 +799,7 @@ int main(int argc, char** argv){
     
         {
         
-            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
             dim3 gridDim(1, 1, 1);
             dim3 blockDim(32, 1, 1);
             cudaEventRecord(fft_begin);
@@ -848,7 +848,7 @@ int main(int argc, char** argv){
     
         {
         
-            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
             dim3 gridDim(1, 1, 1);
             dim3 blockDim(64, 1, 1);
             cudaEventRecord(fft_begin);
@@ -897,7 +897,7 @@ int main(int argc, char** argv){
     
         {
         
-            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
             dim3 gridDim(1, 1, 1);
             dim3 blockDim(128, 1, 1);
             cudaEventRecord(fft_begin);
@@ -946,7 +946,7 @@ int main(int argc, char** argv){
     
         {
         
-            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
             dim3 gridDim(1, 1, 1);
             dim3 blockDim(128, 1, 1);
             cudaEventRecord(fft_begin);
@@ -995,7 +995,7 @@ int main(int argc, char** argv){
     
         {
         
-            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
             dim3 gridDim(1, 1, 1);
             dim3 blockDim(256, 1, 1);
             cudaEventRecord(fft_begin);
@@ -1047,9 +1047,9 @@ int main(int argc, char** argv){
     
         {
         
-            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
             dim3 gridDim(1, 1, 1);
-            dim3 blockDim(1024, 1, 1);
+            dim3 blockDim(256, 1, 1);
             cudaEventRecord(fft_begin);
             timeSt = std::chrono::steady_clock::now();
             
@@ -1101,7 +1101,7 @@ int main(int argc, char** argv){
         
 
             float * reduction = (float*)calloc(2 * 65536, sizeof(float));
-            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
             float * reduction_d, *global_checksum_d;
             CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
             CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
@@ -1116,8 +1116,8 @@ int main(int argc, char** argv){
             for(int i = 0; i < num_tests; ++i){
         {
                 dim3 gridDim(16, 1, 1);
-                dim3 blockDim(8, 16, 1);
-                fft_radix2_logN14_1 <<<gridDim, blockDim, 8704>>> ((float2*)input_d, (float2*)output_d_1, (float2*) checksum_r_d_7);
+                dim3 blockDim(16, 8, 1);
+                fft_radix2_logN14_1 <<<gridDim, blockDim, 8192>>> ((float2*)input_d, (float2*)output_d_1, (float2*) checksum_r_d_6);
                 cudaDeviceSynchronize();
             }
             #if defined(GLOBAL_ON)
@@ -1127,9 +1127,9 @@ int main(int argc, char** argv){
             // printf("sdot! %d \n", res);
             #endif
         {
-                dim3 gridDim(16, 1, 1);
-                dim3 blockDim(8, 16, 1);
-                fft_radix2_logN14_2 <<<gridDim, blockDim, 8704>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_7);
+                dim3 gridDim(4, 1, 1);
+                dim3 blockDim(16, 32, 1);
+                fft_radix2_logN14_2 <<<gridDim, blockDim, 34816>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_8);
                 cudaDeviceSynchronize();
             }
         
@@ -1147,6 +1147,9 @@ int main(int argc, char** argv){
     }    
     
     if(log_N == 15){
+        
+        cudaFuncSetAttribute(fft_radix2_logN15_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        // cudaFuncSetAttribute(VkFFT_main_logN15_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
         
         cudaEventCreate(&fft_begin);
         cudaEventCreate(&fft_end);
@@ -1177,7 +1180,7 @@ int main(int argc, char** argv){
         
 
             float * reduction = (float*)calloc(2 * 65536, sizeof(float));
-            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
             float * reduction_d, *global_checksum_d;
             CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
             CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
@@ -1191,21 +1194,21 @@ int main(int argc, char** argv){
             
             for(int i = 0; i < num_tests; ++i){
         {
-                dim3 gridDim(16, 1, 1);
+                dim3 gridDim(32, 1, 1);
                 dim3 blockDim(16, 8, 1);
-                fft_radix2_logN15_1 <<<gridDim, blockDim, 17408>>> ((float2*)input_d, (float2*)output_d_1, (float2*) checksum_r_d_7);
+                fft_radix2_logN15_1 <<<gridDim, blockDim, 8192>>> ((float2*)input_d, (float2*)output_d_1, (float2*) checksum_r_d_6);
                 cudaDeviceSynchronize();
             }
             #if defined(GLOBAL_ON)
-            cublasSdot(handle, 16, reduction_d, 1, reduction_d + 16, 1, global_checksum_d);
+            cublasSdot(handle, 32, reduction_d, 1, reduction_d + 32, 1, global_checksum_d);
             // int res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
             cudaDeviceSynchronize(); 
             // printf("sdot! %d \n", res);
             #endif
         {
-                dim3 gridDim(16, 1, 1);
-                dim3 blockDim(8, 16, 1);
-                fft_radix2_logN15_2 <<<gridDim, blockDim, 17408>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_8);
+                dim3 gridDim(4, 1, 1);
+                dim3 blockDim(64, 16, 1);
+                fft_radix2_logN15_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_9);
                 cudaDeviceSynchronize();
             }
         
@@ -1256,7 +1259,7 @@ int main(int argc, char** argv){
         
 
             float * reduction = (float*)calloc(2 * 65536, sizeof(float));
-            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
             float * reduction_d, *global_checksum_d;
             CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
             CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
@@ -1271,7 +1274,7 @@ int main(int argc, char** argv){
             for(int i = 0; i < num_tests; ++i){
         {
                 dim3 gridDim(32, 1, 1);
-                dim3 blockDim(16, 4, 1);
+                dim3 blockDim(16, 16, 1);
                 fft_radix2_logN16_1 <<<gridDim, blockDim, 16384>>> ((float2*)input_d, (float2*)output_d_1, (float2*) checksum_r_d_7);
                 cudaDeviceSynchronize();
             }
@@ -1283,7 +1286,7 @@ int main(int argc, char** argv){
             #endif
         {
                 dim3 gridDim(8, 1, 1);
-                dim3 blockDim(16, 32, 1);
+                dim3 blockDim(64, 16, 1);
                 fft_radix2_logN16_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_9);
                 cudaDeviceSynchronize();
             }
@@ -1302,6 +1305,9 @@ int main(int argc, char** argv){
     }    
     
     if(log_N == 17){
+        
+        cudaFuncSetAttribute(fft_radix2_logN17_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
+        // cudaFuncSetAttribute(VkFFT_main_logN17_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
         
         cudaEventCreate(&fft_begin);
         cudaEventCreate(&fft_end);
@@ -1332,7 +1338,7 @@ int main(int argc, char** argv){
         
 
             float * reduction = (float*)calloc(2 * 65536, sizeof(float));
-            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
             float * reduction_d, *global_checksum_d;
             CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
             CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
@@ -1346,21 +1352,21 @@ int main(int argc, char** argv){
             
             for(int i = 0; i < num_tests; ++i){
         {
-                dim3 gridDim(64, 1, 1);
-                dim3 blockDim(8, 16, 1);
-                fft_radix2_logN17_1 <<<gridDim, blockDim, 16384>>> ((float2*)input_d, (float2*)output_d_1, (float2*) checksum_r_d_8);
+                dim3 gridDim(32, 1, 1);
+                dim3 blockDim(16, 16, 1);
+                fft_radix2_logN17_1 <<<gridDim, blockDim, 32768>>> ((float2*)input_d, (float2*)output_d_1, (float2*) checksum_r_d_8);
                 cudaDeviceSynchronize();
             }
             #if defined(GLOBAL_ON)
-            cublasSdot(handle, 64, reduction_d, 1, reduction_d + 64, 1, global_checksum_d);
+            cublasSdot(handle, 32, reduction_d, 1, reduction_d + 32, 1, global_checksum_d);
             // int res = cublasSdot(handle, N, output_d, 1, input_d, 1, global_checksum_d);
             cudaDeviceSynchronize(); 
             // printf("sdot! %d \n", res);
             #endif
         {
-                dim3 gridDim(64, 1, 1);
-                dim3 blockDim(4, 32, 1);
-                fft_radix2_logN17_2 <<<gridDim, blockDim, 16384>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_9);
+                dim3 gridDim(16, 1, 1);
+                dim3 blockDim(64, 16, 1);
+                fft_radix2_logN17_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_9);
                 cudaDeviceSynchronize();
             }
         
@@ -1382,9 +1388,6 @@ int main(int argc, char** argv){
         cudaFuncSetAttribute(fft_radix2_logN18_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
         // cudaFuncSetAttribute(VkFFT_main_logN18_1, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
         
-        cudaFuncSetAttribute(fft_radix2_logN18_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
-        // cudaFuncSetAttribute(VkFFT_main_logN18_2, cudaFuncAttributeMaxDynamicSharedMemorySize, 65536);
-        
         cudaEventCreate(&fft_begin);
         cudaEventCreate(&fft_end);
         
@@ -1414,7 +1417,7 @@ int main(int argc, char** argv){
         
 
             float * reduction = (float*)calloc(2 * 65536, sizeof(float));
-            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
             float * reduction_d, *global_checksum_d;
             CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
             CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
@@ -1429,7 +1432,7 @@ int main(int argc, char** argv){
             for(int i = 0; i < num_tests; ++i){
         {
                 dim3 gridDim(32, 1, 1);
-                dim3 blockDim(16, 64, 1);
+                dim3 blockDim(16, 32, 1);
                 fft_radix2_logN18_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d_1, (float2*) checksum_r_d_9);
                 cudaDeviceSynchronize();
             }
@@ -1441,8 +1444,8 @@ int main(int argc, char** argv){
             #endif
         {
                 dim3 gridDim(32, 1, 1);
-                dim3 blockDim(16, 32, 1);
-                fft_radix2_logN18_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_9);
+                dim3 blockDim(64, 1, 1);
+                fft_radix2_logN18_2 <<<gridDim, blockDim, 4352>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_9);
                 cudaDeviceSynchronize();
             }
         
@@ -1493,7 +1496,7 @@ int main(int argc, char** argv){
         
 
             float * reduction = (float*)calloc(2 * 65536, sizeof(float));
-            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
             float * reduction_d, *global_checksum_d;
             CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
             CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
@@ -1520,8 +1523,8 @@ int main(int argc, char** argv){
             #endif
         {
                 dim3 gridDim(128, 1, 1);
-                dim3 blockDim(4, 64, 1);
-                fft_radix2_logN19_2 <<<gridDim, blockDim, 34816>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_10);
+                dim3 blockDim(128, 2, 1);
+                fft_radix2_logN19_2 <<<gridDim, blockDim, 17588>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_10);
                 cudaDeviceSynchronize();
             }
         
@@ -1572,7 +1575,7 @@ int main(int argc, char** argv){
         
 
             float * reduction = (float*)calloc(2 * 65536, sizeof(float));
-            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
             float * reduction_d, *global_checksum_d;
             CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
             CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
@@ -1599,7 +1602,7 @@ int main(int argc, char** argv){
             #endif
         {
                 dim3 gridDim(256, 1, 1);
-                dim3 blockDim(4, 64, 1);
+                dim3 blockDim(4, 32, 1);
                 fft_radix2_logN20_2 <<<gridDim, blockDim, 40960>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_10);
                 cudaDeviceSynchronize();
             }
@@ -1654,7 +1657,7 @@ int main(int argc, char** argv){
         
 
             float * reduction = (float*)calloc(2 * 65536, sizeof(float));
-            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
             float * reduction_d, *global_checksum_d;
             CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
             CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
@@ -1681,7 +1684,7 @@ int main(int argc, char** argv){
             #endif
         {
                 dim3 gridDim(256, 1, 1);
-                dim3 blockDim(4, 128, 1);
+                dim3 blockDim(128, 4, 1);
                 fft_radix2_logN21_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_11);
                 cudaDeviceSynchronize();
             }
@@ -1736,7 +1739,7 @@ int main(int argc, char** argv){
         
 
             float * reduction = (float*)calloc(2 * 65536, sizeof(float));
-            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
             float * reduction_d, *global_checksum_d;
             CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
             CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
@@ -1763,7 +1766,7 @@ int main(int argc, char** argv){
             #endif
         {
                 dim3 gridDim(512, 1, 1);
-                dim3 blockDim(4, 128, 1);
+                dim3 blockDim(128, 4, 1);
                 fft_radix2_logN22_2 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_11);
                 cudaDeviceSynchronize();
             }
@@ -1815,7 +1818,7 @@ int main(int argc, char** argv){
         cudaEventCreate(&fft_begin);
         cudaEventCreate(&fft_end);
         float * reduction = (float*)calloc(2 * 65536, sizeof(float));
-        CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+        CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
         float * reduction_d, *global_checksum_d;
         CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
         CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
@@ -1841,7 +1844,7 @@ int main(int argc, char** argv){
             #endif
         {
                 dim3 gridDim(4096, 1, 1);
-                dim3 blockDim(16, 8, 1);
+                dim3 blockDim(16, 16, 1);
                 fft_radix2_logN23_2 <<<gridDim, blockDim, 16384>>> ((float2*)output_d, (float2*)output_d_1, (float2*) checksum_r_d_7);
                 cudaDeviceSynchronize();
             }
@@ -1906,7 +1909,7 @@ int main(int argc, char** argv){
         cudaEventCreate(&fft_begin);
         cudaEventCreate(&fft_end);
         float * reduction = (float*)calloc(2 * 65536, sizeof(float));
-        CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+        CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
         float * reduction_d, *global_checksum_d;
         CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
         CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
@@ -1944,7 +1947,7 @@ int main(int argc, char** argv){
             #endif
         {
                 dim3 gridDim(4096, 1, 1);
-                dim3 blockDim(32, 16, 1);
+                dim3 blockDim(16, 16, 1);
                 fft_radix2_logN24_3 <<<gridDim, blockDim, 34816>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_8);
                 cudaDeviceSynchronize();
             }
@@ -2000,7 +2003,7 @@ int main(int argc, char** argv){
         cudaEventCreate(&fft_begin);
         cudaEventCreate(&fft_end);
         float * reduction = (float*)calloc(2 * 65536, sizeof(float));
-        CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+        CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
         float * reduction_d, *global_checksum_d;
         CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
         CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
@@ -2038,7 +2041,7 @@ int main(int argc, char** argv){
             #endif
         {
                 dim3 gridDim(4096, 1, 1);
-                dim3 blockDim(64, 16, 1);
+                dim3 blockDim(32, 16, 1);
                 fft_radix2_logN25_3 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_9);
                 cudaDeviceSynchronize();
             }
@@ -2097,7 +2100,7 @@ int main(int argc, char** argv){
         cudaEventCreate(&fft_begin);
         cudaEventCreate(&fft_end);
         float * reduction = (float*)calloc(2 * 65536, sizeof(float));
-        CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+        CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
         float * reduction_d, *global_checksum_d;
         CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
         CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
@@ -2135,7 +2138,7 @@ int main(int argc, char** argv){
             #endif
         {
                 dim3 gridDim(8192, 1, 1);
-                dim3 blockDim(64, 16, 1);
+                dim3 blockDim(32, 16, 1);
                 fft_radix2_logN26_3 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_9);
                 cudaDeviceSynchronize();
             }
@@ -2197,7 +2200,7 @@ int main(int argc, char** argv){
         cudaEventCreate(&fft_begin);
         cudaEventCreate(&fft_end);
         float * reduction = (float*)calloc(2 * 65536, sizeof(float));
-        CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+        CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
         float * reduction_d, *global_checksum_d;
         CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
         CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
@@ -2235,7 +2238,7 @@ int main(int argc, char** argv){
             #endif
         {
                 dim3 gridDim(16384, 1, 1);
-                dim3 blockDim(64, 16, 1);
+                dim3 blockDim(32, 16, 1);
                 fft_radix2_logN27_3 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_9);
                 cudaDeviceSynchronize();
             }
@@ -2297,7 +2300,7 @@ int main(int argc, char** argv){
         cudaEventCreate(&fft_begin);
         cudaEventCreate(&fft_end);
         float * reduction = (float*)calloc(2 * 65536, sizeof(float));
-        CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+        CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
         float * reduction_d, *global_checksum_d;
         CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
         CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
@@ -2335,7 +2338,7 @@ int main(int argc, char** argv){
             #endif
         {
                 dim3 gridDim(32768, 1, 1);
-                dim3 blockDim(128, 8, 1);
+                dim3 blockDim(32, 8, 1);
                 fft_radix2_logN28_3 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_10);
                 cudaDeviceSynchronize();
             }
@@ -2397,7 +2400,7 @@ int main(int argc, char** argv){
         cudaEventCreate(&fft_begin);
         cudaEventCreate(&fft_end);
         float * reduction = (float*)calloc(2 * 65536, sizeof(float));
-        CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+        CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
         float * reduction_d, *global_checksum_d;
         CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
         CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
@@ -2411,7 +2414,7 @@ int main(int argc, char** argv){
             for(int i = 0; i < num_tests; ++i){
         {
                 dim3 gridDim(65536, 1, 1);
-                dim3 blockDim(8, 64, 1);
+                dim3 blockDim(8, 32, 1);
                 fft_radix2_logN29_1 <<<gridDim, blockDim, 65536>>> ((float2*)input_d, (float2*)output_d, (float2*) checksum_r_d_10);
                 cudaDeviceSynchronize();
             }
@@ -2435,7 +2438,7 @@ int main(int argc, char** argv){
             #endif
         {
                 dim3 gridDim(65536, 1, 1);
-                dim3 blockDim(128, 8, 1);
+                dim3 blockDim(32, 8, 1);
                 fft_radix2_logN29_3 <<<gridDim, blockDim, 65536>>> ((float2*)output_d_1, (float2*)output_d, (float2*) checksum_r_d_10);
                 cudaDeviceSynchronize();
             }

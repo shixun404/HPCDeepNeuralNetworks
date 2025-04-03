@@ -31,7 +31,7 @@ int main(int argc, char** argv){
     long long N = pow((double)RADIX, (double)__log_N__); 
     int random_seed = 10;  
     #if P_FFT == 1
-    int num_tests = 100;
+    int num_tests = 1;
     #else
     int num_tests = 1;
     #endif
@@ -83,7 +83,7 @@ int main(int argc, char** argv){
     checksum_r = (float*)calloc(8192*2, sizeof(float));
     dftmtx = (float*)calloc(8192*8192*2, sizeof(float));
     CUDA_CALLER(cudaMalloc((void**)&input_d, sizeof(float) * N * 2));
-    CUDA_CALLER(cudaMalloc((void**)&output_d, sizeof(float) * N * 2));
+    CUDA_CALLER(cudaMalloc((void**)&output_d, sizeof(float) * ((N + 63) / 64 * 65) * 2));
     
     
 
@@ -235,7 +235,7 @@ int main(int argc, char** argv){
         {
         '''
         ft_fft_script += f'''
-            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
             dim3 gridDim({int(df['num_block_1'][N-1])}, 1, 1);
             dim3 blockDim({int(df['blockdim_x_1'][N-1])}, {int(df['blockdim_y_1'][N-1])}, 1);
             cudaEventRecord(fft_begin);
@@ -305,7 +305,7 @@ int main(int argc, char** argv){
         ft_fft_script += f'''
 
             float * reduction = (float*)calloc(2 * 65536, sizeof(float));
-            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+            CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
             float * reduction_d, *global_checksum_d;
             CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
             CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;
@@ -476,7 +476,7 @@ int main(int argc, char** argv){
         cudaEventCreate(&fft_begin);
         cudaEventCreate(&fft_end);
         float * reduction = (float*)calloc(2 * 65536, sizeof(float));
-        CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) * N * 2));
+        CUDA_CALLER(cudaMalloc((void**)&output_d_1, sizeof(float) *  ((N + 63) / 64 * 65) * 2));
         float * reduction_d, *global_checksum_d;
         CUDA_CALLER(cudaMalloc((void**)&reduction_d, sizeof(float) * 65536 * 2));;
         CUDA_CALLER(cudaMalloc((void**)&global_checksum_d, sizeof(float) * 2));;

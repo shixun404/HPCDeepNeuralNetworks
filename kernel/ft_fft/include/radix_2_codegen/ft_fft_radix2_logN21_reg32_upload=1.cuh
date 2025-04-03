@@ -2995,161 +2995,328 @@ __syncthreads();
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[0])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_0, tmp_angle, tmp);
     temp_0 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[0]] = temp_0;
+    sdata[tx + 8 * __id[0]] = temp_0;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[16])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_16, tmp_angle, tmp);
     temp_16 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[16]] = temp_16;
+    sdata[tx + 8 * __id[16]] = temp_16;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[8])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_8, tmp_angle, tmp);
     temp_8 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[8]] = temp_8;
+    sdata[tx + 8 * __id[8]] = temp_8;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[24])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_24, tmp_angle, tmp);
     temp_24 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[24]] = temp_24;
+    sdata[tx + 8 * __id[24]] = temp_24;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[4])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_4, tmp_angle, tmp);
     temp_4 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[4]] = temp_4;
+    sdata[tx + 8 * __id[4]] = temp_4;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[20])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_20, tmp_angle, tmp);
     temp_20 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[20]] = temp_20;
+    sdata[tx + 8 * __id[20]] = temp_20;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[12])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_12, tmp_angle, tmp);
     temp_12 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[12]] = temp_12;
+    sdata[tx + 8 * __id[12]] = temp_12;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[28])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_28, tmp_angle, tmp);
     temp_28 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[28]] = temp_28;
+    sdata[tx + 8 * __id[28]] = temp_28;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[2])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_2, tmp_angle, tmp);
     temp_2 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[2]] = temp_2;
+    sdata[tx + 8 * __id[2]] = temp_2;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[18])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_18, tmp_angle, tmp);
     temp_18 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[18]] = temp_18;
+    sdata[tx + 8 * __id[18]] = temp_18;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[10])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_10, tmp_angle, tmp);
     temp_10 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[10]] = temp_10;
+    sdata[tx + 8 * __id[10]] = temp_10;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[26])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_26, tmp_angle, tmp);
     temp_26 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[26]] = temp_26;
+    sdata[tx + 8 * __id[26]] = temp_26;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[6])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_6, tmp_angle, tmp);
     temp_6 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[6]] = temp_6;
+    sdata[tx + 8 * __id[6]] = temp_6;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[22])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_22, tmp_angle, tmp);
     temp_22 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[22]] = temp_22;
+    sdata[tx + 8 * __id[22]] = temp_22;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[14])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_14, tmp_angle, tmp);
     temp_14 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[14]] = temp_14;
+    sdata[tx + 8 * __id[14]] = temp_14;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[30])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_30, tmp_angle, tmp);
     temp_30 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[30]] = temp_30;
+    sdata[tx + 8 * __id[30]] = temp_30;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[1])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_1, tmp_angle, tmp);
     temp_1 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[1]] = temp_1;
+    sdata[tx + 8 * __id[1]] = temp_1;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[17])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_17, tmp_angle, tmp);
     temp_17 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[17]] = temp_17;
+    sdata[tx + 8 * __id[17]] = temp_17;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[9])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_9, tmp_angle, tmp);
     temp_9 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[9]] = temp_9;
+    sdata[tx + 8 * __id[9]] = temp_9;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[25])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_25, tmp_angle, tmp);
     temp_25 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[25]] = temp_25;
+    sdata[tx + 8 * __id[25]] = temp_25;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[5])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_5, tmp_angle, tmp);
     temp_5 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[5]] = temp_5;
+    sdata[tx + 8 * __id[5]] = temp_5;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[21])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_21, tmp_angle, tmp);
     temp_21 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[21]] = temp_21;
+    sdata[tx + 8 * __id[21]] = temp_21;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[13])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_13, tmp_angle, tmp);
     temp_13 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[13]] = temp_13;
+    sdata[tx + 8 * __id[13]] = temp_13;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[29])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_29, tmp_angle, tmp);
     temp_29 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[29]] = temp_29;
+    sdata[tx + 8 * __id[29]] = temp_29;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[3])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_3, tmp_angle, tmp);
     temp_3 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[3]] = temp_3;
+    sdata[tx + 8 * __id[3]] = temp_3;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[19])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_19, tmp_angle, tmp);
     temp_19 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[19]] = temp_19;
+    sdata[tx + 8 * __id[19]] = temp_19;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[11])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_11, tmp_angle, tmp);
     temp_11 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[11]] = temp_11;
+    sdata[tx + 8 * __id[11]] = temp_11;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[27])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_27, tmp_angle, tmp);
     temp_27 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[27]] = temp_27;
+    sdata[tx + 8 * __id[27]] = temp_27;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[7])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_7, tmp_angle, tmp);
     temp_7 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[7]] = temp_7;
+    sdata[tx + 8 * __id[7]] = temp_7;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[23])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_23, tmp_angle, tmp);
     temp_23 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[23]] = temp_23;
+    sdata[tx + 8 * __id[23]] = temp_23;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[15])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_15, tmp_angle, tmp);
     temp_15 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[15]] = temp_15;
+    sdata[tx + 8 * __id[15]] = temp_15;
     
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * 8) * (__id[31])) / (float)(2097152), tmp_angle);
     MY_MUL(temp_31, tmp_angle, tmp);
     temp_31 = tmp;
-    outputs[(tx + bx * 8) + 2048 * __id[31]] = temp_31;
+    sdata[tx + 8 * __id[31]] = temp_31;
+    
+            __syncthreads();
+            float global_mem_checksum = 0;
+    
+    temp_0 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 0 * (4) + (ty % 4))];
+    global_mem_checksum += temp_0.x + temp_0.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 0 * (4) + (ty % 4))] = temp_0;
+    
+    temp_1 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 1 * (4) + (ty % 4))];
+    global_mem_checksum += temp_1.x + temp_1.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 1 * (4) + (ty % 4))] = temp_1;
+    
+    temp_2 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 2 * (4) + (ty % 4))];
+    global_mem_checksum += temp_2.x + temp_2.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 2 * (4) + (ty % 4))] = temp_2;
+    
+    temp_3 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 3 * (4) + (ty % 4))];
+    global_mem_checksum += temp_3.x + temp_3.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 3 * (4) + (ty % 4))] = temp_3;
+    
+    temp_4 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 4 * (4) + (ty % 4))];
+    global_mem_checksum += temp_4.x + temp_4.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 4 * (4) + (ty % 4))] = temp_4;
+    
+    temp_5 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 5 * (4) + (ty % 4))];
+    global_mem_checksum += temp_5.x + temp_5.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 5 * (4) + (ty % 4))] = temp_5;
+    
+    temp_6 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 6 * (4) + (ty % 4))];
+    global_mem_checksum += temp_6.x + temp_6.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 6 * (4) + (ty % 4))] = temp_6;
+    
+    temp_7 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 7 * (4) + (ty % 4))];
+    global_mem_checksum += temp_7.x + temp_7.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 7 * (4) + (ty % 4))] = temp_7;
+    
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 16, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 8, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 4, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 2, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 1, 32);
+    
+    outputs[2097152 + bx * 32 + 4 * (tid / 32) +  1].x = global_mem_checksum;
+    global_mem_checksum = 0;
+    
+    temp_8 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 8 * (4) + (ty % 4))];
+    global_mem_checksum += temp_8.x + temp_8.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 8 * (4) + (ty % 4))] = temp_8;
+    
+    temp_9 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 9 * (4) + (ty % 4))];
+    global_mem_checksum += temp_9.x + temp_9.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 9 * (4) + (ty % 4))] = temp_9;
+    
+    temp_10 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 10 * (4) + (ty % 4))];
+    global_mem_checksum += temp_10.x + temp_10.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 10 * (4) + (ty % 4))] = temp_10;
+    
+    temp_11 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 11 * (4) + (ty % 4))];
+    global_mem_checksum += temp_11.x + temp_11.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 11 * (4) + (ty % 4))] = temp_11;
+    
+    temp_12 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 12 * (4) + (ty % 4))];
+    global_mem_checksum += temp_12.x + temp_12.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 12 * (4) + (ty % 4))] = temp_12;
+    
+    temp_13 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 13 * (4) + (ty % 4))];
+    global_mem_checksum += temp_13.x + temp_13.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 13 * (4) + (ty % 4))] = temp_13;
+    
+    temp_14 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 14 * (4) + (ty % 4))];
+    global_mem_checksum += temp_14.x + temp_14.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 14 * (4) + (ty % 4))] = temp_14;
+    
+    temp_15 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 15 * (4) + (ty % 4))];
+    global_mem_checksum += temp_15.x + temp_15.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 15 * (4) + (ty % 4))] = temp_15;
+    
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 16, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 8, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 4, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 2, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 1, 32);
+    
+    outputs[2097152 + bx * 32 + 4 * (tid / 32) +  2].x = global_mem_checksum;
+    global_mem_checksum = 0;
+    
+    temp_16 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 16 * (4) + (ty % 4))];
+    global_mem_checksum += temp_16.x + temp_16.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 16 * (4) + (ty % 4))] = temp_16;
+    
+    temp_17 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 17 * (4) + (ty % 4))];
+    global_mem_checksum += temp_17.x + temp_17.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 17 * (4) + (ty % 4))] = temp_17;
+    
+    temp_18 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 18 * (4) + (ty % 4))];
+    global_mem_checksum += temp_18.x + temp_18.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 18 * (4) + (ty % 4))] = temp_18;
+    
+    temp_19 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 19 * (4) + (ty % 4))];
+    global_mem_checksum += temp_19.x + temp_19.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 19 * (4) + (ty % 4))] = temp_19;
+    
+    temp_20 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 20 * (4) + (ty % 4))];
+    global_mem_checksum += temp_20.x + temp_20.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 20 * (4) + (ty % 4))] = temp_20;
+    
+    temp_21 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 21 * (4) + (ty % 4))];
+    global_mem_checksum += temp_21.x + temp_21.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 21 * (4) + (ty % 4))] = temp_21;
+    
+    temp_22 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 22 * (4) + (ty % 4))];
+    global_mem_checksum += temp_22.x + temp_22.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 22 * (4) + (ty % 4))] = temp_22;
+    
+    temp_23 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 23 * (4) + (ty % 4))];
+    global_mem_checksum += temp_23.x + temp_23.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 23 * (4) + (ty % 4))] = temp_23;
+    
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 16, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 8, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 4, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 2, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 1, 32);
+    
+    outputs[2097152 + bx * 32 + 4 * (tid / 32) +  3].x = global_mem_checksum;
+    global_mem_checksum = 0;
+    
+    temp_24 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 24 * (4) + (ty % 4))];
+    global_mem_checksum += temp_24.x + temp_24.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 24 * (4) + (ty % 4))] = temp_24;
+    
+    temp_25 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 25 * (4) + (ty % 4))];
+    global_mem_checksum += temp_25.x + temp_25.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 25 * (4) + (ty % 4))] = temp_25;
+    
+    temp_26 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 26 * (4) + (ty % 4))];
+    global_mem_checksum += temp_26.x + temp_26.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 26 * (4) + (ty % 4))] = temp_26;
+    
+    temp_27 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 27 * (4) + (ty % 4))];
+    global_mem_checksum += temp_27.x + temp_27.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 27 * (4) + (ty % 4))] = temp_27;
+    
+    temp_28 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 28 * (4) + (ty % 4))];
+    global_mem_checksum += temp_28.x + temp_28.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 28 * (4) + (ty % 4))] = temp_28;
+    
+    temp_29 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 29 * (4) + (ty % 4))];
+    global_mem_checksum += temp_29.x + temp_29.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 29 * (4) + (ty % 4))] = temp_29;
+    
+    temp_30 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 30 * (4) + (ty % 4))];
+    global_mem_checksum += temp_30.x + temp_30.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 30 * (4) + (ty % 4))] = temp_30;
+    
+    temp_31 = sdata[tx + 8 * (((ty * 8) / 32) * 32 * (4) + 31 * (4) + (ty % 4))];
+    global_mem_checksum += temp_31.x + temp_31.y;
+    outputs[(tx + bx * 8) + 2048 * (((ty * 8) / 32) * 32 * (4) + 31 * (4) + (ty % 4))] = temp_31;
+    
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 16, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 8, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 4, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 2, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 1, 32);
+    
+    outputs[2097152 + bx * 32 + 4 * (tid / 32) +  4].x = global_mem_checksum;
+    global_mem_checksum = 0;
     
     }

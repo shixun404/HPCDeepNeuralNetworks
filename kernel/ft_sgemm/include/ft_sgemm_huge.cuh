@@ -1,7 +1,7 @@
 #include <stdio.h>
 //#include "../kernels.cuh"
 #define m 8
- 
+
 
 #define float4_set_zero(t) t.x = 0.; t.y = 0.; t.z = 0.; t.w = 0.; 
 #define comp_and_record(checksum, r, offset) \

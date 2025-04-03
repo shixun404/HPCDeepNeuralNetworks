@@ -319,13 +319,42 @@ __syncthreads();
             
             
             
+    #         for i in range(signal_per_thread):
+    #             ft_fft += f'''
+    # MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * {blockdim_x}) * (__id[{order[signal_per_thread - offset + i]}])) / (float)({N}), tmp_angle);
+    # MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle, tmp);
+    # temp_{order[signal_per_thread - offset + i]} = tmp;
+    # outputs[(tx + bx * {blockdim_x}) + {N2} * __id[{order[signal_per_thread - offset + i]}]] = temp_{order[signal_per_thread - offset + i]};
+    # '''
             for i in range(signal_per_thread):
                 ft_fft += f'''
     MY_ANGLE2COMPLEX((float)(-M_PI * 2 * (tx + bx * {blockdim_x}) * (__id[{order[signal_per_thread - offset + i]}])) / (float)({N}), tmp_angle);
     MY_MUL(temp_{order[signal_per_thread - offset + i]}, tmp_angle, tmp);
     temp_{order[signal_per_thread - offset + i]} = tmp;
-    outputs[(tx + bx * {blockdim_x}) + {N2} * __id[{order[signal_per_thread - offset + i]}]] = temp_{order[signal_per_thread - offset + i]};
+    sdata[tx + {blockdim_x} * __id[{order[signal_per_thread - offset + i]}]] = temp_{order[signal_per_thread - offset + i]};
     '''
+            ft_fft += '''
+            __syncthreads();
+            float global_mem_checksum = 0;
+    '''
+            for i in range(signal_per_thread):
+                ft_fft += f'''
+    temp_{i} = sdata[tx + {blockdim_x} * (((ty * {blockdim_x}) / 32) * {signal_per_thread} * ({int(32 // blockdim_x)}) + {i} * ({int(32 // blockdim_x)}) + (ty % {int(32 // blockdim_x)}))];
+    global_mem_checksum += temp_{i}.x + temp_{i}.y;
+    outputs[(tx + bx * {blockdim_x}) + {N2} * (((ty * {blockdim_x}) / 32) * {signal_per_thread} * ({int(32 // blockdim_x)}) + {i} * ({int(32 // blockdim_x)}) + (ty % {int(32 // blockdim_x)}))] = temp_{i};
+    '''
+                if (i + 1) % (signal_per_thread // 4) == 0:
+                    ft_fft += f'''
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 16, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 8, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 4, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 2, 32);
+    global_mem_checksum += __shfl_xor_sync(0xffffffff, global_mem_checksum, 1, 32);
+    
+    outputs[{N1 * N2} + bx * {num_thread // 32 * 4} + 4 * (tid / 32) +  {(i + 1) // (signal_per_thread // 4)}].x = global_mem_checksum;
+    global_mem_checksum = 0;
+    '''
+            
             ft_fft += '''
     }
 '''

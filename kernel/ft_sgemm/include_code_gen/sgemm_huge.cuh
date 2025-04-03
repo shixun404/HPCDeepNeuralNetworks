@@ -137,17 +137,58 @@ __global__  __launch_bounds__(256) void sgemm_huge(int M, int N, int K, float *A
     vec_B[offset_prefetch_register_kk * 2 + 0] = *((float4*)(buffer_B + offset_vec_B_warp + offset_vec_B_thread + offset_load_vec_B_kk) + 0);
     vec_B[offset_prefetch_register_kk * 2 + 1] = *((float4*)(buffer_B + offset_vec_B_warp + offset_vec_B_thread + offset_load_vec_B_kk) + 1);
     
+    A += ks * M; 
+    B += ks * N; 
+    // prefetch the vector from A and B in global memory 
+    prefetch_vector_tile_A[0] = *((float4*)A + 0);  
+    prefetch_vector_tile_B[0] = *((float4*)B + 0);  
+      C += bx * ms + offset_vec_A_warp + offset_vec_A_thread;
+    C += (by * ns + offset_vec_B_warp + offset_vec_B_thread) * M;
+    
+    // float4 C_res[16];
+    
+    // C_res[0 ] = *((float4 *)(C+ M * 0) + 0 );
+    // C_res[1 ] = *((float4 *)(C+ M * 0) + 1 );
+    // C_res[2 ] = *((float4 *)(C+ M * 1) + 0 );
+    // C_res[3 ] = *((float4 *)(C+ M * 1) + 1 );
+    // C_res[4 ] = *((float4 *)(C+ M * 2) + 0 );
+    // C_res[5 ] = *((float4 *)(C+ M * 2) + 1 );
+    // C_res[6 ] = *((float4 *)(C+ M * 3) + 0 );
+    // C_res[7 ] = *((float4 *)(C+ M * 3) + 1 );
+    // C_res[8 ] = *((float4 *)(C+ M * 4) + 0 );
+    // C_res[9 ] = *((float4 *)(C+ M * 4) + 1 );
+    // C_res[10] = *((float4 *)(C+ M * 5) + 0 );
+    // C_res[11] = *((float4 *)(C+ M * 5) + 1 );
+    // C_res[12] = *((float4 *)(C+ M * 6) + 0 );
+    // C_res[13] = *((float4 *)(C+ M * 6) + 1 );
+    // C_res[14] = *((float4 *)(C+ M * 7) + 0 );
+    // C_res[15] = *((float4 *)(C+ M * 7) + 1 );
     // K loop
     for(k = 0; k < K; k += ks){
-        // tile A abd tile B global offsets move forward ks columns
-        A += ks * M; 
-        B += ks * N; 
-        // prefetch the vector from A and B in global memory 
-        prefetch_vector_tile_A[0] = *((float4*)A + 0);  
-        prefetch_vector_tile_B[0] = *((float4*)B + 0);  
-        
+
         // inner k loop, 8
         for(kk = 0; kk < ks; ++kk){
+            if(kk == ks - 1){
+
+                // update offset to store the prefetch vector
+                offset_store_prefetch = (((int)(k / ks) + 1) & 1);
+                
+                // update the pointer to prefetched buffer A and prefetched buffer B
+                buffer_A = (float*)(sAB) + buffer_A_offset + offset_store_prefetch * ms * ks;
+                buffer_B = (float*)(sAB) + buffer_B_offset + offset_store_prefetch * ns * ks;
+                // store the vectors in the prefetched buffer A and prefetched buffer B
+                *(((float4*)buffer_A) + 1 * tx + 0) = prefetch_vector_tile_A[0];
+                *(((float4*)buffer_B) + 1 * tx + 0) = prefetch_vector_tile_B[0];
+                __syncthreads();
+                // tile A abd tile B global offsets move forward ks columns
+                A += ks * M; 
+                B += ks * N; 
+                // prefetch the vector from A and B in global memory 
+                prefetch_vector_tile_A[0] = *((float4*)A + 0);  
+                prefetch_vector_tile_B[0] = *((float4*)B + 0);  
+        
+            }
+
             offset_register_kk = ((kk) & 1);
             offset_prefetch_register_kk = ((kk + 1) & 1);
     
@@ -244,36 +285,27 @@ __global__  __launch_bounds__(256) void sgemm_huge(int M, int N, int K, float *A
             
         }
             
-        // update offset to store the prefetch vector
-        offset_store_prefetch = (((int)(k / ks) + 1) & 1);
         
-        // update the pointer to prefetched buffer A and prefetched buffer B
-        buffer_A = (float*)(sAB) + buffer_A_offset + offset_store_prefetch * ms * ks;
-        buffer_B = (float*)(sAB) + buffer_B_offset + offset_store_prefetch * ns * ks;
-        // store the vectors in the prefetched buffer A and prefetched buffer B
-        *(((float4*)buffer_A) + 1 * tx + 0) = prefetch_vector_tile_A[0];
-        *(((float4*)buffer_B) + 1 * tx + 0) = prefetch_vector_tile_B[0];
-        __syncthreads();
         // initial outer product column
-        kk = -1;
+        // kk = -1;
         
         // offset of register store for prefetching
-        offset_prefetch_register_kk = ((kk + 1) & 1);
+        // offset_prefetch_register_kk = ((kk + 1) & 1);
         
-        // offset of vec A and vec B w.r.t kk:
-        offset_load_vec_A_kk = ((kk + 1) % ks) * ms;
-        offset_load_vec_B_kk = ((kk + 1) % ks) * ns;
+        // // offset of vec A and vec B w.r.t kk:
+        // offset_load_vec_A_kk = ((kk + 1) % ks) * ms;
+        // offset_load_vec_B_kk = ((kk + 1) % ks) * ns;
         
-        // load the vectors from buffer to registers
-        vec_A[offset_prefetch_register_kk * 2 + 0] = *((float4*)(buffer_A + offset_vec_A_warp + offset_vec_A_thread + offset_load_vec_A_kk) + 0);
-        vec_A[offset_prefetch_register_kk * 2 + 1] = *((float4*)(buffer_A + offset_vec_A_warp + offset_vec_A_thread + offset_load_vec_A_kk) + 1);
-        vec_B[offset_prefetch_register_kk * 2 + 0] = *((float4*)(buffer_B + offset_vec_B_warp + offset_vec_B_thread + offset_load_vec_B_kk) + 0);
-        vec_B[offset_prefetch_register_kk * 2 + 1] = *((float4*)(buffer_B + offset_vec_B_warp + offset_vec_B_thread + offset_load_vec_B_kk) + 1);
+        // // load the vectors from buffer to registers
+        // vec_A[offset_prefetch_register_kk * 2 + 0] = *((float4*)(buffer_A + offset_vec_A_warp + offset_vec_A_thread + offset_load_vec_A_kk) + 0);
+        // vec_A[offset_prefetch_register_kk * 2 + 1] = *((float4*)(buffer_A + offset_vec_A_warp + offset_vec_A_thread + offset_load_vec_A_kk) + 1);
+        // vec_B[offset_prefetch_register_kk * 2 + 0] = *((float4*)(buffer_B + offset_vec_B_warp + offset_vec_B_thread + offset_load_vec_B_kk) + 0);
+        // vec_B[offset_prefetch_register_kk * 2 + 1] = *((float4*)(buffer_B + offset_vec_B_warp + offset_vec_B_thread + offset_load_vec_B_kk) + 1);
         
     }
     
-    C += bx * ms + offset_vec_A_warp + offset_vec_A_thread;
-    C += (by * ns + offset_vec_B_warp + offset_vec_B_thread) * M;
+    // C += bx * ms + offset_vec_A_warp + offset_vec_A_thread;
+    // C += (by * ns + offset_vec_B_warp + offset_vec_B_thread) * M;
     
     float4 C_res[16];
     
