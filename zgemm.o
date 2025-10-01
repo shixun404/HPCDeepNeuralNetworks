@@ -1,4 +1,0 @@
-      64|
-    2.00|
-error is 297.08700, relateive error is 11.95444,  -24.85160,-321.93860. row: 0, col: 0, real or imag: 0
-Failed to pass the correctness verification against NVIDIA cuBLAS. Exited.
