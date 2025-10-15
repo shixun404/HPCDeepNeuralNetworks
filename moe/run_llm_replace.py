@@ -2,7 +2,7 @@
 import argparse
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, set_seed
-
+from model_surgery import replace_transformer_layers
 # Default model: Qwen2-MoE-A2.7B for 4xA100 configuration
 DEFAULT_MODEL = "Qwen/Qwen1.5-MoE-A2.7B"
 
@@ -51,9 +51,10 @@ def main():
         max_memory=max_memory,
         low_cpu_mem_usage=args.low_cpu_mem_usage,
         trust_remote_code=True,
-        # attn_implementation="eager"
-        attn_implementation="flash_attention_2" if torch.cuda.is_available() else "eager"
+        attn_implementation="eager"
+        # attn_implementation="flash_attention_2" if torch.cuda.is_available() else "eager"
     )
+    model = replace_transformer_layers(model, [0, 5])
     model.eval()
     
 
